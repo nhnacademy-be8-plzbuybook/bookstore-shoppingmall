@@ -27,9 +27,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+        
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-
+      
     - name : upload file
       uses: appleboy/scp-action@master
       with:
@@ -38,9 +39,9 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         source: "target/*.jar"
-        target: "/home/nhnacademy/shoppingmall"
+        target: "~/"
         rm: false
-
+        
     - name: execute shell script
       uses: appleboy/ssh-action@master
       with:
@@ -49,4 +50,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script_stop: true
-        script: "/home/nhnacademy/shoppingmall/shoppingmallStartup.sh"
+        script: "./startup.sh"
