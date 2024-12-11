@@ -22,7 +22,7 @@ public class MemberGrade {
     private Long memberGradeId;
 
     //회원 등급 이름
-    @Column(name = "name", nullable = false, length = 10, columnDefinition = "VARCHAR(10) DEFAULT 'NORMAL'")
+    @Column(name = "name", nullable = false, length = 10, columnDefinition = "DEFAULT 'NORMAL'")
     private String memberGradeName;
 
     //등업 조건 주문 금액
