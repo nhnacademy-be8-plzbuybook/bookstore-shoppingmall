@@ -11,13 +11,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberStatus {
+public class MemberState {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_grade_id")
+    @Column(name = "member_state_id")
     private long memberStateId;
 
-    @Column(name = "name", nullable = false)
-    private String memberStateName;
+    @Column(name = "name", nullable = false, columnDefinition = "DEFAULT 'ACTIVE'")
+    private StatusName memberStateName;
 }
