@@ -1,6 +1,5 @@
-package com.nhnacademy.book.domain;
+package com.nhnacademy.book;
 
-import com.nhnacademy.book.MemberGrade;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

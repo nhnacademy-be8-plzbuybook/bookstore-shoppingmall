@@ -1,4 +1,4 @@
-package com.nhnacademy.book.domain;
+package com.nhnacademy.book;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
