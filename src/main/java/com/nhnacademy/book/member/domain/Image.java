@@ -1,4 +1,4 @@
-package com.nhnacademy.book;
+package com.nhnacademy.book.member.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,13 +11,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberState {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_state_id")
-    private long memberStateId;
+    @Column(name = "image_id")
+    private long imageId;
 
-    @Column(name = "name", nullable = false, columnDefinition = "DEFAULT 'ACTIVE'")
-    private StatusName memberStateName;
+    @Column(name = "path", nullable = false)
+    private String imagePath;
 }
