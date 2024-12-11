@@ -1,4 +1,4 @@
-package com.nhnacademy.book.domain;
+package com.nhnacademy.book.member.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Getter
