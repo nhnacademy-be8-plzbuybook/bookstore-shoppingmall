@@ -18,7 +18,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    private long memberId;
+    private Long memberId;
 
     //회원 등급 id
     @ManyToOne
