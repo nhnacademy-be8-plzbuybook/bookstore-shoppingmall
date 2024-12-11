@@ -16,7 +16,7 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id")
-    private long imageId;
+    private Long imageId;
 
     @Column(name = "path", nullable = false)
     private String imagePath;
