@@ -51,3 +51,5 @@ jobs:
           script_stop: true
           script: "/home/nhnacademy/shoppingmall/shoppingmallStartup.sh"
 
+
+   
