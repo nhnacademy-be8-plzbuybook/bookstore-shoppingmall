@@ -8,4 +8,6 @@ public interface AuthClient {
 
     @GetMapping("/hello")
     String hello();
+
+    //test
 }
