@@ -21,11 +21,11 @@ public class Review {
     private Long reviewId;
 
     @ManyToOne
-    @JoinColumn(name = "rm_id", nullable = false)
+    @JoinColumn(name = "r_member_id", nullable = false)
     private Member member;
 
     @OneToOne
-    @JoinColumn(name = "rop_id", nullable = false)
+    @JoinColumn(name = "r_order_product_id", nullable = false)
     private OrderProduct orderProduct;
 
     //평가 점수
