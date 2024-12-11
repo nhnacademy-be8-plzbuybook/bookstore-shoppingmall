@@ -1,0 +1,9 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
+
+### 쇼핑몰 서버에서 인증 서버로 요청 보내기
+
+GET http://localhost:8080/hello-from-auth
