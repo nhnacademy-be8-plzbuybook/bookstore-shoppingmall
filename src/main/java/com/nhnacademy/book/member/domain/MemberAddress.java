@@ -20,7 +20,7 @@ public class MemberAddress {
     private Long memberAddressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mad_member_id", nullable = false)
+    @JoinColumn(name = "ma_member_id", nullable = false)
     private Member member;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT false")

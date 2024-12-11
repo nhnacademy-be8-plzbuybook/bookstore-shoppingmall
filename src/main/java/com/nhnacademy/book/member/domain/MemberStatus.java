@@ -15,7 +15,7 @@ public class MemberStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_grade_id")
+    @Column(name = "member_state_id")
     private long memberStateId;
 
     @Column(name = "name", nullable = false)

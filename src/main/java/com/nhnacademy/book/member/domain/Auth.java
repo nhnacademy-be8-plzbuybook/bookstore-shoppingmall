@@ -18,6 +18,6 @@ public class Auth {
     @Column(nullable = false)
     private Long authId;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String authName;
 }

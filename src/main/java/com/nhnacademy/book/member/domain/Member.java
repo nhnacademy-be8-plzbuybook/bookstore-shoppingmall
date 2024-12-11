@@ -22,12 +22,12 @@ public class Member {
 
     //회원 등급 id
     @ManyToOne
-    @JoinColumn(name = "member_grade_id", nullable = false)
+    @JoinColumn(name = "m_grade_id", nullable = false)
     private MemberGrade memberGrade;
 
     //회원 상태 id
     @ManyToOne
-    @JoinColumn(name = "member_status_id", nullable = false)
+    @JoinColumn(name = "m_state_id", nullable = false)
     private MemberStatus memberStatus;
 
     //이름
@@ -49,8 +49,6 @@ public class Member {
     //비밀번호
     @Column(nullable = false, length = 100)
     private String password;
-
-    //권한은 아직 확정 아님
 
 
 
