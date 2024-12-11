@@ -50,3 +50,4 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: "/home/nhnacademy/shoppingmall/shoppingmallStartup.sh"
+

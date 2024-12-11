@@ -1,4 +1,4 @@
-package com.nhnacademy.book;
+package com.nhnacademy.book.member.domain;
 
 
 import jakarta.persistence.*;
