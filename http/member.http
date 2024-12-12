@@ -11,3 +11,22 @@ Content-Type: application/json
   "birth": "2024-12-12",
   "password": "1111"
 }
+
+### 회원 등급 추가 (값 추가를 위함)
+POST http://localhost:8081/api/members/grade
+Content-Type: application/json
+
+{
+  "memberGradeName": "NORMAL",
+  "conditionPrice": 10000.00,
+  "gradeChange": "2024-12-11T12:00:00"
+
+}
+
+### 회원 상태 추가 (값 추가를 위항)
+POST http://localhost:8081/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "ACTIVE"
+}
