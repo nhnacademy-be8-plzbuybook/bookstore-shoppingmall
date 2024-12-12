@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain.dto;
 
-import com.nhnacademy.book.member.domain.StatusName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,6 +36,6 @@ public class MemberCreateResponseDto {
     private String memberGradeName;
 
     @NotNull
-    private StatusName memberStateName;
+    private String memberStateName;
 
 }
