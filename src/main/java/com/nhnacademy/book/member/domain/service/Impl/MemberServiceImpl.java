@@ -5,6 +5,7 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -48,6 +49,35 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    @Override
+    public Member modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("id에 해당하는 member가 없다!"));
+
+        if(memberModifyRequestDto.getName() != null) {
+            member.setName(memberModifyRequestDto.getName());
+        }
+
+        if(memberModifyRequestDto.getPhone() != null) {
+            member.setPhone(memberModifyRequestDto.getPhone());
+        }
+
+        if(memberModifyRequestDto.getEmail() != null) {
+            member.setEmail(memberModifyRequestDto.getEmail());
+        }
+
+        if(memberModifyRequestDto.getBirth() != null) {
+            member.setBirth(memberModifyRequestDto.getBirth());
+        }
+
+        if (memberModifyRequestDto.getPassword() != null) {
+            member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
+        }
+
+
+        return memberRepository.save(member);
+
     }
 
 
