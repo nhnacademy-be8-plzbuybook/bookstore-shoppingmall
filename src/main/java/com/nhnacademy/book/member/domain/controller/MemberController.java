@@ -3,18 +3,12 @@ package com.nhnacademy.book.member.domain.controller;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberCreateResponseDto;
-import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -43,6 +37,22 @@ public class MemberController {
 
         return memberCreateResponseDto;
     }
+
+    //회원 수정
+    @PutMapping("/members/{member-id}")
+    public MemberModifyResponseDto modifyMember(@PathVariable Long memberId, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
+        Member member = memberService.modify(memberId, memberModifyRequestDto);
+
+        MemberModifyResponseDto memberModifyResponseDto = new MemberModifyResponseDto(
+                member.getName(),
+                member.getPhone(),
+                member.getEmail(),
+                member.getBirth()
+        );
+
+        return memberModifyResponseDto;
+    }
+
 
 
     //회원 등급 추가(값 추가를 위함)
