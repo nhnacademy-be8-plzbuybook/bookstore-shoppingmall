@@ -5,12 +5,14 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 
 
 
 public interface MemberService {
     Member save(MemberCreateRequestDto memberCreateRequestDto);
+    Member modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto);
     MemberGrade save(MemberGradeCreateRequestDto memberGradeCreateRequestDto);
     MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto);
     MemberGrade findByMemberGradeId(Long id);
