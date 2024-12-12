@@ -1,8 +1,11 @@
-spring:
-  config:
-    activate:
-      on-profile: prod
+server:
+  port: 8091
 
+spring:
+  application:
+    name: shoppingmall-server2  # 쇼핑몰 서버 이름
+
+# 유레카에 등록
 eureka:
   client:
     register-with-eureka: true
