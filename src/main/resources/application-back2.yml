@@ -1,0 +1,15 @@
+#spring.application.name=bookstore-front
+
+server:
+  port: 8091
+
+spring:
+  application:
+    name: bookstore-back2
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
