@@ -17,5 +17,5 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long authorId;
 
-
+    //TODO 여기 부분 추가해줘야 합니다
 }
