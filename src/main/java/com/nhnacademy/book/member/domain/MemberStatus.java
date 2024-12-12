@@ -20,6 +20,6 @@ public class MemberStatus {
     private Long memberStateId;
 
 
-    @Column(name = "name", nullable = false)
-    private StatusName memberStateName;
+    @Column(name = "name", nullable = false, length = 10)
+    private String memberStateName;
 }

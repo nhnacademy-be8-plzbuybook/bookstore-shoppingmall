@@ -3,7 +3,6 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.StatusName;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
@@ -65,7 +64,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto){
         MemberStatus memberStatus = new MemberStatus();
-        memberStatus.setMemberStateName(StatusName.valueOf(memberStatusCreateRequestDto.getMemberStateName()));
+        memberStatus.setMemberStateName(memberStatusCreateRequestDto.getMemberStateName());
 
         return memberStatusRepository.save(memberStatus);
     }
