@@ -17,6 +17,5 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long authorId;
 
-    @ManyToMany(mappedBy = "categories")
-    private Set<Book> books = new HashSet<>();
+
 }

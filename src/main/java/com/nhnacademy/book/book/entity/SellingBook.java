@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.entity;
 
 import jakarta.persistence.*;
+import jakarta.ws.rs.DELETE;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,9 +43,10 @@ public class SellingBook {
     private Long sellingBookViewCount;
 
     enum SellingBookStatus {
-        판매중,
-        판매종료,
-        삭제도서
+        SELLING,
+        SELLEND,
+        DELETEBOOK
+
     }
 }
 
