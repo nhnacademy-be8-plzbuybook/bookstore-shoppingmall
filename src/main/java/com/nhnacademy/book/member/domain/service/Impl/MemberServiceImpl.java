@@ -4,6 +4,9 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
+import com.nhnacademy.book.member.domain.exception.DuplicateEmailException;
+import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
+import com.nhnacademy.book.member.domain.exception.MemberStatusNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
@@ -12,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,14 +30,14 @@ public class MemberServiceImpl implements MemberService {
     public MemberCreateResponseDto createMember(MemberCreateRequestDto memberCreateRequestDto) {
         // 이메일 중복 검사
         if (memberRepository.existsByEmail(memberCreateRequestDto.getEmail())) {
-            throw new RuntimeException("이메일이 이미 존재함!");
+            throw new DuplicateEmailException("이메일이 이미 존재함!");
         }
 
         // 회원 등급 및 상태 조회
         MemberGrade memberGrade = memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
-                .orElseThrow(() -> new RuntimeException("멤버 등급이 없다!"));
+                .orElseThrow(() -> new MemberGradeNotFoundException("멤버 등급이 없다!"));
         MemberStatus memberStatus = memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
-                .orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
+                .orElseThrow(() -> new MemberStatusNotFoundException("멤버 상태가 없다!"));
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
