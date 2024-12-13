@@ -13,10 +13,6 @@ import java.util.Optional;
 @Repository
 public interface MemberAuthRepository extends JpaRepository<MemberAuth, Long> {
     List<MemberAuth> findByMemberMemberId(Long memberId);
-
-//    @Query("SELECT ma FROM MemberAuth ma WHERE ma.member.memberId = :memberId AND ma.auth.authId = :authId")
-//    Optional<MemberAuth> findByMemberIdAndAuthId(Long memberId, Long authId);
-
     void deleteByMemberMemberId(Long memberId);
 }
 

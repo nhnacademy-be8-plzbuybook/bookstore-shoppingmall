@@ -1,4 +1,4 @@
-### 회원 권한 할당
+### 회원 권한 설정
 POST http://localhost:8081/api/members/auths
 Content-Type: application/json
 
@@ -7,3 +7,6 @@ Content-Type: application/json
   "authId": 2
 }
 
+### 회원 권한 조회
+
+### 회원 권한 삭제

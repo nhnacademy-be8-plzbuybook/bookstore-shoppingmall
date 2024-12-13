@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberAuthResponseDto {
+public class MemberAuthAssignResponseDto {
     private Long memberAuthId;
     private Long memberId;
-    private Long authId;
+    private Long AuthId;
 }
