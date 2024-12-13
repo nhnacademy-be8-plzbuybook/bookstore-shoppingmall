@@ -27,6 +27,6 @@ public class MemberCertification {
     @Column
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false, columnDefinition = "일반")
+    @Column(nullable = false)
     private String certificationMethod;
 }
