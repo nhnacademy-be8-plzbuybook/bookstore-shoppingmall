@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.member.domain.dto.auth.AuthResponseDto;
 import com.nhnacademy.book.member.domain.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

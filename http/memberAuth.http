@@ -1,0 +1,9 @@
+### 회원 권한 할당
+POST http://localhost:8081/api/members/auths
+Content-Type: application/json
+
+{
+  "memberId": 1,
+  "authId": 2
+}
+

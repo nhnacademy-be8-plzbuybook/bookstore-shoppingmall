@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponseDto {
-    private Long authId;
     private String name;
-}
 
+}

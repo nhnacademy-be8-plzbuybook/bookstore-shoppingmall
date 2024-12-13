@@ -2,14 +2,15 @@ package com.nhnacademy.book.member.domain.controller;
 
 import com.nhnacademy.book.member.domain.Auth;
 import com.nhnacademy.book.member.domain.MemberAuth;
-import com.nhnacademy.book.member.domain.dto.auth.MemberAuthRequestDto;
+import com.nhnacademy.book.member.domain.dto.auth.MemberAuthAssignRequestDto;
+import com.nhnacademy.book.member.domain.dto.auth.MemberAuthResponseDto;
 import com.nhnacademy.book.member.domain.service.MemberAuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -17,22 +18,23 @@ import java.util.List;
 public class MemberAuthController {
     private MemberAuthService memberAuthService;
 
-    @PostMapping("members/auths")
-    public ResponseEntity<MemberAuth> assignMemberAuth(@RequestBody MemberAuthRequestDto request) {
-        MemberAuth memberAuth = memberAuthService.assignMemberAuth(request.getMemberId(), request.getAuthId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberAuth);
-    }
+        // 회원 권한 할당
+        @PostMapping("/members/auths")
+        public ResponseEntity<String> assignAuthToMember(@RequestBody MemberAuthAssignRequestDto requestDto) {
+            memberAuthService.assignAuthToMember(requestDto);
+            return ResponseEntity.ok("권한이 할당되었습니다.");
+        }
 
-    @GetMapping("/members/{memberId}/auths")
-    public ResponseEntity<List<Auth>> getMemberAuth(@PathVariable Long memberId) {
-        List<Auth> auths = memberAuthService.getMemberAuths(memberId);
-        return ResponseEntity.ok(auths);
-    }
+        // 회원 권한 조화
+        @GetMapping("/members/{memberId}/auths")
+        public List<MemberAuth> getMemberAuths(@PathVariable Long memberId) {
+            return memberAuthService.getMemberAuthsByMemberId(memberId);
+        }
 
-    @DeleteMapping("/members/{memberId}/auths")
-    public ResponseEntity<Void> deleteMemberAuth(@PathVariable Long memberAuthId) {
-        memberAuthService.deleteMemberAuth(memberAuthId);
-        return ResponseEntity.noContent().build();
-    }
-
+        // 회원 권한 삭제
+        @DeleteMapping("/members/{memberId}/auths")
+        public void deleteMemberAuths(@PathVariable Long memberId) {
+        memberAuthService.deleteMemberAuthsByMemberId(memberId);
+        }
 }
+

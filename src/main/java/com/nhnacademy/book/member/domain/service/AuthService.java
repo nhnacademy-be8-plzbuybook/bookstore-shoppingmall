@@ -1,7 +1,6 @@
 package com.nhnacademy.book.member.domain.service;
 
 import com.nhnacademy.book.member.domain.Auth;
-import com.nhnacademy.book.member.domain.dto.auth.AuthResponseDto;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
