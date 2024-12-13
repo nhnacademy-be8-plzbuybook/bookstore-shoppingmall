@@ -42,6 +42,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return "회원 권한이 성공적으로 설정되었습니다.";
     }
 
+
     public List<MemberAuthAssignResponseDto> getMemberAuthsByMemberId(Long memberId) {
         return memberAuthRepository.findByMemberMemberId(memberId).stream()
                 .map(auth -> new MemberAuthAssignResponseDto(

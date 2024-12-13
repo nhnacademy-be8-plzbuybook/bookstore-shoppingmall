@@ -35,5 +35,6 @@ public class MemberAuthController {
         memberAuthService.deleteMemberAuthsByMemberId(memberId);
         return ResponseEntity.noContent().build();
     }
+
 }
 
