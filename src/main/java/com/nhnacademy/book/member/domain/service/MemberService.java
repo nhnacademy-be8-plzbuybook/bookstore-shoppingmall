@@ -7,8 +7,8 @@ import com.nhnacademy.book.member.domain.dto.*;
 
 
 public interface MemberService {
-    Member save(MemberCreateRequestDto memberCreateRequestDto);
-    Member modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto);
+    MemberCreateResponseDto createMember(MemberCreateRequestDto memberCreateRequestDto);
+    MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto);
     MemberGrade save(MemberGradeCreateRequestDto memberGradeCreateRequestDto);
     MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto);
     MemberGrade findByMemberGradeId(Long id);
