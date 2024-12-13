@@ -35,4 +35,10 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     private List<Book> books = new ArrayList<>();
+
+    public Category(String categoryName, Integer categoryDepth, Category parentCategory) {
+        this.categoryName = categoryName;
+        this.categoryDepth = categoryDepth;
+        this.parentCategory = parentCategory;
+    }
 }
