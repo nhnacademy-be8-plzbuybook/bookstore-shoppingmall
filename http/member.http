@@ -1,3 +1,44 @@
+### 회원 등급 추가1 (값 추가를 위함)
+POST http://localhost:8090/api/members/grade
+Content-Type: application/json
+
+{
+  "memberGradeName": "NORMAL",
+  "conditionPrice": 10000.00,
+  "gradeChange": "2024-12-11T12:00:00"
+
+}
+
+### 회원 등급 추가2 (값 추가를 위함)
+POST http://localhost:8090/api/members/grade
+Content-Type: application/json
+
+{
+  "memberGradeName": "GOLD",
+  "conditionPrice": 10000.00,
+  "gradeChange": "2024-12-11T12:00:00"
+
+}
+
+### 회원 상태 추가1 (값 추가를 위함)
+POST http://localhost:8090/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "ACTIVE"
+}
+
+
+### 회원 상태 추가2 (값 추가를 위함)
+POST http://localhost:8090/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "DORMANT"
+}
+
+
+
 ### Member1 회원 가입
 POST http://localhost:8090/api/members
 Content-Type: application/json
@@ -40,6 +81,10 @@ Content-Type: application/json
   "password": "1111"
 }
 
+### 특정 회원 조회(이메일)
+GET http://localhost:8090/api/members/email?email=test@naver.com
+Content-Type: application/json
+
 ### 회원 수정
 PUT http://localhost:8090/api/members/1
 Content-Type: application/json
@@ -53,46 +98,4 @@ Content-Type: application/json
 }
 
 
-### 회원 등급 추가 (값 추가를 위함)
-POST http://localhost:8090/api/members/grade
-Content-Type: application/json
-
-{
-  "memberGradeName": "NORMAL",
-  "conditionPrice": 10000.00,
-  "gradeChange": "2024-12-11T12:00:00"
-
-}
-
-### 회원 등급 추가 (값 추가를 위함)
-POST http://localhost:8090/api/members/grade
-Content-Type: application/json
-
-{
-  "memberGradeName": "GOLD",
-  "conditionPrice": 10000.00,
-  "gradeChange": "2024-12-11T12:00:00"
-
-}
-
-### 회원 상태 추가 (값 추가를 위항)
-POST http://localhost:8090/api/members/status
-Content-Type: application/json
-
-{
-  "memberStateName": "ACTIVE"
-}
-
-
-### 회원 상태 추가 (값 추가를 위항)
-POST http://localhost:8090/api/members/status
-Content-Type: application/json
-
-{
-  "memberStateName": "DORMANT"
-}
-
-### 특정 회원 조회(이메일)
-GET http://localhost:8090/api/members/email?email=test@naver.com
-Content-Type: application/json
 
