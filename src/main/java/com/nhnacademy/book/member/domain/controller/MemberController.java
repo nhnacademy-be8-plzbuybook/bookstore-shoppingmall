@@ -8,6 +8,7 @@ import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,9 +40,9 @@ public class MemberController {
     }
 
     //회원 수정
-    @PutMapping("/members/{member-id}")
-    public MemberModifyResponseDto modifyMember(@PathVariable Long memberId, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
-        Member member = memberService.modify(memberId, memberModifyRequestDto);
+    @PutMapping("/members/{member_id}")
+    public MemberModifyResponseDto modifyMember(@PathVariable Long member_id, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
+        Member member = memberService.modify(member_id, memberModifyRequestDto);
 
         MemberModifyResponseDto memberModifyResponseDto = new MemberModifyResponseDto(
                 member.getName(),
@@ -52,6 +53,14 @@ public class MemberController {
 
         return memberModifyResponseDto;
     }
+
+    //특정 회원 조회(이메일)
+    @GetMapping("/members/email")
+    public ResponseEntity<MemberEmailResponseDto> getMemberByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(memberService.getMemberByEmail(email));
+    }
+    
+
 
 
 

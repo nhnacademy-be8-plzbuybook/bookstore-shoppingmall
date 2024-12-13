@@ -3,10 +3,7 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
@@ -26,6 +23,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberGradeRepository memberGradeRepository;
     private final MemberStatusRepository memberStatusRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public Member save(MemberCreateRequestDto memberCreateRequestDto) {
@@ -109,5 +107,23 @@ public class MemberServiceImpl implements MemberService {
     public MemberStatus findByMemberStatusId(Long id){
         MemberStatus memberStatus = memberStatusRepository.findById(id).orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
         return memberStatus;
+    }
+
+    @Override
+    public MemberEmailResponseDto getMemberByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() ->new RuntimeException("이메일에 해당하는 멤버가 없다!"));
+
+        MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
+        memberEmailResponseDto.setName(member.getName());
+        memberEmailResponseDto.setPhone(member.getPhone());
+        memberEmailResponseDto.setEmail(member.getEmail());
+        memberEmailResponseDto.setBirth(member.getBirth());
+        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
+        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
+
+        return memberEmailResponseDto;
+
+
     }
 }
