@@ -49,10 +49,8 @@ public class BookTest {
                 "1234567890123456"                      // ISBN-13
         );
 
-        // Book 저장
         Book savedBook = bookRepository.save(book);
 
-        // 저장된 데이터 검증
         assertThat(savedBook).isNotNull();
         assertThat(savedBook.getBookId()).isNotNull();
         assertThat(savedBook.getBookTitle()).isEqualTo("Test Book Title");

@@ -26,3 +26,6 @@ logging:
     level:
       org.hibernate.SQL: OFF  # Hibernate SQL 로그 끄기
       org.hibernate.tool.hbm2ddl: OFF  # Hibernate DDL 로그 끄기
+aladin:
+  api:
+    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
