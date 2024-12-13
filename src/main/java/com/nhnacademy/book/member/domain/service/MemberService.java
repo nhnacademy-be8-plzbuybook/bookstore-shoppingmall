@@ -14,4 +14,5 @@ public interface MemberService {
     MemberGrade findByMemberGradeId(Long id);
     MemberStatus findByMemberStatusId(Long id);
     MemberEmailResponseDto getMemberByEmail(String email);
+    MemberIdResponseDto getMemberById(Long id);
 }

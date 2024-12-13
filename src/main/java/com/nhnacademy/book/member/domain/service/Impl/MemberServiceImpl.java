@@ -162,4 +162,26 @@ public class MemberServiceImpl implements MemberService {
 
 
     }
+
+    //id로 특정 회원 조회
+    @Override
+    public MemberIdResponseDto getMemberById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Id에 해당하는 멤버가 없다!"));
+
+        MemberGrade memberGrade = memberGradeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("멤버 등급이 없다!"));
+
+        MemberStatus memberStatus = memberStatusRepository
+                .findById(id).orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
+
+        return new MemberIdResponseDto(
+                member.getName(),
+                member.getPhone(),
+                member.getEmail(),
+                member.getBirth(),
+                memberGrade.getMemberGradeName(),
+                memberStatus.getMemberStateName()
+        );
+    }
 }
