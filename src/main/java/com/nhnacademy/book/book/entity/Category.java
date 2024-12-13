@@ -1,12 +1,16 @@
 package com.nhnacademy.book.book.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "category")
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

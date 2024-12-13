@@ -1,9 +1,13 @@
 package com.nhnacademy.book.book.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "book_image")
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class BookImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

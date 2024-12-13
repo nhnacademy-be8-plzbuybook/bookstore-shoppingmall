@@ -2,7 +2,9 @@ package com.nhnacademy.book.book.entity;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -12,6 +14,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "author")
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
