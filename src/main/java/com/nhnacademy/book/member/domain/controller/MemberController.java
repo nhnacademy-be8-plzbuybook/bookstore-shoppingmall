@@ -4,8 +4,6 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
-import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,40 +16,21 @@ public class MemberController {
 
     private final MemberService memberService;
 
-
-    //회원 추가
+    //회원 생성
     @PostMapping("/members")
-    public MemberCreateResponseDto createMember(@RequestBody MemberCreateRequestDto memberCreateRequestDto) {
-        Member member = memberService.save(memberCreateRequestDto);
-
-        MemberGrade memberGrade = memberService.findByMemberGradeId(memberCreateRequestDto.getMemberGradeId());
-        MemberStatus memberStatus = memberService.findByMemberStatusId(memberCreateRequestDto.getMemberStateId());
-
-        MemberCreateResponseDto memberCreateResponseDto = new MemberCreateResponseDto(
-                member.getName(),
-                member.getPhone(),
-                member.getEmail(),
-                member.getBirth(),
-                memberGrade.getMemberGradeName(),
-                memberStatus.getMemberStateName()
-        );
-
-        return memberCreateResponseDto;
+    public ResponseEntity<MemberCreateResponseDto> createMember(@RequestBody MemberCreateRequestDto memberCreateRequestDto) {
+        MemberCreateResponseDto responseDto = memberService.createMember(memberCreateRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     //회원 수정
     @PutMapping("/members/{member_id}")
-    public MemberModifyResponseDto modifyMember(@PathVariable Long member_id, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
-        Member member = memberService.modify(member_id, memberModifyRequestDto);
+    public ResponseEntity<MemberModifyResponseDto> modifyMember(
+            @PathVariable Long member_id,
+            @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
 
-        MemberModifyResponseDto memberModifyResponseDto = new MemberModifyResponseDto(
-                member.getName(),
-                member.getPhone(),
-                member.getEmail(),
-                member.getBirth()
-        );
-
-        return memberModifyResponseDto;
+        MemberModifyResponseDto responseDto = memberService.modify(member_id, memberModifyRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     //특정 회원 조회(이메일)
@@ -59,7 +38,7 @@ public class MemberController {
     public ResponseEntity<MemberEmailResponseDto> getMemberByEmail(@RequestParam String email) {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
-    
+
 
 
 

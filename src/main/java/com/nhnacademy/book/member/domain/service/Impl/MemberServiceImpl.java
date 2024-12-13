@@ -24,18 +24,24 @@ public class MemberServiceImpl implements MemberService {
     private final MemberStatusRepository memberStatusRepository;
     private final PasswordEncoder passwordEncoder;
 
-
+    //회원 생성
     @Override
-    public Member save(MemberCreateRequestDto memberCreateRequestDto) {
-        //이메일 중복 검사
+    public MemberCreateResponseDto createMember(MemberCreateRequestDto memberCreateRequestDto) {
+        // 이메일 중복 검사
         if (memberRepository.existsByEmail(memberCreateRequestDto.getEmail())) {
             throw new RuntimeException("이메일이 이미 존재함!");
         }
 
-        MemberGrade memberGrade = memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId()).orElseThrow(() -> new RuntimeException("멤버 등급이 없다!"));
-        MemberStatus memberStatus = memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId()).orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
+        // 회원 등급 및 상태 조회
+        MemberGrade memberGrade = memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
+                .orElseThrow(() -> new RuntimeException("멤버 등급이 없다!"));
+        MemberStatus memberStatus = memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
+                .orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
+
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
 
+        // 회원 객체 생성
         Member member = Member.builder()
                 .memberGrade(memberGrade)
                 .memberStatus(memberStatus)
@@ -46,26 +52,46 @@ public class MemberServiceImpl implements MemberService {
                 .password(encodedPassword)
                 .build();
 
-        return memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+
+        // 응답 DTO 생성 및 반환
+        return new MemberCreateResponseDto(
+                savedMember.getName(),
+                savedMember.getPhone(),
+                savedMember.getEmail(),
+                savedMember.getBirth(),
+                memberGrade.getMemberGradeName(),
+                memberStatus.getMemberStateName()
+        );
     }
 
+    //회원 수정
     @Override
-    public Member modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("id에 해당하는 member가 없다!"));
+    public MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("id에 해당하는 member가 없다!"));
 
-        if(memberModifyRequestDto.getName() != null) {
+        // 이메일 수정 시 이메일 중복 검사
+        if (memberModifyRequestDto.getEmail() != null &&
+                !memberModifyRequestDto.getEmail().equals(member.getEmail()) &&
+                memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
+            throw new RuntimeException("이메일이 이미 존재합니다.");
+        }
+
+        // 수정 가능한 필드들만 업데이트
+        if (memberModifyRequestDto.getName() != null) {
             member.setName(memberModifyRequestDto.getName());
         }
 
-        if(memberModifyRequestDto.getPhone() != null) {
+        if (memberModifyRequestDto.getPhone() != null) {
             member.setPhone(memberModifyRequestDto.getPhone());
         }
 
-        if(memberModifyRequestDto.getEmail() != null) {
+        if (memberModifyRequestDto.getEmail() != null) {
             member.setEmail(memberModifyRequestDto.getEmail());
         }
 
-        if(memberModifyRequestDto.getBirth() != null) {
+        if (memberModifyRequestDto.getBirth() != null) {
             member.setBirth(memberModifyRequestDto.getBirth());
         }
 
@@ -73,12 +99,18 @@ public class MemberServiceImpl implements MemberService {
             member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
         }
 
+        // 수정된 회원 저장
+        Member updatedMember = memberRepository.save(member);
 
-        return memberRepository.save(member);
-
+        // 응답 DTO 생성
+        return new MemberModifyResponseDto(
+                updatedMember.getName(),
+                updatedMember.getPhone(),
+                updatedMember.getEmail(),
+                updatedMember.getBirth()
+        );
     }
-
-
+    //회원 등급 저장
     @Override
     public MemberGrade save(MemberGradeCreateRequestDto memberGradeCreateRequestDto) {
         MemberGrade memberGrade = new MemberGrade();
@@ -89,6 +121,7 @@ public class MemberServiceImpl implements MemberService {
         return memberGradeRepository.save(memberGrade);
     }
 
+    //회원 상태 저장
     @Override
     public MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto){
         MemberStatus memberStatus = new MemberStatus();
@@ -103,12 +136,15 @@ public class MemberServiceImpl implements MemberService {
         return memberGrade;
     }
 
+
+
     @Override
     public MemberStatus findByMemberStatusId(Long id){
         MemberStatus memberStatus = memberStatusRepository.findById(id).orElseThrow(() -> new RuntimeException("멤버 상태가 없다!"));
         return memberStatus;
     }
 
+    //이메일로 특정 회원 조회
     @Override
     public MemberEmailResponseDto getMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
