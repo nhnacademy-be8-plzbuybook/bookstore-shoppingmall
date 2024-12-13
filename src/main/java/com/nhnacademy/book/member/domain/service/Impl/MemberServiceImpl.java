@@ -180,8 +180,20 @@ public class MemberServiceImpl implements MemberService {
                 member.getPhone(),
                 member.getEmail(),
                 member.getBirth(),
-                memberGrade.getMemberGradeName(),
-                memberStatus.getMemberStateName()
+                member.getMemberGrade().getMemberGradeName(),
+                member.getMemberStatus().getMemberStateName()
         );
+    }
+
+    @Override
+    public void withdrawMember(Long memberId) {
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAW")
+                .orElseThrow(() -> new RuntimeException("withdraw 상태가 없다!"));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원이 존재 하지 않음!"));
+
+        member.setMemberStatus(withdrawStatus);
+        memberRepository.save(member);
     }
 }

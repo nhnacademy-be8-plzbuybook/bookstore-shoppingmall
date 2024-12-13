@@ -15,4 +15,5 @@ public interface MemberService {
     MemberStatus findByMemberStatusId(Long id);
     MemberEmailResponseDto getMemberByEmail(String email);
     MemberIdResponseDto getMemberById(Long id);
+    void withdrawMember(Long memberId);
 }
