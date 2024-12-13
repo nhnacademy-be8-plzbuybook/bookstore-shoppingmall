@@ -1,3 +1,21 @@
+### 권한 설정(관리자)
+POST http://localhost:8090/api/members/auths
+Content-Type: application/json
+
+{
+  "authId": 1,
+  "name": "ADMIN"
+}
+
+### 권한 설정(회원)
+POST http://localhost:8090/api/members/auths
+Content-Type: application/json
+
+{
+  "authId": 2,
+  "name": "USER"
+}
+
 ### 회원 권한 설정
 POST http://localhost:8090/api/members/auths
 Content-Type: application/json

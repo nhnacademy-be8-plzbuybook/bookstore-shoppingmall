@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
 
-    @Override
-    public List<AuthResponseDto> getAllAuths() {
-        List<Auth> authList = authRepository.findAll();
-        return authList.stream()
-                .map(auth -> new AuthResponseDto(auth.getAuthId(), auth.getAuthName()))
-                .collect(Collectors.toList());
+    // 권한 생성
+    public Auth createAuth(String authName) {
+        Auth auth = new Auth();
+        auth.setAuthName(authName);
+        return authRepository.save(auth);
     }
+
 }
