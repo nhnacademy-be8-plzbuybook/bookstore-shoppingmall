@@ -9,16 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-public class AuthService {
-    private final AuthRepository authRepository;
-
-    public List<AuthResponseDto> getAllAuths() {
-        List<Auth> authList = authRepository.findAll();
-        return authList.stream()
-                .map(auth -> new AuthResponseDto(auth.getAuthId(), auth.getAuthName()))
-                .collect(Collectors.toList());
-
-    }
+public interface AuthService {
+    List<AuthResponseDto> getAllAuths();
 }
+

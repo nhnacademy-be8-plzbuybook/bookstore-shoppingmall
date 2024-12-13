@@ -8,5 +8,17 @@ Content-Type: application/json
 }
 
 ### 회원 권한 조회
+GET http://localhost:8081/api/members/1/auths
+Content-Type: application/json
+
+{
+  "memberId": 1
+}
 
 ### 회원 권한 삭제
+DELETE http://localhost:8081/api/members/1/auths
+Content-Type: application/json
+
+{
+  "memberId": 1
+}
