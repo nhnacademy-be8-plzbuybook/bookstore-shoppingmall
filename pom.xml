@@ -34,7 +34,6 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
-
         <!-- jpa pom추가 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,7 +47,12 @@
             <scope>runtime</scope>
         </dependency>
 
-
+        <!--        lombok 추가-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+        </dependency>
 
         <!--        validation 추가-->
         <dependency>
@@ -60,7 +64,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-
 
         <!-- 웹 애플리케이션을 위한 Spring Boot 스타터 의존성 -->
         <dependency>
@@ -75,22 +78,9 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- jpa pom추가 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-data-jpa</artifactId>-->
-<!--        </dependency>-->
 
-<!--         H2 Database -->
 
-        <!--        lombok 추가-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
 
-        <!--        validation 추가-->
 
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
         <dependency>
@@ -98,14 +88,6 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>4.2.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version> <!-- 최신 버전으로 대체 가능 -->
-            <scope>runtime</scope>
-        </dependency>
-
 
     </dependencies>
 
@@ -128,20 +110,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
