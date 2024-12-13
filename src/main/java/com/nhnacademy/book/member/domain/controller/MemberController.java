@@ -63,4 +63,13 @@ public class MemberController {
 
         return memberStatus;
     }
+
+
+    //회원 삭제( => withdraw로 상태 변경)
+    @PutMapping("/members/{member_id}/withdraw")
+    public ResponseEntity<String> withdrawMember(@PathVariable Long member_id) {
+        memberService.withdrawMember(member_id);
+        return ResponseEntity.ok("탈퇴 처리 됐습니다.");
+    }
+
 }
