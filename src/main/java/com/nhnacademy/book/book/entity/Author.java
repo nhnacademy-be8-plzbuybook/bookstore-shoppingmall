@@ -22,4 +22,5 @@ public class Author {
     private Long authorId;
 
     //TODO 여기 부분 추가해줘야 합니다
+    private String authorName;
 }
