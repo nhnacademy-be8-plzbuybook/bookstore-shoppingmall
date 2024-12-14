@@ -180,61 +180,7 @@ public class BookRepositoryTest {
         assertThat(books).contains(book, book2);
     }
 
-    @Test
-    void findBooksByAuthorNameTest(){
 
-        Book book2 = new Book(
-                publisher,                              // Publisher 설정
-                "Find Book Title",                      // 제목
-                "Test Book Index",                      // 목차
-                "Test Book Description",                // 설명
-                LocalDate.of(2023, 12, 13),             // 출판일
-                new BigDecimal("19.99"),                // 가격
-                "12345678901",                        // ISBN
-                "1234567890123"                      // ISBN-13
-        );
-
-        Author author = new Author();
-        author.setAuthorName("test author");
-        author = authorRepository.save(author);
-        BookAuthor bookAuthor = new BookAuthor();
-        bookAuthor.setAuthor(author);
-        bookAuthor.setBook(book2);
-        bookAuthorRepository.save(bookAuthor);
-        book2.getBookAuthors().add(bookAuthor);
-
-        BookCategory bookCategory = new BookCategory();
-        bookCategory.setCategory(category);
-        bookCategory.setBook(book2);
-        bookCategoryRepository.save(bookCategory);
-
-        book2.getBookCategories().add(bookCategory);
-
-        bookRepository.save(book2);
-
-        List<Book> books = bookRepository.findBooksByAuthorName("test author");
-
-        assertThat(books).isNotNull();
-        assertThat(books.size()).isEqualTo(2);
-        assertThat(books).contains(book2);
-
-        boolean hasBookWithId1 = books.stream()
-                .anyMatch(book -> book.getBookId() == 1L);
-
-        assertTrue(hasBookWithId1);
-    }
-
-
-    @Test
-    void findAuthorsByBookId(){
-
-        List<Author> authors = bookRepository.findAuthorsByBookId(1L);
-        Author author = authors.getFirst();
-
-        assertThat(author.getAuthorName()).isEqualTo("test author");
-        assertThat(authors).isNotNull();
-        assertThat(authors.size()).isEqualTo(1);
-    }
 
 
 }

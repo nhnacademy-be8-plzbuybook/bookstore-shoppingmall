@@ -9,7 +9,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "book_author")
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
 public class BookAuthor {
     @Id
@@ -25,4 +24,9 @@ public class BookAuthor {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
+
+    @Override
+    public String toString() {
+        return "BookAuthor [id=" + id + ", book=" + book.toString() + ", author=" + author.toString() + "]";
+    }
 }

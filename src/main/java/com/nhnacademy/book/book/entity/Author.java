@@ -29,4 +29,9 @@ public class Author {
     @OneToMany(mappedBy = "author")
     private List<BookAuthor> bookAuthors = new ArrayList<>();
 
+
+    @Override
+    public String toString() {
+        return "authorId: " + authorId + ", " +"authorName: "+authorName;
+    }
 }

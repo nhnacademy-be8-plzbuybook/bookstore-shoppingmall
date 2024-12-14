@@ -67,4 +67,9 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     private List<BookAuthor> bookAuthors = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "bookId" + bookId + ", bookTitle" + bookTitle;
+    }
 }
