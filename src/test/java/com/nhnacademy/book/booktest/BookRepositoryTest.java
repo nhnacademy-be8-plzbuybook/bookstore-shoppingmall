@@ -3,12 +3,10 @@ package com.nhnacademy.book.booktest;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.repository.*;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +19,7 @@ import java.util.List;
 @Slf4j
 @DataJpaTest
 @ActiveProfiles("test")
-public class BookTest {
+public class BookRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;

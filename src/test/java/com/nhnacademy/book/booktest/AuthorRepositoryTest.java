@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
-public class AuthorTest {
+public class AuthorRepositoryTest {
 
     @Autowired
     private AuthorRepository authorRepository;
