@@ -11,8 +11,6 @@ public interface MemberService {
     MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto);
     MemberGrade save(MemberGradeCreateRequestDto memberGradeCreateRequestDto);
     MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto);
-    MemberGrade findByMemberGradeId(Long id);
-    MemberStatus findByMemberStatusId(Long id);
     MemberEmailResponseDto getMemberByEmail(String email);
     MemberIdResponseDto getMemberById(Long id);
     void withdrawMember(Long memberId);

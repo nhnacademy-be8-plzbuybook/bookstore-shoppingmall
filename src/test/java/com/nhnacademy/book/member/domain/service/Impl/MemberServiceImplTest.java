@@ -5,10 +5,7 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberCreateResponseDto;
-import com.nhnacademy.book.member.domain.exception.DuplicateEmailException;
-import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
-import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
-import com.nhnacademy.book.member.domain.exception.MemberStatusNotFoundException;
+import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
@@ -312,8 +309,42 @@ class MemberServiceImplTest {
 
         assertThrows(MemberEmailNotFoundException.class, () -> memberService.getMemberByEmail(email));
 
+        verify(memberRepository).findByEmail(email);
+    }
+
+    //id 로 특정 회원 조회 잘 되는지
+    @Test
+    void getMemberById() {
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.of(2000, 3, 9),"Password");
+
+        //id로 멤버 조회
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+
+        var response = memberService.getMemberById(1L);
+
+        assertNotNull(response);
+        assertEquals("윤지호", response.getName());
+        assertEquals("010-7237-3951", response.getPhone());
+        assertEquals("yoonwlgh12@naver.com", response.getEmail());
+        assertEquals(LocalDate.of(2000, 3, 9), response.getBirth());
+
+        assertEquals("NORMAL", response.getMemberGradeName());
+        assertEquals("ACTIVE", response.getMemberStateName());
+
+        verify(memberRepository).findById(1L);
     }
 
 
+    //id로 회원 조회할 때 해당하는 아이디 없으면 예외처리 잘하는지
+    @Test
+    void getMemberById_MemberIdNotFoundException() {
+        when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(MemberIdNotFoundException.class, () -> memberService.getMemberById(1L));
+
+        verify(memberRepository).findById(1L);
+    }
 }
 

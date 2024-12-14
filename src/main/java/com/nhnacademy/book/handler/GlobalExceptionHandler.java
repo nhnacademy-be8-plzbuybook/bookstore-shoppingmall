@@ -38,4 +38,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMemberEmailNotFoundException(MemberEmailNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler(MemberIdNotFoundException.class)
+    public ResponseEntity<String> handleMemberIdNotFoundException(MemberIdNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
