@@ -27,6 +27,6 @@ public class MemberCertification {
     @Column
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false, columnDefinition = "일반")
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT '일반'")
     private String certificationMethod;
 }
