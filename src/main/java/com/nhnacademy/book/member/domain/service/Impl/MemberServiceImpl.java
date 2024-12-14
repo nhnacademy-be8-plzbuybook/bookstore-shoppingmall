@@ -115,16 +115,6 @@ public class MemberServiceImpl implements MemberService {
                 updatedMember.getBirth()
         );
     }
-    //회원 등급 저장
-    @Override
-    public MemberGrade save(MemberGradeCreateRequestDto memberGradeCreateRequestDto) {
-        MemberGrade memberGrade = new MemberGrade();
-        memberGrade.setMemberGradeName(memberGradeCreateRequestDto.getMemberGradeName());
-        memberGrade.setConditionPrice(memberGradeCreateRequestDto.getConditionPrice());
-        memberGrade.setGradeChange(memberGradeCreateRequestDto.getGradeChange());
-
-        return memberGradeRepository.save(memberGrade);
-    }
 
     //이메일로 특정 회원 조회
     @Override
