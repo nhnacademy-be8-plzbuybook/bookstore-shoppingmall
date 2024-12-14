@@ -55,4 +55,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateMemberStateException(DuplicateMemberStateException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    //등급을 추가할 때 중복
+    @ExceptionHandler(DuplicateMemberGradeException.class)
+    public ResponseEntity<String> handleDuplicateMemberGradeException(DuplicateMemberGradeException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }
