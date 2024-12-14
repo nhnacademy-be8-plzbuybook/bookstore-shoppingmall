@@ -40,7 +40,7 @@ public class SellingBook {
     @Column(nullable = false)
     private Long sellingBookViewCount;
 
-    enum SellingBookStatus {
+    public enum SellingBookStatus {
         SELLING,
         SELLEND,
         DELETEBOOK
