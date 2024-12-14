@@ -4,9 +4,7 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
-import com.nhnacademy.book.member.domain.exception.DuplicateEmailException;
-import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
-import com.nhnacademy.book.member.domain.exception.MemberStatusNotFoundException;
+import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
@@ -33,11 +31,15 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateEmailException("이메일이 이미 존재함!");
         }
 
-        // 회원 등급 및 상태 조회
-        MemberGrade memberGrade = memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
-                .orElseThrow(() -> new MemberGradeNotFoundException("멤버 등급이 없다!"));
-        MemberStatus memberStatus = memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
-                .orElseThrow(() -> new MemberStatusNotFoundException("멤버 상태가 없다!"));
+        MemberGrade memberGrade = memberCreateRequestDto.getMemberGradeId() != null
+                ? memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
+                .orElseThrow(() -> new MemberGradeNotFoundException("멤버 등급이 없다!"))
+                : memberGradeRepository.findById(1L).orElseThrow(() -> new DefaultMemberGradeNotFoundException("Default 등급을 찾을 수 없다!"));
+
+        MemberStatus memberStatus = memberCreateRequestDto.getMemberStateId() != null
+                ? memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
+                .orElseThrow(() -> new MemberStatusNotFoundException("멤버 상태가 없다!"))
+                : memberStatusRepository.findById(1L).orElseThrow(() -> new DefaultStatusGradeNotfoundException("Default 상태를 찾을 수 없다!"));
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
