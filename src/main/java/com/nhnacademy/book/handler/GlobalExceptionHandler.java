@@ -33,4 +33,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDefaultStatusGradeNotFoundException(DefaultStatusGradeNotfoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler(MemberEmailNotFoundException.class)
+    public ResponseEntity<String> handleMemberEmailNotFoundException(MemberEmailNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }

@@ -6,6 +6,7 @@ import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberCreateResponseDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateEmailException;
+import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberStatusNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
@@ -282,5 +283,37 @@ class MemberServiceImplTest {
 
         assertThrows(MemberStatusNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
+
+    //이메일로 회원을 조회할 때 값이 잘 나오는 지
+    @Test
+    void getMemberByEmail() {
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"Password");
+
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(member));
+        when(passwordEncoder.encode(member.getPassword())).thenReturn("encodedPassword");
+
+        var response = memberService.getMemberByEmail("yoonwlgh12@naver.com");
+
+        assertNotNull(response);
+        assertEquals("yoonwlgh12@naver.com", response.getEmail());
+        assertEquals("encodedPassword", response.getPassword());
+
+        verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+        verify(passwordEncoder).encode(member.getPassword());
+    }
+
+    //이메일로 회원을 조회할 때 예외 처리
+    @Test
+    void getMemberByEmail_MemberEmailNotFoundException() {
+        String email = "yoonwlgh12@naver.com";
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(MemberEmailNotFoundException.class, () -> memberService.getMemberByEmail(email));
+
+    }
+
+
 }
 

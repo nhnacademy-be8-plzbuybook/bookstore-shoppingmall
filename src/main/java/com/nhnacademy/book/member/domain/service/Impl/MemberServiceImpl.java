@@ -151,15 +151,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberEmailResponseDto getMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() ->new RuntimeException("이메일에 해당하는 멤버가 없다!"));
+                .orElseThrow(() ->new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
 
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
-        memberEmailResponseDto.setName(member.getName());
-        memberEmailResponseDto.setPhone(member.getPhone());
+//        memberEmailResponseDto.setName(member.getName());
+//        memberEmailResponseDto.setPhone(member.getPhone());
         memberEmailResponseDto.setEmail(member.getEmail());
-        memberEmailResponseDto.setBirth(member.getBirth());
-        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
-        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
+        memberEmailResponseDto.setPassword(passwordEncoder.encode(member.getPassword()));
+//        memberEmailResponseDto.setBirth(member.getBirth());
+//        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
+//        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
 
         return memberEmailResponseDto;
 
