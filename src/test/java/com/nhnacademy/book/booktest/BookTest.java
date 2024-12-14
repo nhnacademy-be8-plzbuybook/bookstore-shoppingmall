@@ -1,12 +1,9 @@
 package com.nhnacademy.book.booktest;
 
-import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.entity.Category;
-import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.repository.BookRepository;
-import com.nhnacademy.book.book.repository.CategoryRepository;
-import com.nhnacademy.book.book.repository.PublisherRepository;
+import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @DataJpaTest
@@ -30,9 +29,16 @@ public class BookTest {
     private PublisherRepository publisherRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
+    @Autowired
+    private BookAuthorRepository bookAuthorRepository;
+    @Autowired
+    private BookCategoryRepository bookCategoryRepository;
 
     private Publisher publisher;
     private Category category;
+
     @BeforeEach
     public void setUp() {
         // Publisher 생성 및 저장
@@ -57,11 +63,7 @@ public class BookTest {
         // 카테고리 테스트용으로 마지막 카테고리 가져오기
         category = subCategory4;
 
-    }
-
-    @Test
-    void bookCreateTest() {
-        // Book 엔티티 생성
+        //delete,update 용 book 생성?
         Book book = new Book(
                 publisher,                              // Publisher 설정
                 "Test Book Title",                      // 제목
@@ -69,36 +71,152 @@ public class BookTest {
                 "Test Book Description",                // 설명
                 LocalDate.of(2023, 12, 13),             // 출판일
                 new BigDecimal("19.99"),                // 가격
-                "1234567890123",                        // ISBN
-                "1234567890123456"                      // ISBN-13
+                "1234567890122",                        // ISBN
+                "1234567890123451"                      // ISBN-13
         );
 
+        Author author = new Author();
+        author.setAuthorName("test author");
+        author = authorRepository.save(author);
+        BookAuthor bookAuthor = new BookAuthor();
+        bookAuthor.setAuthor(author);
+        bookAuthor.setBook(book);
+        bookAuthorRepository.save(bookAuthor);
+
+        book.getBookAuthors().add(bookAuthor);
         // 카테고리 설정
-        book.getCategories().add(category);  // 앞서 설정한 마지막 카테고리를 책에 추가
+
+        // 책과 카테고리를 연결하는 BookCategory 객체 생성
+        BookCategory bookCategory = new BookCategory();
+        bookCategory.setCategory(category);
+        bookCategory.setBook(book);
+        bookCategoryRepository.save(bookCategory);
+
+        // BookCategory 객체를 책에 추가
+        book.getBookCategories().add(bookCategory);
 
         // Book 엔티티 저장
         Book savedBook = bookRepository.save(book);
 
-        // Assertions
+    }
+
+    @Test
+    void bookCreateTest() {
+        // Book 엔티티 생성
+        Book book = new Book(
+                publisher,                              // Publisher 설정
+                "Book Title2",                          // 제목
+                "Book Index2",                          // 목차
+                "Book Description2",                    // 설명
+                LocalDate.of(2023, 12, 13),             // 출판일
+                new BigDecimal("19.99"),                // 가격
+                "1234567890",                           // ISBN
+                "1234567890123"                         // ISBN-13
+        );
+
+        Author author = new Author();
+        author.setAuthorName("test author");
+        author = authorRepository.save(author);
+        BookAuthor bookAuthor = new BookAuthor();
+        bookAuthor.setAuthor(author);
+        bookAuthor.setBook(book);
+        bookAuthorRepository.save(bookAuthor);
+
+        book.getBookAuthors().add(bookAuthor);
+        // 카테고리 설정
+
+        // 책과 카테고리를 연결하는 BookCategory 객체 생성
+        BookCategory bookCategory = new BookCategory();
+        bookCategory.setCategory(category);
+        bookCategory.setBook(book);
+        bookCategoryRepository.save(bookCategory);
+
+        // BookCategory 객체를 책에 추가
+        book.getBookCategories().add(bookCategory);
+
+
+        // Book 엔티티 저장
+        Book savedBook = bookRepository.save(book);
+
+        // Book 엔티티 저장
+
+        // 검증
         assertThat(savedBook).isNotNull();
         assertThat(savedBook.getBookId()).isNotNull();
-        assertThat(savedBook.getBookTitle()).isEqualTo("Test Book Title");
+        assertThat(savedBook.getBookTitle()).isEqualTo("Book Title2");
         assertThat(savedBook.getPublisher().getPublisherName()).isEqualTo("Test Publisher");
-        assertThat(savedBook.getCategories()).contains(category);
-
-        // DB에서 해당 book을 다시 조회하여 확인
-        Book foundBook = bookRepository.findById(savedBook.getBookId()).orElse(null);
-        assertThat(foundBook).isNotNull();
-        assertThat(foundBook.getBookId()).isEqualTo(savedBook.getBookId());
-        assertThat(foundBook.getCategories()).contains(category);  // 카테고리 포함 여부 확인
-
-        log.info("{},{},{},{},{}", foundBook.getBookId(), foundBook.getCategories(), foundBook.getBookTitle(), foundBook.getPublisher().getPublisherName(), foundBook.getBookIsbn13());
-
-        // DB에서 해당 카테고리를 다시 조회하여 확인
-        Category foundCategory = categoryRepository.findById(category.getCategoryId()).orElse(null);
-        assertThat(foundCategory).isNotNull();
-        assertThat(foundCategory.getCategoryName()).isEqualTo(category.getCategoryName());
+        assertThat(savedBook.getBookCategories()).hasSize(1); // BookCategory가 1개로 연결된 상태
+        assertThat(savedBook.getBookCategories().get(0).getCategory()).isEqualTo(category);
+        assertThat(savedBook.getBookAuthors().getFirst()).isEqualTo(bookAuthor);
     }
+
+
+
+    //Isbn으로 책 db에서 책 불러오기
+    @Test
+    void findByBookIsbnTest(){
+        Book book = bookRepository.findByBookIsbn("1234567890122");
+
+        assertThat(book).isNotNull();
+        assertThat(book.getBookId()).isEqualTo(1);
+//        System.out.println(book.getAuthors().getFirst().getAuthorName());
+
+    }
+
+    @Test
+    void findByBookTitleTest(){
+
+        // 제목은 같지만 isbn 등이 다른 책 생성
+        Book book = new Book(
+                publisher,                              // Publisher 설정
+                "Find Book Title",                      // 제목
+                "Book Index2",                      // 목차
+                "Book Description2",                // 설명
+                LocalDate.of(2023, 12, 13),             // 출판일
+                new BigDecimal("19.99"),                // 가격
+                "1234567892",                        // ISBN
+                "1234567890125"                      // ISBN-13
+        );
+
+        // 카테고리 설정
+
+        // Book 엔티티 저장
+        Book savedBook = bookRepository.save(book);
+
+        Book book2 = new Book(
+                publisher,                              // Publisher 설정
+                "Find Book Title",                      // 제목
+                "Test Book Index",                      // 목차
+                "Test Book Description",                // 설명
+                LocalDate.of(2023, 12, 13),             // 출판일
+                new BigDecimal("19.99"),                // 가격
+                "12345678901",                        // ISBN
+                "1234567890123"                      // ISBN-13
+        );
+        Book savedBook2 = bookRepository.save(book2);
+
+        List<Book> books = bookRepository.findByBookTitle("Find Book Title");
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(2);
+        assertThat(books).contains(book, book2);
+    }
+
+    @Test
+    void findBooksByAuthorNameTest(){
+
+        List<Book> books = bookRepository.findBooksByAuthorName("test author");
+
+
+        assertThat(books).isNotNull();
+        assertThat(books.size()).isEqualTo(1);
+
+        boolean hasBookWithId1 = books.stream()
+                .anyMatch(book -> book.getBookId() == 1L);
+
+        assertTrue(hasBookWithId1);
+    }
+
 
 
 }

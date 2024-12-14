@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "book")
-
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -36,7 +35,7 @@ public class Book {
     private Long bookId;
 
     @ManyToOne
-    @JoinColumn(name = "book_publisher_id", nullable = false)
+    @JoinColumn(name = "publisher_id", nullable = false)
     private Publisher publisher;
 
     @Column(nullable = false, length = 150)
@@ -54,22 +53,18 @@ public class Book {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal bookPriceStandard;
 
-    @Column(nullable = false, length = 30, unique = true)
+    @Column(nullable = false, length = 40, unique = true)
     private String bookIsbn;
 
-    @Column(nullable = false, length = 30, unique = true)
+    @Column(nullable = false, length = 40, unique = true)
     private String bookIsbn13;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SellingBook> sellingBooks = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "book_category",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
-    private List<Category> categories = new ArrayList<>();
+    @OneToMany(mappedBy = "book")
+    private List<BookCategory> bookCategories = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "book")
+    private List<BookAuthor> bookAuthors = new ArrayList<>();
 }
