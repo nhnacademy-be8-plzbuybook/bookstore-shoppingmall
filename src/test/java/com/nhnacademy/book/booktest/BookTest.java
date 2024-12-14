@@ -41,7 +41,6 @@ public class BookTest {
 
     @BeforeEach
     public void setUp() {
-        // Publisher 생성 및 저장
         publisher = new Publisher("Test Publisher");
         publisherRepository.save(publisher);
 
@@ -60,7 +59,6 @@ public class BookTest {
         Category subCategory4 = new Category("사랑/결혼", 5, subCategory3);
         categoryRepository.save(subCategory4);  // 네 번째 자식 카테고리 저장
 
-        // 카테고리 테스트용으로 마지막 카테고리 가져오기
         category = subCategory4;
 
         //delete,update 용 book 생성?
@@ -82,27 +80,23 @@ public class BookTest {
         bookAuthor.setAuthor(author);
         bookAuthor.setBook(book);
         bookAuthorRepository.save(bookAuthor);
-
         book.getBookAuthors().add(bookAuthor);
-        // 카테고리 설정
 
-        // 책과 카테고리를 연결하는 BookCategory 객체 생성
+
+
         BookCategory bookCategory = new BookCategory();
         bookCategory.setCategory(category);
         bookCategory.setBook(book);
         bookCategoryRepository.save(bookCategory);
 
-        // BookCategory 객체를 책에 추가
         book.getBookCategories().add(bookCategory);
 
-        // Book 엔티티 저장
         Book savedBook = bookRepository.save(book);
 
     }
 
     @Test
     void bookCreateTest() {
-        // Book 엔티티 생성
         Book book = new Book(
                 publisher,                              // Publisher 설정
                 "Book Title2",                          // 제목
@@ -123,24 +117,18 @@ public class BookTest {
         bookAuthorRepository.save(bookAuthor);
 
         book.getBookAuthors().add(bookAuthor);
-        // 카테고리 설정
 
-        // 책과 카테고리를 연결하는 BookCategory 객체 생성
         BookCategory bookCategory = new BookCategory();
         bookCategory.setCategory(category);
         bookCategory.setBook(book);
         bookCategoryRepository.save(bookCategory);
 
-        // BookCategory 객체를 책에 추가
         book.getBookCategories().add(bookCategory);
 
 
-        // Book 엔티티 저장
         Book savedBook = bookRepository.save(book);
 
-        // Book 엔티티 저장
 
-        // 검증
         assertThat(savedBook).isNotNull();
         assertThat(savedBook.getBookId()).isNotNull();
         assertThat(savedBook.getBookTitle()).isEqualTo("Book Title2");
@@ -159,7 +147,6 @@ public class BookTest {
 
         assertThat(book).isNotNull();
         assertThat(book.getBookId()).isEqualTo(1);
-//        System.out.println(book.getAuthors().getFirst().getAuthorName());
 
     }
 
@@ -177,10 +164,6 @@ public class BookTest {
                 "1234567892",                        // ISBN
                 "1234567890125"                      // ISBN-13
         );
-
-        // 카테고리 설정
-
-        // Book 엔티티 저장
         Book savedBook = bookRepository.save(book);
 
         Book book2 = new Book(
