@@ -4,6 +4,7 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
+import com.nhnacademy.book.member.domain.service.MemberGradeService;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberStatusService memberStatusService;
+    private final MemberGradeService memberGradeService;
 
     //회원 생성
     @PostMapping("/members")
@@ -53,7 +55,7 @@ public class MemberController {
     //회원 등급 추가(값 추가를 위함)
     @PostMapping("/members/grade")
     public MemberGrade createMemberGrade (@RequestBody MemberGradeCreateRequestDto memberGradeCreateRequestDto) {
-        MemberGrade memberGrade = memberService.save(memberGradeCreateRequestDto);
+        MemberGrade memberGrade = memberGradeService.createMemberGrade(memberGradeCreateRequestDto);
 
         return memberGrade;
     }
