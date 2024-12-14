@@ -5,6 +5,7 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberStatusService memberStatusService;
 
     //회원 생성
     @PostMapping("/members")
@@ -59,7 +61,7 @@ public class MemberController {
     //회원 상태 추가(값 추가를 위함)
     @PostMapping("/members/status")
     public MemberStatus createMemberStatus (@RequestBody MemberStatusCreateRequestDto memberStatusCreateRequestDto){
-        MemberStatus memberStatus = memberService.save(memberStatusCreateRequestDto);
+        MemberStatus memberStatus = memberStatusService.createMemberStatus(memberStatusCreateRequestDto);
 
         return memberStatus;
     }
