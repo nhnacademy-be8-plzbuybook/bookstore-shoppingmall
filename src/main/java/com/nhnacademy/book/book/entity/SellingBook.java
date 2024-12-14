@@ -2,9 +2,7 @@ package com.nhnacademy.book.book.entity;
 
 import jakarta.persistence.*;
 import jakarta.ws.rs.DELETE;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -12,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "selling_book")
 @Getter
 @Setter
-@NoArgsConstructor
+@AllArgsConstructor
 public class SellingBook {
 
     @Id
@@ -47,6 +45,8 @@ public class SellingBook {
         SELLEND,
         DELETEBOOK
 
+    }
+    public SellingBook() {
     }
 }
 

@@ -30,7 +30,9 @@ eureka:
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
-
+aladin:
+  api:
+    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
 # 'prod' 프로파일 전용 설정
 ---
 
@@ -67,3 +69,6 @@ eureka:
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
+aladin:
+  api:
+    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
