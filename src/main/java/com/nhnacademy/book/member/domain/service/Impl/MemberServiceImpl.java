@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -122,15 +124,6 @@ public class MemberServiceImpl implements MemberService {
         memberGrade.setGradeChange(memberGradeCreateRequestDto.getGradeChange());
 
         return memberGradeRepository.save(memberGrade);
-    }
-
-    //회원 상태 저장
-    @Override
-    public MemberStatus save(MemberStatusCreateRequestDto memberStatusCreateRequestDto){
-        MemberStatus memberStatus = new MemberStatus();
-        memberStatus.setMemberStateName(memberStatusCreateRequestDto.getMemberStateName());
-
-        return memberStatusRepository.save(memberStatus);
     }
 
     //이메일로 특정 회원 조회
