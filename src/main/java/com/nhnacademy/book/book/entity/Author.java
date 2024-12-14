@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,6 +23,10 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long authorId;
 
-    //TODO 여기 부분 추가해줘야 합니다
+    @Column(name= "author_name")
     private String authorName;
+
+    @OneToMany(mappedBy = "author")
+    private List<BookAuthor> bookAuthors = new ArrayList<>();
+
 }

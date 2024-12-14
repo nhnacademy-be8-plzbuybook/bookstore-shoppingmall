@@ -60,7 +60,6 @@ public class AladinApiService {
         // 카테고리 처리 예시
         Category category = new Category();
         category.setCategoryName(response.getCategory());
-        book.getCategories().add(category);
 
         return book;
     }

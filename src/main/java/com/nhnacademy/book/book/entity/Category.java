@@ -33,8 +33,9 @@ public class Category {
     @Column(nullable = false)
     private Integer categoryDepth;
 
-    @ManyToMany(mappedBy = "categories")
-    private List<Book> books = new ArrayList<>();
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookCategory> bookCategories = new ArrayList<>();
+
 
     public Category(String categoryName, Integer categoryDepth, Category parentCategory) {
         this.categoryName = categoryName;
