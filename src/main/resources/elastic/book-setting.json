@@ -1,0 +1,88 @@
+{
+  "settings": {
+    "number_of_shards": 4,
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "korean_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": ["lowercase", "nori_part_of_speech", "synonym_filter"]
+        },
+        "ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": ["lowercase"]
+        }
+      },
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 3,
+          "token_chars": ["letter", "digit"]
+        }
+      },
+      "filter": {
+        "nori_part_of_speech": {
+          "type": "nori_part_of_speech",
+          "stoptags": [
+            "E", "IC", "J", "MAG", "MAJ", "MM", "SP", "SSC", "SSO",
+            "SC", "SE", "XPN", "XSA", "XSN", "XSV", "UNA", "NA", "VSV"
+          ]
+        },
+        "synonym_filter": {
+          "type": "synonym",
+          "synonyms": [
+            "아기, 유아",
+            "학생, 제자",
+            "구입, 구매",
+            "예쁜, 아름다운",
+            "슬픈, 우울한",
+            "기질, 특성",
+            "LA => 로스엔젤레스"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "tags": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "author": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "published_date": {
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      },
+      "price": {
+        "type": "float"
+      },
+      "rating": {
+        "type": "float"
+      },
+      "review_count": {
+        "type": "integer"
+      },
+      "popularity": {
+        "type": "integer"
+      },
+      "view_count": {
+        "type": "integer"
+      }
+    }
+  }
+}
