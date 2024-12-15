@@ -37,9 +37,17 @@ public class Category {
     private List<BookCategory> bookCategories = new ArrayList<>();
 
 
+    //생성자
     public Category(String categoryName, Integer categoryDepth, Category parentCategory) {
         this.categoryName = categoryName;
         this.categoryDepth = categoryDepth;
         this.parentCategory = parentCategory;
+    }
+
+    // 자식 카테고리 추가
+    public void addChildCategory(Category childCategory) {
+        childCategory.setParentCategory(this);
+        childCategory.setCategoryDepth(this.categoryDepth + 1); // 부모의 깊이 + 1
+        this.childrenCategory.add(childCategory);
     }
 }

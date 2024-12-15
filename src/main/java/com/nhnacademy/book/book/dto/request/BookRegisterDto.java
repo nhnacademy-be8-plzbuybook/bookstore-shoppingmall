@@ -1,15 +1,16 @@
-package com.nhnacademy.book.book.dto.response;
+package com.nhnacademy.book.book.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-public class BookDetailResponseDto {
-    private Long bookId;
+@Getter
+@Setter
+public class BookRegisterDto {
     private String bookTitle;
     private String bookIndex;
     private String bookDescription;
@@ -17,5 +18,5 @@ public class BookDetailResponseDto {
     private BigDecimal bookPriceStandard;
     private String bookIsbn;
     private String bookIsbn13;
-    private String publisherName;
+    private Long publisherId;
 }

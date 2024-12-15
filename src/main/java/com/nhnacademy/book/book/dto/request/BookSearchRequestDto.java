@@ -9,5 +9,10 @@ public class BookSearchRequestDto {
     private String title;
     private String author;
     private String category;
+
+    //추가버전
+    private String keyword;
+    private Long categoryId;
+    private Boolean onlyAvailable;
 }
 
