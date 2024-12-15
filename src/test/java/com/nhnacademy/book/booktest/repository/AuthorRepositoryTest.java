@@ -1,4 +1,4 @@
-package com.nhnacademy.book.booktest;
+package com.nhnacademy.book.booktest.repository;
 
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.repository.AuthorRepository;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatException;
 
 @DataJpaTest
 @ActiveProfiles("test")
