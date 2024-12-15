@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberStatusService memberStatusService;
-    private final MemberGradeService memberGradeService;
 
     //회원 생성
     @PostMapping("/members")
@@ -37,12 +35,12 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
+
     //특정 회원 조회(이메일)
     @GetMapping("/members/email")
     public ResponseEntity<MemberEmailResponseDto> getMemberByEmail(@RequestParam String email) {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
-
 
     //특정 회원 조회(id)
     @GetMapping("/members/{member_id}")
@@ -50,30 +48,10 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberById(member_id));
     }
 
-
-
-    //회원 등급 추가(값 추가를 위함)
-    @PostMapping("/members/grade")
-    public MemberGrade createMemberGrade (@RequestBody MemberGradeCreateRequestDto memberGradeCreateRequestDto) {
-        MemberGrade memberGrade = memberGradeService.createMemberGrade(memberGradeCreateRequestDto);
-
-        return memberGrade;
-    }
-
-    //회원 상태 추가(값 추가를 위함)
-    @PostMapping("/members/status")
-    public MemberStatus createMemberStatus (@RequestBody MemberStatusCreateRequestDto memberStatusCreateRequestDto){
-        MemberStatus memberStatus = memberStatusService.createMemberStatus(memberStatusCreateRequestDto);
-
-        return memberStatus;
-    }
-
-
-    //회원 삭제( => withdraw로 상태 변경)
-    @PutMapping("/members/{member_id}/withdraw")
+    //회원 삭제( => withdrawal로 상태 변경)
+    @PutMapping("/members/{member_id}/withdrawal")
     public ResponseEntity<String> withdrawMember(@PathVariable Long member_id) {
         memberService.withdrawMember(member_id);
         return ResponseEntity.ok("탈퇴 처리 됐습니다.");
     }
-
 }
