@@ -43,7 +43,7 @@ POST http://localhost:8090/api/members/status
 Content-Type: application/json
 
 {
-  "memberStateName": "WITHDRAW"
+  "memberStateName": "WITHDRAWAL"
 }
 
 
@@ -123,6 +123,6 @@ Content-Type: application/json
 }
 
 ### 회원 삭제 (withdraw로 상태 변경)
-PUT http://localhost:8090/api/members/1/withdraw
+PUT http://localhost:8090/api/members/1/withdrawal
 Content-Type: application/json
 

@@ -436,5 +436,50 @@ class MemberServiceImplTest {
         assertThrows(DuplicateEmailException.class, () -> memberService.modify(member.getMemberId(), memberModifyRequestDto));
 
     }
+
+    //삭제시 회원 상태가 withdraw로 변경 되는지
+    @Test
+    void withdrawMember_Success() {
+        MemberStatus withdrawalStatus = new MemberStatus();
+        withdrawalStatus.setMemberStateName("WITHDRAWAL");
+
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setMemberStatus(new MemberStatus());
+
+        when(memberRepository.findById(member.getMemberId())).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.of(withdrawalStatus));
+
+        memberService.withdrawMember(member.getMemberId());
+
+        verify(memberRepository).save(any(Member.class));
+        assertEquals("WITHDRAWAL", member.getMemberStatus().getMemberStateName());
+    }
+
+
+    //withdraw 상태가 없으면 오류 발생 잘 시키는지
+    @Test
+    void withdrawMember_MemberGradeNotFoundException() {
+        when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.empty());
+
+        assertThrows(MemberGradeNotFoundException.class, () -> memberService.withdrawMember(1L));
+        verify(memberRepository, never()).save(any(Member.class));
+    }
+
+    //탈퇴하려는 id에 해당하는 회원을 불러올 때 없으면 오류 발생 잘 시키는 지
+    @Test
+    void withdrawMember_MemberNotFoundException() {
+        MemberStatus withdrawalStatus = new MemberStatus();
+        withdrawalStatus.setMemberStateName("WITHDRAWAL");
+
+        when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.of(withdrawalStatus));
+        when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(MemberIdNotFoundException.class, () -> memberService.withdrawMember(1L));
+        verify(memberRepository, never()).save(any(Member.class));
+    }
 }
 
