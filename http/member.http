@@ -104,10 +104,22 @@ Content-Type: application/json
 
 {
   "name": "testtest",
-  "phone": "010-1111-2222",
-  "email": "testtest@naver.com",
+  "phone": "010-1111-1111",
+  "email": "test22@naver.com",
+  "birth": "2024-11-11",
+  "password": "1111"
+}
+
+### 회원 수정(수정된게 없을 경우 예외)
+PUT http://localhost:8090/api/members/1
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phone": "010-1234-5678",
+  "email": "test@naver.com",
   "birth": "2024-12-12",
-  "password": "2222"
+  "password": "1111"
 }
 
 ### 회원 삭제 (withdraw로 상태 변경)

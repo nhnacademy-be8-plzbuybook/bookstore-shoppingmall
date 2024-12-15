@@ -70,38 +70,44 @@ public class MemberServiceImpl implements MemberService {
         );
     }
 
-    //회원 수정
+    //회원 수정 (수정하려는 값이 하나도 없는데 수정하는 경우 예외 발생)
     @Override
     public MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto) {
+        boolean isModified = false;
+
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("id에 해당하는 member가 없다!"));
+                .orElseThrow(() -> new MemberIdNotFoundException("id에 해당하는 member가 없다!"));
 
-        // 이메일 수정 시 이메일 중복 검사
-        if (memberModifyRequestDto.getEmail() != null &&
-                !memberModifyRequestDto.getEmail().equals(member.getEmail()) &&
-                memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
-            throw new RuntimeException("이메일이 이미 존재합니다.");
-        }
-
-        // 수정 가능한 필드들만 업데이트
-        if (memberModifyRequestDto.getName() != null) {
+        if (memberModifyRequestDto.getName() != null && !memberModifyRequestDto.getName().equals(member.getName())) {
             member.setName(memberModifyRequestDto.getName());
+            isModified = true;
         }
 
-        if (memberModifyRequestDto.getPhone() != null) {
+        if (memberModifyRequestDto.getPhone() != null && !memberModifyRequestDto.getPhone().equals(member.getPhone())) {
             member.setPhone(memberModifyRequestDto.getPhone());
+            isModified = true;
         }
 
-        if (memberModifyRequestDto.getEmail() != null) {
+        if (memberModifyRequestDto.getEmail() != null && !memberModifyRequestDto.getEmail().equals(member.getEmail())) {
+            if (memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
+                throw new DuplicateEmailException("이메일이 이미 존재!");
+            }
             member.setEmail(memberModifyRequestDto.getEmail());
+            isModified = true;
         }
 
-        if (memberModifyRequestDto.getBirth() != null) {
+        if (memberModifyRequestDto.getBirth() != null && !memberModifyRequestDto.getBirth().equals(member.getBirth())) {
             member.setBirth(memberModifyRequestDto.getBirth());
+            isModified = true;
         }
 
-        if (memberModifyRequestDto.getPassword() != null) {
+        if (memberModifyRequestDto.getPassword() != null && !passwordEncoder.matches(memberModifyRequestDto.getPassword(), member.getPassword())) {
             member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
+            isModified = true;
+        }
+
+        if(!isModified) {
+            throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
         // 수정된 회원 저장

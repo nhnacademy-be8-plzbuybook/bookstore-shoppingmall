@@ -5,6 +5,8 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberCreateResponseDto;
+import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberModifyResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -30,8 +32,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 //@SpringBootTest
 @Slf4j
@@ -345,6 +346,95 @@ class MemberServiceImplTest {
         assertThrows(MemberIdNotFoundException.class, () -> memberService.getMemberById(1L));
 
         verify(memberRepository).findById(1L);
+    }
+
+    //회원 수정을 잘하는지
+    @Test
+    void memberModify_success() {
+        Long memberId = 1L;
+        Member member = new Member();
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("encodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName("융징홍");
+        memberModifyRequestDto.setPhone("010-1111-1111");
+        memberModifyRequestDto.setEmail("yoonwlgh123@naver.com");
+        memberModifyRequestDto.setBirth(LocalDate.of(2000, 3, 10));
+        memberModifyRequestDto.setPassword("newPassword");
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(memberRepository.existsByEmail(memberModifyRequestDto.getEmail())).thenReturn(false);
+        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = memberService.modify(memberId, memberModifyRequestDto);
+
+        assertEquals("융징홍", response.getName());
+        assertEquals("010-1111-1111", response.getPhone());
+        assertEquals("yoonwlgh123@naver.com", response.getEmail());
+        assertEquals(LocalDate.of(2000, 3, 10), response.getBirth());
+        verify(passwordEncoder).encode("newPassword");
+        verify(memberRepository).findById(memberId);
+        verify(memberRepository,times(1)).save(any(Member.class));
+    }
+
+
+    //회원 수정 값이 없을 때 예외를 잘 처리 하는지
+    @Test
+    void memberModify_DuplicateMemberModificationException() {
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("EncodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName(member.getName());
+        memberModifyRequestDto.setPhone(member.getPhone());
+        memberModifyRequestDto.setEmail(member.getEmail());
+        memberModifyRequestDto.setBirth(member.getBirth());
+        memberModifyRequestDto.setPassword("password");
+
+       when(memberRepository.findById(member.getMemberId())).thenReturn(Optional.of(member));
+       when(passwordEncoder.matches("password", "EncodedPassword")).thenReturn(true);
+
+       assertThrows(DuplicateMemberModificationException.class, () -> memberService.modify(member.getMemberId(), memberModifyRequestDto));
+
+       verify(memberRepository).findById(member.getMemberId());
+       verify(passwordEncoder).matches("password", "EncodedPassword");
+
+    }
+
+
+    //회원 수정하는데 중복된 이메일로 수정하려 할 떄
+    @Test
+    void memberModify_DuplicateEmailException() {
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("EncodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName("융징홍");
+        memberModifyRequestDto.setPhone("010-1111-1111");
+        memberModifyRequestDto.setEmail("duplicate@naver.com");
+        memberModifyRequestDto.setBirth(LocalDate.of(2000, 3, 10));
+        memberModifyRequestDto.setPassword("password");
+
+        when(memberRepository.findById(member.getMemberId())).thenReturn(Optional.of(member));
+        when(memberRepository.existsByEmail("duplicate@naver.com")).thenReturn(true);
+
+        assertThrows(DuplicateEmailException.class, () -> memberService.modify(member.getMemberId(), memberModifyRequestDto));
+
     }
 }
 
