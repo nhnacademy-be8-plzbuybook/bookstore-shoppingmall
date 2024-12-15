@@ -1,4 +1,4 @@
-package com.nhnacademy.book.book.dto;
+package com.nhnacademy.book.book.dto.response;
 
 import com.nhnacademy.book.book.entity.Publisher;
 import lombok.Getter;

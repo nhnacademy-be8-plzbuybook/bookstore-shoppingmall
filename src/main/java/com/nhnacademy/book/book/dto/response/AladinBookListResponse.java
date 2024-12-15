@@ -1,4 +1,4 @@
-package com.nhnacademy.book.book.dto;
+package com.nhnacademy.book.book.dto.response;
 
 
 import lombok.Getter;

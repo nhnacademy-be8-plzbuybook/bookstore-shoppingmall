@@ -1,8 +1,8 @@
 package com.nhnacademy.book.book.service;
 
 
-import com.nhnacademy.book.book.dto.AladinBookListResponse;
-import com.nhnacademy.book.book.dto.AladinResponse;
+import com.nhnacademy.book.book.dto.response.AladinBookListResponse;
+import com.nhnacademy.book.book.dto.response.AladinResponse;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.entity.Publisher;
