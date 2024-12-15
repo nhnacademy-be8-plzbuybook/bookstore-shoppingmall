@@ -70,6 +70,6 @@ public class Book {
 
     @Override
     public String toString() {
-        return "bookId" + bookId + ", bookTitle" + bookTitle;
+        return "bookId : " + bookId + ", bookTitle : " + bookTitle;
     }
 }
