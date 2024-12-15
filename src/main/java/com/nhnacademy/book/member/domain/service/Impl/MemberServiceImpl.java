@@ -160,11 +160,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void withdrawMember(Long memberId) {
-        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAW")
-                .orElseThrow(() -> new RuntimeException("withdraw 상태가 없다!"));
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+                .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("회원이 존재 하지 않음!"));
+                .orElseThrow(() -> new MemberIdNotFoundException("id에 해당하는 member가 없다!"));
 
         member.setMemberStatus(withdrawStatus);
         memberRepository.save(member);
