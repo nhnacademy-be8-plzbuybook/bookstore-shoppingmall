@@ -37,7 +37,6 @@ public class BookAuthorRepositoryTest {
 
     private Publisher publisher;
 
-
     @BeforeEach
     public void setUp() {
         publisher = new Publisher("Test Publisher");
