@@ -1,4 +1,4 @@
-package com.nhnacademy.book.booktest;
+package com.nhnacademy.book.booktest.repository;
 
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Publisher;

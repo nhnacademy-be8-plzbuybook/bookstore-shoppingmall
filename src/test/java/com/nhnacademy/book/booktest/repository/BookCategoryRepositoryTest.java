@@ -1,11 +1,10 @@
-package com.nhnacademy.book.booktest;
+package com.nhnacademy.book.booktest.repository;
 
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.repository.BookCategoryRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +121,6 @@ public class BookCategoryRepositoryTest {
 
         assertThat(categories).hasSize(2);
     }
-
 
     //카테고리에 속한 책 찾기
     @Test
