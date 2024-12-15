@@ -1,9 +1,9 @@
 package com.nhnacademy.book.book.controller;
 
 
+import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
-import com.nhnacademy.book.book.dto.request.BookSearchRequestDto;
 import com.nhnacademy.book.book.service.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

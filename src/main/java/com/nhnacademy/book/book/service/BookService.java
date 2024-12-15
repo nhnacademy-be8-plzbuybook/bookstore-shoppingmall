@@ -1,8 +1,8 @@
 package com.nhnacademy.book.book.service;
 
+import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
-import com.nhnacademy.book.book.dto.request.BookSearchRequestDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

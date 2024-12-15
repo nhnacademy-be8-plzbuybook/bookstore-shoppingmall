@@ -70,6 +70,18 @@ public class Book {
 
     @Override
     public String toString() {
-        return "bookId : " + bookId + ", bookTitle : " + bookTitle;
+        return "bookId : " +
+                bookId + ", bookTitle : "
+                + bookTitle+ '\'' +
+                '}';
+    }
+    // addCategory 메서드 추가
+    public void addCategory(Category category) {
+        // 중간 엔티티 생성
+        BookCategory bookCategory = new BookCategory(this, category);
+
+        // 양쪽 관계 동기화
+        this.bookCategories.add(bookCategory);
+        category.getBookCategories().add(bookCategory);
     }
 }
