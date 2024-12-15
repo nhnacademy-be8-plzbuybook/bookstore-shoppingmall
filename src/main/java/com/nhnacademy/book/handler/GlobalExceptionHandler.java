@@ -61,4 +61,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateMemberGradeException(DuplicateMemberGradeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    //회원을 수정할 떄 기존 값과 같을 경우
+    @ExceptionHandler(DuplicateMemberModificationException.class)
+    public ResponseEntity<String> handleDuplicateMemberModificationException(DuplicateMemberModificationException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }
