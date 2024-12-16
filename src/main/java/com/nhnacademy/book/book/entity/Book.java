@@ -40,10 +40,10 @@ public class Book {
     @Column(nullable = false, length = 150)
     private String bookTitle;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String bookIndex;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String bookDescription;
 
     @Column(nullable = false)
@@ -58,10 +58,10 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SellingBook> sellingBooks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> bookCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookAuthor> bookAuthors = new ArrayList<>();
 
     @Override
@@ -73,11 +73,14 @@ public class Book {
     }
     // addCategory 메서드 추가
     public void addCategory(Category category) {
-        // 중간 엔티티 생성
         BookCategory bookCategory = new BookCategory(this, category);
-
-        // 양쪽 관계 동기화
         this.bookCategories.add(bookCategory);
         category.getBookCategories().add(bookCategory);
+    }
+
+    public void addAuthor(Author author) {
+        BookAuthor bookAuthor = new BookAuthor(this, author);
+        this.bookAuthors.add(bookAuthor);
+        author.getBookAuthors().add(bookAuthor);
     }
 }

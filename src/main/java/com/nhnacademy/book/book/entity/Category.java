@@ -27,13 +27,13 @@ public class Category {
     @OneToMany(mappedBy = "parentCategory", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Category> childrenCategory = new ArrayList<>();
 
-    @Column(length = 20)
+    @Column(length = 100)
     private String categoryName;
 
     @Column(nullable = false)
     private Integer categoryDepth;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<BookCategory> bookCategories = new ArrayList<>();
 
 

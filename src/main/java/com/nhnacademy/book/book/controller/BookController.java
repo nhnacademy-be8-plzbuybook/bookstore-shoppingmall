@@ -4,6 +4,8 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.service.AladinApiService;
 import com.nhnacademy.book.book.service.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,9 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private AladinApiService aladinApiService;
 
     // 도서 검색 기능
     @GetMapping
@@ -77,6 +82,13 @@ public class BookController {
     @PutMapping("/{bookId}")
     public ResponseEntity<Void> updateBook(@PathVariable Long bookId, @RequestBody BookRegisterDto bookUpdateRequest) {
         bookService.updateBook(bookId, bookUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    // 알라딘 API 호출 후 책 저장
+    @PostMapping("/sync")
+    public ResponseEntity<Void> syncBooks() {
+        aladinApiService.saveBooksFromAladinApi();
         return ResponseEntity.ok().build();
     }
 }
