@@ -55,7 +55,7 @@ public class CategoryService {
     }
 
     public void deleteCategoryById(Long categoryId) {
-        if(categoryRepository.findById(categoryId).isEmpty()) {
+        if(categoryRepository.existsById(categoryId)) {
             throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
         }
 
