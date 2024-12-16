@@ -4,16 +4,21 @@ import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @DataJpaTest
+@ActiveProfiles("test")
 class CategoryRepositoryTest {
 
     @Autowired
@@ -111,5 +116,18 @@ class CategoryRepositoryTest {
 
         // Then
         assertThat(updatedCategory.getCategoryName()).isEqualTo("전자책");
+    }
+
+    @Test
+    void findByParentCategoryTest(){
+
+        for(Category category : categoryRepository.findByParentCategory(parentCategory)){
+            log.info(category.getCategoryName());
+        }
+
+        List<Category> categoryList = categoryRepository.findByParentCategory(parentCategory);
+        assertThat(categoryList).isNotNull();
+        assertThat(categoryList.size()).isEqualTo(2);
+
     }
 }
