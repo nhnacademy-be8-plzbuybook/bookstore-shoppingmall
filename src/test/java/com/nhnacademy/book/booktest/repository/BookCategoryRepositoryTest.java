@@ -1,135 +1,120 @@
-//package com.nhnacademy.book.booktest.repository;
-//
-//import com.nhnacademy.book.book.entity.*;
-//import com.nhnacademy.book.book.repository.BookCategoryRepository;
-//import com.nhnacademy.book.book.repository.BookRepository;
-//import com.nhnacademy.book.book.repository.CategoryRepository;
-//import com.nhnacademy.book.book.repository.PublisherRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//import org.springframework.test.context.ActiveProfiles;
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//import java.math.BigDecimal;
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//@DataJpaTest
-//@ActiveProfiles("test")
-//public class BookCategoryRepositoryTest {
-//
-//    @Autowired
-//    private BookCategoryRepository bookCategoryRepository;
-//    @Autowired
-//    private BookRepository bookRepository;
-//    @Autowired
-//    private PublisherRepository publisherRepository;
-//    @Autowired
-//    private CategoryRepository categoryRepository;
-//
-//    public static Book book;
-//    public static Book book2;
-//
-//
-//    @BeforeEach
-//    void setUp() {
-//        Publisher publisher = new Publisher("Test Publisher");
-//        publisherRepository.save(publisher);
-//
-//        Category rootCategory = new Category("국내도서", 1, null);
-//        categoryRepository.save(rootCategory);  // 루트 카테고리 저장
-//
-//        Category subCategory1 = new Category("종교/역학", 2, rootCategory);
-//        categoryRepository.save(subCategory1);  // 첫 번째 자식 카테고리 저장
-//
-//        Category subCategory2 = new Category("기독교(개신교)", 3, subCategory1);
-//        categoryRepository.save(subCategory2);  // 두 번째 자식 카테고리 저장
-//
-//        Category anotherCategory = new Category("다른 카테고리",2, rootCategory);
-//        categoryRepository.save(anotherCategory);
-//        book = new Book(
-//                publisher,                              // Publisher 설정
-//                "Test Book Title",                      // 제목
-//                "Test Book Index",                      // 목차
-//                "Test Book Description",                // 설명
-//                LocalDate.of(2023, 12, 13),             // 출판일
-//                new BigDecimal("19.99"),                // 가격
-//                "1234567890122",                        // ISBN
-//                "1234567890123451"                      // ISBN-13
-//        );
-//
-//        bookRepository.save(book);
-//
-//        BookCategory bookCategory = new BookCategory();
-//        bookCategory.setCategory(subCategory2);
-//        bookCategory.setBook(book);
-//        bookCategoryRepository.save(bookCategory);
-//
-//        BookCategory bookCategory2 = new BookCategory();
-//        bookCategory2.setCategory(anotherCategory);
-//        bookCategory2.setBook(book);
-//        bookCategoryRepository.save(bookCategory2);
-//
-//        book2 = new Book(
-//                publisher,                              // Publisher 설정
-//                "Test Book Title2",                      // 제목
-//                "Test Book Index2",                      // 목차
-//                "Test Book Description2",                // 설명
-//                LocalDate.of(2023, 12, 13),             // 출판일
-//                new BigDecimal("19.99"),                // 가격
-//                "1234567890111",                        // ISBN
-//                "1234567890123111"                      // ISBN-13
-//        );
-//
-//        bookRepository.save(book2);
-//        BookCategory bookCategory3 = new BookCategory();
-//        bookCategory3.setCategory(subCategory2);
-//        bookCategory3.setBook(book2);
-//        bookCategoryRepository.save(bookCategory3);
-//
-//    }
-//
-//    //잘 등록된건가 확인차
-//    @Test
-//    void verifyBookCategoryData() {
-//        List<BookCategory> bookCategories = bookCategoryRepository.findAll();
-//        for (BookCategory bookCategory : bookCategories) {
-//            System.out.println("Book ID: " + bookCategory.getBook().getBookId());
-//            System.out.println("Category ID: " + bookCategory.getCategory().getCategoryId());
-//        }
-//    }
-//
-//    // 같은 책에 카테고리가 한 개 일때
-//    @Test
-//    void testFindCategoriesByBookId() {
-//
-//        List<Book> books = bookRepository.findAll();
-//        List<Category> categories = bookCategoryRepository.findCategoriesByBookId(2L);
-//
-//        assertThat(categories).hasSize(1);
-//    }
-//
-//
-//    // 같은 책에 카테고리가 여러 개 일때 - 여기선 2개
-//    @Test
-//    void testFindCategoriesByBookId_2() {
-//
-//        List<Book> books = bookRepository.findAll();
-//        List<Category> categories = bookCategoryRepository.findCategoriesByBookId(1L);
-//
-//        assertThat(categories).hasSize(2);
-//    }
-//
-//    //카테고리에 속한 책 찾기
-//    @Test
-//    void testFindBooksByCategoryId() {
-//
-//        List<Book> books = bookCategoryRepository.findBooksByCategoryId(3L);
-//
-//        assertThat(books).hasSize(2);
-//        assertThat(books).contains(book,book2);
-//    }
-//
-//}
+package com.nhnacademy.book.booktest.repository;
+
+import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.repository.BookCategoryRepository;
+import com.nhnacademy.book.book.repository.BookRepository;
+import com.nhnacademy.book.book.repository.CategoryRepository;
+import com.nhnacademy.book.book.repository.PublisherRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+@ActiveProfiles("test")
+public class BookCategoryRepositoryTest {
+
+    @Autowired
+    private BookCategoryRepository bookCategoryRepository;
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private PublisherRepository publisherRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    private Book book;
+    private Book book2;
+
+    @BeforeEach
+    void setUp() {
+        // 1. Publisher 생성 및 저장
+        Publisher publisher = new Publisher("Test Publisher");
+        publisherRepository.save(publisher);
+
+        // 2. 카테고리 계층 구조 생성 및 저장
+        Category rootCategory = new Category("국내도서", 1, null); // 루트 카테고리
+        categoryRepository.save(rootCategory);
+
+        Category subCategory1 = new Category("종교/역학", 2, rootCategory); // 첫 번째 자식 카테고리
+        categoryRepository.save(subCategory1);
+
+        Category subCategory2 = new Category("기독교(개신교)", 3, subCategory1); // 두 번째 자식 카테고리
+        categoryRepository.save(subCategory2);
+
+        Category anotherCategory = new Category("다른 카테고리", 2, rootCategory); // 별도의 카테고리
+        categoryRepository.save(anotherCategory);
+
+        // 3. 책 생성 및 저장
+        book = new Book(
+                publisher,
+                "Test Book Title",
+                "Test Book Index",
+                "Test Book Description",
+                LocalDate.of(2023, 12, 13),
+                new BigDecimal("19.99"),
+                "1234567890122",
+                "1234567890123451"
+        );
+        bookRepository.save(book);
+
+        book2 = new Book(
+                publisher,
+                "Test Book Title2",
+                "Test Book Index2",
+                "Test Book Description2",
+                LocalDate.of(2023, 12, 13),
+                new BigDecimal("19.99"),
+                "1234567890111",
+                "1234567890123111"
+        );
+        bookRepository.save(book2);
+
+        // 4. BookCategory 관계 설정 및 저장
+        bookCategoryRepository.save(new BookCategory(book, subCategory2)); // 첫 번째 책, 두 번째 자식 카테고리
+        bookCategoryRepository.save(new BookCategory(book, anotherCategory)); // 첫 번째 책, 다른 카테고리
+        bookCategoryRepository.save(new BookCategory(book2, subCategory2)); // 두 번째 책, 두 번째 자식 카테고리
+    }
+
+    // 테스트 1: BookCategory 데이터 검증
+    @Test
+    void verifyBookCategoryData() {
+        // 모든 BookCategory 엔티티 조회
+        List<BookCategory> bookCategories = bookCategoryRepository.findAll();
+
+        // 각 BookCategory 엔티티의 책 ID와 카테고리 ID 출력
+        bookCategories.forEach(bookCategory -> {
+            System.out.println("Book ID: " + bookCategory.getBook().getBookId());
+            System.out.println("Category ID: " + bookCategory.getCategory().getCategoryId());
+        });
+
+        // BookCategory 개수 검증
+        assertThat(bookCategories).hasSize(3); // 총 3개의 관계
+    }
+
+    // 테스트 2: 특정 책에 속한 카테고리 조회 (카테고리 1개인 경우)
+    @Test
+    void testFindCategoriesByBookId_SingleCategory() {
+        List<Category> categories = bookCategoryRepository.findCategoriesByBookId(book2.getBookId());
+
+        // 카테고리 개수 검증 (1개만 존재)
+        assertThat(categories).hasSize(1);
+        assertThat(categories.get(0).getCategoryName()).isEqualTo("기독교(개신교)");
+    }
+
+    // 테스트 3: 특정 책에 속한 카테고리 조회 (카테고리 여러 개인 경우)
+    @Test
+    void testFindCategoriesByBookId_MultipleCategories() {
+        List<Category> categories = bookCategoryRepository.findCategoriesByBookId(book.getBookId());
+
+        // 카테고리 개수 검증 (2개 존재)
+        assertThat(categories).hasSize(2);
+    }
+}

@@ -32,7 +32,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
 aladin:
   api:
-    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
+    url: https://api.aladin.co.kr/
 # 'prod' 프로파일 전용 설정
 ---
 
@@ -71,4 +71,4 @@ eureka:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
 aladin:
   api:
-    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
+    url: http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101
