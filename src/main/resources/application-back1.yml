@@ -48,7 +48,7 @@ spring:
     name: bookstore-back1-dev
 
   datasource:
-    url: jdbc:h2:mem:bookstore-db-prod;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:bookstore-db-dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
