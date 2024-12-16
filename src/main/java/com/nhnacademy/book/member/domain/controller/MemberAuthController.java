@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MemberAuthController {
     private final MemberAuthService memberAuthService;
 
-    // 회원 권한 부여
+    // 회원 권한 설정
     @PostMapping("/members/auths")
     public ResponseEntity<MemberAuthResponseDto> assignAuthToMember(@RequestBody MemberAuthRequestDto requestDto) {
         MemberAuthResponseDto responseDto = memberAuthService.assignAuthToMember(requestDto);

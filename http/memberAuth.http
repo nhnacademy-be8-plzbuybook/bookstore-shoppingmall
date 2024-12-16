@@ -1,4 +1,4 @@
-### 권한 설정(관리자)
+### 권한 생성(관리자)
 POST http://localhost:8090/api/auths
 Content-Type: application/json
 
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 
-### 권한 설정(회원)
+### 권한 생성(회원)
 POST http://localhost:8090/api/auths
 Content-Type: application/json
 
