@@ -45,7 +45,6 @@ class SellingBookRepositoryTest {
                 "Description Content",
                 LocalDate.of(2023, 1, 1),
                 new BigDecimal("19.99"),
-                "1234567890",
                 "1234567890123"
         );
         testBook = bookRepository.save(testBook); // 저장

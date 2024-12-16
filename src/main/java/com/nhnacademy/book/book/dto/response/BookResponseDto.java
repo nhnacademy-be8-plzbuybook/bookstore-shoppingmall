@@ -11,6 +11,5 @@ public class BookResponseDto {
     private Long bookId;
     private String bookTitle;
     private BigDecimal bookPriceStandard;
-    private String bookIsbn;
     private String bookIsbn13;
 }

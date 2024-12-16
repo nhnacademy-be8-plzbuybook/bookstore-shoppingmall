@@ -20,14 +20,13 @@ import java.util.List;
 public class Book {
 
     public Book(Publisher publisher, String bookTitle, String bookIndex, String bookDescription,
-                LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn, String bookIsbn13) {
+                LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13) {
         this.publisher = publisher;
         this.bookTitle = bookTitle;
         this.bookIndex = bookIndex;
         this.bookDescription = bookDescription;
         this.bookPubDate = bookPubDate;
         this.bookPriceStandard = bookPriceStandard;
-        this.bookIsbn = bookIsbn;
         this.bookIsbn13 = bookIsbn13;
     }
     @Id
@@ -52,9 +51,6 @@ public class Book {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal bookPriceStandard;
-
-    @Column(nullable = false, length = 40, unique = true)
-    private String bookIsbn;
 
     @Column(nullable = false, length = 40, unique = true)
     private String bookIsbn13;

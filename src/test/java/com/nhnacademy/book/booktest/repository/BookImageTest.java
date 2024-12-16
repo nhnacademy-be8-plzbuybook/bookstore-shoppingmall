@@ -36,7 +36,6 @@ class BookImageTest {
         // Book 객체 초기화
         book = new Book();
         book.setBookTitle("Test Book");
-        book.setBookIsbn("1234567890123");
         book.setBookIsbn13("1234567890123");
         book.setBookPriceStandard(BigDecimal.valueOf(10000.0));  // book_price_standard에 BigDecimal로 값 설정
         book.setBookPubDate(LocalDate.now());

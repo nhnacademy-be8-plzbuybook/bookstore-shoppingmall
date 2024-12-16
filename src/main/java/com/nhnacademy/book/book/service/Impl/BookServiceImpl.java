@@ -41,7 +41,6 @@ public class BookServiceImpl implements BookService {
                         book.getBookId(),
                         book.getBookTitle(),
                         book.getBookPriceStandard(),
-                        book.getBookIsbn(),
                         book.getBookIsbn13()))
                 .collect(Collectors.toList());
     }
@@ -58,7 +57,6 @@ public class BookServiceImpl implements BookService {
                 book.getBookDescription(),
                 book.getBookPubDate(),
                 book.getBookPriceStandard(),
-                book.getBookIsbn(),
                 book.getBookIsbn13(),
                 book.getPublisher().getPublisherName());
     }
@@ -101,7 +99,6 @@ public class BookServiceImpl implements BookService {
                 bookRegisterDto.getBookDescription(),
                 bookRegisterDto.getBookPubDate(),
                 bookRegisterDto.getBookPriceStandard(),
-                bookRegisterDto.getBookIsbn(),
                 bookRegisterDto.getBookIsbn13()
         );
         bookRepository.save(book);
@@ -141,7 +138,6 @@ public class BookServiceImpl implements BookService {
         book.setBookDescription(bookUpdateRequest.getBookDescription());
         book.setBookPubDate(bookUpdateRequest.getBookPubDate());
         book.setBookPriceStandard(bookUpdateRequest.getBookPriceStandard());
-        book.setBookIsbn(bookUpdateRequest.getBookIsbn());
         book.setBookIsbn13(bookUpdateRequest.getBookIsbn13());
         bookRepository.save(book);
         System.out.println("도서 수정 완료: " + book.getBookTitle());

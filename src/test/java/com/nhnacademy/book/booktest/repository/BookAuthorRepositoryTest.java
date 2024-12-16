@@ -37,9 +37,11 @@ public class BookAuthorRepositoryTest {
 
     @BeforeEach
     public void setUp() {
+        // Publisher 저장
         publisher = new Publisher("Test Publisher");
-        publisherRepository.save(publisher);
+        publisher = publisherRepository.save(publisher);
 
+        // Book 저장
         Book book = new Book(
                 publisher,
                 "Test Book Title",
@@ -47,26 +49,29 @@ public class BookAuthorRepositoryTest {
                 "Test Book Description",
                 LocalDate.of(2023, 12, 13),
                 new BigDecimal("19.99"),
-                "1234567890122",
                 "1234567890123451"
         );
         book = bookRepository.save(book);
 
+        // Author 저장
         Author author = new Author();
         author.setAuthorName("test author");
         author = authorRepository.save(author);
 
+        // BookAuthor 저장
         BookAuthor bookAuthor = new BookAuthor();
         bookAuthor.setAuthor(author);
         bookAuthor.setBook(book);
-        bookAuthorRepository.save(bookAuthor);
+        bookAuthor = bookAuthorRepository.save(bookAuthor);
 
+        // 관계 동기화
         book.getBookAuthors().add(bookAuthor);
         bookRepository.save(book);
     }
 
     @Test
     void findBooksByAuthorIdTest() {
+        // 추가 Book 저장
         Book book2 = new Book(
                 publisher,
                 "Find Book Title",
@@ -74,21 +79,25 @@ public class BookAuthorRepositoryTest {
                 "Test Book Description",
                 LocalDate.of(2023, 12, 13),
                 new BigDecimal("19.99"),
-                "12345678901",
                 "1234567890123"
         );
         book2 = bookRepository.save(book2);
 
-        Author author = authorRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Author not found"));
+        // Author 조회
+        Author author = authorRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
+        // BookAuthor 저장
         BookAuthor bookAuthor = new BookAuthor();
         bookAuthor.setAuthor(author);
         bookAuthor.setBook(book2);
-        bookAuthorRepository.save(bookAuthor);
+        bookAuthor = bookAuthorRepository.save(bookAuthor);
 
+        // 관계 동기화
         book2.getBookAuthors().add(bookAuthor);
         bookRepository.save(book2);
 
+        // 테스트 실행
         List<Book> books = bookAuthorRepository.findBooksByAuthorId(author.getAuthorId());
 
         assertThat(books).isNotNull().hasSize(2).contains(book2);
