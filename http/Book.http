@@ -1,0 +1,10 @@
+# curl -X POST http://localhost:8090/api/books/sync
+POST http://localhost:8090/api/books/sync
+
+###
+
+# curl -X GET "http://www.aladin.co.kr/ttb/api/ItemList.aspx?...&output=js"
+GET http://www.aladin.co.kr/ttb/api/ItemList.aspx?...&output=js
+
+###
+
