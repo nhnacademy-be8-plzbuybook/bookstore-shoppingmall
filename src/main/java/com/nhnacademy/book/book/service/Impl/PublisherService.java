@@ -2,9 +2,12 @@ package com.nhnacademy.book.book.service.Impl;
 
 
 import com.nhnacademy.book.book.entity.Publisher;
+import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFound;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class PublisherService {
@@ -30,12 +33,9 @@ public class PublisherService {
         publisherRepository.delete(publisher);
     }
 
-    public Publisher getPublisher(Long publisherId) {
+    public Publisher findPublisherById(Long publisherId) {
+        return publisherRepository.findById(publisherId)
+                .orElseThrow(() -> new PublisherNotFound("publisher not found"));
 
-        if(publisherRepository.findById(publisherId).isEmpty()){
-            throw new PublisherNotFound("publisher name not found");
-        }
-
-        return publisherRepository.findById(publisherId).get();
     }
 }
