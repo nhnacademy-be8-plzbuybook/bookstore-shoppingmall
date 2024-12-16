@@ -1,6 +1,7 @@
 package com.nhnacademy.book.member.domain;
 
 import jakarta.persistence.*;
+import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,6 @@ public class MemberStatus {
     private Long memberStateId;
 
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 10)
     private String memberStateName;
 }

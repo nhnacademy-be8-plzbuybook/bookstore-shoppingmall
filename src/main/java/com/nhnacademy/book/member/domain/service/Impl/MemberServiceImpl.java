@@ -3,17 +3,21 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.*;
+import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,17 +28,28 @@ public class MemberServiceImpl implements MemberService {
     private final MemberStatusRepository memberStatusRepository;
     private final PasswordEncoder passwordEncoder;
 
+    //회원 생성
     @Override
-    public Member save(MemberCreateRequestDto memberCreateRequestDto) {
-        //이메일 중복 검사
+    public MemberCreateResponseDto createMember(MemberCreateRequestDto memberCreateRequestDto) {
+        // 이메일 중복 검사
         if (memberRepository.existsByEmail(memberCreateRequestDto.getEmail())) {
-            throw new RuntimeException("이메일이 이미 존재함!");
+            throw new DuplicateEmailException("이메일이 이미 존재함!");
         }
 
-        MemberGrade memberGrade = memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId()).orElse(null);
-        MemberStatus memberStatus = memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId()).orElse(null);
+        MemberGrade memberGrade = memberCreateRequestDto.getMemberGradeId() != null
+                ? memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
+                .orElseThrow(() -> new MemberGradeNotFoundException("멤버 등급이 없다!"))
+                : memberGradeRepository.findById(1L).orElseThrow(() -> new DefaultMemberGradeNotFoundException("Default 등급을 찾을 수 없다!"));
+
+        MemberStatus memberStatus = memberCreateRequestDto.getMemberStateId() != null
+                ? memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
+                .orElseThrow(() -> new MemberStatusNotFoundException("멤버 상태가 없다!"))
+                : memberStatusRepository.findById(1L).orElseThrow(() -> new DefaultStatusGradeNotfoundException("Default 상태를 찾을 수 없다!"));
+
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
 
+        // 회원 객체 생성
         Member member = Member.builder()
                 .memberGrade(memberGrade)
                 .memberStatus(memberStatus)
@@ -45,6 +60,136 @@ public class MemberServiceImpl implements MemberService {
                 .password(encodedPassword)
                 .build();
 
-        return memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+
+        // 응답 DTO 생성 및 반환
+        return new MemberCreateResponseDto(
+                savedMember.getName(),
+                savedMember.getPhone(),
+                savedMember.getEmail(),
+                savedMember.getBirth(),
+                memberGrade.getMemberGradeName(),
+                memberStatus.getMemberStateName()
+        );
+    }
+
+    //회원 수정 (수정하려는 값이 하나도 없는데 수정하는 경우 예외 발생)
+    @Override
+    public MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto) {
+        boolean isModified = false;
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException("id에 해당하는 member가 없다!"));
+
+        if (memberModifyRequestDto.getName() != null && !memberModifyRequestDto.getName().equals(member.getName())) {
+            member.setName(memberModifyRequestDto.getName());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPhone() != null && !memberModifyRequestDto.getPhone().equals(member.getPhone())) {
+            member.setPhone(memberModifyRequestDto.getPhone());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getEmail() != null && !memberModifyRequestDto.getEmail().equals(member.getEmail())) {
+            if (memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
+                throw new DuplicateEmailException("이메일이 이미 존재!");
+            }
+            member.setEmail(memberModifyRequestDto.getEmail());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getBirth() != null && !memberModifyRequestDto.getBirth().equals(member.getBirth())) {
+            member.setBirth(memberModifyRequestDto.getBirth());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPassword() != null && !passwordEncoder.matches(memberModifyRequestDto.getPassword(), member.getPassword())) {
+            member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
+            isModified = true;
+        }
+
+        if(!isModified) {
+            throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
+        }
+
+        // 수정된 회원 저장
+        Member updatedMember = memberRepository.save(member);
+
+        // 응답 DTO 생성
+        return new MemberModifyResponseDto(
+                updatedMember.getName(),
+                updatedMember.getPhone(),
+                updatedMember.getEmail(),
+                updatedMember.getBirth()
+        );
+    }
+
+    //이메일로 특정 회원 조회
+    @Override
+    public MemberEmailResponseDto getMemberByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() ->new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
+
+        MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
+//        memberEmailResponseDto.setName(member.getName());
+//        memberEmailResponseDto.setPhone(member.getPhone());
+        memberEmailResponseDto.setEmail(member.getEmail());
+        memberEmailResponseDto.setPassword(passwordEncoder.encode(member.getPassword()));
+//        memberEmailResponseDto.setBirth(member.getBirth());
+//        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
+//        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
+
+        return memberEmailResponseDto;
+
+
+    }
+
+    //id로 특정 회원 조회
+    @Override
+    public MemberIdResponseDto getMemberById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberIdNotFoundException("Id에 해당하는 멤버가 없다!"));
+
+        return new MemberIdResponseDto(
+                member.getName(),
+                member.getPhone(),
+                member.getEmail(),
+                member.getBirth(),
+                member.getMemberGrade().getMemberGradeName(),
+                member.getMemberStatus().getMemberStateName()
+        );
+    }
+
+    @Override
+    public void withdrawMember(Long memberId) {
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+                .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException("id에 해당하는 member가 없다!"));
+
+        member.setMemberStatus(withdrawStatus);
+        memberRepository.save(member);
+    }
+
+    @Override
+    public Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto) {
+        Pageable pageable = PageRequest.of(memberSearchRequestDto.getPage(), memberSearchRequestDto.getSize());
+
+        Page<Member> members = memberRepository.findAll(pageable);
+
+        if(members.isEmpty()) {
+            throw new MemberNotFoundException("등록된 회원이 없다!");
+        }
+        return memberRepository.findAll(pageable)
+                .map(member -> new MemberSearchResponseDto(
+                        member.getName(),
+                        member.getPhone(),
+                        member.getEmail(),
+                        member.getBirth(),
+                        member.getMemberGrade().getMemberGradeName(),
+                        member.getMemberStatus().getMemberStateName()
+                ));
     }
 }

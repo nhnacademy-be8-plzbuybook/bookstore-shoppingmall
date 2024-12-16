@@ -21,7 +21,7 @@ public class MemberGrade {
     @Column(name = "member_grade_id", nullable = false)
     private Long memberGradeId;
 
-    //회원 등급 이름
+    //회원 등급 이름(NORMAL, ROYAL, GOLD, PLATINUM)
     @Column(name = "name", nullable = false, length = 10, columnDefinition = "VARCHAR(10) DEFAULT 'NORMAL'")
     private String memberGradeName;
 

@@ -23,7 +23,7 @@ public class MemberAddress {
     @JoinColumn(name = "ma_member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT false")
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean defaultAddress;
 
     @Column(length = 100, nullable = false)

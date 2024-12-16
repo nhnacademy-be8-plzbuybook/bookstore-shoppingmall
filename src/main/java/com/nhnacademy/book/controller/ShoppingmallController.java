@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 public class ShoppingmallController {
 
     private final AuthClient authClient;
+
+    public ShoppingmallController(AuthClient authClient) {
+        this.authClient = authClient;
+    }
 
 
     @GetMapping("/hello")
