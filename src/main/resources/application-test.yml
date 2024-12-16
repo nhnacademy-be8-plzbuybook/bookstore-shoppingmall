@@ -29,3 +29,11 @@ logging:
 aladin:
   api:
     url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
+
+eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka/  # Eureka 서버 URL (테스트 환경에서는 로컬 또는 테스트 Eureka 서버)
+      fetch-registry: false  # 클라이언트가 레지스트리에서 정보를 가져오는지 여부 설정 (테스트 환경에서는 false로 설정할 수 있음)
+      register-with-eureka: false  # Eureka 서버에 클라이언트를 등록할지 여부 설정 (테스트 환경에서는 false로 설정)
+      enabled: false  # Eureka 클라이언트 활성화 여부 (테스트 환경에서는 false로 설정하여 Eureka와의 통신을 비활성화)
