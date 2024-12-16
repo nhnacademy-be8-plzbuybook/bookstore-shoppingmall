@@ -1,4 +1,4 @@
-package com.nhnacademy.book;
+package com.nhnacademy.book.member.domain.service.Impl;
 
 
 import com.nhnacademy.book.member.domain.*;
@@ -9,14 +9,11 @@ import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.service.Impl.MemberAuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -26,7 +23,7 @@ import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
-public class MemberAuthServiceTest {
+public class MemberAuthServiceImplTest {
 
     @Autowired
     private MemberAuthServiceImpl memberAuthService;
@@ -76,6 +73,7 @@ public class MemberAuthServiceTest {
     }
 
     @Test
+    // 멤버가 존재하지 않을 경우
     void assignAuth_MemberNotFound() {
         MemberAuthRequestDto requestDto = new MemberAuthRequestDto(1L, 1L);
 
@@ -85,6 +83,7 @@ public class MemberAuthServiceTest {
     }
 
     @Test
+    // 권한이 존재하지 않을 경우
     void assignAuth_AuthNotFound() {
         MemberAuthRequestDto requestDto = new MemberAuthRequestDto(1L, 1L);
 

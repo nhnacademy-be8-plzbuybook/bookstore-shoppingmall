@@ -1,4 +1,4 @@
-### 권한 설정(관리자)
+### 권한 생성(관리자)
 POST http://localhost:8090/api/auths
 Content-Type: application/json
 
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 
-### 권한 설정(회원)
+### 권한 생성(회원)
 POST http://localhost:8090/api/auths
 Content-Type: application/json
 
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### 권한 수정
-PUT http://localhost:8090/api/auths/{authId}
+PUT http://localhost:8090/api/auths/{auth_id}
 Content-Type: application/json
 
 {
@@ -24,7 +24,11 @@ Content-Type: application/json
 }
 
 ### 권한 삭제
-DELETE http://localhost:8090/api/auths/{authId}
+DELETE http://localhost:8090/api/auths/{auth_id}
+
+### 모든 권한 조회
+PUT http://localhost:8090/api/auths
+
 
 
 
@@ -39,11 +43,11 @@ Content-Type: application/json
 
 
 ### 회원 권한 조회
-GET http://localhost:8090/api/members/{memberId}/auths
+GET http://localhost:8090/api/members/{member_id}/auths
 
 
 ### 회원 권한 수정
-PUT http://localhost:8090/api/members/{memberId}/auths
+PUT http://localhost:8090/api/members/{member_id}/auths
 Content-Type: application/json
 
 {
@@ -51,5 +55,5 @@ Content-Type: application/json
 }
 
 ### 회원 권한 삭제
-DELETE http://localhost:8090/api/members/{memberId}/auths/{authId}
+DELETE http://localhost:8090/api/members/{member_id}/auths/{auth_id}
 Content-Type: application/json

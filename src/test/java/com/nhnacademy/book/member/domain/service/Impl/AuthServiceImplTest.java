@@ -1,14 +1,11 @@
-package com.nhnacademy.book;
+package com.nhnacademy.book.member.domain.service.Impl;
 
 import com.nhnacademy.book.member.domain.Auth;
-import com.nhnacademy.book.member.domain.dto.auth.AuthRequestDto;
 import com.nhnacademy.book.member.domain.dto.auth.AuthResponseDto;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+public class AuthServiceImplTest {
 
     @MockBean
     private AuthRepository authRepository;
@@ -31,6 +28,21 @@ public class AuthServiceTest {
     private AuthService authService;
 
     @Test
+    // 새로운 권한을 생성하고 반환하는지
+    void testCreateAuth() {
+        String authName = "ADMIN";
+        Auth auth = new Auth();
+        auth.setAuthName(authName);
+        Mockito.when(authRepository.save(Mockito.any(Auth.class))).thenReturn(auth);
+
+        AuthResponseDto createAuth = authService.createAuth(authName);
+
+        assertNotNull(createAuth);
+        assertEquals(authName, createAuth.getName());
+    }
+
+    @Test
+    // 모든 권한을 반환하는지
     void testGetAllAuths_whenAuthsExist() {
         Auth adminAuth = new Auth(1L, "ADMIN");
         Auth userAuth = new Auth(2L, "USER");
@@ -45,6 +57,7 @@ public class AuthServiceTest {
 
 
     @Test
+    // 특정 authId를 반환하는지
     void testGetAuthById() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 
@@ -57,6 +70,7 @@ public class AuthServiceTest {
     }
 
     @Test
+    // 정상적으로 수정하는지
     void testUpdateAuth() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 
@@ -70,6 +84,7 @@ public class AuthServiceTest {
     }
 
     @Test
+    // 정상적으로 삭제하는지
     void testDeleteAuth() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 

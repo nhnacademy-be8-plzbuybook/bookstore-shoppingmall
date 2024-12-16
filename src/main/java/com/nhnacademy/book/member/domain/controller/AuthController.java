@@ -31,25 +31,25 @@ public class AuthController {
     }
 
     // 권한 ID로 조회
-    @GetMapping("/auths/{authId}")
-    public ResponseEntity<AuthResponseDto> getAuthById(@PathVariable Long authId) {
-        AuthResponseDto auth = authService.getAuthById(authId)
+    @GetMapping("/auths/{auth_id}")
+    public ResponseEntity<AuthResponseDto> getAuthById(@PathVariable Long auth_id) {
+        AuthResponseDto auth = authService.getAuthById(auth_id)
                 .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다."));
         return new ResponseEntity<>(auth, HttpStatus.OK);
     }
 
     // 권한 수정
-    @PutMapping("/auths/{authId}")
-    public ResponseEntity<AuthResponseDto> updateAuth(@PathVariable Long authId,
+    @PutMapping("/auths/{auth_id}")
+    public ResponseEntity<AuthResponseDto> updateAuth(@PathVariable Long auth_id,
                                                       @RequestBody AuthRequestDto requestDto) {
-        AuthResponseDto updatedAuth = authService.updateAuth(authId, requestDto.getName());
+        AuthResponseDto updatedAuth = authService.updateAuth(auth_id, requestDto.getName());
         return new ResponseEntity<>(updatedAuth, HttpStatus.OK);
     }
 
     // 권한 삭제
-    @DeleteMapping("/auths/{authId}")
-    public ResponseEntity<Void> deleteAuth(@PathVariable Long authId) {
-        authService.deleteAuth(authId);
+    @DeleteMapping("/auths/{auth_id}")
+    public ResponseEntity<Void> deleteAuth(@PathVariable Long auth_id) {
+        authService.deleteAuth(auth_id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
