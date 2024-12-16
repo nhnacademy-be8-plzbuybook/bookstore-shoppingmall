@@ -31,6 +31,19 @@ public class AuthServiceTest {
     private AuthService authService;
 
     @Test
+    void testCreateAuth() {
+        String authName = "ADMIN";
+        Auth auth = new Auth();
+        auth.setAuthName(authName);
+        Mockito.when(authRepository.save(Mockito.any(Auth.class))).thenReturn(auth);
+
+        AuthResponseDto createAuth = authService.createAuth(authName);
+
+        assertNotNull(createAuth);
+        assertEquals(authName, createAuth.getName());
+    }
+
+    @Test
     void testGetAllAuths_whenAuthsExist() {
         Auth adminAuth = new Auth(1L, "ADMIN");
         Auth userAuth = new Auth(2L, "USER");
