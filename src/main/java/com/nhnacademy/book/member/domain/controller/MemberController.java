@@ -8,6 +8,7 @@ import com.nhnacademy.book.member.domain.service.MemberGradeService;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,5 +54,11 @@ public class MemberController {
     public ResponseEntity<String> withdrawMember(@PathVariable Long member_id) {
         memberService.withdrawMember(member_id);
         return ResponseEntity.ok("탈퇴 처리 됐습니다.");
+    }
+
+    //전체 회원 조회
+    @GetMapping("/members")
+    public ResponseEntity<Page<MemberSearchResponseDto>> getMembers(@ModelAttribute MemberSearchRequestDto memberSearchRequestDto) {
+        return ResponseEntity.ok(memberService.getMembers(memberSearchRequestDto));
     }
 }

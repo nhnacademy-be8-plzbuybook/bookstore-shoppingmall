@@ -126,3 +126,5 @@ Content-Type: application/json
 PUT http://localhost:8090/api/members/1/withdrawal
 Content-Type: application/json
 
+### 전체 회원 조회
+GET http://localhost:8090/api/members?page=0&size=2
