@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,11 +16,40 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
 
-    // 권한 생성
-    public Auth createAuth(String authName) {
+    @Override
+    public AuthResponseDto createAuth(String authName) {
         Auth auth = new Auth();
         auth.setAuthName(authName);
-        return authRepository.save(auth);
+        Auth savedAuth = authRepository.save(auth);
+        return new AuthResponseDto(savedAuth.getAuthId(), savedAuth.getAuthName());
     }
 
+    @Override
+    public List<AuthResponseDto> getAllAuths() {
+        return authRepository.findAll().stream()
+                .map(auth -> new AuthResponseDto(auth.getAuthId(), auth.getAuthName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<AuthResponseDto> getAuthById(Long authId) {
+        return authRepository.findById(authId)
+                .map(auth -> new AuthResponseDto(auth.getAuthId(), auth.getAuthName()));
+    }
+
+    @Override
+    public AuthResponseDto updateAuth(Long authId, String newAuthName) {
+        Auth auth = authRepository.findById(authId)
+                .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다"));
+        auth.setAuthName(newAuthName);
+        Auth updatedAuth = authRepository.save(auth);
+        return new AuthResponseDto(updatedAuth.getAuthId(), updatedAuth.getAuthName());
+    }
+
+    @Override
+    public void deleteAuth(Long authId) {
+        Auth auth = authRepository.findById(authId)
+                .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다"));
+        authRepository.delete(auth);
+    }
 }

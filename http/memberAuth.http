@@ -1,20 +1,32 @@
 ### 권한 설정(관리자)
-POST http://localhost:8090/api/members/auths
+POST http://localhost:8090/api/auths
 Content-Type: application/json
 
 {
-  "authId": 1,
   "name": "ADMIN"
 }
 
+
 ### 권한 설정(회원)
-POST http://localhost:8090/api/members/auths
+POST http://localhost:8090/api/auths
 Content-Type: application/json
 
 {
-  "authId": 2,
   "name": "USER"
 }
+
+### 권한 수정
+PUT http://localhost:8090/api/auths/{authId}
+Content-Type: application/json
+
+{
+  "name": "SUPER ADMIN"
+}
+
+### 권한 삭제
+DELETE http://localhost:8090/api/auths/{authId}
+
+
 
 ### 회원 권한 설정
 POST http://localhost:8090/api/members/auths
@@ -25,18 +37,19 @@ Content-Type: application/json
   "authId": 2
 }
 
+
 ### 회원 권한 조회
-GET http://localhost:8090/api/members/1/auths
+GET http://localhost:8090/api/members/{memberId}/auths
+
+
+### 회원 권한 수정
+PUT http://localhost:8090/api/members/{memberId}/auths
 Content-Type: application/json
 
 {
-  "memberId": 1
+  "authId": 3
 }
 
 ### 회원 권한 삭제
-DELETE http://localhost:8090/api/members/1/auths
+DELETE http://localhost:8090/api/members/{memberId}/auths/{authId}
 Content-Type: application/json
-
-{
-  "memberId": 1
-}
