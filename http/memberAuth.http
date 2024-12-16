@@ -15,8 +15,14 @@ Content-Type: application/json
   "name": "USER"
 }
 
+### 모든 권한 조회
+PUT http://localhost:8090/api/auths
+
+### 특정 id로 조회
+GET http://localhost:8090/api/auths/1
+
 ### 권한 수정
-PUT http://localhost:8090/api/auths/{auth_id}
+PUT http://localhost:8090/api/auths/1
 Content-Type: application/json
 
 {
@@ -24,10 +30,8 @@ Content-Type: application/json
 }
 
 ### 권한 삭제
-DELETE http://localhost:8090/api/auths/{auth_id}
+DELETE http://localhost:8090/api/auths/1
 
-### 모든 권한 조회
-PUT http://localhost:8090/api/auths
 
 
 
