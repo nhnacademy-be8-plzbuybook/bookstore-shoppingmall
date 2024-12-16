@@ -10,6 +10,9 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -168,5 +171,25 @@ public class MemberServiceImpl implements MemberService {
 
         member.setMemberStatus(withdrawStatus);
         memberRepository.save(member);
+    }
+
+    @Override
+    public Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto) {
+        Pageable pageable = PageRequest.of(memberSearchRequestDto.getPage(), memberSearchRequestDto.getSize());
+
+        Page<Member> members = memberRepository.findAll(pageable);
+
+        if(members.isEmpty()) {
+            throw new MemberNotFoundException("등록된 회원이 없다!");
+        }
+        return memberRepository.findAll(pageable)
+                .map(member -> new MemberSearchResponseDto(
+                        member.getName(),
+                        member.getPhone(),
+                        member.getEmail(),
+                        member.getBirth(),
+                        member.getMemberGrade().getMemberGradeName(),
+                        member.getMemberStatus().getMemberStateName()
+                ));
     }
 }
