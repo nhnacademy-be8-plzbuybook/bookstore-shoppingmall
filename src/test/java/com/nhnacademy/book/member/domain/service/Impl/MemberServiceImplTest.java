@@ -3,10 +3,7 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberCreateResponseDto;
-import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberModifyResponseDto;
+import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -22,11 +19,15 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -480,6 +481,53 @@ class MemberServiceImplTest {
 
         assertThrows(MemberIdNotFoundException.class, () -> memberService.withdrawMember(1L));
         verify(memberRepository, never()).save(any(Member.class));
+    }
+
+    //회원 조회를 성공적으로 하는가
+    @Test
+    void getMembers_success() {
+       MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
+       memberSearchRequestDto.setPage(0);
+       memberSearchRequestDto.setSize(10);
+
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.of(2000, 3, 9),"Password");
+        Member member2 = new Member(2L, memberGrade, memberStatus, "윤지호2", "010-7237-3952", "yoonwlgh123@naver.com",LocalDate.of(2001, 3, 9),"Password");
+
+        Page<Member> page = new PageImpl<>(List.of(member, member2));
+
+        when(memberRepository.findAll(any(Pageable.class))).thenReturn(page);
+
+        Page<MemberSearchResponseDto> response = memberService.getMembers(memberSearchRequestDto);
+
+        assertNotNull(response);
+        assertEquals(2, response.getContent().size());
+        assertEquals("윤지호", response.getContent().getFirst().getName());
+        assertEquals("010-7237-3951", response.getContent().getFirst().getPhone());
+        assertEquals("윤지호2", response.getContent().get(1).getName());
+        assertEquals("010-7237-3952", response.getContent().get(1).getPhone());
+
+    }
+
+    //회원 조회할 값이 없을 시 예외 처리를 잘하는가
+    @Test
+    void getMembers_MemberNotFoundException() {
+        MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
+        memberSearchRequestDto.setPage(0);
+        memberSearchRequestDto.setSize(10);
+
+        Page<Member> page = Page.empty();
+
+
+        when(memberRepository.findAll(any(Pageable.class))).thenReturn(page);
+
+        MemberNotFoundException exception = assertThrows(MemberNotFoundException.class, () -> {
+            memberService.getMembers(memberSearchRequestDto);
+        });
+
+        assertEquals("등록된 회원이 없다!", exception.getMessage());
+
     }
 }
 
