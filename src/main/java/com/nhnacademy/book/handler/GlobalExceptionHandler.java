@@ -67,4 +67,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateMemberModificationException(DuplicateMemberModificationException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    //전체 회원을 조회할 때 등록된 회원이 없는 경우
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<String> handleMemberNotFoundException(MemberNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
