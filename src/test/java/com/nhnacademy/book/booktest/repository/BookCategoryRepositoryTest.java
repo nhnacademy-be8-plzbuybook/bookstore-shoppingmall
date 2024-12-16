@@ -60,7 +60,6 @@ public class BookCategoryRepositoryTest {
                 "Test Book Description",
                 LocalDate.of(2023, 12, 13),
                 new BigDecimal("19.99"),
-                "1234567890122",
                 "1234567890123451"
         );
         bookRepository.save(book);
@@ -72,7 +71,6 @@ public class BookCategoryRepositoryTest {
                 "Test Book Description2",
                 LocalDate.of(2023, 12, 13),
                 new BigDecimal("19.99"),
-                "1234567890111",
                 "1234567890123111"
         );
         bookRepository.save(book2);

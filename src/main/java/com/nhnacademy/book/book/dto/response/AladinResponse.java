@@ -16,7 +16,6 @@ public class AladinResponse {
     private String bookDescription;
     private LocalDate bookPubDate;
     private BigDecimal bookPriceStandard;
-    private String bookIsbn;
     private String bookIsbn13;
     private String category;
 
