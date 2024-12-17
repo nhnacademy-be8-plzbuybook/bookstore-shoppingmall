@@ -22,9 +22,7 @@ public class AuthorService {
 
 
     public List<Author> getAllAuthors() {
-        if(authorRepository.findAll().isEmpty()) {
-            throw new AuthorsNotFoundException("Authors not Empty");
-        }
+
         return authorRepository.findAll();
     }
 

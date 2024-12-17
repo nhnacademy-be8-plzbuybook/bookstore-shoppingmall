@@ -1,8 +1,11 @@
 package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.entity.Author;
+import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
+import com.nhnacademy.book.book.exception.AuthorsNotFoundException;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import com.nhnacademy.book.book.service.Impl.AuthorService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +75,23 @@ public class AuthorServiceTest {
     }
 
     @Test
+    void createAuthor_NameNotFoundException() {
+        Author author = new Author();
+        author.setAuthorName("");
+        Mockito.when(authorRepository.save(author)).thenReturn(author);
+
+        Author author1 = new Author();
+        author1.setAuthorName(null);
+
+        assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author));
+
+        Mockito.when(authorRepository.save(author)).thenReturn(author);
+        assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author1));
+
+
+    }
+
+    @Test
     void getAllAuthors() {
 
         Mockito.when(authorRepository.findAll()).thenReturn(authorList);
@@ -93,6 +114,13 @@ public class AuthorServiceTest {
     }
 
     @Test
+    void getAuthorById_AuthorsNotFoundException(){
+
+        Mockito.when(authorRepository.findById(5L)).thenReturn(Optional.empty());
+        assertThrows(AuthorsNotFoundException.class, () -> authorService.getAuthorById(5L));
+    }
+
+    @Test
     void deleteAuthorById() {
         Author author = new Author();
         author.setAuthorName("test_created");
@@ -100,7 +128,12 @@ public class AuthorServiceTest {
         authorService.deleteAuthorById(5L);
         Mockito.verify(authorRepository, Mockito.times(1)).deleteById(5L);
 
+    }
 
+    @Test
+    void deleteAuthorById_AuthorsNotFoundException() {
+        Mockito.when(authorRepository.findById(5L)).thenReturn(Optional.empty());
+        assertThrows(AuthorsNotFoundException.class, () -> authorService.deleteAuthorById(5L));
     }
 
 
