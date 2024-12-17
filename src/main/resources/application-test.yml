@@ -1,8 +1,12 @@
 # 테스트 환경 전용 설정 (application-test.yml)
+server:
+  port: 8090
 spring:
   config:
     activate:
       on-profile: test
+
+
 
   application:
     name: bookstore-back1-test
@@ -22,13 +26,20 @@ spring:
         format_sql: false
         show_sql: false
 
+
+  h2:
+    console:
+      enabled: true  # H2 콘솔 활성화
+      path: /h2-console  # H2 콘솔 접근 경로
+
+
 logging:
     level:
       org.hibernate.SQL: OFF  # Hibernate SQL 로그 끄기
       org.hibernate.tool.hbm2ddl: OFF  # Hibernate DDL 로그 끄기
 aladin:
   api:
-    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
+    url: http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101
 
 eureka:
     client:
