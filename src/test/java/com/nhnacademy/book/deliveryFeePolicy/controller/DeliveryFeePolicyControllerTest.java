@@ -7,6 +7,7 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.service.impl.DeliveryFeePolicyServiceImpl;
 import com.nhnacademy.book.handler.GlobalExceptionHandler;
+import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -50,9 +53,14 @@ class DeliveryFeePolicyControllerTest {
         when(deliveryFeePolicyService.getDeliveryFeePolicy(id)).thenThrow(new NotFoundException(id + " policy not found!"));
 
         //when
-        mockMvc.perform(get(url))
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(id + " policy not found!"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponse = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(404, errorResponse.getStatus());
+        assertEquals(id + " policy not found!", errorResponse.getMessage());
     }
 
     @Test
@@ -100,11 +108,16 @@ class DeliveryFeePolicyControllerTest {
         when(deliveryFeePolicyService.createDeliveryFeePolicy(any(DeliveryFeePolicySaveRequestDto.class))).thenThrow(new ConflictException("duplicated delivery fee policy"));
 
         //when
-        mockMvc.perform(post(BASE_URL)
+        MvcResult result = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveRequest)))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("duplicated delivery fee policy"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponse = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(409, errorResponse.getStatus());
+        assertEquals("duplicated delivery fee policy", errorResponse.getMessage());
     }
 
     @Test
@@ -136,11 +149,16 @@ class DeliveryFeePolicyControllerTest {
         when(deliveryFeePolicyService.modifyDeliveryFeePolicy(anyLong(), any(DeliveryFeePolicyUpdateRequestDto.class))).thenThrow(new NotFoundException(id + " policy not found!"));
 
         //when
-        mockMvc.perform(put(url)
+        MvcResult result = mockMvc.perform(put(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(updateRequest)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(id + " policy not found!"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponse = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(404, errorResponse.getStatus());
+        assertEquals(id + " policy not found!", errorResponse.getMessage());
     }
 
     @Test
@@ -161,9 +179,14 @@ class DeliveryFeePolicyControllerTest {
 
         doThrow(new NotFoundException(id + " policy not found!")).when(deliveryFeePolicyService).removeDeliveryFeePolicy(id);
 
-        mockMvc.perform(delete(url))
+        MvcResult result = mockMvc.perform(delete(url))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(id + " policy not found!"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponse = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(404, errorResponse.getStatus());
+        assertEquals(id + " policy not found!", errorResponse.getMessage());
     }
 
     @Test
@@ -220,11 +243,16 @@ class DeliveryFeePolicyControllerTest {
                 .thenThrow(new NotFoundException(id + " policy not found!"));
 
         //when
-        mockMvc.perform(post(url)
+        MvcResult result = mockMvc.perform(post(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(calculateRequest)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(id + " policy not found!"));
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponse = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(404, errorResponse.getStatus());
+        assertEquals(id + " policy not found!", errorResponse.getMessage());
 
     }
 }
