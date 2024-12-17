@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### 모든 권한 조회
-PUT http://localhost:8090/api/auths
+GET http://localhost:8090/api/auths
 
 ### 특정 id로 조회
 GET http://localhost:8090/api/auths/1
