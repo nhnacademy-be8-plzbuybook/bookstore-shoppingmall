@@ -46,9 +46,9 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public WrappingPaperSaveResponseDto createWrappingPaper(WrappingPaperSaveRequestDto saveRequest, @NotNull MultipartFile imageFile) {
         if (wrappingPaperRepository.existsByName(saveRequest.getName())) {
-            throw new ConflictException("wrapping paper: " + saveRequest.getName() + "is already exists!");
+            throw new ConflictException("wrapping paper: [" + saveRequest.getName() + "] is already exists!");
         }
-        // 이미지 저장 메서드 호출 imageFile 업로드
+        // TODO: 이미지 저장 메서드 호출 / imageFile 업로드
         String image = "image/path";
         WrappingPaper wrappingPaper = saveRequest.toEntity(image);
         WrappingPaper savedWrappingPaper = wrappingPaperRepository.save(wrappingPaper);
@@ -63,16 +63,16 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         if (wrappingPaper.isEmpty()) {
             throw new NotFoundException(id + "wrapping paper not found!");
         }
-
         WrappingPaper target = wrappingPaper.get();
+
         if (imageFile == null) {
             target.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), updateRequest.imagePath());
+
         } else {
-            // 이미지 저장 메서드 호출 imageFile 업로드
-            String image = "/new/image/path";
+            // TODO: 이미지 저장 메서드 호출 / imageFile 업로드
+            String image = "/update/path";
             target.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), image);
         }
-
         return new WrappingPaperUpdateResponseDto(id);
     }
 
