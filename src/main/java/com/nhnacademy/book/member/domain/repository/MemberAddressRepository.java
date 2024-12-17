@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberAddressRepository extends JpaRepository<MemberAddress, Long> {
-    List<MemberAddress> findByMemberId(Long memberId);
-    Optional<MemberAddress> findByLocationAddressAndMemberId(String locationAddress, Long memberId);
+    List<MemberAddress> findByMember_memberId(Long memberId);
+    Optional<MemberAddress> findByLocationAddressAndMember_memberId(String locationAddress, Long memberId);
 
 }

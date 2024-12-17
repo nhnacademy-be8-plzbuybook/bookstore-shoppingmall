@@ -29,13 +29,13 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         // 회원 존재 여부 확인
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
-        List<MemberAddress> existingAddresses = memberAddressRepository.findByMemberId(memberId);
+        List<MemberAddress> existingAddresses = memberAddressRepository.findByMember_memberId(memberId);
         if (existingAddresses.size() >= 10) {
             throw new AddressLimitExceededException("회원은 최대 10개의 주소를 등록할 수 있습니다.");
         }
 
         // 주소 중복 확인
-        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndMemberId(addressRequestDto.getLocationAddress(), memberId);
+        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndMember_memberId(addressRequestDto.getLocationAddress(), memberId);
         if (existingAddress.isPresent()) {
             throw new DuplicateAddressException("해당 주소는 이미 등록되어 있습니다.");
         }
@@ -79,7 +79,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
-        List<MemberAddress> memberAddresses = memberAddressRepository.findByMemberId(memberId);
+        List<MemberAddress> memberAddresses = memberAddressRepository.findByMember_memberId(memberId);
 
         return memberAddresses.stream()
                 .map(memberAddress -> new MemberAddressResponseDto(
@@ -135,7 +135,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         existingAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
 
         if (addressRequestDto.getDefaultAddress() != null && addressRequestDto.getDefaultAddress()) {
-            memberAddressRepository.findByMemberId(memberId).stream()
+            memberAddressRepository.findByMember_memberId(memberId).stream()
                     .filter(memberAddress -> memberAddress.getDefaultAddress())
                     .forEach(memberAddress -> memberAddress.setDefaultAddress(false));
             existingAddress.setDefaultAddress(true);
@@ -165,7 +165,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
     // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
     if (existingAddress.getDefaultAddress()) {
-        List<MemberAddress> memberAddress = memberAddressRepository.findByMemberId(memberId);
+        List<MemberAddress> memberAddress = memberAddressRepository.findByMember_memberId(memberId);
 
         if (!memberAddress.isEmpty()) {
             // 첫번째 주소를 기본 주소로 설정
