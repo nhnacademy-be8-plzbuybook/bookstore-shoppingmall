@@ -22,8 +22,29 @@ Content-Type: application/json
   "defaultAddress": true,
   "locationAddress": "광주 동구 필문대로 309",
   "detailAddress": "IT융합대학",
-  "zipCode": "61452"
+  "zipCode": "61452",
+  "nickName": "집",
+  "recipient": "test1",
+  "recipientPhone": "010-1234-5678"
 }
 
+
+### 배송지 수정
+PUT http://localhost:8090/api/members/1/address/1
+Content-Type: application/json
+
+{
+  "memberAddressId": 1,
+  "defaultAddress": true,
+  "locationAddress": "광주 동구 필문대로 309",
+  "detailAddress": "IT융합대학",
+  "zipCode": "61452",
+  "nickName": "집",
+  "recipient": "test1",
+  "recipientPhone": "010-1234-5678"
+}
+
+### 배송지 삭제
+DELETE http://localhost:8090/api/members/1/address/1
 
 

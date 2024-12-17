@@ -4,6 +4,8 @@ import com.nhnacademy.book.member.domain.dto.MemberAddressRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberAddressResponseDto;
 import com.nhnacademy.book.member.domain.service.MemberAddressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,9 @@ public class MemberAddressController {
 
     // 배송지 등록
     @PostMapping("/members/{member_id}/address")
-    public MemberAddressResponseDto addAddress(@PathVariable Long member_id, @RequestBody MemberAddressRequestDto addressRequestDto) {
-        return memberAddressService.addAddress(member_id, addressRequestDto);
+    public ResponseEntity<MemberAddressResponseDto> addAddress(@PathVariable Long member_id, @RequestBody MemberAddressRequestDto addressRequestDto) {
+        MemberAddressResponseDto addressResponseDto = memberAddressService.addAddress(member_id, addressRequestDto);
+        return new ResponseEntity<>(addressResponseDto, HttpStatus.CREATED);
     }
 
     // 배송지 목록 조회
@@ -41,8 +44,9 @@ public class MemberAddressController {
 
     // 주소 삭제
     @DeleteMapping("/members/{member_id}/address/{address_id}")
-    public void deleteAddress(@PathVariable Long member_id, @PathVariable Long address_id) {
+    public ResponseEntity<Void> deleteAddress(@PathVariable Long member_id, @PathVariable Long address_id) {
         memberAddressService.deleteAddress(member_id, address_id);
+        return ResponseEntity.noContent().build();
     }
 
 }
