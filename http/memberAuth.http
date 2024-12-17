@@ -33,9 +33,6 @@ Content-Type: application/json
 DELETE http://localhost:8090/api/auths/1
 
 
-
-
-
 ### 회원 권한 설정
 POST http://localhost:8090/api/members/auths
 Content-Type: application/json
