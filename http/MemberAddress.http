@@ -1,0 +1,29 @@
+### 배송지 추가 (주소1)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 1,
+  "defaultAddress": true,
+  "locationAddress": "광주 동구 필문대로 309",
+  "detailAddress": "IT융합대학",
+  "zipCode": "61452",
+  "nickName": "학교",
+  "recipient": "test1",
+  "recipientPhone": "010-1234-5678"
+}
+
+### 배송지 추가 (주소2)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 2,
+  "defaultAddress": true,
+  "locationAddress": "광주 동구 필문대로 309",
+  "detailAddress": "IT융합대학",
+  "zipCode": "61452"
+}
+
+
+

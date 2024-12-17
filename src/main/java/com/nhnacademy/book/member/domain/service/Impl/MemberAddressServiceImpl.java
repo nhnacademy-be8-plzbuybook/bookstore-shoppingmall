@@ -97,6 +97,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
+    // 배송지 상세 조회
     public MemberAddressResponseDto getAddress(Long memberId, Long addressId) {
 
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
