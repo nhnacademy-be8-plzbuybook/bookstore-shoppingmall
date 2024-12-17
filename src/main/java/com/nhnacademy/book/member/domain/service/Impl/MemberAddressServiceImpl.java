@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,8 +70,57 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 savedAddress.getRecipientPhone()
         );
 
+    }
+
+    @Override
+    // 배송지 목록 조회
+    public List<MemberAddressResponseDto> getAddressList(Long memberId) {
+
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
+        List<MemberAddress> memberAddresses = memberAddressRepository.findByMemberId(memberId);
+
+        return memberAddresses.stream()
+                .map(memberAddress -> new MemberAddressResponseDto(
+                        memberAddress.getMemberAddressId(),
+                        memberAddress.getDefaultAddress(),
+                        memberAddress.getLocationAddress(),
+                        memberAddress.getDetailAddress(),
+                        memberAddress.getZipCode(),
+                        memberAddress.getNickName(),
+                        memberAddress.getRecipient(),
+                        memberAddress.getRecipientPhone()
+                ))
+                .collect((Collectors.toList()));
+
+    }
+
+    @Override
+    public MemberAddressResponseDto getAddress(Long memberId, Long addressId) {
+
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
+        MemberAddress memberAddress = memberAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+
+        return new MemberAddressResponseDto(
+                memberAddress.getMemberAddressId(),
+                memberAddress.getDefaultAddress(),
+                memberAddress.getLocationAddress(),
+                memberAddress.getDetailAddress(),
+                memberAddress.getZipCode(),
+                memberAddress.getNickName(),
+                memberAddress.getRecipient(),
+                memberAddress.getRecipientPhone()
+        );
 
 
     }
+
+//    public MemberAddressResponseDto updateAddress(Long memberId, Long AddressId, MemberAddressRequestDto addressRequestDto) {
+//
+//    }
+
+
 }
 
