@@ -45,7 +45,4 @@ public class MemberAddress {
     private String recipientPhone;
 
 
-
-
-
 }

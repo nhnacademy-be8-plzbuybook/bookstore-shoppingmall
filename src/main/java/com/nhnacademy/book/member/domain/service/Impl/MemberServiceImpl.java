@@ -1,6 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
 import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.MemberAuth;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
@@ -8,6 +9,8 @@ import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
+import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
+import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -27,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberGradeRepository memberGradeRepository;
     private final MemberStatusRepository memberStatusRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberAuthRepository memberAuthRepository;
+
 
     //회원 생성
     @Override
@@ -131,6 +137,14 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
 
+        List<MemberAuth> memberAuthList = memberAuthRepository.findByMember(member);
+
+        if (memberAuthList.isEmpty()) {
+            throw new RuntimeException("해당 멤버에 대한 권한 정보를 찾을 수 없습니다");
+        }
+
+        String authName = memberAuthList.get(0).getAuth().getAuthName();
+
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
 //        memberEmailResponseDto.setName(member.getName());
 //        memberEmailResponseDto.setPhone(member.getPhone());
@@ -139,7 +153,7 @@ public class MemberServiceImpl implements MemberService {
 //        memberEmailResponseDto.setBirth(member.getBirth());
 //        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
 //        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
-        memberEmailResponseDto.setAuthName(member.getMemberGrade().getMemberGradeName());  // 권한 정보 추가
+        memberEmailResponseDto.setAuthName(authName);// 권한 정보 추가
 
         return memberEmailResponseDto;
 
