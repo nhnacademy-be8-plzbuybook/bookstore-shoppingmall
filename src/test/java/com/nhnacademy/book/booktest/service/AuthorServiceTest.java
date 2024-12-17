@@ -100,6 +100,7 @@ public class AuthorServiceTest {
         authorService.deleteAuthorById(5L);
         Mockito.verify(authorRepository, Mockito.times(1)).deleteById(5L);
 
+
     }
 
 
