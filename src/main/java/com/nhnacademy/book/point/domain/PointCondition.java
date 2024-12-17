@@ -1,5 +1,6 @@
 package com.nhnacademy.book.point.domain;
 
+import com.nhnacademy.book.converter.PointConditionNameConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,9 @@ public class PointCondition {
     @Column(nullable = false)
     private Long pointConditionId;
 
-    @Enumerated(EnumType.STRING)
+
+    @Convert(converter = PointConditionNameConverter.class)
+//    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PointConditionName name;
 

@@ -23,7 +23,7 @@ public class PasswordConverterTest {
 
     @BeforeEach
     public void setUp() {
-        plainPassword = "password";  // 테스트용 평문 패스워드
+        plainPassword = "password";
     }
 
     @Configuration
