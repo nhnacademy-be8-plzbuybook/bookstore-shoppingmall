@@ -251,14 +251,24 @@ public class AladinApiService {
             String[] categoryParts = categoryPath.split(">");
             String lastCategoryName = categoryParts[categoryParts.length - 1].trim();
 
-            // 최하위 카테고리를 Book과 연결
-            Category category = categoryRepository.findByCategoryNameAndParentCategory(lastCategoryName, null)
-                    .orElseThrow(() -> new IllegalStateException("카테고리 저장 실패: " + lastCategoryName));
+            // 최하위 카테고리를 찾거나 새로 생성
+            Category category = categoryRepository
+                    .findByCategoryNameAndParentCategory(lastCategoryName, null)
+                    .orElseGet(() -> {
+                        System.out.println("최하위 카테고리 생성: " + lastCategoryName);
+                        Category newCategory = new Category();
+                        newCategory.setCategoryName(lastCategoryName);
+                        newCategory.setCategoryDepth(categoryParts.length);
+                        newCategory.setParentCategory(null); // 부모 없음
+                        return categoryRepository.save(newCategory);
+                    });
 
+            // 도서에 카테고리 연결
             book.addCategory(category);
             System.out.println("도서에 연결된 최하위 카테고리: " + lastCategoryName);
         }
     }
+
 
 
     /**
@@ -340,4 +350,95 @@ public class AladinApiService {
         sellingBook.setSellingBookViewCount(0L);
         return sellingBook;
     }
+
+    @Transactional
+    public void saveBooksByItemIds(List<String> itemIds) {
+        itemIds.forEach(itemId -> {
+            // 동적 URL 생성
+            String url = buildUrl(aladinLookupUrl, "&itemIdType=ItemId", "&ItemId=", itemId);
+
+            // API 호출
+            AladinBookListResponse response = callAladinApi(url);
+
+            // 응답 처리
+            if (response != null && response.getBooks() != null) {
+                response.getBooks().forEach(this::processBookData);
+                System.out.println("저장된 ItemId 도서: " + itemId);
+            } else {
+                System.err.println("ItemId 도서 조회 실패: " + itemId);
+            }
+        });
+    }
+    /**
+     * 동적으로 URL을 생성하는 유틸리티 메서드.
+     * @param baseUrl 기본 URL
+     * @param params 추가 파라미터 배열
+     * @return 완성된 URL
+     */
+    private String buildUrl(String baseUrl, String... params) {
+        StringBuilder url = new StringBuilder(baseUrl);
+        for (String param : params) {
+            url.append(param);
+        }
+        return url.toString();
+    }
+
+
+    /**
+     * API를 호출하고 응답을 처리하는 유틸리티 메서드.
+     * @param url 호출할 URL
+     * @return API 응답 객체
+     */
+    private AladinBookListResponse callAladinApi(String url) {
+        try {
+            System.out.println("API 호출 URL: " + url);
+            return restTemplate.getForObject(url, AladinBookListResponse.class);
+        } catch (Exception e) {
+            System.err.println("API 호출 실패: " + url + ", 오류: " + e.getMessage());
+            return null; // 실패 시 null 반환
+        }
+    }
+
+    @Transactional
+    public void saveBooksFromListApiDynamic(int startIndex, int maxResults) {
+        int savedCount = 0;
+
+        try {
+            System.out.println("동적 파라미터를 통한 데이터 가져오기 시작.");
+
+            for (int i = 0; i < 5; i++) { // 예: 최대 5번까지 반복 (파라미터 변경)
+                String dynamicUrl = String.format("%s&start=%d&MaxResults=%d", aladinApiUrl, startIndex, maxResults);
+
+                System.out.println("API 호출 URL: " + dynamicUrl);
+
+                AladinBookListResponse response = callAladinApi(dynamicUrl);
+
+                if (response == null || response.getBooks() == null || response.getBooks().isEmpty()) {
+                    System.out.println("가져올 데이터가 없습니다. 종료.");
+                    break;
+                }
+
+                // 중복 검사 후 데이터 저장
+                for (AladinResponse book : response.getBooks()) {
+                    if (!bookRepository.existsByBookIsbn13(book.getIsbn13())) {
+                        processBookData(book);
+                        savedCount++;
+                    } else {
+                        System.out.println("중복된 책 (ISBN13: " + book.getIsbn13() + ") 스킵됨.");
+                    }
+                }
+
+                // 다음 인덱스 설정
+                startIndex += maxResults;
+                System.out.println("페이지 처리 완료, 다음 시작 인덱스: " + startIndex);
+            }
+
+        } catch (Exception e) {
+            System.err.println("API 호출 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("총 저장된 책 수: " + savedCount);
+    }
+
 }

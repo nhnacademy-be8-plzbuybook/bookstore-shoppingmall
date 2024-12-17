@@ -71,10 +71,14 @@ eureka:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
 aladin:
   api:
-    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101&OptResult=cover,category
+    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101
     lookup:
-      url: http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ItemId&ItemId=353980745&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
+      url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101&OptResult=cover,category
+
+    #https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&output=js&Version=20131101
+      #url: http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ItemId&ItemId=353980745&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
 
 #      http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ItemId&ItemId=353980745,353980794&output=xml&Version=20131101&OptResult=ebookList,usedList,reviewList
-# https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101
-    #url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"
+# https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101 - 51개
+    #url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101" --
+    # https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101&OptResult=cover,category
