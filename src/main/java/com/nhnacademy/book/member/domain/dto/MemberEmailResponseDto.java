@@ -32,6 +32,9 @@ public class MemberEmailResponseDto {
     private String email;
 
     //권한
+    @NotBlank
+    @Size(max = 100)
+    private String authName;
 
     //비밀번호
     @NotBlank

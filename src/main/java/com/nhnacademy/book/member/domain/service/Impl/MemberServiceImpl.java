@@ -139,6 +139,7 @@ public class MemberServiceImpl implements MemberService {
 //        memberEmailResponseDto.setBirth(member.getBirth());
 //        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
 //        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
+        memberEmailResponseDto.setAuthName(member.getMemberGrade().getMemberGradeName());  // 권한 정보 추가
 
         return memberEmailResponseDto;
 
