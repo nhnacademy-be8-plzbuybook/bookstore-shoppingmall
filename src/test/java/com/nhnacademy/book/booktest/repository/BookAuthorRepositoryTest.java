@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @DataJpaTest
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 public class BookAuthorRepositoryTest {
 
     @Autowired

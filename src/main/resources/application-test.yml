@@ -1,8 +1,12 @@
 # 테스트 환경 전용 설정 (application-test.yml)
+server:
+  port: 8090
 spring:
   config:
     activate:
       on-profile: test
+
+
 
   application:
     name: bookstore-back1-test
@@ -21,6 +25,13 @@ spring:
       hibernate:
         format_sql: false
         show_sql: false
+
+
+  h2:
+    console:
+      enabled: true  # H2 콘솔 활성화
+      path: /h2-console  # H2 콘솔 접근 경로
+
 
 logging:
     level:

@@ -85,10 +85,10 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-    // 알라딘 API 호출 후 책 저장
-    @PostMapping("/sync")
-    public ResponseEntity<Void> syncBooks() {
-        aladinApiService.saveBooksFromAladinApi();
-        return ResponseEntity.ok().build();
-    }
+//    // 알라딘 API 호출 후 책 저장
+//    @PostMapping("/sync/pathvaluer?배열로 받기 쿼리 파라미터에 담긴 횟수만큼 받기 -> isbn 10번 호출하면 ㅇㅇ/ 지금 있는 책은 똑같은거만 들어가니깡,,,,,,,/알라딘 ap i 알라딘에서 사용하는 식별번호로  ")
+//    public ResponseEntity<Void> syncBooks() {
+//        aladinApiService.saveBooksFromAladinApi();
+//        return ResponseEntity.ok().build();
+//    }
 }
