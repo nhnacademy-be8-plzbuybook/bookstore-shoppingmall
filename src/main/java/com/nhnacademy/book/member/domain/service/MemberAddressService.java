@@ -10,5 +10,6 @@ public interface MemberAddressService {
     MemberAddressResponseDto addAddress(Long memberId, MemberAddressRequestDto addressRequestDto);
     List<MemberAddressResponseDto> getAddressList(Long memberId);
     MemberAddressResponseDto getAddress(Long memberId, Long addressId);
-    MemberAddressResponseDto updateAddress(Long memberId, Long AddressId, MemberAddressRequestDto addressRequestDto);
+    MemberAddressResponseDto updateAddress(Long memberId, Long addressId, MemberAddressRequestDto addressRequestDto);
+    void deleteAddress(Long memberId, Long addressId);
 }

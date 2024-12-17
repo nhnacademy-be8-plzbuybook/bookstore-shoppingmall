@@ -10,6 +10,7 @@ import com.nhnacademy.book.member.domain.repository.MemberAddressRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberAddressService;
 import com.nhnacademy.book.member.domain.service.MemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -117,9 +118,68 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
     }
 
-//    public MemberAddressResponseDto updateAddress(Long memberId, Long AddressId, MemberAddressRequestDto addressRequestDto) {
-//
-//    }
+    @Transactional
+    @Override
+    public MemberAddressResponseDto updateAddress(Long memberId, Long addressId, MemberAddressRequestDto addressRequestDto) {
+
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
+        MemberAddress existingAddress = memberAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+
+        existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
+        existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
+        existingAddress.setZipCode(addressRequestDto.getZipCode());
+        existingAddress.setNickName(addressRequestDto.getNickName());
+        existingAddress.setRecipient(addressRequestDto.getRecipient());
+        existingAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
+
+        if (addressRequestDto.getDefaultAddress() != null && addressRequestDto.getDefaultAddress()) {
+            memberAddressRepository.findByMemberId(memberId).stream()
+                    .filter(memberAddress -> memberAddress.getDefaultAddress())
+                    .forEach(memberAddress -> memberAddress.setDefaultAddress(false));
+            existingAddress.setDefaultAddress(true);
+        }
+
+        MemberAddress updateAddress = memberAddressRepository.save(existingAddress);
+
+        return new MemberAddressResponseDto(
+                updateAddress.getMemberAddressId(),
+                updateAddress.getDefaultAddress(),
+                updateAddress.getLocationAddress(),
+                updateAddress.getDetailAddress(),
+                updateAddress.getZipCode(),
+                updateAddress.getNickName(),
+                updateAddress.getRecipient(),
+                updateAddress.getRecipientPhone()
+        );
+
+
+    }
+    @Override
+    public void deleteAddress(Long memberId, Long addressId) {
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
+        MemberAddress existingAddress = memberAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+
+    // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
+    if (existingAddress.getDefaultAddress()) {
+        List<MemberAddress> memberAddress = memberAddressRepository.findByMemberId(memberId);
+
+        if (!memberAddress.isEmpty()) {
+            // 첫번째 주소를 기본 주소로 설정
+            MemberAddress newDefaultAddress = memberAddress.stream()
+                    .filter(address -> !address.getDefaultAddress())
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(("기본 주소로 설정할 다른 주소가 없습니다")));
+                    newDefaultAddress.setDefaultAddress(true);
+                    memberAddressRepository.save(newDefaultAddress);
+        }
+    }
+    memberAddressRepository.delete(existingAddress);
+
+    }
 
 
 }
