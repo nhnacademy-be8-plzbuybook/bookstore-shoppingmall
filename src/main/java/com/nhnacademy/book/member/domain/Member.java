@@ -1,5 +1,6 @@
 package com.nhnacademy.book.member.domain;
 
+import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,7 +46,8 @@ public class Member {
     private LocalDate birth;
 
     //비밀번호
-    @Column(nullable = false, length = 100)
+    @Convert(converter = PasswordConverter.class)
+    @Column(nullable = false, length = 200)
     private String password;
 
 

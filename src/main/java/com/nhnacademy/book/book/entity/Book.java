@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.entity;
 
+import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
