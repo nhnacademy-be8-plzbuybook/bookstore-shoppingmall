@@ -112,10 +112,7 @@ Content-Type: application/json
   "defaultAddress": false,
   "locationAddress": "울산광역시 남구 신정로 76",
   "detailAddress": "신정아파트 7동",
-  "zipCode": "44694",
-  "nickName": "할머니집",
-  "recipient": "test8",
-  "recipientPhone": "010-8901-2345"
+  "zipCode": "44694"
 }
 
 ### 배송지 추가 (주소9)
@@ -127,10 +124,7 @@ Content-Type: application/json
   "defaultAddress": false,
   "locationAddress": "강원도 춘천시 중앙로 12",
   "detailAddress": "춘천빌딩 2층",
-  "zipCode": "24362",
-  "nickName": "여행지",
-  "recipient": "test9",
-  "recipientPhone": "010-9012-3456"
+  "zipCode": "24362"
 }
 
 ### 배송지 추가 (주소10)
@@ -167,7 +161,7 @@ Content-Type: application/json
 GET http://localhost:8090/api/members/1/address
 
 ### 배송지 상세 조회
-GET http://localhost:8090/api/members/1/address/6
+GET http://localhost:8090/api/members/1/address/5
 
 
 
