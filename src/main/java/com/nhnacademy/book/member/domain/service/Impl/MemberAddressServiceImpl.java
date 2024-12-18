@@ -35,8 +35,8 @@ public class MemberAddressServiceImpl implements MemberAddressService {
             throw new AddressLimitExceededException("회원은 최대 10개의 주소를 등록할 수 있습니다.");
         }
 
-        // 주소 중복 확인 (도로명 주소와 상세주소가 같을때)
-        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndDefaultAddressAndMember_memberId(
+        // 주소 중복 확인 (도로명 주소와 상세주소가 같을때 중복 처리)
+        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndDetailAddressAndMember_memberId(
                 addressRequestDto.getLocationAddress(), addressRequestDto.getDetailAddress(), memberId);
         if (existingAddress.isPresent()) {
             throw new DuplicateAddressException("해당 주소는 이미 등록되어 있습니다.");
@@ -105,7 +105,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress memberAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
         return new MemberAddressResponseDto(
                 memberAddress.getMemberAddressId(),

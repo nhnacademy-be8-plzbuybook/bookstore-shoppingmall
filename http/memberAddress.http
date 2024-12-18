@@ -3,7 +3,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 1,
   "defaultAddress": true,
   "locationAddress": "광주 동구 필문대로 309",
   "detailAddress": "IT융합대학 4225",
@@ -18,7 +17,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 2,
   "defaultAddress": false,
   "locationAddress": "서울특별시 강남구 테헤란로 152",
   "detailAddress": "강남빌딩 3층",
@@ -28,12 +26,12 @@ Content-Type: application/json
   "recipientPhone": "010-2345-6789"
 }
 
+
 ### 배송지 추가 (주소3)
-POST http://localhost:8090/api/members/1/address
+POST http://localhost:8090/api/members/2/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 3,
   "defaultAddress": false,
   "locationAddress": "부산광역시 해운대구 우동 1408",
   "detailAddress": "동백아파트 102동",
@@ -48,7 +46,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 4,
   "defaultAddress": false,
   "locationAddress": "대구광역시 달서구 월배로 118",
   "detailAddress": "월배빌라 1층",
@@ -63,7 +60,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 5,
   "defaultAddress": false,
   "locationAddress": "인천광역시 남동구 구월로 42",
   "detailAddress": "구월타워 8층",
@@ -78,7 +74,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 6,
   "defaultAddress": false,
   "locationAddress": "경기도 성남시 분당구 성남대로 926",
   "detailAddress": "분당아이파크",
@@ -93,7 +88,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 7,
   "defaultAddress": false,
   "locationAddress": "대전광역시 서구 둔산중로 34",
   "detailAddress": "둔산타워 5층",
@@ -108,7 +102,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 8,
   "defaultAddress": false,
   "locationAddress": "울산광역시 남구 신정로 76",
   "detailAddress": "신정아파트 7동",
@@ -120,7 +113,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 9,
   "defaultAddress": false,
   "locationAddress": "강원도 춘천시 중앙로 12",
   "detailAddress": "춘천빌딩 2층",
@@ -132,7 +124,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 10,
   "defaultAddress": false,
   "locationAddress": "전라북도 전주시 완산구 서학로 25",
   "detailAddress": "서학빌라 4층",
@@ -147,7 +138,6 @@ POST http://localhost:8090/api/members/1/address
 Content-Type: application/json
 
 {
-  "memberAddressId": 11,
   "defaultAddress": false,
   "locationAddress": "제주특별자치도 제주시 연동 270-25",
   "detailAddress": "제주타운 7층",
@@ -162,7 +152,6 @@ GET http://localhost:8090/api/members/1/address
 
 ### 배송지 상세 조회
 GET http://localhost:8090/api/members/1/address/5
-
 
 
 ### 배송지 수정
@@ -181,6 +170,6 @@ Content-Type: application/json
 }
 
 ### 배송지 삭제
-DELETE http://localhost:8090/api/members/1/address/5
+DELETE http://localhost:8090/api/members/1/address/3
 
 

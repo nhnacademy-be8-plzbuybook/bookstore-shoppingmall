@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface MemberAddressRepository extends JpaRepository<MemberAddress, Long> {
     List<MemberAddress> findByMember_memberId(Long memberId);
-    Optional<MemberAddress> findByLocationAddressAndDefaultAddressAndMember_memberId(String locationAddress, String detailAddress, Long memberId);
+    Optional<MemberAddress> findByLocationAddressAndDetailAddressAndMember_memberId(String locationAddress, String detailAddress, Long memberId);
 
 }
