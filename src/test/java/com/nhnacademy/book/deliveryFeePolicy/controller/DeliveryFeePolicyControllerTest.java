@@ -53,7 +53,8 @@ class DeliveryFeePolicyControllerTest {
         when(deliveryFeePolicyService.getDeliveryFeePolicy(id)).thenThrow(new NotFoundException(id + " policy not found!"));
 
         //when
-        MvcResult result = mockMvc.perform(get(url))
+        MvcResult result = mockMvc.perform(get(url)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
 
@@ -74,7 +75,8 @@ class DeliveryFeePolicyControllerTest {
         String resultContent = objectMapper.writeValueAsString(existingPolicy);
 
         //when
-        mockMvc.perform(get(url))
+        mockMvc.perform(get(url)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(resultContent));
     }
@@ -92,6 +94,7 @@ class DeliveryFeePolicyControllerTest {
 
         //when
         mockMvc.perform(post(BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveRequest)))
                 .andExpect(status().isCreated())
@@ -109,6 +112,7 @@ class DeliveryFeePolicyControllerTest {
 
         //when
         MvcResult result = mockMvc.perform(post(BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveRequest)))
                 .andExpect(status().isConflict())
@@ -131,6 +135,7 @@ class DeliveryFeePolicyControllerTest {
 
         //when
         mockMvc.perform(put(url)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(updateRequest)))
                 .andExpect(status().isOk())
@@ -150,6 +155,7 @@ class DeliveryFeePolicyControllerTest {
 
         //when
         MvcResult result = mockMvc.perform(put(url)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(updateRequest)))
                 .andExpect(status().isNotFound())
@@ -168,7 +174,8 @@ class DeliveryFeePolicyControllerTest {
 
         doNothing().when(deliveryFeePolicyService).removeDeliveryFeePolicy(id);
 
-        mockMvc.perform(delete(url))
+        mockMvc.perform(delete(url)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 
@@ -179,7 +186,8 @@ class DeliveryFeePolicyControllerTest {
 
         doThrow(new NotFoundException(id + " policy not found!")).when(deliveryFeePolicyService).removeDeliveryFeePolicy(id);
 
-        MvcResult result = mockMvc.perform(delete(url))
+        MvcResult result = mockMvc.perform(delete(url)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
 
@@ -203,6 +211,7 @@ class DeliveryFeePolicyControllerTest {
         DeliveryFeeCalculateResponseDto calculateResponse = new DeliveryFeeCalculateResponseDto(freeFee);
         //when
         mockMvc.perform(post(url)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(calculateRequest)))
                 .andExpect(status().isOk())
@@ -223,6 +232,7 @@ class DeliveryFeePolicyControllerTest {
         DeliveryFeeCalculateResponseDto calculateResponse = new DeliveryFeeCalculateResponseDto(defaultFee);
         //when
         mockMvc.perform(post(url)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(calculateRequest)))
                 .andExpect(status().isOk())
@@ -244,6 +254,7 @@ class DeliveryFeePolicyControllerTest {
 
         //when
         MvcResult result = mockMvc.perform(post(url)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(calculateRequest)))
                 .andExpect(status().isNotFound())
