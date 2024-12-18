@@ -26,9 +26,5 @@ public class MemberAddressServiceImplTest {
     @InjectMocks
     private MemberAddressServiceImpl memberAddressService;
 
-    private Long memberId = 1L;
-    private MemberAddressRequestDto addressRequestDto;
-    private MemberAddress memberAddress;
-
 
 }

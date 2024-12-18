@@ -26,9 +26,9 @@ public class MemberAuthController {
 
     // 회원 권한 조회
     @GetMapping("/members/{member_id}/auths")
-    public ResponseEntity<List<Long>> getAuthsByMember(@PathVariable Long member_id) {
-        List<Long> auths = memberAuthService.getAuthsByMember(member_id);
-        return new ResponseEntity<>(auths, HttpStatus.OK);
+    public ResponseEntity<List<String>> getAuthNameByMember(@PathVariable Long member_id) {
+        List<String> authNames = memberAuthService.getAuthNameByMember(member_id);
+        return new ResponseEntity<>(authNames, HttpStatus.OK);
     }
 
     // 회원 권한 수정

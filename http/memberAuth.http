@@ -39,7 +39,7 @@ Content-Type: application/json
 
 {
   "memberId": 1,
-  "authId": 2
+  "authId": 1
 }
 
 
@@ -52,9 +52,11 @@ PUT http://localhost:8090/api/members/1/auths
 Content-Type: application/json
 
 {
-  "authId": 3
+  "memberId": 1,
+  "authId": 2
+
 }
 
 ### 회원 권한 삭제
-DELETE http://localhost:8090/api/members/{member_id}/auths/{auth_id}
+DELETE http://localhost:8090/api/members/1/auths/1
 Content-Type: application/json

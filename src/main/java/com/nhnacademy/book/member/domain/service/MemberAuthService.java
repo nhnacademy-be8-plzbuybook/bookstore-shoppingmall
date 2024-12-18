@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface MemberAuthService {
     MemberAuthResponseDto assignAuthToMember(MemberAuthRequestDto requestDto);
-    List<Long> getAuthsByMember(Long memberId);
+//    List<Long> getAuthsByMember(Long memberId);
+    List<String> getAuthNameByMember(Long memberId);
     MemberAuthResponseDto updateMemberAuth(MemberAuthRequestDto requestDto);
     void deleteAuthFromMember(Long memberId, Long authId);
 }
