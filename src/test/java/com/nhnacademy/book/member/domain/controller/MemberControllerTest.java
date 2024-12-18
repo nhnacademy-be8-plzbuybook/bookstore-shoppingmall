@@ -107,6 +107,8 @@ class MemberControllerTest {
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
         memberEmailResponseDto.setEmail(email);
         memberEmailResponseDto.setPassword("1111");
+        memberEmailResponseDto.setAuthName("ADMIN");
+
 
         when(memberService.getMemberByEmail(email)).thenReturn(memberEmailResponseDto);
 
@@ -116,6 +118,7 @@ class MemberControllerTest {
         assertNotNull(responseEntity.getBody());
         assertEquals(memberEmailResponseDto.getEmail(), responseEntity.getBody().getEmail());
         assertEquals(memberEmailResponseDto.getPassword(), responseEntity.getBody().getPassword());
+        assertEquals(memberEmailResponseDto.getAuthName(), responseEntity.getBody().getAuthName());
     }
 
     @Test
