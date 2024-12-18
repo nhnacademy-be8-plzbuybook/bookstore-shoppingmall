@@ -19,14 +19,156 @@ Content-Type: application/json
 
 {
   "memberAddressId": 2,
-  "defaultAddress": true,
-  "locationAddress": "광주 동구 필문대로 309",
-  "detailAddress": "IT융합대학",
-  "zipCode": "61452",
-  "nickName": "집",
-  "recipient": "test1",
-  "recipientPhone": "010-1234-5678"
+  "defaultAddress": false,
+  "locationAddress": "서울특별시 강남구 테헤란로 152",
+  "detailAddress": "강남빌딩 3층",
+  "zipCode": "06236",
+  "nickName": "사무실",
+  "recipient": "test2",
+  "recipientPhone": "010-2345-6789"
 }
+
+### 배송지 추가 (주소3)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 3,
+  "defaultAddress": false,
+  "locationAddress": "부산광역시 해운대구 우동 1408",
+  "detailAddress": "동백아파트 102동",
+  "zipCode": "48058",
+  "nickName": "집",
+  "recipient": "test3",
+  "recipientPhone": "010-3456-7890"
+}
+
+### 배송지 추가 (주소4)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 4,
+  "defaultAddress": false,
+  "locationAddress": "대구광역시 달서구 월배로 118",
+  "detailAddress": "월배빌라 1층",
+  "zipCode": "42714",
+  "nickName": "친구집",
+  "recipient": "test4",
+  "recipientPhone": "010-4567-8901"
+}
+
+### 배송지 추가 (주소5)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 5,
+  "defaultAddress": false,
+  "locationAddress": "인천광역시 남동구 구월로 42",
+  "detailAddress": "구월타워 8층",
+  "zipCode": "21544",
+  "nickName": "사촌집",
+  "recipient": "test5",
+  "recipientPhone": "010-5678-9012"
+}
+
+### 배송지 추가 (주소6)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 6,
+  "defaultAddress": false,
+  "locationAddress": "경기도 성남시 분당구 성남대로 926",
+  "detailAddress": "분당아이파크",
+  "zipCode": "13592",
+  "nickName": "본가",
+  "recipient": "test6",
+  "recipientPhone": "010-6789-0123"
+}
+
+### 배송지 추가 (주소7)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 7,
+  "defaultAddress": false,
+  "locationAddress": "대전광역시 서구 둔산중로 34",
+  "detailAddress": "둔산타워 5층",
+  "zipCode": "35232",
+  "nickName": "작업실",
+  "recipient": "test7",
+  "recipientPhone": "010-7890-1234"
+}
+
+### 배송지 추가 (주소8)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 8,
+  "defaultAddress": false,
+  "locationAddress": "울산광역시 남구 신정로 76",
+  "detailAddress": "신정아파트 7동",
+  "zipCode": "44694",
+  "nickName": "할머니집",
+  "recipient": "test8",
+  "recipientPhone": "010-8901-2345"
+}
+
+### 배송지 추가 (주소9)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 9,
+  "defaultAddress": false,
+  "locationAddress": "강원도 춘천시 중앙로 12",
+  "detailAddress": "춘천빌딩 2층",
+  "zipCode": "24362",
+  "nickName": "여행지",
+  "recipient": "test9",
+  "recipientPhone": "010-9012-3456"
+}
+
+### 배송지 추가 (주소10)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 10,
+  "defaultAddress": false,
+  "locationAddress": "전라북도 전주시 완산구 서학로 25",
+  "detailAddress": "서학빌라 4층",
+  "zipCode": "55045",
+  "nickName": "전주집",
+  "recipient": "test10",
+  "recipientPhone": "010-0123-4567"
+}
+
+### 배송지 추가 (주소11)
+POST http://localhost:8090/api/members/1/address
+Content-Type: application/json
+
+{
+  "memberAddressId": 11,
+  "defaultAddress": false,
+  "locationAddress": "제주특별자치도 제주시 연동 270-25",
+  "detailAddress": "제주타운 7층",
+  "zipCode": "63124",
+  "nickName": "제주집",
+  "recipient": "test11",
+  "recipientPhone": "010-1234-1111"
+}
+
+### 배송지 목록 조회
+GET http://localhost:8090/api/members/1/address
+
+### 배송지 상세 조회
+GET http://localhost:8090/api/members/1/address/6
+
 
 
 ### 배송지 수정
@@ -37,14 +179,14 @@ Content-Type: application/json
   "memberAddressId": 1,
   "defaultAddress": true,
   "locationAddress": "광주 동구 필문대로 309",
-  "detailAddress": "IT융합대학",
+  "detailAddress": "공과대학",
   "zipCode": "61452",
-  "nickName": "집",
+  "nickName": "회사",
   "recipient": "test1",
   "recipientPhone": "010-1234-5678"
 }
 
 ### 배송지 삭제
-DELETE http://localhost:8090/api/members/1/address/1
+DELETE http://localhost:8090/api/members/1/address/5
 
 

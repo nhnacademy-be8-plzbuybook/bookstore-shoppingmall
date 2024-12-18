@@ -44,11 +44,11 @@ Content-Type: application/json
 
 
 ### 회원 권한 조회
-GET http://localhost:8090/api/members/{member_id}/auths
+GET http://localhost:8090/api/members/1/auths
 
 
 ### 회원 권한 수정
-PUT http://localhost:8090/api/members/{member_id}/auths
+PUT http://localhost:8090/api/members/1/auths
 Content-Type: application/json
 
 {

@@ -1,5 +1,6 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
+import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAddress;
 import com.nhnacademy.book.member.domain.dto.MemberAddressRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberAddressResponseDto;
@@ -27,7 +28,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     @Override
     public MemberAddressResponseDto addAddress(Long memberId, MemberAddressRequestDto addressRequestDto) {
         // 회원 존재 여부 확인
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         List<MemberAddress> existingAddresses = memberAddressRepository.findByMember_memberId(memberId);
         if (existingAddresses.size() >= 10) {
