@@ -115,7 +115,6 @@ public class BookServiceImpl implements BookService {
         }
         Category category = new Category(categoryRequest.getCategoryName(), 1, parentCategory);
         categoryRepository.save(category);
-        System.out.println("카테고리 등록 완료: " + category.getCategoryName());
     }
 
     // 도서 삭제 기능 (관리자)

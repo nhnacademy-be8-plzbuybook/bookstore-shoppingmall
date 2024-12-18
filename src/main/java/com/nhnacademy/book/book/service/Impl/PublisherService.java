@@ -1,41 +1,64 @@
 package com.nhnacademy.book.book.service.Impl;
 
-
+import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
+import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFound;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class PublisherService {
 
     private final PublisherRepository publisherRepository;
+
     public PublisherService(PublisherRepository publisherRepository) {
         this.publisherRepository = publisherRepository;
     }
 
-    public Publisher createPublisher(Publisher publisher) {
-        if(publisher.getPublisherName().isEmpty()){
-            throw new PublisherNotFound("publisher name is empty");
+    // Publisher 생성
+    public PublisherResponseDto createPublisher(PublisherRequestDto publisherRequestDto) {
+        // PublisherRequestDto로부터 Publisher 엔티티 생성
+        if (publisherRequestDto.getPublisherName().isEmpty()) {
+            throw new PublisherNotFound("Publisher name is empty");
         }
 
-        return publisherRepository.save(publisher);
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName(publisherRequestDto.getPublisherName());
+
+        // 저장
+        Publisher savedPublisher = publisherRepository.save(publisher);
+
+        // PublisherResponseDto로 변환하여 반환
+        return convertToDto(savedPublisher);
     }
 
-    public void deletePublisher(Publisher publisher) {
-        if(publisher.getPublisherId() == null || publisher.getPublisherName().isEmpty()){
-            throw new PublisherNotFound("publisher is empty");
+    // Publisher 삭제
+    public void deletePublisher(PublisherRequestDto publisherRequestDto) {
+        Publisher publisher = publisherRepository.findById(publisherRequestDto.getPublisherId())
+                .orElseThrow(() -> new PublisherNotFound("Publisher not found"));
+
+        if (publisher.getPublisherId() == null || publisher.getPublisherName().isEmpty()) {
+            throw new PublisherNotFound("Publisher is empty");
         }
 
         publisherRepository.delete(publisher);
     }
 
-    public Publisher findPublisherById(Long publisherId) {
-        return publisherRepository.findById(publisherId)
-                .orElseThrow(() -> new PublisherNotFound("publisher not found"));
+    // Publisher 조회
+    public PublisherResponseDto findPublisherById(Long publisherId) {
+        Publisher publisher = publisherRepository.findById(publisherId)
+                .orElseThrow(() -> new PublisherNotFound("Publisher not found"));
 
+        // PublisherResponseDto로 변환하여 반환
+        return convertToDto(publisher);
+    }
+
+    // Publisher -> PublisherResponseDto 변환
+    private PublisherResponseDto convertToDto(Publisher publisher) {
+        PublisherResponseDto responseDto = new PublisherResponseDto();
+        responseDto.setPublisherId(publisher.getPublisherId());
+        responseDto.setPublisherName(publisher.getPublisherName());
+        return responseDto;
     }
 }
