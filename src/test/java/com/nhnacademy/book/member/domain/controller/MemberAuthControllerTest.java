@@ -59,7 +59,9 @@ public class MemberAuthControllerTest {
 
         mockMvc.perform(post("/api/members/auths")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.memberId").value(responseDto.getMemberId()))
                 .andExpect(jsonPath("$.authId").value(responseDto.getAuthId()));
@@ -73,7 +75,9 @@ public class MemberAuthControllerTest {
         when(memberAuthService.getAuthsByMember(memberId)).thenReturn(auths);
 
         // When & Then
-        mockMvc.perform(get("/api/members/{member_id}/auths", memberId))
+        mockMvc.perform(get("/api/members/{member_id}/auths", memberId)
+                        .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]").value(101))
                 .andExpect(jsonPath("$[1]").value(102));
@@ -96,7 +100,9 @@ public class MemberAuthControllerTest {
         // When & Then
         mockMvc.perform(put("/api/members/{member_id}/auths", memberId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(responseDto.getMemberId()))
                 .andExpect(jsonPath("$.authId").value(responseDto.getAuthId()));

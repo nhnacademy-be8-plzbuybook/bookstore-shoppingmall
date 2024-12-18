@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.service.AladinApiService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

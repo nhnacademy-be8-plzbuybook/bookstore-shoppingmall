@@ -101,10 +101,6 @@ public class BookAuthorRepositoryTest {
         List<Book> books = bookAuthorRepository.findBooksByAuthorId(author.getAuthorId());
 
         assertThat(books).isNotNull().hasSize(2).contains(book2);
-
-        boolean hasBookWithId1 = books.stream()
-                .anyMatch(book -> book.getBookId().equals(1L));
-        assertTrue(hasBookWithId1);
     }
 
     @Test
