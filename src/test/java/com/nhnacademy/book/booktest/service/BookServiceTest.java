@@ -23,15 +23,7 @@ public class BookServiceTest {
     private BookRepository bookRepository;
 
 
-//    @Test
-//    void registerBook() {
-//
-//        BookRegisterDto registerDto = new BookRegisterDto();
-//        registerDto.setBookDescription("test book description");
-//        registerDto.setBookTitle("test book title");
-//        registerDto.setBookIndex("test book index");
-//        registerDto.setBookIsbn13("test book isbn 13");
-//    }
+
 
 
 }

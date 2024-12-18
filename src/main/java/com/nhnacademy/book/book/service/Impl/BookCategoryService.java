@@ -1,6 +1,9 @@
 package com.nhnacademy.book.book.service.Impl;
 
-
+import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
+import com.nhnacademy.book.book.dto.response.BookCategoryResponseDto;
+import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookCategory;
 import com.nhnacademy.book.book.entity.Category;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class BookCategoryService {
@@ -28,51 +32,97 @@ public class BookCategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public BookCategory createBookCategory(Book book, Category category) {
+    public BookCategoryResponseDto createBookCategory(BookCategoryRequestDto bookCategoryRequestDto) {
+        Book book = bookRepository.findById(bookCategoryRequestDto.getBookId())
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        Category category = categoryRepository.findById(bookCategoryRequestDto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
-        if(Objects.isNull(book)){
-            throw new BookNotFoundException("Book not found");
-        } else if(Objects.isNull(category)){
-            throw new CategoryNotFoundException("Category not found");
-        }
-        BookCategory bookCategory = new BookCategory();
-        bookCategory.setBook(book);
-        bookCategory.setCategory(category);
-        return bookCategoryRepository.save(bookCategory);
+        BookCategory bookCategory = new BookCategory(book, category);
+        bookCategory = bookCategoryRepository.save(bookCategory);
 
+        return new BookCategoryResponseDto(
+                bookCategory.getId(),
+                bookCategory.getBook().getBookId(),
+                bookCategory.getBook().getBookTitle(),
+                bookCategory.getCategory().getCategoryId(),
+                bookCategory.getCategory().getCategoryName()
+        );
     }
 
-    public List<Book> findBooksByCategory (Category category) {
-        if(categoryRepository.findById(category.getCategoryId()).isEmpty()){
-            throw new CategoryNotFoundException("Category not found");
-        }
+    public List<BookResponseDto> findBooksByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
         List<Book> books = bookCategoryRepository.findBooksByCategory(category);
-        if(books.isEmpty()){
+
+        if (books.isEmpty()) {
             throw new BookNotFoundException("Books not found");
         }
 
-        return bookCategoryRepository.findBooksByCategory(category);
+        return books.stream()
+                .map(book -> new BookResponseDto(
+                        book.getBookId(),
+                        book.getBookTitle(),
+                        book.getBookPriceStandard(),
+                        book.getBookIsbn13()
+                ))
+                .collect(Collectors.toList());
     }
 
-    public List<Category> findCategoriesByBookId(Long bookId) {
-        if(bookRepository.existsById(bookId)){
-            throw new BookNotFoundException("Book not found");
-        }
-
+    public List<CategoryResponseDto> findCategoriesByBookId(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
 
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(bookId);
 
-        if(categories.isEmpty()){
+        if (categories.isEmpty()) {
             throw new CategoryNotFoundException("Categories not found");
         }
-        return categories;
+
+        // Category 엔티티를 CategoryResponseDto로 변환하여 반환
+        return categories.stream()
+                .map(category -> {
+                    // 자식 카테고리 목록 생성
+                    List<CategoryResponseDto> childCategories = category.getChildrenCategory().stream()
+                            .map(child -> new CategoryResponseDto(
+                                    child.getCategoryId(),
+                                    child.getCategoryName(),
+                                    child.getCategoryDepth(),
+                                    child.getParentCategory() != null ? child.getParentCategory().getCategoryId() : null,
+                                    new ArrayList<>()  // 자식 카테고리의 자식들을 추가할 경우 여기에 추가
+                            ))
+                            .collect(Collectors.toList());
+
+                    return new CategoryResponseDto(
+                            category.getCategoryId(),
+                            category.getCategoryName(),
+                            category.getCategoryDepth(),
+                            category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null,
+                            childCategories
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
-    public List<Book> findBooksByCategoryId(Long categoryId) {
+
+    public List<BookResponseDto> findBooksByCategoryId(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
         List<Book> books = bookCategoryRepository.findBooksByCategoryId(categoryId);
-        if(books.isEmpty()){
+
+        if (books.isEmpty()) {
             throw new BookNotFoundException("Books not found");
         }
-        return books;
+
+        return books.stream()
+                .map(book -> new BookResponseDto(
+                        book.getBookId(),
+                        book.getBookTitle(),
+                        book.getBookPriceStandard(),
+                        book.getBookIsbn13()
+                ))
+                .collect(Collectors.toList());
     }
 }
