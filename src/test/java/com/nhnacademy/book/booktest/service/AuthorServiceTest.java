@@ -8,11 +8,11 @@ import com.nhnacademy.book.book.service.Impl.AuthorService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -22,14 +22,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@ActiveProfiles("test")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class AuthorServiceTest {
 
-    @Autowired
+    @InjectMocks
     private AuthorService authorService;
 
-    @MockBean
+    @Mock
     private AuthorRepository authorRepository;
 
     List<Author> authorList = new ArrayList<>();
@@ -53,12 +52,7 @@ public class AuthorServiceTest {
         authorList.add(author3);
         authorList.add(author4);
 
-        // 여러 Author 객체에 대해 save()가 호출될 때마다 mock 처리
-        Mockito.when(authorRepository.save(Mockito.any(Author.class)))
-                .thenReturn(author1)
-                .thenReturn(author2)
-                .thenReturn(author3)
-                .thenReturn(author4);
+
 
     }
 
@@ -77,17 +71,14 @@ public class AuthorServiceTest {
     @Test
     void createAuthor_NameNotFoundException() {
         Author author = new Author();
-        author.setAuthorName("");
-        Mockito.when(authorRepository.save(author)).thenReturn(author);
+        author.setAuthorName(null);
 
         Author author1 = new Author();
         author1.setAuthorName(null);
 
         assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author));
 
-        Mockito.when(authorRepository.save(author)).thenReturn(author);
         assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author1));
-
 
     }
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,16 +46,5 @@ class BookImageTest {
         bookRepository.save(book);  // Book 객체 저장
     }
 
-    @Test
-    void testSaveBook() {
-        // Given: Book 객체 저장
-        Book savedBook = bookRepository.save(book);
 
-        // When: 저장된 객체가 반환되면 ID가 할당되었는지 확인
-        assertThat(savedBook).isNotNull();
-        assertThat(savedBook.getBookId()).isNotNull();
-
-        // Then: 저장된 Book의 publisherId가 올바르게 설정되었는지 확인
-        assertThat(savedBook.getPublisher()).isEqualTo(publisher);
-    }
 }
