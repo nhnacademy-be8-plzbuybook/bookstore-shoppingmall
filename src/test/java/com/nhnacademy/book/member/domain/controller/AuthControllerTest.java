@@ -51,7 +51,8 @@ public class AuthControllerTest {
         // When & Then
         mockMvc.perform(post("/api/auths")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
+                .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.authId").value(1))
                 .andExpect(jsonPath("$.name").value("ADMIN"));
@@ -64,7 +65,8 @@ public class AuthControllerTest {
         AuthResponseDto responseDto2 = new AuthResponseDto(2L, "USER");
         when(authService.getAllAuths()).thenReturn(Arrays.asList(responseDto, responseDto2));
 
-        mockMvc.perform(get("/api/auths"))
+        mockMvc.perform(get("/api/auths")
+                        .accept(MediaType.APPLICATION_JSON)) // JSON 응답을 기대
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].authId").value(1))
                 .andExpect(jsonPath("$[0].name").value("ADMIN"))
@@ -79,7 +81,8 @@ public class AuthControllerTest {
         when(authService.getAuthById(1L)).thenReturn(Optional.of(responseDto));
 
         // When & Then
-        mockMvc.perform(get("/api/auths/1"))
+        mockMvc.perform(get("/api/auths/1")
+                .accept(MediaType.APPLICATION_JSON)) // JSON 응답을 기대
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.authId").value(1))
                 .andExpect(jsonPath("$.name").value("ADMIN"));
@@ -104,7 +107,8 @@ public class AuthControllerTest {
         // When & Then
         mockMvc.perform(put("/api/auths/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
+                .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.authId").value(1))
                 .andExpect(jsonPath("$.name").value("SUPER_ADMIN"));

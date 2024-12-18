@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
+
 public class AladinApiService {
 
     // 알라딘 API URL (기본 ItemList API URL)
