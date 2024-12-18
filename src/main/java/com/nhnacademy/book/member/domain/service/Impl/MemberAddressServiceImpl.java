@@ -128,7 +128,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
         existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
@@ -164,7 +164,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
     // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
     if (existingAddress.getDefaultAddress()) {

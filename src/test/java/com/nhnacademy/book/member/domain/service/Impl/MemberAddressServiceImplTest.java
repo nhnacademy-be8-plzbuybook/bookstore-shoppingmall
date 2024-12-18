@@ -19,13 +19,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberAddressServiceImplTest {
@@ -41,6 +42,7 @@ public class MemberAddressServiceImplTest {
     @BeforeEach
     public void setUp() {
         addressRequestDto = new MemberAddressRequestDto();
+//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -141,8 +143,8 @@ public class MemberAddressServiceImplTest {
         Long memberId = 1L;
         MemberAddress address1 = new MemberAddress();
         address1.setMemberAddressId(1L);
-        address1.setLocationAddress("광주 동구 필문대로 309");
         address1.setDefaultAddress(true);
+        address1.setLocationAddress("광주 동구 필문대로 309");
         address1.setDetailAddress("IT융합대학 4225");
         address1.setNickName("학교");
         address1.setZipCode("64132");
@@ -151,8 +153,8 @@ public class MemberAddressServiceImplTest {
 
         MemberAddress address2 = new MemberAddress();
         address2.setMemberAddressId(2L);
-        address2.setLocationAddress("서울특별시 강남구 테헤란로 152");
         address2.setDefaultAddress(false);
+        address2.setLocationAddress("서울특별시 강남구 테헤란로 152");
         address2.setDetailAddress("강남빌딩 3층");
         address2.setNickName("회사");
         address2.setZipCode("06236");
@@ -194,8 +196,8 @@ public class MemberAddressServiceImplTest {
 
         MemberAddress address = new MemberAddress();
         address.setMemberAddressId(addressId);
-        address.setLocationAddress("광주 동구 필문대로 309");
         address.setDefaultAddress(true);
+        address.setLocationAddress("광주 동구 필문대로 309");
         address.setDetailAddress("IT융합대학 4225");
         address.setNickName("학교");
         address.setZipCode("64132");
@@ -240,6 +242,178 @@ public class MemberAddressServiceImplTest {
         assertEquals("해당 주소는 존재하지 않습니다.", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("주소 수정_성공")
+    void updateAddress_Success() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+        MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
+        addressRequestDto.setDefaultAddress(true);
+        addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
+        addressRequestDto.setDetailAddress("공과대학");
+        addressRequestDto.setZipCode("64133");
+        addressRequestDto.setNickName("학교");
+        addressRequestDto.setRecipient("test");
+        addressRequestDto.setRecipientPhone("010-1234-5678");
+
+        Member member = new Member();
+        member.setMemberId(memberId);
+
+        // 원래 주소
+        MemberAddress existingAddress = new MemberAddress();
+        existingAddress.setMemberAddressId(addressId);
+        existingAddress.setDefaultAddress(true);
+        existingAddress.setLocationAddress("광주 동구 필문대로 309");
+        existingAddress.setDetailAddress("IT융합대학 4225");
+        existingAddress.setZipCode("64132");
+        existingAddress.setNickName("학교");
+        existingAddress.setRecipient("test");
+        existingAddress.setRecipientPhone("010-1234-5679");
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberAddressRepository.findById(addressId)).thenReturn(Optional.of(existingAddress));
+
+        // 수정된 주소
+        MemberAddress updatedAddress = new MemberAddress();
+        updatedAddress.setMemberAddressId(addressId);
+        updatedAddress.setDefaultAddress(true);
+        updatedAddress.setLocationAddress("광주 동구 필문대로 309");
+        updatedAddress.setDetailAddress("공과대학");
+        updatedAddress.setZipCode("64133");
+        updatedAddress.setNickName("학교");
+        updatedAddress.setRecipient("test");
+        updatedAddress.setRecipientPhone("010-1234-5678");
+
+
+        when(memberAddressRepository.save(existingAddress)).thenReturn(updatedAddress);
+        MemberAddressResponseDto result = memberAddressService.updateAddress(memberId, addressId, addressRequestDto);
+
+        assertNotNull(result);
+        assertEquals(addressId, result.getMemberAddressId());
+        assertEquals("광주 동구 필문대로 309", result.getLocationAddress());
+        assertEquals("학교", result.getNickName());
+        assertTrue(result.getDefaultAddress());
+
+    }
+    @Test
+    @DisplayName("주소 수정_회원이 존재하지 않을 때")
+    void updateAddress_MemberNotFound() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+        MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        MemberNotFoundException exception = assertThrows(MemberNotFoundException.class, () -> {
+            memberAddressService.updateAddress(memberId, addressId, addressRequestDto);
+        });
+
+        assertEquals("회원이 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("주소 수정_주소가 존재하지 않을 때")
+    void updateAddress_IllegalArgumentException() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+        MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(new Member()));
+        when(memberAddressRepository.findById(addressId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            memberAddressService.updateAddress(memberId, addressId, addressRequestDto);
+        });
+
+        assertEquals("해당 주소는 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("주소 삭제_성공")
+    void deleteAddress_Success() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+
+        // 회원 생성
+        Member member = new Member();
+        member.setMemberId(memberId);
+
+        // 기존 주소 생성 (기본 주소)
+        MemberAddress existingAddress = new MemberAddress();
+        existingAddress.setMemberAddressId(addressId);
+        existingAddress.setDefaultAddress(true);
+        existingAddress.setLocationAddress("광주 동구 필문대로 309");
+        existingAddress.setDetailAddress("IT융합대학 4225");
+        existingAddress.setZipCode("64132");
+        existingAddress.setNickName("학교");
+        existingAddress.setRecipient("test");
+        existingAddress.setRecipientPhone("010-1234-5679");
+
+        // 새로운 기본 주소가 아닌 주소 (주소 ID 2번)
+        MemberAddress newDefaultAddress = new MemberAddress();
+        newDefaultAddress.setMemberAddressId(2L);
+        newDefaultAddress.setDefaultAddress(false);
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberAddressRepository.findById(addressId)).thenReturn(Optional.of(existingAddress));
+        when(memberAddressRepository.findByMember_memberId(memberId)).thenReturn(Arrays.asList(existingAddress, newDefaultAddress));
+
+        memberAddressService.deleteAddress(memberId, addressId);
+
+        verify(memberAddressRepository, times(1)).delete(existingAddress);
+        // 기본 주소로 설정된 주소가 true로 변경되었는지 확인
+        assertTrue(newDefaultAddress.getDefaultAddress());
+    }
+
+    @Test
+    @DisplayName("주소 삭제_회원이 존재하지 않을 때")
+    void deleteAddress_MemberNotFound() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        MemberNotFoundException exception = assertThrows(MemberNotFoundException.class, () -> {
+            memberAddressService.deleteAddress(memberId, addressId);
+        });
+
+        assertEquals("회원이 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("주소 삭제_주소가 존재하지 않을 때")
+    void deleteAddress_IllegalArgumentException() {
+        Long memberId = 1L;
+        Long addressId = 1L;
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(new Member()));
+        when(memberAddressRepository.findById(addressId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            memberAddressService.deleteAddress(memberId, addressId);
+        });
+
+        assertEquals("해당 주소는 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("주소 삭제_기본 주소 삭제 시 기본 주소로 설정할 다른 주소가 없을 때")
+    void deleteAddress_NoOtherDefaultAddress () {
+        Long memberId = 1L;
+        Long addressId = 1L;
+
+        Member member = new Member();
+        member.setMemberId(memberId);
+
+        MemberAddress exstingAddress = new MemberAddress();
+        exstingAddress.setMemberAddressId(addressId);
+        exstingAddress.setDefaultAddress(true);
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberAddressRepository.findById(addressId)).thenReturn(Optional.of(exstingAddress));
+        when(memberAddressRepository.findByMember_memberId(memberId)).thenReturn(Collections.singletonList(exstingAddress));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            memberAddressService.deleteAddress(memberId, addressId);
+        });
+
+        assertEquals("기본 주소로 설정할 다른 주소가 없습니다", exception.getMessage());
+    }
 
 }
 
