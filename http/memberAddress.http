@@ -6,7 +6,7 @@ Content-Type: application/json
   "memberAddressId": 1,
   "defaultAddress": true,
   "locationAddress": "광주 동구 필문대로 309",
-  "detailAddress": "IT융합대학",
+  "detailAddress": "IT융합대학 4225",
   "zipCode": "61452",
   "nickName": "학교",
   "recipient": "test1",
