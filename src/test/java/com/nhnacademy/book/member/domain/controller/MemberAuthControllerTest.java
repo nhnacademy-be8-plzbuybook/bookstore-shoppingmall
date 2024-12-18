@@ -71,16 +71,16 @@ public class MemberAuthControllerTest {
     void getAuthsByMember() throws Exception {
         // Given
         Long memberId = 1L;
-        List<Long> auths = Arrays.asList(101L, 102L);
-        when(memberAuthService.getAuthsByMember(memberId)).thenReturn(auths);
+        List<String> authNames = Arrays.asList("ADMIN", "USER");
+        when(memberAuthService.getAuthNameByMember(memberId)).thenReturn(authNames);
 
         // When & Then
         mockMvc.perform(get("/api/members/{member_id}/auths", memberId)
                         .accept(MediaType.APPLICATION_JSON) // JSON 응답을 기대
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]").value(101))
-                .andExpect(jsonPath("$[1]").value(102));
+                .andExpect(jsonPath("$[0]").value("ADMIN"))
+                .andExpect(jsonPath("$[1]").value("USER"));
     }
 
     @Test

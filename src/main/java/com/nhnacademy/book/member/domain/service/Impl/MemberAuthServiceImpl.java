@@ -33,6 +33,11 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         Auth auth = authRepository.findById(requestDto.getAuthId())
                 .orElseThrow(() -> new AuthNotFoundException("권한이 존재하지 않습니다"));
 
+        Optional<MemberAuth> existingMemberAuth = memberAuthRepository.findByMemberAndAuth(member, auth);
+        if (existingMemberAuth.isPresent()) {
+            throw new IllegalArgumentException("이미 권한이 부여되었습니다.");
+        }
+
         MemberAuth memberAuth = new MemberAuth();
         memberAuth.setMember(member);
         memberAuth.setAuth(auth);
@@ -45,16 +50,27 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     }
 
     // 회원의 권한 조회
-    @Override
-    public List<Long> getAuthsByMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다"));
+//    @Override
+//    public List<String> getAuthsByMember(Long memberId) {
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다"));
+//
+//        return memberAuthRepository.findByMember(member)
+//                .stream()
+//                .map(memberAuth -> memberAuth.getAuth().getAuthName())
+//                .collect(Collectors.toList());
+//    }
 
-        return memberAuthRepository.findByMember(member)
-                .stream()
-                .map(memberAuth -> memberAuth.getAuth().getAuthId())
-                .collect(Collectors.toList());
-    }
+        @Override
+        public List<String> getAuthNameByMember(Long memberId) {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다"));
+
+            return memberAuthRepository.findByMember(member)
+                    .stream()
+                    .map(memberAuth -> memberAuth.getAuth().getAuthName())
+                    .collect(Collectors.toList());
+        }
 
     // 회원 권한 수정
     @Override
