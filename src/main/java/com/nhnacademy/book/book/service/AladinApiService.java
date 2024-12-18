@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
-
 public class AladinApiService {
 
     // 알라딘 API URL (기본 ItemList API URL)
@@ -41,6 +40,7 @@ public class AladinApiService {
 
     // 생성자: 필요한 Repository와 RestTemplate 주입
 
+
     public AladinApiService(RestTemplate restTemplate, BookRepository bookRepository,
                             PublisherRepository publisherRepository, CategoryRepository categoryRepository,
                             AuthorRepository authorRepository, SellingBookRepository sellingBookRepository,
@@ -53,6 +53,7 @@ public class AladinApiService {
         this.sellingBookRepository = sellingBookRepository;
         this.bookImageRepository = bookImageRepository;
     }
+
 
 
     /**

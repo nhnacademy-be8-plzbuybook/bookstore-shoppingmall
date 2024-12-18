@@ -40,6 +40,8 @@ logging:
 aladin:
   api:
     url: http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101
+    lookup:
+      url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=50&start=1&SearchTarget=Book&output=js&Version=20131101&OptResult=cover,category
 
 eureka:
     client:
