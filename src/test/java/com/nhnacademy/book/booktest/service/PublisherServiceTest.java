@@ -8,8 +8,12 @@ import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,18 +21,16 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@ActiveProfiles("test")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class PublisherServiceTest {
 
-    @Autowired
+
+    @InjectMocks
     private PublisherService publisherService;
 
-    @MockBean
+    @Mock
     private PublisherRepository publisherRepository;
 
     private Publisher publisher;
@@ -45,7 +47,7 @@ public class PublisherServiceTest {
 
 
         Mockito.verify(publisherRepository, Mockito.times(1)).save(Mockito.any(Publisher.class));
-        assertThat(createdPublisher.getPublisherName()).isEqualTo("test");
+        assertEquals(createdPublisher.getPublisherName(),"test");
 
     }
 
@@ -53,7 +55,7 @@ public class PublisherServiceTest {
     void createPublisher_PublisherNotFound(){
         Publisher publisher = new Publisher();
         publisher.setPublisherName("");
-        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
+//        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
 
         assertThrows(PublisherNotFound.class, () -> publisherService.createPublisher(publisher));
 

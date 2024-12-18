@@ -14,7 +14,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class SellingBookRepositoryTest {
@@ -67,9 +68,9 @@ class SellingBookRepositoryTest {
         SellingBook savedSellingBook = sellingBookRepository.save(testSellingBook);
 
         // 검증
-        assertThat(savedSellingBook.getSellingBookId()).isNotNull();
-        assertThat(savedSellingBook.getSellingBookPrice()).isEqualTo(new BigDecimal("29.99"));
-        assertThat(savedSellingBook.getSellingBookStock()).isEqualTo(100);
-        assertThat(savedSellingBook.getBook().getBookTitle()).isEqualTo("Test Book");
+        assertNotNull(savedSellingBook.getSellingBookId()); // ID가 null이 아닌지 확인
+        assertEquals(new BigDecimal("29.99"), savedSellingBook.getSellingBookPrice()); // 가격이 올바른지 확인
+        assertEquals(100, savedSellingBook.getSellingBookStock()); // 재고 수가 올바른지 확인
+        assertEquals("Test Book", savedSellingBook.getBook().getBookTitle()); // 책 제목이 올바른지 확인
     }
 }

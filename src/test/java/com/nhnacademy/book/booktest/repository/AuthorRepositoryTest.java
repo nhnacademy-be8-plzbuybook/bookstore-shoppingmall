@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -22,8 +23,9 @@ public class AuthorRepositoryTest {
         author.setAuthorName("test author");
         Author jpa = authorRepository.save(author);
 
-        assertThat(jpa.getAuthorId()).isEqualTo(author.getAuthorId());
-        assertThat(jpa.getAuthorName()).isEqualTo(author.getAuthorName());
+        assertEquals(jpa.getAuthorId(),author.getAuthorId());
+
+        assertEquals(jpa.getAuthorName(),author.getAuthorName());
 
     }
 
@@ -45,7 +47,7 @@ public class AuthorRepositoryTest {
         author.setAuthorName("new author");
         authorRepository.save(author);
         Author updatedAuthor = authorRepository.findById(jpa.getAuthorId()).get();
-        assertThat(updatedAuthor.getAuthorName()).isEqualTo("new author");
+        assertEquals(updatedAuthor.getAuthorName(),"new author");
     }
 
 }
