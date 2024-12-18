@@ -47,6 +47,9 @@ public class CategoryServiceTest {
         assertEquals(category.getCategoryId(), 1L);
         assertEquals(category.getCategoryDepth(), 0);
         assertEquals(category.getCategoryName(), "test1");
-
+    }
+    @Test
+    void findCategoryById_CategoryNotFoundException(){
+        Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
     }
 }
