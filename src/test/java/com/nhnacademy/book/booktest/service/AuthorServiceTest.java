@@ -70,15 +70,19 @@ public class AuthorServiceTest {
 
     @Test
     void createAuthor_NameNotFoundException() {
+
         Author author = new Author();
         author.setAuthorName(null);
 
-        Author author1 = new Author();
-        author1.setAuthorName(null);
 
         assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author));
+    }
+    @Test
+    void createAuthor_NameNotFoundException2() {
+        Author author = new Author();
+        author.setAuthorName("");
 
-        assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author1));
+        assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(author));
 
     }
 

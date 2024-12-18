@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-
 public class AladinApiController {
 
     private final AladinApiService aladinApiService;
