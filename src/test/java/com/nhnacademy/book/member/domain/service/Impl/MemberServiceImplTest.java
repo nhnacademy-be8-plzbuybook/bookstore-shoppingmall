@@ -1,13 +1,12 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberGrade;
-import com.nhnacademy.book.member.domain.MemberStatus;
+import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
+import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +48,9 @@ class MemberServiceImplTest {
 
     @Mock
     private MemberStatusRepository memberStatusRepository;
+
+    @Mock
+    private MemberAuthRepository memberAuthRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -288,9 +290,13 @@ class MemberServiceImplTest {
     void getMemberByEmail() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Auth auth = new Auth(1L, "ADMIN");
         Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"Password");
+        MemberAuth memberAuth = new MemberAuth(1L, auth, member);
+        List<MemberAuth> memberAuthList = List.of(memberAuth);
 
         when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(member));
+        when(memberAuthRepository.findByMember(member)).thenReturn(memberAuthList);
         when(passwordEncoder.encode(member.getPassword())).thenReturn("encodedPassword");
 
         var response = memberService.getMemberByEmail("yoonwlgh12@naver.com");
@@ -298,9 +304,33 @@ class MemberServiceImplTest {
         assertNotNull(response);
         assertEquals("yoonwlgh12@naver.com", response.getEmail());
         assertEquals("encodedPassword", response.getPassword());
+        assertEquals("ADMIN", response.getAuthName());
 
         verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+        verify(memberAuthRepository).findByMember(member);
         verify(passwordEncoder).encode(member.getPassword());
+    }
+
+    //비어 있는 권한 리스트 예외 처리 테스트
+    @Test
+    void getMemberByEmail_exception() {
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"Password");
+
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(member));
+        when(memberAuthRepository.findByMember(member)).thenReturn(List.of());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> memberService.getMemberByEmail(member.getEmail()));
+
+        assertEquals("해당 멤버에 대한 권한 정보를 찾을 수 없습니다", exception.getMessage());
+
+        verify(memberRepository).findByEmail(member.getEmail());
+        verify(memberAuthRepository).findByMember(member);
+        verifyNoInteractions(passwordEncoder);
+
+
+
     }
 
     //이메일로 회원을 조회할 때 예외 처리
