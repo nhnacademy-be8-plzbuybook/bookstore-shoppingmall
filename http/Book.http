@@ -1,11 +1,19 @@
-# curl -X POST http://localhost:8090/api/books/sync
+### 프로젝트 실행시키면 무조건 한번 실행되는 http 요청 - 실행 버튼 안눌러도돼.
 POST http://localhost:8090/api/books/sync
 
-###
 
+### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
 POST http://localhost:8090/api/books/sync/isbn
 Content-Type: application/json
 
-["9781234567897", "9782345678901", "9783456789012"]
+[
+  "9791158682934",
+  "9791170403012"
+]
+
+
+
+### 9788936434267이라는 ISBN을 기반으로 알라딘 API를 호출하고, 도서 데이터를 저장합니다. (특정 isbn 으로 저장 가능) / 9788936434120 - 소년이 온다
+POST http://localhost:8090/api/books/sync/itemid/9791158682934
 
 

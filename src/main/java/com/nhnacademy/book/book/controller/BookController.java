@@ -4,8 +4,6 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
-import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.service.AladinApiService;
 import com.nhnacademy.book.book.service.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,6 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @Autowired
-    private AladinApiService aladinApiService;
 
     // 도서 검색 기능
     @GetMapping
@@ -85,10 +81,4 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-//    // 알라딘 API 호출 후 책 저장
-//    @PostMapping("/sync/pathvaluer?배열로 받기 쿼리 파라미터에 담긴 횟수만큼 받기 -> isbn 10번 호출하면 ㅇㅇ/ 지금 있는 책은 똑같은거만 들어가니깡,,,,,,,/알라딘 ap i 알라딘에서 사용하는 식별번호로  ")
-//    public ResponseEntity<Void> syncBooks() {
-//        aladinApiService.saveBooksFromAladinApi();
-//        return ResponseEntity.ok().build();
-//    }
 }

@@ -7,13 +7,16 @@ import com.nhnacademy.book.book.repository.AuthorRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -23,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class PublisherServiceTest {
 
     @Autowired
@@ -32,7 +36,6 @@ public class PublisherServiceTest {
     private PublisherRepository publisherRepository;
 
     private Publisher publisher;
-
 
     @Test
     void createPublisher(){
@@ -49,6 +52,7 @@ public class PublisherServiceTest {
 
     }
 
+    @DisplayName("출판사생성_존재하지않는 예외")
     @Test
     void createPublisher_PublisherNotFound(){
         Publisher publisher = new Publisher();
