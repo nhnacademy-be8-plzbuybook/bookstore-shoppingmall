@@ -4,6 +4,7 @@ import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ class MemberStatusControllerTest {
     private MemberStatusController memberStatusController;
 
     @Test
+    @DisplayName("회원 상태 생성 controller test")
     void createMemberStatus() {
         MemberStatusCreateRequestDto memberStatusCreateRequestDto = new MemberStatusCreateRequestDto();
         memberStatusCreateRequestDto.setMemberStateName("ACTIVE");

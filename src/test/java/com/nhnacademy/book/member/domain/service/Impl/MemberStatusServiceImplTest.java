@@ -4,6 +4,7 @@ import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateMemberStateException;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,7 @@ class MemberStatusServiceImplTest {
     private MemberStatusServiceImpl memberStatusService;
 
     @Test
+    @DisplayName("회원 상태를 성공적으로 저장할 때")
     void createMemberStatus_SuccessfullySavesState() {
         // given
         String stateName = "ACTIVE";
@@ -56,6 +58,7 @@ class MemberStatusServiceImplTest {
     }
 
     @Test
+    @DisplayName("중복된 회원 상태를 추가하려할 때 예외")
     void createMemberStatus_ThrowsExceptionWhenDuplicateStateExists() {
         // given
         String stateName = "ACTIVE";

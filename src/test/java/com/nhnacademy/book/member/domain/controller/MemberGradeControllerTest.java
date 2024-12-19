@@ -3,6 +3,7 @@ package com.nhnacademy.book.member.domain.controller;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
 import com.nhnacademy.book.member.domain.service.MemberGradeService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ class MemberGradeControllerTest {
     private MemberGradeController memberGradeController;
 
     @Test
+    @DisplayName("회원 등급 생성 controller test")
     void createMemberGrade() {
         MemberGradeCreateRequestDto memberGradeCreateRequestDto = new MemberGradeCreateRequestDto();
         memberGradeCreateRequestDto.setMemberGradeName("NORMAL");
