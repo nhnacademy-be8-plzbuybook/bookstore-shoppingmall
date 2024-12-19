@@ -38,7 +38,7 @@ public class Book {
     @JoinColumn(name = "publisher_id", nullable = false)
     private Publisher publisher;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 255)
     private String bookTitle;
 
     @Column(nullable = true, columnDefinition = "TEXT")
