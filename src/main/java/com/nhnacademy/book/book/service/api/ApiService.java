@@ -4,14 +4,15 @@ import com.nhnacademy.book.book.dto.response.aladin.AladinBookListResponse;
 import com.nhnacademy.book.book.dto.response.aladin.AladinResponse;
 import com.nhnacademy.book.book.service.mapping.MappingService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
+@Slf4j
 public class ApiService {
 
     @Value("${aladin.api.url}")
@@ -44,29 +45,29 @@ public class ApiService {
                 // QueryType과 start를 동적으로 추가
                 String listUrl = String.format("%s&QueryType=%s&start=%d&MaxResults=%d",
                         aladinApiUrl, "ItemNewSpecial", startIndex, itemsPerPage);
-                System.out.println("API 호출 중: URL = " + listUrl);
+                log.debug("API 호출 중: URL = {}", listUrl);
 
                 // API 호출
                 AladinBookListResponse response = callAladinApi(listUrl);
 
                 // API 응답 체크
                 if (response == null || response.getBooks() == null || response.getBooks().isEmpty()) {
-                    System.out.println("더 이상 가져올 데이터가 없습니다. 현재 페이지: " + currentPage);
+                    log.debug("더 이상 가져올 데이터가 없습니다. 현재 페이지: {}", currentPage);
                     break;
                 }
 
                 int booksFetched = response.getBooks().size();
                 totalBooksFetched += booksFetched;
-                System.out.println("가져온 데이터 수: " + booksFetched + " (페이지: " + currentPage + ")");
+                log.debug("가져온 데이터 수: {} (페이지: {})", booksFetched, currentPage);
 
                 // 응답 데이터 처리
                 for (AladinResponse bookData : response.getBooks()) {
                     boolean isSaved = mappingService.processBookData(bookData);
                     if (isSaved) {
                         totalBooksSaved++;
-                        System.out.println("저장된 책: " + bookData.getTitle());
+                        log.debug("저장된 책: {}", bookData.getTitle());
                     } else {
-                        System.out.println("중복된 책 스킵: " + bookData.getIsbn13());
+                        log.debug("중복된 책 스킵: {}", bookData.getIsbn13());
                     }
                 }
 
@@ -75,13 +76,12 @@ public class ApiService {
                 currentPage++;
             }
         } catch (Exception e) {
-            System.err.println("API 호출 중 오류 발생: " + e.getMessage());
-            e.printStackTrace();
+            log.error("API 호출 중 오류 발생: {}", e.getMessage(), e);
         }
 
-        System.out.println("총 가져온 책 수: " + totalBooksFetched);
-        System.out.println("총 저장된 책 수: " + totalBooksSaved);
-        System.out.println("도서 데이터 가져오기 및 저장 완료.");
+        log.debug("총 가져온 책 수: {}", totalBooksFetched);
+        log.debug("총 저장된 책 수: {}", totalBooksSaved);
+        log.debug("도서 데이터 가져오기 및 저장 완료.");
     }
 
 
@@ -112,11 +112,11 @@ public class ApiService {
                         isSaved = true; // 저장된 경우 true로 설정
                     }
                 } else {
-                    System.err.println("ISBN으로 검색된 데이터가 없습니다: " + isbn);
+                    log.warn("ISBN으로 검색된 데이터가 없습니다: {}", isbn);
                 }
             }
         } catch (Exception e) {
-            System.err.println("알라딘 ISBN API 호출 중 오류 발생: " + e.getMessage());
+            log.error("알라딘 ISBN API 호출 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("알라딘 ISBN API 호출 실패", e);
         }
 
@@ -141,16 +141,16 @@ public class ApiService {
                     for (AladinResponse book : response.getBooks()) {
                         boolean isSaved = mappingService.processBookData(book);
                         if (isSaved) {
-                            System.out.println("저장된 ItemId 도서: " + book.getTitle());
+                            log.debug("저장된 ItemId 도서: {}", book.getTitle());
                         } else {
-                            System.out.println("중복된 책 스킵: " + book.getIsbn13());
+                            log.debug("중복된 책 스킵: {}", book.getIsbn13());
                         }
                     }
                 } else {
-                    System.out.println("ItemId로 검색된 데이터가 없습니다: " + itemId);
+                    log.warn("ItemId로 검색된 데이터가 없습니다: {}", itemId);
                 }
             } catch (Exception e) {
-                System.err.println("ItemId API 호출 실패: " + e.getMessage());
+                log.error("ItemId API 호출 실패: {}", e.getMessage(), e);
             }
         }
     }
@@ -160,10 +160,10 @@ public class ApiService {
      */
     private AladinBookListResponse callAladinApi(String url) {
         try {
-            System.out.println("API 호출 URL: " + url);
+            log.debug("API 호출 URL: {}", url);
             return restTemplate.getForObject(url, AladinBookListResponse.class);
         } catch (Exception e) {
-            System.err.println("API 호출 실패: " + e.getMessage());
+            log.error("API 호출 실패: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -191,16 +191,16 @@ public class ApiService {
                             mappingService.processBookData(book);
                         }
                     } catch (Exception e) {
-                        System.err.println("ISBN 데이터 처리 중 오류 발생: " + isbn);
+                        log.error("ISBN 데이터 처리 중 오류 발생: {}", isbn, e);
                         failedIsbns.add(isbn); // 실패한 ISBN 추가
                     }
                 } else {
-                    System.err.println("ISBN으로 검색된 데이터가 없습니다: " + isbn);
+                    log.warn("ISBN으로 검색된 데이터가 없습니다: {}", isbn);
                     failedIsbns.add(isbn); // 검색 실패 ISBN 추가
                 }
             }
         } catch (Exception e) {
-            System.err.println("알라딘 ISBN API 호출 중 오류 발생: " + e.getMessage());
+            log.error("알라딘 ISBN API 호출 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("알라딘 ISBN API 호출 실패", e);
         }
 

@@ -5,6 +5,7 @@ import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.book.service.category.ApiCategoryService;
 import com.nhnacademy.book.book.service.image.ImageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@Slf4j
 public class MappingService {
 
     private final BookRepository bookRepository;
@@ -58,8 +60,7 @@ public class MappingService {
 
             return true; // 처리 성공
         } catch (Exception e) {
-            System.err.println("데이터 처리 중 오류 발생: " + bookData.getIsbn13());
-            e.printStackTrace();
+            log.debug("데이터 처리 중 오류 발생: {}", bookData.getIsbn13(), e);
             return false;
         }
     }
@@ -95,7 +96,8 @@ public class MappingService {
         try {
             book.setBookPubDate(LocalDate.parse(response.getPubDate(), DateTimeFormatter.ISO_DATE));
         } catch (Exception e) {
-            System.err.println("날짜 파싱 실패: " + response.getPubDate());
+            log.debug("날짜 파싱 실패: {}", response.getPubDate());
+
             book.setBookPubDate(LocalDate.now()); //현재 날짜로 설정
         }
 

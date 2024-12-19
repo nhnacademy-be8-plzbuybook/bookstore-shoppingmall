@@ -4,8 +4,10 @@ import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ApiCategoryService {
     private final CategoryRepository categoryRepository;
@@ -23,12 +25,12 @@ public class ApiCategoryService {
         final String[] categoryParts = fullPath.split(">"); // 카테고리 경로를 > 기준으로 나눔
         Category parentCategory = null; // 초기 부모 카테고리 설정
 
-        System.out.println("처리할 경로: " + fullPath);
+        log.debug("처리할 경로: {}", fullPath);
 
         for (int depth = 0; depth < categoryParts.length; depth++) {
             final String categoryName = categoryParts[depth].trim(); // 각 카테고리 이름
 
-            System.out.println("현재 카테고리 이름: " + categoryName + ", 깊이: " + (depth + 1));
+            log.debug("현재 카테고리 이름: {}, 깊이: {}", categoryName, depth + 1);
 
             // 부모와 이름을 기준으로 카테고리 찾기
             final Category currentParent = parentCategory; // 람다식 내 사용되는 변수는 final 또는 effectively final 이어야 함
@@ -37,7 +39,7 @@ public class ApiCategoryService {
             Category category = categoryRepository
                     .findByCategoryNameAndParentCategory(categoryName, currentParent)
                     .orElseGet(() -> {
-                        System.out.println("새로운 카테고리 생성: " + categoryName + ", 깊이: " + (finalDepth + 1));
+                        log.debug("새로운 카테고리 생성: {}, 깊이: {}", categoryName, finalDepth + 1);
                         // 새 카테고리 생성
                         Category newCategory = new Category();
                         newCategory.setCategoryName(categoryName);
@@ -47,7 +49,7 @@ public class ApiCategoryService {
                         return categoryRepository.save(newCategory); // 저장
                     });
 
-            System.out.println("저장된/찾은 카테고리: " + category.getCategoryName() + ", ID: " + category.getCategoryId());
+            log.debug("저장된/찾은 카테고리: {}, ID: {}", category.getCategoryName(), category.getCategoryId());
 
             parentCategory = category; // 현재 카테고리를 부모로 설정
         }
@@ -70,7 +72,7 @@ public class ApiCategoryService {
             Category category = categoryRepository
                     .findByCategoryNameAndParentCategory(lastCategoryName, null)
                     .orElseGet(() -> {
-                        System.out.println("최하위 카테고리 생성: " + lastCategoryName);
+                        log.debug("최하위 카테고리 생성: {}", lastCategoryName);
                         Category newCategory = new Category();
                         newCategory.setCategoryName(lastCategoryName);
                         newCategory.setCategoryDepth(categoryParts.length);
@@ -80,7 +82,7 @@ public class ApiCategoryService {
 
             // 도서에 카테고리 연결
             book.addCategory(category);
-            System.out.println("도서에 연결된 최하위 카테고리: " + lastCategoryName);
+            log.debug("도서에 연결된 최하위 카테고리: {}", lastCategoryName);
         }
     }
 }
