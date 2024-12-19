@@ -33,7 +33,7 @@ public class Category {
     @Column(nullable = false)
     private Integer categoryDepth;
 
-    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> bookCategories = new ArrayList<>();
 
 

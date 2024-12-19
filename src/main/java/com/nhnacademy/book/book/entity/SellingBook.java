@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.entity;
 import jakarta.persistence.*;
 import jakarta.ws.rs.DELETE;
 import lombok.*;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.math.BigDecimal;
 
