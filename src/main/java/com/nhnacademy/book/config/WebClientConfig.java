@@ -18,19 +18,19 @@ public class WebClientConfig {
         return builder.baseUrl("http://localhost:8090").build();
     }
 
-    @Bean
-    public ApplicationRunner apiCallOnStartup(WebClient webClient) {
-        return args -> {
-            String apiUrl = "/api/books/sync";
-
-            webClient.post()
-                    .uri(apiUrl)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .doOnSuccess(response -> log.debug("API Response: {}", response))
-                    .doOnError(error -> log.error("API Error: {}", error.getMessage()))
-                    .block(); // 블로킹으로 처리하여 애플리케이션 시작 시 호출 완료
-
-        };
-    }
+//    @Bean
+//    public ApplicationRunner apiCallOnStartup(WebClient webClient) {
+//        return args -> {
+//            String apiUrl = "/api/books/sync";
+//
+//            webClient.post()
+//                    .uri(apiUrl)
+//                    .retrieve()
+//                    .bodyToMono(String.class)
+//                    .doOnSuccess(response -> log.debug("API Response: {}", response))
+//                    .doOnError(error -> log.error("API Error: {}", error.getMessage()))
+//                    .block(); // 블로킹으로 처리하여 애플리케이션 시작 시 호출 완료
+//
+//        };
+//    }
 }
