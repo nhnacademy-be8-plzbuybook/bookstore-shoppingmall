@@ -26,9 +26,7 @@ public class AuthorService {
 
     public List<AuthorResponseDto> getAllAuthors() {
         List<Author> authors = authorRepository.findAll();
-        if (authors.isEmpty()) {
-            throw new AuthorsNotFoundException("No authors found");
-        }
+
         return authors.stream().map(this::toResponseDto).collect(Collectors.toList());
     }
 

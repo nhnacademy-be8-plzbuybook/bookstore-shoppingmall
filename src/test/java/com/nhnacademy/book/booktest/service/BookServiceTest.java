@@ -1,8 +1,11 @@
 package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.BookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Publisher;
+import com.nhnacademy.book.book.exception.BookNotFoundException;
+import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
@@ -20,9 +23,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.assertj.core.api.Assertions.anyOf;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -45,6 +49,7 @@ public class BookServiceTest {
     @BeforeEach
     void setUp() {
         publisher = new Publisher("Test Publisher");
+        publisher.setPublisherId(1L);
 //        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
 
         Book book1 = new Book(
@@ -96,7 +101,7 @@ public class BookServiceTest {
         bookRegisterDto.setBookPubDate(LocalDate.of(2023, 12, 15));
         bookRegisterDto.setBookPriceStandard(BigDecimal.valueOf(15.99));
         bookRegisterDto.setBookIsbn13("1234567890");
-
+        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(publisherRepository.findById(anyLong())).thenReturn(Optional.ofNullable(publisher));
 
         bookService.registerBook(bookRegisterDto);
@@ -104,7 +109,117 @@ public class BookServiceTest {
 
     }
 
+    @Test
+    void registerBook_BookNotFoundException(){
 
+        assertThrows(BookNotFoundException.class, () -> bookService.registerBook(null));
+    }
+
+    @Test
+    void registerBook_shouldThrowPublisherNotFoundException_whenPublisherNotFound() {
+
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+        bookRegisterDto.setPublisherId(1L);
+
+        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(false);
+
+        assertThrows(PublisherNotFoundException.class, () -> bookService.registerBook(bookRegisterDto));
+    }
+    @Test
+    void registerBook_shouldThrowPublisherNotFoundException_whenPublisherNameIsEmpty() {
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+        bookRegisterDto.setPublisherId(1L);
+
+        Publisher publisher = new Publisher();
+        publisher.setPublisherId(1L);
+        publisher.setPublisherName("");
+
+        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(true);
+
+        Mockito.when(publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisher));
+
+        assertThrows(PublisherNotFoundException.class, () -> bookService.registerBook(bookRegisterDto));
+    }
+
+    @Test
+    void registerBook_shouldThrowPublisherNotFoundException_whenPublisherIdIsNull() {
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+        bookRegisterDto.setPublisherId(1L);
+
+        Publisher publisher = new Publisher();
+        publisher.setPublisherId(null);
+        publisher.setPublisherName("Valid Publisher");
+
+        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(true);
+        Mockito.when(publisherRepository.findById(anyLong())).thenReturn(Optional.of(publisher));
+
+        assertThrows(PublisherNotFoundException.class, () -> bookService.registerBook(bookRegisterDto));
+    }
+
+    @Test
+    void getAllBooks() {
+
+        Mockito.when(bookRepository.findAll()).thenReturn(books);
+        bookService.getAllBooks();
+        Mockito.verify(bookRepository, Mockito.times(1)).findAll();
+
+    }
+
+    @Test
+    void getBookDetail(){
+
+        Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(books.get(0)));
+        BookDetailResponseDto bookDetailResponseDto = bookService.getBookDetail(anyLong());
+        Mockito.verify(bookRepository, Mockito.times(1)).findById(anyLong());
+
+    }
+
+    @Test
+    void getBookDetail_BookNotFoundException(){
+
+        Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(BookNotFoundException.class, () -> bookService.getBookDetail(anyLong()));
+
+    }
+
+    @Test
+    void deleteBook() {
+        Mockito.when(bookRepository.existsById(anyLong())).thenReturn(true);
+        bookService.deleteBook(anyLong());
+        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(any());
+    }
+
+    @Test
+    void deleteBook_BookNotFoundException(){
+        Mockito.when(bookRepository.existsById(anyLong())).thenReturn(false);
+        assertThrows(BookNotFoundException.class, () -> bookService.deleteBook(anyLong()));
+    }
+
+    @Test
+    void updateBook() {
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+        bookRegisterDto.setPublisherId(1L);
+        bookRegisterDto.setBookTitle("test");
+        bookRegisterDto.setBookIndex("test index");
+        bookRegisterDto.setBookDescription("test description");
+        bookRegisterDto.setBookPubDate(LocalDate.of(2023, 12, 15));
+        bookRegisterDto.setBookPriceStandard(BigDecimal.valueOf(15.99));
+        bookRegisterDto.setBookIsbn13("1234567890");
+
+
+        Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.ofNullable(books.getFirst()));
+        bookService.updateBook(books.getFirst().getBookId(), bookRegisterDto);
+        Mockito.verify(bookRepository, Mockito.times(1)).findById(anyLong());
+
+    }
+
+    @Test
+    void updateBook_BookNotFoundException(){
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+
+        Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(BookNotFoundException.class, () -> bookService.updateBook(anyLong(), bookRegisterDto));
+    }
 
 
 }
