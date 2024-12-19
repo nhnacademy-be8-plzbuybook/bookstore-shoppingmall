@@ -12,9 +12,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MemberAddressRequestDto {
+    private Boolean defaultAddress;
     @NotBlank
     private String locationAddress;
-    private Boolean defaultAddress;
     @NotBlank
     private String detailAddress;
     @NotBlank
