@@ -22,6 +22,12 @@ public class BookServiceTest {
     @MockBean
     private BookRepository bookRepository;
 
+    @Test
+    void createBook() {
+        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+
+    }
+
 
 
 

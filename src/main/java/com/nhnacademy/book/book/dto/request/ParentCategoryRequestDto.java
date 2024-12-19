@@ -13,5 +13,6 @@ import java.util.List;
 public class ParentCategoryRequestDto {
 
     private Long categoryId;
+    private String categoryName;
 
 }
