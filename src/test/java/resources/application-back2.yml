@@ -29,25 +29,25 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    hibernate:
+      ddl-auto: update  # 애플리케이션 실행 시 DB 스키마 자동 업데이트
+    show-sql: true  # 실행되는 SQL을 콘솔에 출력
+    properties:
       hibernate:
-        ddl-auto: update  # 애플리케이션 실행 시 DB 스키마 자동 업데이트
-      show-sql: true  # 실행되는 SQL을 콘솔에 출력
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
+        dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
 
 app:
-    skm:
-      url: https://api-keymanager.nhncloudservice.com
-      appKey: qTQNj7LyHhdAazH3
-      keystoreFile: skm.p12
-      password: 4444
-      database:
-        url: 1117490ed9294c8798e83f2cb162982d
-        username: 7f2f713f0a6c4d82acb64ed3aa831cee
-        password: 7ac2c65487d34a7fa73997fada11d730
+  skm:
+    url: https://api-keymanager.nhncloudservice.com
+    appKey: qTQNj7LyHhdAazH3
+    keystoreFile: skm.p12
+    password: 4444
+    database:
+      url: 1117490ed9294c8798e83f2cb162982d
+      username: 7f2f713f0a6c4d82acb64ed3aa831cee
+      password: 7ac2c65487d34a7fa73997fada11d730
 
-#h2:
+#  h2:
 #    console:
 #      enabled: true  # H2 콘솔 활성화
 #      path: /h2-console  # H2 콘솔 접근 경로
