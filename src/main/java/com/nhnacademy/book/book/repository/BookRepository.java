@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.repository;
 
+import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // 제목으로 책 조회
     List<Book> findByBookTitle(String bookTitle);
+
 
 
     // 제목에 특정 문자열이 포함된 책 조회

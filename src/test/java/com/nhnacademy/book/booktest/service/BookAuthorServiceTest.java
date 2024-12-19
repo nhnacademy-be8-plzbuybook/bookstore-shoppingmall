@@ -1,10 +1,7 @@
 package com.nhnacademy.book.booktest.service;
 
 
-import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.repository.BookAuthorRepository;
-import com.nhnacademy.book.book.service.BookService;
-import com.nhnacademy.book.book.service.Impl.AuthorService;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

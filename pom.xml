@@ -102,6 +102,11 @@
             <classifier>osx-aarch_64</classifier> <!-- for Apple Silicon (M1/M2) -->
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
