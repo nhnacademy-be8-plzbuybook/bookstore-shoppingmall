@@ -3,9 +3,11 @@ package com.nhnacademy.book.book.service.image;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookImage;
 import com.nhnacademy.book.book.repository.BookImageRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ImageService {
 
     private final BookImageRepository bookImageRepository;
@@ -25,7 +27,7 @@ public class ImageService {
             bookImage.setImageId((long) imageUrl.hashCode()); // 간단한 해시값으로 ID 생성
 
             bookImageRepository.save(bookImage); // BookImageRepository 사용
-            System.out.println("이미지 URL 저장: " + imageUrl);
+            log.debug("이미지 URL 저장: {}", imageUrl);
         }
     }
 
