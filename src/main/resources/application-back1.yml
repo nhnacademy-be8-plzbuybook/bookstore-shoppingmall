@@ -1,57 +1,20 @@
-# 기본 설정
-server:
-  port: 8090
-
-spring:
-  elasticsearch:
-      uris: http://localhost:9200
-      username:
-      password:
-
-  config:
-    activate:
-      on-profile: prod
-  application:
-    name: bookstore-back1-prod
-
-#  datasource:
-#    url: jdbc:mysql://<MYSQL_HOST>:3306/<DATABASE_NAME>  # MySQL 데이터베이스 URL
-#    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
-#    username: <MYSQL_USERNAME>  # MySQL 사용자명
-#    password: <MYSQL_PASSWORD>  # MySQL 비밀번호
-#
-#  jpa:
-#    hibernate:
-#      ddl-auto: update  # 애플리케이션 실행 시 DB 스키마 자동 업데이트
-#    show-sql: true  # 실행되는 SQL을 콘솔에 출력
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
-
-
-eureka:
-  client:
-    register-with-eureka: true  # Eureka에 서비스 등록
-    fetch-registry: true  # Eureka에서 서비스 목록 가져오기
-    service-url:
-      defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
-aladin:
-  api:
-    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001
-
-# 'prod' 프로파일 전용 설정
----
-
 server:
   port: 8090  # prod 환경에서 다른 포트 사용 (예시)
 
 spring:
+  elasticsearch:
+    uris: http://localhost:9200
+    username:
+    password:
+
   config:
     activate:
-      on-profile: dev
+      on-profile: back1
 
   application:
-    name: bookstore-back1-dev
+    name: bookstore-back1
+
+
 
   datasource:
     url: jdbc:h2:mem:bookstore-db-dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -75,6 +38,7 @@ eureka:
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
       defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
+
 aladin:
   api:
     url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&SearchTarget=Book&output=js&Version=20131101
