@@ -5,8 +5,8 @@ server:
 spring:
   elasticsearch:
       uris: http://localhost:9200
-      username:
-      password:
+      username: elastic
+      password: nhnacademy123!
 
   config:
     activate:
@@ -49,6 +49,11 @@ spring:
   config:
     activate:
       on-profile: dev
+
+  elasticsearch:
+    uris: http://localhost:9200
+    username: elastic
+    password: nhnacademy123!
 
   application:
     name: bookstore-back1-dev

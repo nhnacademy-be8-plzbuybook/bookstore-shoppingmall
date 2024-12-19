@@ -25,10 +25,6 @@ public class ApiService {
         this.restTemplate = restTemplate;
         this.mappingService = mappingService;
     }
-
-    /**
-     * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다.
-     */
     /**
      * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다.
      */
@@ -90,7 +86,7 @@ public class ApiService {
      *
      * @param isbns ISBN 리스트
      */
-        @Transactional
+    @Transactional
     public boolean saveBooksByIsbns(List<String> isbns) {
         boolean isSaved = false;
 

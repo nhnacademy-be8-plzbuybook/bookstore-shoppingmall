@@ -40,4 +40,7 @@ public class AladinResponse {
     @JsonProperty("categoryName")
     private String categoryName; // 카테고리 이름
 
+    @JsonProperty("categoryPath")
+    private String categoryPath; // 카테고리 경로
+
 }

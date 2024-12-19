@@ -61,7 +61,6 @@ public class BookRepositoryTest {
 
         // 카테고리와 관계 설정
         book.addCategory(category);
-
         bookRepository.save(book);
     }
 
