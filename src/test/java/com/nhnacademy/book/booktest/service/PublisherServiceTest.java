@@ -1,98 +1,97 @@
 package com.nhnacademy.book.booktest.service;
 
+import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
+import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
-import com.nhnacademy.book.book.exception.PublisherNotFound;
-import com.nhnacademy.book.book.repository.AuthorRepository;
+import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@ActiveProfiles("test")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class PublisherServiceTest {
 
-    @Autowired
+    @InjectMocks
     private PublisherService publisherService;
 
-    @MockBean
+    @Mock
     private PublisherRepository publisherRepository;
 
-    private Publisher publisher;
-
+    // 테스트에서 사용할 Publisher 객체
+    private Publisher publisher = new Publisher();
 
     @Test
-    void createPublisher(){
+    void createPublisher() {
+        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
+        publisherRequestDto.setPublisherName("test");
 
         Publisher publisher = new Publisher();
         publisher.setPublisherName("test");
 
         Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
-        Publisher createdPublisher = publisherService.createPublisher(publisher);
 
+        PublisherResponseDto createdPublisher = publisherService.createPublisher(publisherRequestDto);
 
         Mockito.verify(publisherRepository, Mockito.times(1)).save(Mockito.any(Publisher.class));
-        assertThat(createdPublisher.getPublisherName()).isEqualTo("test");
-
+        assertEquals("test", createdPublisher.getPublisherName());
     }
 
     @Test
-    void createPublisher_PublisherNotFound(){
-        Publisher publisher = new Publisher();
-        publisher.setPublisherName("");
-        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
+    void createPublisher_PublisherNotFound() {
+        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
+        publisherRequestDto.setPublisherName(""); // 빈 값 설정
 
-        assertThrows(PublisherNotFound.class, () -> publisherService.createPublisher(publisher));
-
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.createPublisher(publisherRequestDto));
     }
 
     @Test
-    void deletePublisher(){
+    void deletePublisher() {
+        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
+        publisherRequestDto.setPublisherId(1L);
+        publisherRequestDto.setPublisherName("Valid Publisher");
+
         Publisher publisher = new Publisher();
         publisher.setPublisherId(1L);
         publisher.setPublisherName("Valid Publisher");
 
-        publisherService.deletePublisher(publisher);
-
-        Mockito.verify(publisherRepository, Mockito.times(1)).delete(publisher);
-
-    }
-
-    @Test
-    void deletePublisher_PublisherNotFound(){
-
-        Publisher publisher = new Publisher();
-        publisher.setPublisherId(null);
-        publisher.setPublisherName("test");
-        assertThrows(PublisherNotFound.class, () -> publisherService.deletePublisher(publisher));
-        publisher.setPublisherId(1L);
-        publisher.setPublisherName("");
-        assertThrows(PublisherNotFound.class, () -> publisherService.deletePublisher(publisher));
-
-    }
-
-
-    @Test
-    void findPublisherById(){
-        Publisher publisher = new Publisher();
-        publisher.setPublisherId(1L);
-        publisher.setPublisherName("test");
         Mockito.when(publisherRepository.findById(1L)).thenReturn(Optional.of(publisher));
 
-        Publisher result = publisherService.findPublisherById(1L);
+        publisherService.deletePublisher(publisherRequestDto);
+
+        Mockito.verify(publisherRepository, Mockito.times(1)).delete(publisher);
+    }
+
+    @Test
+    void deletePublisher_PublisherNotFound() {
+        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
+        publisherRequestDto.setPublisherId(null);
+        publisherRequestDto.setPublisherName("test");
+
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
+
+        publisherRequestDto.setPublisherId(1L);
+        publisherRequestDto.setPublisherName("");
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
+    }
+
+    @Test
+    void findPublisherById() {
+        Publisher publisher = new Publisher();
+        publisher.setPublisherId(1L);
+        publisher.setPublisherName("test");
+
+        Mockito.when(publisherRepository.findById(1L)).thenReturn(Optional.of(publisher));
+
+        PublisherResponseDto result = publisherService.findPublisherById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getPublisherId());
@@ -102,12 +101,8 @@ public class PublisherServiceTest {
     }
 
     @Test
-    void findPublisherById_PublisherNotFound(){
-        Publisher publisher = new Publisher();
-        publisher.setPublisherId(null);
-        publisher.setPublisherName("test");
-        assertThrows(PublisherNotFound.class, () -> publisherService.findPublisherById(1L));
-
+    void findPublisherById_PublisherNotFound() {
+        Mockito.when(publisherRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.findPublisherById(1L));
     }
-
 }

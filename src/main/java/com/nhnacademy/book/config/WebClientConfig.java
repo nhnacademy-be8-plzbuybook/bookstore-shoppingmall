@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @Slf4j
-@Profile("!test") // 'test' 프로파일이 아닐 때만 실행
 public class WebClientConfig {
 
     @Bean

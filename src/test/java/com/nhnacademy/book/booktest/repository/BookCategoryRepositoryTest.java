@@ -9,16 +9,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.Assertions;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@ActiveProfiles("test")
 public class BookCategoryRepositoryTest {
 
     @Autowired
@@ -94,7 +93,7 @@ public class BookCategoryRepositoryTest {
         });
 
         // BookCategory 개수 검증
-        assertThat(bookCategories).hasSize(3); // 총 3개의 관계
+        assertEquals(3, bookCategories.size()); // 총 3개의 관계
     }
 
     // 테스트 2: 특정 책에 속한 카테고리 조회 (카테고리 1개인 경우)
@@ -103,8 +102,8 @@ public class BookCategoryRepositoryTest {
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(book2.getBookId());
 
         // 카테고리 개수 검증 (1개만 존재)
-        assertThat(categories).hasSize(1);
-        assertThat(categories.get(0).getCategoryName()).isEqualTo("기독교(개신교)");
+        assertEquals(1, categories.size());
+        assertEquals("기독교(개신교)", categories.get(0).getCategoryName());
     }
 
     // 테스트 3: 특정 책에 속한 카테고리 조회 (카테고리 여러 개인 경우)
@@ -113,6 +112,6 @@ public class BookCategoryRepositoryTest {
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(book.getBookId());
 
         // 카테고리 개수 검증 (2개 존재)
-        assertThat(categories).hasSize(2);
+        assertEquals(2, categories.size());
     }
 }

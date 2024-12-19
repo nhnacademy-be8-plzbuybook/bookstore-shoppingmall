@@ -16,8 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
@@ -100,24 +99,26 @@ public class BookAuthorRepositoryTest {
         // 테스트 실행
         List<Book> books = bookAuthorRepository.findBooksByAuthorId(author.getAuthorId());
 
-        assertThat(books).isNotNull().hasSize(2).contains(book2);
-
-        boolean hasBookWithId1 = books.stream()
-                .anyMatch(book -> book.getBookId().equals(1L));
-        assertTrue(hasBookWithId1);
+        assertNotNull(books);
+        assertEquals(2, books.size());
+        assertTrue(books.contains(book2));
     }
 
     @Test
     void findBooksByNonExistentAuthorIdTest() {
         List<Book> books = bookAuthorRepository.findBooksByAuthorId(999L);
 
-        assertThat(books).isEmpty();
+        assertNotNull(books);
+        assertTrue(books.isEmpty());
+
     }
 
     @Test
     void findAuthorsByNonExistentBookIdTest() {
         List<Author> authors = bookAuthorRepository.findAuthorsByBookId(999L);
 
-        assertThat(authors).isEmpty();
+        assertNotNull(authors);
+        assertTrue(authors.isEmpty());
+
     }
 }

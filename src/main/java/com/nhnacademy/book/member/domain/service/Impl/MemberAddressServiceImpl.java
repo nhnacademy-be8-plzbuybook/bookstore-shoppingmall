@@ -1,5 +1,6 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
+import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAddress;
 import com.nhnacademy.book.member.domain.dto.MemberAddressRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberAddressResponseDto;
@@ -27,15 +28,16 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     @Override
     public MemberAddressResponseDto addAddress(Long memberId, MemberAddressRequestDto addressRequestDto) {
         // 회원 존재 여부 확인
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         List<MemberAddress> existingAddresses = memberAddressRepository.findByMember_memberId(memberId);
         if (existingAddresses.size() >= 10) {
             throw new AddressLimitExceededException("회원은 최대 10개의 주소를 등록할 수 있습니다.");
         }
 
-        // 주소 중복 확인
-        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndMember_memberId(addressRequestDto.getLocationAddress(), memberId);
+        // 주소 중복 확인 (도로명 주소와 상세주소가 같을때 중복 처리)
+        Optional<MemberAddress> existingAddress = memberAddressRepository.findByLocationAddressAndDetailAddressAndMember_memberId(
+                addressRequestDto.getLocationAddress(), addressRequestDto.getDetailAddress(), memberId);
         if (existingAddress.isPresent()) {
             throw new DuplicateAddressException("해당 주소는 이미 등록되어 있습니다.");
         }
@@ -97,12 +99,13 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
+    // 배송지 상세 조회
     public MemberAddressResponseDto getAddress(Long memberId, Long addressId) {
 
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress memberAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
         return new MemberAddressResponseDto(
                 memberAddress.getMemberAddressId(),
@@ -125,7 +128,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
         existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
@@ -161,7 +164,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
     // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
     if (existingAddress.getDefaultAddress()) {

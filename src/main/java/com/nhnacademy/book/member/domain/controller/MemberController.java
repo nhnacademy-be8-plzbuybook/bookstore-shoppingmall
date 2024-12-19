@@ -43,6 +43,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
 
+
     //특정 회원 조회(id)
     @GetMapping("/members/{member_id}")
     public ResponseEntity<MemberIdResponseDto> getMemberById(@PathVariable Long member_id) {

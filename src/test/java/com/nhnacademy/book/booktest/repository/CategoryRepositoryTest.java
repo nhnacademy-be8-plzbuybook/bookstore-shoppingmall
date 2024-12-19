@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
@@ -55,9 +55,9 @@ class CategoryRepositoryTest {
         Category savedCategory = categoryRepository.save(category);
 
         // Then
-        assertThat(savedCategory).isNotNull();
-        assertThat(savedCategory.getCategoryName()).isEqualTo("잡지");
-        assertThat(savedCategory.getCategoryDepth()).isEqualTo(1);
+        assertNotNull(savedCategory);
+        assertEquals("잡지", savedCategory.getCategoryName());
+        assertEquals(1, savedCategory.getCategoryDepth());
     }
 
     @Test
@@ -66,8 +66,8 @@ class CategoryRepositoryTest {
         Optional<Category> foundCategory = categoryRepository.findByCategoryName("도서");
 
         // Then
-        assertThat(foundCategory).isPresent();
-        assertThat(foundCategory.get().getCategoryName()).isEqualTo("도서");
+        assertTrue(foundCategory.isPresent());
+        assertEquals("도서", foundCategory.get().getCategoryName());
     }
 
     @Test
@@ -76,12 +76,13 @@ class CategoryRepositoryTest {
         Optional<Category> foundParentCategory = categoryRepository.findByCategoryName("도서");
 
         // Then
-        assertThat(foundParentCategory).isPresent();
+        assertTrue(foundParentCategory.isPresent());
         Category parent = foundParentCategory.get();
-        assertThat(parent.getChildrenCategory()).hasSize(2);
-        assertThat(parent.getChildrenCategory())
-                .extracting(Category::getCategoryName)
-                .containsExactlyInAnyOrder("소설", "만화");
+        assertEquals(2, parent.getChildrenCategory().size());
+        assertTrue(parent.getChildrenCategory().stream()
+                .anyMatch(child -> child.getCategoryName().equals("소설")));
+        assertTrue(parent.getChildrenCategory().stream()
+                .anyMatch(child -> child.getCategoryName().equals("만화")));
     }
 
     @Test
@@ -101,9 +102,8 @@ class CategoryRepositoryTest {
 
         // Then
         Optional<Category> deletedCategory = categoryRepository.findByCategoryName("소설");
-        assertThat(deletedCategory).isNotPresent();
+        assertFalse(deletedCategory.isPresent());
     }
-
 
     @Test
     void testUpdateCategory() {
@@ -115,19 +115,17 @@ class CategoryRepositoryTest {
         Category updatedCategory = categoryRepository.save(categoryToUpdate);
 
         // Then
-        assertThat(updatedCategory.getCategoryName()).isEqualTo("전자책");
+        assertEquals("전자책", updatedCategory.getCategoryName());
     }
 
     @Test
-    void findByParentCategoryTest(){
-
-        for(Category category : categoryRepository.findByParentCategory(parentCategory)){
+    void findByParentCategoryTest() {
+        for (Category category : categoryRepository.findByParentCategory(parentCategory)) {
             log.info(category.getCategoryName());
         }
 
         List<Category> categoryList = categoryRepository.findByParentCategory(parentCategory);
-        assertThat(categoryList).isNotNull();
-        assertThat(categoryList.size()).isEqualTo(2);
-
+        assertNotNull(categoryList);
+        assertEquals(2, categoryList.size());
     }
 }

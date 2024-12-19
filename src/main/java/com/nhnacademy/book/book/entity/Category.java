@@ -21,7 +21,7 @@ public class Category {
     private Long categoryId;
 
     @ManyToOne
-    @JoinColumn(name = "category_parent_id")
+    @JoinColumn(name = "category_parent_id", nullable = true)
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
