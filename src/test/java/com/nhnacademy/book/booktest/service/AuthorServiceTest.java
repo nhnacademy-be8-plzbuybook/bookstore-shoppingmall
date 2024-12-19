@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +90,7 @@ public class AuthorServiceTest {
         List<AuthorResponseDto> responseDtos = authorService.getAllAuthors();
         assertThat(responseDtos.size()).isEqualTo(4);
     }
+
 
     @Test
     void getAuthorById() {

@@ -67,10 +67,16 @@ public class BookService {
         if(Objects.isNull(bookRegisterDto)){
             throw new BookNotFoundException("등록 할 책 정보 못 찾음");
         }
-        Publisher publisher = publisherRepository.findById(bookRegisterDto.getPublisherId()).get();
-        if(Objects.isNull(publisher.getPublisherName())){
+        if(!publisherRepository.existsById(bookRegisterDto.getPublisherId())){
             throw new PublisherNotFoundException("출판사 못 찾음");
         }
+
+        Publisher publisher = publisherRepository.findById(bookRegisterDto.getPublisherId()).get();
+        if(publisher.getPublisherName().isEmpty() || publisher.getPublisherId() == null){
+            throw new PublisherNotFoundException("출판사 못 찾음");
+        }
+
+
 
         Book book = new Book(
                 publisher,

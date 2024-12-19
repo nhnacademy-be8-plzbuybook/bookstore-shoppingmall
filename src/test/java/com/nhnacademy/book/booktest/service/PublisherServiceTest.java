@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class PublisherServiceTest {
@@ -37,11 +38,11 @@ public class PublisherServiceTest {
         Publisher publisher = new Publisher();
         publisher.setPublisherName("test");
 
-        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
+        Mockito.when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
 
         PublisherResponseDto createdPublisher = publisherService.createPublisher(publisherRequestDto);
 
-        Mockito.verify(publisherRepository, Mockito.times(1)).save(Mockito.any(Publisher.class));
+        Mockito.verify(publisherRepository, Mockito.times(1)).save(any(Publisher.class));
         assertEquals("test", createdPublisher.getPublisherName());
     }
 
@@ -71,17 +72,32 @@ public class PublisherServiceTest {
     }
 
     @Test
-    void deletePublisher_PublisherNotFound() {
+    void deletePublisher_PublisherNotFound_PublisherIdIsNull() {
         PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
         publisherRequestDto.setPublisherId(null);
         publisherRequestDto.setPublisherName("test");
+        Publisher publisher = new Publisher();
+        Mockito.when(publisherRepository.findById(any())).thenReturn(Optional.of(publisher));
 
-        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));}
 
+
+    @Test
+    void deletePublisher_PublisherNotFound_PublisherNameIsEmpty() {
+        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
+
+
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName("");
         publisherRequestDto.setPublisherId(1L);
         publisherRequestDto.setPublisherName("");
+
+        Mockito.when(publisherRepository.findById(any())).thenReturn(Optional.of(publisher));
+
         assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
     }
+
+
 
     @Test
     void findPublisherById() {
