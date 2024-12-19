@@ -35,17 +35,15 @@ class SecureKeyManagerServiceTest {
         when(skmProperties.getUrl()).thenReturn("https://api-keymanager.nhncloudservice.com");
         when(skmProperties.getAppKey()).thenReturn("qTQNj7LyHhdAazH3");
 
-        // Mock RestTemplate 대체
         restTemplate = Mockito.mock(RestTemplate.class);
 
-        // 클래스 인스턴스 생성
         secureKeyManagerService = new SecureKeyManagerService(skmProperties);
     }
 
     @Test
     @DisplayName("url secretFetch 성공")
     void fetchSecret_url_Success() {
-        // 준비: KeyResponseDto Mock 설정
+        //KeyResponseDto Mock 설정
         KeyResponseDto responseDto = new KeyResponseDto();
         Body body = new Body();
         body.setSecret("jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore");
@@ -53,7 +51,6 @@ class SecureKeyManagerServiceTest {
 
         ResponseEntity<KeyResponseDto> responseEntity = new ResponseEntity<>(responseDto, HttpStatus.OK);
 
-        // RestTemplate Mock 동작 설정
         when(restTemplate.exchange(
                 any(URI.class),
                 eq(HttpMethod.GET),
@@ -61,10 +58,8 @@ class SecureKeyManagerServiceTest {
                 eq(KeyResponseDto.class))
         ).thenReturn(responseEntity);
 
-        // 실행
         String secret = secureKeyManagerService.fetchSecret("1117490ed9294c8798e83f2cb162982d");
 
-        // 검증
         assertNotNull(secret);
         assertEquals("jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore", secret);
     }
@@ -72,7 +67,7 @@ class SecureKeyManagerServiceTest {
     @Test
     @DisplayName("username secretFetch 성공")
     void fetchSecret_username_Success() {
-        // 준비: KeyResponseDto Mock 설정
+        //KeyResponseDto Mock 설정
         KeyResponseDto responseDto = new KeyResponseDto();
         Body body = new Body();
         body.setSecret("project_be8_plzbuybook");
@@ -80,7 +75,6 @@ class SecureKeyManagerServiceTest {
 
         ResponseEntity<KeyResponseDto> responseEntity = new ResponseEntity<>(responseDto, HttpStatus.OK);
 
-        // RestTemplate Mock 동작 설정
         when(restTemplate.exchange(
                 any(URI.class),
                 eq(HttpMethod.GET),
@@ -88,10 +82,8 @@ class SecureKeyManagerServiceTest {
                 eq(KeyResponseDto.class))
         ).thenReturn(responseEntity);
 
-        // 실행
         String secret = secureKeyManagerService.fetchSecret("7f2f713f0a6c4d82acb64ed3aa831cee");
 
-        // 검증
         assertNotNull(secret);
         assertEquals("project_be8_plzbuybook", secret);
     }
@@ -99,7 +91,7 @@ class SecureKeyManagerServiceTest {
     @Test
     @DisplayName("password secretFetch 성공")
     void fetchSecret_password_Success() {
-        // 준비: KeyResponseDto Mock 설정
+        //KeyResponseDto Mock 설정
         KeyResponseDto responseDto = new KeyResponseDto();
         Body body = new Body();
         body.setSecret("MOW6c#y4TVxi1P5b");
@@ -107,7 +99,6 @@ class SecureKeyManagerServiceTest {
 
         ResponseEntity<KeyResponseDto> responseEntity = new ResponseEntity<>(responseDto, HttpStatus.OK);
 
-        // RestTemplate Mock 동작 설정
         when(restTemplate.exchange(
                 any(URI.class),
                 eq(HttpMethod.GET),
@@ -115,20 +106,18 @@ class SecureKeyManagerServiceTest {
                 eq(KeyResponseDto.class))
         ).thenReturn(responseEntity);
 
-        // 실행
         String secret = secureKeyManagerService.fetchSecret("7ac2c65487d34a7fa73997fada11d730");
 
-        // 검증
         assertNotNull(secret);
         assertEquals("MOW6c#y4TVxi1P5b", secret);
     }
 
     @Test
-    void fetchSecret_shouldThrowException_whenKeyManagerReturnsInvalidResponse() throws Exception {
-        // 준비: KeyResponseDto 내용이 null인 경우
+    @DisplayName("dto내용이 null인 경우 exception")
+    void fetchSecret_dtoNull() throws Exception {
+        //KeyResponseDto 내용이 null인 경우
         ResponseEntity<KeyResponseDto> responseEntity = new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 
-        // RestTemplate Mock 동작 설정
         when(restTemplate.exchange(
                 any(URI.class),
                 eq(HttpMethod.GET),
@@ -136,7 +125,6 @@ class SecureKeyManagerServiceTest {
                 eq(KeyResponseDto.class))
         ).thenReturn(responseEntity);
 
-        // 실행 & 검증
         Exception exception = assertThrows(RuntimeException.class, () -> {
             secureKeyManagerService.fetchSecret("testKeyId");
         });
@@ -145,11 +133,11 @@ class SecureKeyManagerServiceTest {
     }
 
     @Test
-    void fetchSecret_shouldThrowKeyManagerException_whenKeyStoreInitializationFails() throws Exception {
-        // 준비: keystore 읽기 중 IOException 강제 발생
+    @DisplayName("예외 처리 확인")
+    void fetchSecret_exception() throws Exception {
+        //keystore 읽기 중 IOException 강제 발생
         when(skmProperties.getKeystoreFile()).thenThrow(new KeyMangerException("Keystore file not found."));
 
-        // 실행 & 검증
         Exception exception = assertThrows(KeyMangerException.class, () -> {
             secureKeyManagerService.fetchSecret("testKeyId");
         });
