@@ -3,7 +3,7 @@ package com.nhnacademy.book.booktest.service;
 import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.exception.PublisherNotFound;
+import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class PublisherServiceTest {
         PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
         publisherRequestDto.setPublisherName(""); // 빈 값 설정
 
-        assertThrows(PublisherNotFound.class, () -> publisherService.createPublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.createPublisher(publisherRequestDto));
     }
 
     @Test
@@ -76,11 +76,11 @@ public class PublisherServiceTest {
         publisherRequestDto.setPublisherId(null);
         publisherRequestDto.setPublisherName("test");
 
-        assertThrows(PublisherNotFound.class, () -> publisherService.deletePublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
 
         publisherRequestDto.setPublisherId(1L);
         publisherRequestDto.setPublisherName("");
-        assertThrows(PublisherNotFound.class, () -> publisherService.deletePublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
     }
 
     @Test
@@ -103,6 +103,6 @@ public class PublisherServiceTest {
     @Test
     void findPublisherById_PublisherNotFound() {
         Mockito.when(publisherRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(PublisherNotFound.class, () -> publisherService.findPublisherById(1L));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.findPublisherById(1L));
     }
 }

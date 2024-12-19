@@ -3,7 +3,7 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.exception.PublisherNotFound;
+import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class PublisherService {
     public PublisherResponseDto createPublisher(PublisherRequestDto publisherRequestDto) {
         // PublisherRequestDto로부터 Publisher 엔티티 생성
         if (publisherRequestDto.getPublisherName().isEmpty()) {
-            throw new PublisherNotFound("Publisher name is empty");
+            throw new PublisherNotFoundException("Publisher name is empty");
         }
 
         Publisher publisher = new Publisher();
@@ -36,10 +36,10 @@ public class PublisherService {
     // Publisher 삭제
     public void deletePublisher(PublisherRequestDto publisherRequestDto) {
         Publisher publisher = publisherRepository.findById(publisherRequestDto.getPublisherId())
-                .orElseThrow(() -> new PublisherNotFound("Publisher not found"));
+                .orElseThrow(() -> new PublisherNotFoundException("Publisher not found"));
 
         if (publisher.getPublisherId() == null || publisher.getPublisherName().isEmpty()) {
-            throw new PublisherNotFound("Publisher is empty");
+            throw new PublisherNotFoundException("Publisher is empty");
         }
 
         publisherRepository.delete(publisher);
@@ -48,7 +48,7 @@ public class PublisherService {
     // Publisher 조회
     public PublisherResponseDto findPublisherById(Long publisherId) {
         Publisher publisher = publisherRepository.findById(publisherId)
-                .orElseThrow(() -> new PublisherNotFound("Publisher not found"));
+                .orElseThrow(() -> new PublisherNotFoundException("Publisher not found"));
 
         // PublisherResponseDto로 변환하여 반환
         return convertToDto(publisher);
