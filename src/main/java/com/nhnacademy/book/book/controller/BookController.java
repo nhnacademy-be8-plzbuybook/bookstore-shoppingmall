@@ -19,12 +19,12 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-
-    // 도서 검색 기능
-    @GetMapping
-    public ResponseEntity<List<BookResponseDto>> searchBooks(@ModelAttribute BookSearchRequestDto searchRequest) {
-        return ResponseEntity.ok(bookService.searchBooks(searchRequest));
-    }
+//
+//    // 도서 검색 기능
+//    @GetMapping
+//    public ResponseEntity<List<BookResponseDto>> searchBooks(@ModelAttribute BookSearchRequestDto searchRequest) {
+//        return ResponseEntity.ok(bookService.searchBooks(searchRequest));
+//    }
 
     // 도서 상세 조회 기능
     @GetMapping("/books/{bookId}")
