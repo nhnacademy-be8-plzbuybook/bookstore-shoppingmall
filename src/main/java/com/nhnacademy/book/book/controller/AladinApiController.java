@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.controller;
 
-//import com.nhnacademy.book.book.service.AladinApiService;
 import com.nhnacademy.book.book.service.api.ApiService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +17,6 @@ public class AladinApiController {
     public AladinApiController(ApiService aladinApiService) {
         this.aladinApiService = aladinApiService;
     }
-
-//
-//    /**
-//     * ISBN 리스트를 받아서 개별 조회 후 저장
-//     */
-//    @PostMapping("/sync/isbn")
-//    public ResponseEntity<Void> syncBooksByIsbn(@RequestBody List<String> isbns) {
-//        aladinApiService.saveBooksByIsbns(isbns);
-//        return ResponseEntity.ok().build();
-//    }
 
     /**
      * 기본 ItemList API를 통해 저장 -> 대량 저장

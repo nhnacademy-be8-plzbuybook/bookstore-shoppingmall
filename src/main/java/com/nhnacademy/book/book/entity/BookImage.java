@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.entity;
 
+import com.nhnacademy.book.member.domain.Image;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,10 +19,11 @@ public class BookImage {
     private Long bookImageId;
 
     @ManyToOne
-    @JoinColumn(name = "book_image_book_id", nullable = false)
+    @JoinColumn(name = "bi_book_id", nullable = false)
     private Book book;
 
-    @Column(nullable = false)
-    private Long imageId;
+    @ManyToOne
+    @JoinColumn(name = "bi_id", nullable = false)
+    private Image image;
 }
 
