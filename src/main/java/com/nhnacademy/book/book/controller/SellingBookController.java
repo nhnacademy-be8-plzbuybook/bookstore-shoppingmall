@@ -23,15 +23,6 @@ public class SellingBookController {
         this.sellingBookService = sellingBookService;
     }
 
-//    /**
-//     * 판매책 등록 -> 책 ID 를 사용하여 판매책 등록 관리자 이거는 책 쪽에서 자동으로 들어감!!!!! 안해도 될것가틍ㄴ데
-//     */
-//    @PostMapping
-//    public ResponseEntity<SellingBookResponseDto> registerSellingBook(@RequestBody SellingBookRegisterDto registerDto) {
-//        SellingBookResponseDto response = sellingBookService.registerSellingBook(registerDto);
-//        return ResponseEntity.ok(response);
-//    }
-
     /**
      * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
      * @param sellingBookId
@@ -114,7 +105,7 @@ public class SellingBookController {
      */
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
-        System.out.println("요청: 카테고리 ID " +  categoryId);
+        log.debug("요청: 카테고리 ID = {}", categoryId);
         List<SellingBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
         log.debug("응답 크기: {}", response.size());
         return ResponseEntity.ok(response);

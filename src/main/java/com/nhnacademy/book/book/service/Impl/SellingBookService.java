@@ -2,10 +2,8 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
-import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
-import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
@@ -33,34 +31,6 @@ public class SellingBookService {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
     }
-
-    /**
-     * 판매책 등록
-     * @param registerDto 판매책 등록 DTO
-     * @return 등록된 판매책의 정보
-     */
-    @Transactional
-    public SellingBookResponseDto registerSellingBook(SellingBookRegisterDto registerDto) {
-        // Book 테이블에서 도서 정보 조회
-        Book book = bookRepository.findById(registerDto.getBookId())
-                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + registerDto.getBookId()));
-
-        // SellingBook 생성, 기본값 설정
-        SellingBook sellingBook = new SellingBook();
-        sellingBook.setBook(book);
-        sellingBook.setSellingBookPrice(book.getBookPriceStandard()); // 기본값: 책의 정가
-        sellingBook.setSellingBookPackageable(false); // 기본값: 선물 포장 불가
-        sellingBook.setSellingBookStock(0); // 기본값: 재고 없음
-        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING); // 기본값: 등록 대기 상태
-        sellingBook.setUsed(false); // 기본값: 새 상품
-        sellingBook.setSellingBookViewCount(0L); // 초기 조회수
-
-        // 판매책 저장
-        SellingBook savedSellingBook = sellingBookRepository.save(sellingBook);
-
-        return toResponseDto(savedSellingBook);
-    }
-
 
     /**
      * 판매책 수정 update -  특정 필드값 수정 가능 로직
@@ -196,22 +166,6 @@ public class SellingBookService {
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
     }
-
-
-//    public List<SellingBookResponseDto> findSellingBooksByCategory(Long categoryId) {
-//        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryId(categoryId);
-//
-//        log.debug("카테고리 ID {}에서 찾은 판매책: {}", categoryId, sellingBooks);
-//
-//        if (sellingBooks.isEmpty()) {
-//            throw new CategoryNotFoundException("No selling books found for category ID: " + categoryId + ". Please check the category or add related selling books.");
-//        }
-//
-//        return sellingBooks.stream()
-//                .map(this::toResponseDto)
-//                .collect(Collectors.toList());
-//    }
-
 
 
     /**

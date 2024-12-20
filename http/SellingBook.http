@@ -59,5 +59,5 @@ GET http://localhost:8090/api/selling-books/view-count/asc
 GET http://localhost:8090/api/selling-books/status?status=SELLING
 
 
-### 카테고리별 판매책 조회 하 이거 또 안되네 ㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅ
-GET http://localhost:8090/api/selling-books/category/5
+### 카테고리별 판매책 조회
+GET http://localhost:8090/api/selling-books/category/8
