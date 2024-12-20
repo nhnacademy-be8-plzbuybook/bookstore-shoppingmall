@@ -56,9 +56,6 @@ public class BookCategoryService {
 
         List<Book> books = bookCategoryRepository.findBooksByCategory(category);
 
-        if (books.isEmpty()) {
-            throw new BookNotFoundException("Books not found");
-        }
 
         return books.stream()
                 .map(book -> new BookResponseDto(
@@ -76,9 +73,7 @@ public class BookCategoryService {
 
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(bookId);
 
-        if (categories.isEmpty()) {
-            throw new CategoryNotFoundException("Categories not found");
-        }
+
 
         // Category 엔티티를 CategoryResponseDto로 변환하여 반환
         return categories.stream()
@@ -112,9 +107,7 @@ public class BookCategoryService {
 
         List<Book> books = bookCategoryRepository.findBooksByCategoryId(categoryId);
 
-        if (books.isEmpty()) {
-            throw new BookNotFoundException("Books not found");
-        }
+
 
         return books.stream()
                 .map(book -> new BookResponseDto(

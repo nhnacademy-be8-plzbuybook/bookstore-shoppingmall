@@ -76,8 +76,6 @@ public class BookService {
             throw new PublisherNotFoundException("출판사 못 찾음");
         }
 
-
-
         Book book = new Book(
                 publisher,
                 bookRegisterDto.getBookTitle(),
