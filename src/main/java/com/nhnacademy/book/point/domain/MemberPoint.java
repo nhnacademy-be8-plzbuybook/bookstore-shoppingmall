@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,6 +29,9 @@ public class MemberPoint {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mp_condition_id", nullable = false)
     private PointCondition pointCondition;
+
+    @Column(nullable = false)
+    private BigDecimal point;
 
     @Column
     private LocalDateTime addDate;
