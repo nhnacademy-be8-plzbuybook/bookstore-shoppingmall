@@ -1,6 +1,9 @@
-package com.nhnacademy.book.payment;
+package com.nhnacademy.book.payment.service;
 
-import com.nhnacademy.book.payment.dto.SaveAmountDto;
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.payment.dto.*;
+import com.nhnacademy.book.payment.entity.Payment;
+import com.nhnacademy.book.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -14,13 +17,37 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class PaymentService {
+public class PaymentServiceImpl implements PaymentService{
     private static final String SAVE_AMOUNT_KEY = "save_amount:";
     private final RedisTemplate<String, String> redisTemplate;
+    private final PaymentRepository paymentRepository;
+
+    @Override
+    public String createPayment(PaymentSaveRequestDto saveRequest) {
+        Payment payment = saveRequest.toEntity();
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return savedPayment.getTossOrderId();
+    }
+
+    @Override
+    public Payment getPaymentByOrderId(String orderId) {
+        Optional<Payment> optionalPayment = paymentRepository.findByTossOrderId(orderId);
+        return optionalPayment.orElseThrow(() -> new NotFoundException("can not found payment info"));
+    }
+
+//    @Override
+//    public void removePayment(long paymentId) {
+//        if (paymentRepository.existsById(paymentId)) {
+//            paymentRepository.deleteById(paymentId);
+//        }
+//        throw new NotFoundException("can not found payment!");
+//    }
 
     private HttpURLConnection createConnection(String secretKey, String urlString) throws IOException {
         URL url = new URL(urlString);
@@ -72,4 +99,6 @@ public class PaymentService {
 
         return amount.equals(savedAmount);
     }
+
+
 }
