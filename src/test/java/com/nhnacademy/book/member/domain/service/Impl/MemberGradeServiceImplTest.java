@@ -4,6 +4,7 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateMemberGradeException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,8 +29,9 @@ class MemberGradeServiceImplTest {
     @InjectMocks
     private MemberGradeServiceImpl memberGradeService;
 
-    //등급을 정상적으로 추가 할 경우
+
     @Test
+    @DisplayName("등급을 정상적으로 추가 할 경우")
     void createGrade_Success() {
         String gradeName = "NORMAL";
         BigDecimal conditionPrice = BigDecimal.valueOf(0.5);
@@ -58,8 +60,9 @@ class MemberGradeServiceImplTest {
 
     }
 
-    //중복 등급을 추가하려 할 때 예외 처리
+
     @Test
+    @DisplayName("중복 등급을 추가하려 할 때 예외 처리")
     void createGrade_DuplicateMemberGradeException() {
         String gradeName = "NORMAL";
         BigDecimal conditionPrice = BigDecimal.valueOf(0.5);

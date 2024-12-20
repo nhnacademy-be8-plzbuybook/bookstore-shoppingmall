@@ -4,6 +4,7 @@ import com.nhnacademy.book.member.domain.Auth;
 import com.nhnacademy.book.member.domain.dto.auth.AuthResponseDto;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.service.AuthService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,7 +31,7 @@ public class AuthServiceImplTest {
     private AuthServiceImpl authService;
 
     @Test
-        // 새로운 권한을 생성하고 반환하는지
+    @DisplayName("새로운 권한을 생성하고 반환하는지")
     void testCreateAuth() {
         String authName = "ADMIN";
         Auth auth = new Auth();
@@ -44,7 +45,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-        // 모든 권한을 반환하는지
+    @DisplayName("모든 권한을 반환하는지")
     void testGetAllAuths_whenAuthsExist() {
         Auth adminAuth = new Auth(1L, "ADMIN");
         Auth userAuth = new Auth(2L, "USER");
@@ -59,7 +60,7 @@ public class AuthServiceImplTest {
 
 
     @Test
-        // 특정 authId를 반환하는지
+    @DisplayName("특정 authId를 반환하는지")
     void testGetAuthById() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 
@@ -72,7 +73,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-        // 정상적으로 수정하는지
+    @DisplayName("정상적으로 수정하는지")
     void testUpdateAuth() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 
@@ -86,7 +87,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-        // 정상적으로 삭제하는지
+    @DisplayName("정상적으로 삭제하는지")
     void testDeleteAuth() {
         Auth adminAuth = new Auth(1L, "ADMIN");
 

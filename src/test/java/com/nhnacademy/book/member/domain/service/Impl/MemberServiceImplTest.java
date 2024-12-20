@@ -9,6 +9,7 @@ import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -66,7 +67,7 @@ class MemberServiceImplTest {
 
 
     @Test
-    //회원 가입 성공
+    @DisplayName("회원 가입 성공")
     void createMember_Success() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -101,7 +102,7 @@ class MemberServiceImplTest {
     }
 
     @Test
-    //회원 가입시 중복 이메일
+    @DisplayName("회원 가입시 중복 이메일")
     void createMember_DuplicateEmailException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -120,8 +121,9 @@ class MemberServiceImplTest {
         assertThrows(DuplicateEmailException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
-    //회원 등급 없을 때
+
     @Test
+    @DisplayName("회원 등급 없을 때")
     void createMember_MemberGradeNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -141,8 +143,9 @@ class MemberServiceImplTest {
 
     }
 
-    //회원 상태 없을 때
+
     @Test
+    @DisplayName("회원 상태 없을 때")
     void createMember_MemberStatusNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -164,8 +167,9 @@ class MemberServiceImplTest {
 
     }
 
-    //비밀번호 암호화 되어있나
+
     @Test
+    @DisplayName("비밀번호 암호화 되어있나")
     void createMember_PasswordIsEncoded() {
         // given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -202,8 +206,8 @@ class MemberServiceImplTest {
     }
 
 
-    //default가 normal, active인가
     @Test
+    @DisplayName("default가 normal, active인가")
     void testMemberCreationWithDefaultValues() {
         // given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -244,8 +248,9 @@ class MemberServiceImplTest {
         assertEquals("ACTIVE", response.getMemberStateName());  // MemberStatus가 ACTIVE로 설정되었는지 확인
     }
 
-    //default grade 조회를 실패 했을 시
+
     @Test
+    @DisplayName("default grade 조회를 실패 했을 시")
     void creteMember_memberGradeNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -263,8 +268,8 @@ class MemberServiceImplTest {
         assertThrows(MemberGradeNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
-   //default 상태가 없을 때 오류 처리
     @Test
+    @DisplayName("default 상태가 없을 때 오류 처리")
     void createMember_memberStatusNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
@@ -285,8 +290,9 @@ class MemberServiceImplTest {
         assertThrows(MemberStatusNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
-    //이메일로 회원을 조회할 때 값이 잘 나오는 지
+
     @Test
+    @DisplayName("이메일로 회원을 조회할 때 값이 잘 나오는 지")
     void getMemberByEmail() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
@@ -311,8 +317,8 @@ class MemberServiceImplTest {
         verify(passwordEncoder).encode(member.getPassword());
     }
 
-    //비어 있는 권한 리스트 예외 처리 테스트
     @Test
+    @DisplayName("비어 있는 권한 리스트 예외 처리 테스트")
     void getMemberByEmail_exception() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
@@ -333,8 +339,8 @@ class MemberServiceImplTest {
 
     }
 
-    //이메일로 회원을 조회할 때 예외 처리
     @Test
+    @DisplayName("이메일로 회원을 조회할 때 예외 처리")
     void getMemberByEmail_MemberEmailNotFoundException() {
         String email = "yoonwlgh12@naver.com";
         when(memberRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -344,8 +350,8 @@ class MemberServiceImplTest {
         verify(memberRepository).findByEmail(email);
     }
 
-    //id 로 특정 회원 조회 잘 되는지
     @Test
+    @DisplayName("id 로 특정 회원 조회 잘 되는지")
     void getMemberById() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
@@ -369,8 +375,8 @@ class MemberServiceImplTest {
     }
 
 
-    //id로 회원 조회할 때 해당하는 아이디 없으면 예외처리 잘하는지
     @Test
+    @DisplayName("id로 회원 조회할 때 해당하는 아이디 없으면 예외처리 잘하는지")
     void getMemberById_MemberIdNotFoundException() {
         when(memberRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -379,8 +385,8 @@ class MemberServiceImplTest {
         verify(memberRepository).findById(1L);
     }
 
-    //회원 수정을 잘하는지
     @Test
+    @DisplayName("회원 수정을 잘하는지")
     void memberModify_success() {
         Long memberId = 1L;
         Member member = new Member();
@@ -414,8 +420,8 @@ class MemberServiceImplTest {
     }
 
 
-    //회원 수정 값이 없을 때 예외를 잘 처리 하는지
     @Test
+    @DisplayName("회원 수정 값이 없을 때 예외를 잘 처리 하는지")
     void memberModify_DuplicateMemberModificationException() {
         Member member = new Member();
         member.setMemberId(1L);
@@ -443,8 +449,8 @@ class MemberServiceImplTest {
     }
 
 
-    //회원 수정하는데 중복된 이메일로 수정하려 할 떄
     @Test
+    @DisplayName("회원 수정하는데 중복된 이메일로 수정하려 할 떄")
     void memberModify_DuplicateEmailException() {
         Member member = new Member();
         member.setMemberId(1L);
@@ -468,8 +474,8 @@ class MemberServiceImplTest {
 
     }
 
-    //삭제시 회원 상태가 withdraw로 변경 되는지
     @Test
+    @DisplayName("삭제시 회원 상태가 withdraw로 변경 되는지")
     void withdrawMember_Success() {
         MemberStatus withdrawalStatus = new MemberStatus();
         withdrawalStatus.setMemberStateName("WITHDRAWAL");
@@ -491,8 +497,8 @@ class MemberServiceImplTest {
     }
 
 
-    //withdraw 상태가 없으면 오류 발생 잘 시키는지
     @Test
+    @DisplayName("withdraw 상태가 없으면 오류 발생 잘 시키는지")
     void withdrawMember_MemberGradeNotFoundException() {
         when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.empty());
 
@@ -500,8 +506,8 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any(Member.class));
     }
 
-    //탈퇴하려는 id에 해당하는 회원을 불러올 때 없으면 오류 발생 잘 시키는 지
     @Test
+    @DisplayName("탈퇴하려는 id에 해당하는 회원을 불러올 때 없으면 오류 발생 잘 시키는 지")
     void withdrawMember_MemberNotFoundException() {
         MemberStatus withdrawalStatus = new MemberStatus();
         withdrawalStatus.setMemberStateName("WITHDRAWAL");
@@ -513,8 +519,9 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any(Member.class));
     }
 
-    //회원 조회를 성공적으로 하는가
+
     @Test
+    @DisplayName("회원 조회를 성공적으로 하는가")
     void getMembers_success() {
        MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
        memberSearchRequestDto.setPage(0);
@@ -540,8 +547,8 @@ class MemberServiceImplTest {
 
     }
 
-    //회원 조회할 값이 없을 시 예외 처리를 잘하는가
     @Test
+    @DisplayName("회원 조회할 값이 없을 시 예외 처리를 잘하는가")
     void getMembers_MemberNotFoundException() {
         MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
         memberSearchRequestDto.setPage(0);
