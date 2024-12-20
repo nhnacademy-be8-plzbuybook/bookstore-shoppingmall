@@ -41,7 +41,7 @@ Content-Type: application/json
 DELETE localhost:8090/api/selling-books/1
 
 ### 판매책 상세조회
-GET http://localhost:8090/api/selling-books/1
+GET http://localhost:8090/api/selling-books/4
 
 ### 조회수에 따른 조회
 # - {sortDirection}: 정렬 방향 (desc: 높은 순, asc: 낮은 순). 기본값은 desc.
@@ -59,5 +59,5 @@ GET http://localhost:8090/api/selling-books/view-count/asc
 GET http://localhost:8090/api/selling-books/status?status=SELLING
 
 
-### 카테고리별 판매책 조회
+### 카테고리별 판매책 조회 하 이거 또 안되네 ㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅㄷㅅ
 GET http://localhost:8090/api/selling-books/category/5
