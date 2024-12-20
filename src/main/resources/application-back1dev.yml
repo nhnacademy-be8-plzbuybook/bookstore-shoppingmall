@@ -27,6 +27,8 @@ spring:
     console:
       enabled: true  # H2 콘솔 활성화
       path: /h2-console  # H2 콘솔 접근 경로
+  config:
+    import: classpath:application-secret.yml
 
 #eureka:
 #  client:
