@@ -4,6 +4,7 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -134,6 +135,39 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
 
+    //배송지 등록 할때 10개 초과 오류
+    @ExceptionHandler(AddressLimitExceededException.class)
+    public ResponseEntity<ErrorResponseDto> handleAddressLimitExceededException(AddressLimitExceededException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    //권한이 없는 경우
+    @ExceptionHandler(AuthNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthNotFoundException(AuthNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    //같은 배송지를 등록 하는 경우
+    @ExceptionHandler(DuplicateAddressException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateAddressException(DuplicateAddressException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -176,5 +210,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }
 
+    //skm 예외
+    @ExceptionHandler(KeyMangerException.class)
+    public ResponseEntity<ErrorResponseDto> KeyManagerException(KeyMangerException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
+    }
 
 }

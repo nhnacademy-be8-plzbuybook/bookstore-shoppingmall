@@ -4,7 +4,8 @@
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mock;
+
+
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.context.annotation.Bean;
@@ -17,9 +18,11 @@
 //
 //@Slf4j
 //@ExtendWith(SpringExtension.class)
+//@SpringBootTest
+//@ActiveProfiles("test")
 //public class PasswordConverterTest {
 //
-//    @Mock
+//    @Autowired
 //    private PasswordConverter passwordConverter;
 //
 //    private String plainPassword;
