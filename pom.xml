@@ -119,6 +119,20 @@
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
 
+        <!-- 토스 api에 사용되는 json 의존성 -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+<!--        Redis 의존성-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>
