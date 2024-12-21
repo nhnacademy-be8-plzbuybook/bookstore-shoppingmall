@@ -47,6 +47,13 @@ app:
         username: 7f2f713f0a6c4d82acb64ed3aa831cee
         password: 7ac2c65487d34a7fa73997fada11d730
 
+      object_storage:
+        auth_url:
+        password:
+        storage_url:
+        tenant_url:
+        username:
+
 #h2:
 #    console:
 #      enabled: true  # H2 콘솔 활성화
