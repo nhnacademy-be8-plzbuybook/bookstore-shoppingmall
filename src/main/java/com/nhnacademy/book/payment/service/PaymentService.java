@@ -4,7 +4,7 @@ import com.nhnacademy.book.payment.dto.PaymentSaveRequestDto;
 import com.nhnacademy.book.payment.entity.Payment;
 
 public interface PaymentService {
-    String createPayment(PaymentSaveRequestDto saveRequest);
-    Payment getPaymentByOrderId(String orderId);
+    String recordPayment(PaymentSaveRequestDto saveRequest);
+    Payment getByOrderId(String orderId);
 //    void removePayment(long paymentId);
 }
