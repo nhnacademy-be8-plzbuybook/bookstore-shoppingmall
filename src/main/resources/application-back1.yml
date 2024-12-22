@@ -1,6 +1,8 @@
 server:
   port: 8090  # prod 환경에서 다른 포트 사용 (예시)
-
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 spring:
   elasticsearch:
     uris: http://localhost:9200
