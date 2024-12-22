@@ -3,7 +3,11 @@ POST https://api-identity-infrastructure.nhncloudservice.com/v2.0/tokens
 Content-Type: application/json
 
 {
-  "tenantId" : "c20e3b10d61749a2a52346ed0261d79e",
-  "username" : "jalyice",
-  "password" : "plzbuybook"
+  "auth": {
+    "tenantId": "c20e3b10d61749a2a52346ed0261d79e",
+    "passwordCredentials": {
+      "username": "jalyice@gmail.com",
+      "password": "plzbuybook"
+    }
+  }
 }

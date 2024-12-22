@@ -8,16 +8,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class TokenRequestDto {
-    private OSAuth osAuth;
+    private Auth auth;
 
     @Getter
-    @NoArgsConstructor // 기본 생성자 추가
-    public static class OSAuth {
+    @NoArgsConstructor
+    public static class Auth {
         private String tenantId;
         private PasswordCredentials passwordCredentials;
 
         @Builder
-        public OSAuth(@JsonProperty("tenantId") String tenantId,
+        public Auth(@JsonProperty("tenantId") String tenantId,
                     @JsonProperty("passwordCredentials") PasswordCredentials passwordCredentials) {
             this.tenantId = tenantId;
             this.passwordCredentials = passwordCredentials;
@@ -48,7 +48,7 @@ public class TokenRequestDto {
                         .password(password)
                         .build();
 
-        this.osAuth = OSAuth.builder()
+        this.auth = Auth.builder()
                 .tenantId(tenantId)
                 .passwordCredentials(passwordCredentials)
                 .build();
