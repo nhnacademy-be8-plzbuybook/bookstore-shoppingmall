@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +53,7 @@ public class PublisherControllerTest {
         mockMvc.perform(post("/api/publishers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(publisherRegisterDto)))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk());
 
         Mockito.verify(publisherService, Mockito.times(1)).createPublisher(any(PublisherRegisterDto.class));
@@ -64,7 +66,9 @@ public class PublisherControllerTest {
         Mockito.doNothing().when(publisherService).deletePublisher(anyLong());
 
         mockMvc.perform(delete("/api/publishers/{publisherId}",1L))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk()); // HTTP 200 응답 확인
+
 
         Mockito.verify(publisherService, Mockito.times(1)).deletePublisher(1L);
 
@@ -75,6 +79,7 @@ public class PublisherControllerTest {
         Mockito.when(publisherService.findPublisherById(anyLong())).thenReturn(publisherResponseDto);
 
         mockMvc.perform(get("/api/publishers/{publisherId}" ,1L))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(publisherResponseDto)));
 
