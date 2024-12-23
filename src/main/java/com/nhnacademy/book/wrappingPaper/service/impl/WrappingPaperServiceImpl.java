@@ -2,7 +2,6 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.member.domain.Image;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;

@@ -1,6 +1,5 @@
 package com.nhnacademy.book.wrappingPaper.entity;
 
-import com.nhnacademy.book.member.domain.Image;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
