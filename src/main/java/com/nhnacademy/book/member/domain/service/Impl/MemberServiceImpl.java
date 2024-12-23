@@ -1,5 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAuth;
 import com.nhnacademy.book.member.domain.MemberGrade;
@@ -34,6 +36,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberAuthRepository memberAuthRepository;
 
+    private final CouponClient couponClient;
 
     //회원 생성
     @Override
@@ -66,6 +69,14 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        // Welcome 쿠폰(회원가입 쿠폰) 발급 요청
+        WelComeCouponRequestDto welComeCouponRequestDto = new WelComeCouponRequestDto(
+                savedMember.getMemberId(),
+                savedMember.getName()
+        );
+
+        couponClient.issueWelcomeCoupon(welComeCouponRequestDto);
 
         // 응답 DTO 생성 및 반환
         return new MemberCreateResponseDto(
