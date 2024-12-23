@@ -22,6 +22,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthorController.class)
@@ -53,6 +54,7 @@ public class AuthorControllerTest {
         mockMvc.perform(post("/api/authors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authorRequestDto)))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk());
 
         Mockito.verify(authorService, Mockito.times(1)).createAuthor(any(AuthorRequestDto.class));
@@ -63,6 +65,7 @@ public class AuthorControllerTest {
         Mockito.when(authorService.getAuthorById(anyLong())).thenReturn(authorResponseDto);
 
         mockMvc.perform(get("/api/authors/" + authorResponseDto.getAuthorId()))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(authorResponseDto)));
 
@@ -79,6 +82,7 @@ public class AuthorControllerTest {
         Mockito.when(authorService.getAllAuthors()).thenReturn(authors);
 
         mockMvc.perform(get("/api/authors"))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(authors)));
 
@@ -90,6 +94,7 @@ public class AuthorControllerTest {
         Mockito.doNothing().when(authorService).deleteAuthorById(anyLong());
 
         mockMvc.perform(delete("/api/authors/{authorId}", 1L))
+                .andDo(print()) // 로그 출력
                 .andExpect(status().isOk()); // HTTP 200 응답 확인
 
         Mockito.verify(authorService, Mockito.times(1)).deleteAuthorById(1L);

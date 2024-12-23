@@ -7,8 +7,10 @@ import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class PublisherService {
 
     private final PublisherRepository publisherRepository;
