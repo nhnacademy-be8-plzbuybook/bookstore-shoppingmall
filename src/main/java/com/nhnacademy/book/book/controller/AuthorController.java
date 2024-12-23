@@ -13,29 +13,30 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/authors")
 public class AuthorController {
 
     @Autowired
     private final AuthorService authorService;
 
 
-    @PostMapping("/authors")
+    @PostMapping
     public ResponseEntity<Void> createAuthor(@RequestBody AuthorRequestDto authorRequestDto) {
         authorService.createAuthor(authorRequestDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/authors/{authorId}")
+    @GetMapping("{authorId}")
     public ResponseEntity<AuthorResponseDto> getAuthor(@PathVariable Long authorId) {
         return ResponseEntity.ok(authorService.getAuthorById(authorId));
     }
 
-    @GetMapping("/authors")
+    @GetMapping
     public ResponseEntity<List<AuthorResponseDto>> getAuthors() {
         return ResponseEntity.ok(authorService.getAllAuthors());
     }
 
-    @DeleteMapping("/authors/{authorId}")
+    @DeleteMapping("/{authorId}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {
         authorService.deleteAuthorById(authorId);
         return ResponseEntity.ok().build();

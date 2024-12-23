@@ -49,7 +49,7 @@ public class PublisherControllerTest {
 
         Mockito.doAnswer(invocation -> null).when(publisherService).createPublisher(any(PublisherRegisterDto.class));
 
-        mockMvc.perform(post("/publishers")
+        mockMvc.perform(post("/api/publishers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(publisherRegisterDto)))
                 .andExpect(status().isOk());
@@ -63,7 +63,7 @@ public class PublisherControllerTest {
 
         Mockito.doNothing().when(publisherService).deletePublisher(anyLong());
 
-        mockMvc.perform(delete("/publishers/{publisherId}",1L))
+        mockMvc.perform(delete("/api/publishers/{publisherId}",1L))
                 .andExpect(status().isOk()); // HTTP 200 응답 확인
 
         Mockito.verify(publisherService, Mockito.times(1)).deletePublisher(1L);
@@ -74,7 +74,7 @@ public class PublisherControllerTest {
     void getPublisherTest() throws Exception {
         Mockito.when(publisherService.findPublisherById(anyLong())).thenReturn(publisherResponseDto);
 
-        mockMvc.perform(get("/publishers/{publisherId}" ,1L))
+        mockMvc.perform(get("/api/publishers/{publisherId}" ,1L))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(publisherResponseDto)));
 

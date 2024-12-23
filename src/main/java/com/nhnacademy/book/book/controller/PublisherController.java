@@ -12,23 +12,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/publishers")
 public class PublisherController {
 
     @Autowired
     private final  PublisherService publisherService;
 
-    @PostMapping("/publishers")
+    @PostMapping
     public ResponseEntity<Void> createPublisher(@RequestBody PublisherRegisterDto publisherRegisterDto) {
         publisherService.createPublisher(publisherRegisterDto);
         return ResponseEntity.ok().build();
     }
-    @DeleteMapping("/publishers/{publisherId}")
+    @DeleteMapping("/{publisherId}")
     public ResponseEntity<Void> deletePublisherById(@PathVariable Long publisherId) {
         publisherService.deletePublisher(publisherId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/publishers/{publisherId}")
+    @GetMapping("/{publisherId}")
     public ResponseEntity<PublisherResponseDto> getPublisher(@PathVariable Long publisherId) {
         return ResponseEntity.ok(publisherService.findPublisherById(publisherId));
     }

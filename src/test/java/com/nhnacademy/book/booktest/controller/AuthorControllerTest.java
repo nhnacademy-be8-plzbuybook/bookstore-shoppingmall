@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @WebMvcTest(AuthorController.class)
 public class AuthorControllerTest {
@@ -50,7 +50,7 @@ public class AuthorControllerTest {
     void createAuthor() throws Exception {
         Mockito.doAnswer(invocation -> null).when(authorService).createAuthor(any(AuthorRequestDto.class));
 
-        mockMvc.perform(post("/authors")
+        mockMvc.perform(post("/api/authors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authorRequestDto)))
                 .andExpect(status().isOk());
@@ -62,7 +62,7 @@ public class AuthorControllerTest {
     void getAuthor() throws Exception {
         Mockito.when(authorService.getAuthorById(anyLong())).thenReturn(authorResponseDto);
 
-        mockMvc.perform(get("/authors/" + authorResponseDto.getAuthorId()))
+        mockMvc.perform(get("/api/authors/" + authorResponseDto.getAuthorId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(authorResponseDto)));
 
@@ -78,7 +78,7 @@ public class AuthorControllerTest {
 
         Mockito.when(authorService.getAllAuthors()).thenReturn(authors);
 
-        mockMvc.perform(get("/authors"))
+        mockMvc.perform(get("/api/authors"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(authors)));
 
@@ -89,7 +89,7 @@ public class AuthorControllerTest {
     void deleteAuthor() throws Exception {
         Mockito.doNothing().when(authorService).deleteAuthorById(anyLong());
 
-        mockMvc.perform(delete("/authors/{authorId}", 1L))
+        mockMvc.perform(delete("/api/authors/{authorId}", 1L))
                 .andExpect(status().isOk()); // HTTP 200 응답 확인
 
         Mockito.verify(authorService, Mockito.times(1)).deleteAuthorById(1L);
