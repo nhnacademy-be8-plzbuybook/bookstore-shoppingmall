@@ -14,12 +14,18 @@ spring:
   application:
     name: bookstore-back2
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
-  #  datasource:
-  #    url: jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore  # MySQL 데이터베이스 URL
-  #    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
-  #    username: project_be8_plzbuybook # MySQL 사용자명
-  #    password: MOW6c#y4TVxi1P5b  # MySQL 비밀번호
+
+#    datasource:
+#      url: jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore  # MySQL 데이터베이스 URL
+#      driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
+#      username: project_be8_plzbuybook # MySQL 사용자명
+#      password: MOW6c#y4TVxi1P5b  # MySQL 비밀번호
 
   datasource:
     #{}에 값을 불러온다
@@ -46,6 +52,14 @@ app:
         url: 1117490ed9294c8798e83f2cb162982d
         username: 7f2f713f0a6c4d82acb64ed3aa831cee
         password: 7ac2c65487d34a7fa73997fada11d730
+
+      object_storage:
+        authUrl: 3837e5ff588b4470af5aa617a1766bde
+        password: 378cb4362b044d07912724fabe675dac
+        url: 6e67697af7ee4ca5963bd29e028e904b
+        tenantId: b7d8458d714a40f8a229061e3dbf810f
+        username: eb228aac947c4989be561ac95ee42c6b
+        containerName: 4c3b4227ce904561ac012c685e35d1dd
 
 #h2:
 #    console:
