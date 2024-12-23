@@ -23,7 +23,6 @@ public class PointCondition {
 
 
     @Convert(converter = PointConditionNameConverter.class)
-//    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PointConditionName name;
 
