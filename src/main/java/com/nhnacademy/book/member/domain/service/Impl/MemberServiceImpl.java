@@ -18,11 +18,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -42,15 +43,13 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateEmailException("이메일이 이미 존재함!");
         }
 
-        MemberGrade memberGrade = memberCreateRequestDto.getMemberGradeId() != null
-                ? memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())
-                .orElseThrow(() -> new MemberGradeNotFoundException("멤버 등급이 없다!"))
-                : memberGradeRepository.findById(1L).orElseThrow(() -> new DefaultMemberGradeNotFoundException("Default 등급을 찾을 수 없다!"));
+        // 기본 등급 조회 (예: ID가 1인 기본 등급)
+        MemberGrade memberGrade = memberGradeRepository.findById(1L)
+                .orElseThrow(() -> new DefaultMemberGradeNotFoundException("기본 회원 등급을 찾을 수 없습니다!"));
 
-        MemberStatus memberStatus = memberCreateRequestDto.getMemberStateId() != null
-                ? memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())
-                .orElseThrow(() -> new MemberStatusNotFoundException("멤버 상태가 없다!"))
-                : memberStatusRepository.findById(1L).orElseThrow(() -> new DefaultStatusGradeNotfoundException("Default 상태를 찾을 수 없다!"));
+        // 기본 상태 조회 (예: ID가 1인 기본 상태)
+        MemberStatus memberStatus = memberStatusRepository.findById(1L)
+                .orElseThrow(() -> new DefaultStatusGradeNotfoundException("기본 회원 상태를 찾을 수 없습니다!"));
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
@@ -146,13 +145,8 @@ public class MemberServiceImpl implements MemberService {
         String authName = memberAuthList.get(0).getAuth().getAuthName();
 
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
-//        memberEmailResponseDto.setName(member.getName());
-//        memberEmailResponseDto.setPhone(member.getPhone());
         memberEmailResponseDto.setEmail(member.getEmail());
-        memberEmailResponseDto.setPassword(passwordEncoder.encode(member.getPassword()));
-//        memberEmailResponseDto.setBirth(member.getBirth());
-//        memberEmailResponseDto.setMemberGradeName(member.getMemberGrade().getMemberGradeName());
-//        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
+        memberEmailResponseDto.setPassword(member.getPassword());
         memberEmailResponseDto.setAuthName(authName);// 권한 정보 추가
 
         return memberEmailResponseDto;
