@@ -3,14 +3,10 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -19,12 +15,6 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-//
-//    // 도서 검색 기능
-//    @GetMapping
-//    public ResponseEntity<List<BookResponseDto>> searchBooks(@ModelAttribute BookSearchRequestDto searchRequest) {
-//        return ResponseEntity.ok(bookService.searchBooks(searchRequest));
-//    }
 
     @GetMapping("/books")
     public ResponseEntity<List<BookDetailResponseDto>> getAllBooks() {

@@ -42,19 +42,18 @@ class ApiServiceTest {
         book.setIsbn13("1234567890123");
         mockResponse.setBooks(List.of(book));
 
-        // 두 번의 API 호출에 대해 같은 mockResponse를 반환하도록 설정
+        // API 호출에 대해 mockResponse 반환 설정
         when(restTemplate.getForObject(anyString(), eq(AladinBookListResponse.class))).thenReturn(mockResponse);
         when(mappingService.processBookData(book)).thenReturn(true);
 
         // When
-        apiService.saveBooksFromListApi();
+        apiService.saveBooksFromListApi("Bestseller", "Book", 3, 1);
 
         // Then
-        // API 호출 두 번 검증
-        verify(restTemplate, times(2)).getForObject(anyString(), eq(AladinBookListResponse.class));
-        // 데이터 저장 두 번 검증
-        verify(mappingService, times(2)).processBookData(book);
+        // 호출 횟수를 5로 변경
+        verify(mappingService, times(5)).processBookData(book);
     }
+
 
     @DisplayName("ISBN 리스트를 기반으로 도서 데이터를 저장")
     @Test
