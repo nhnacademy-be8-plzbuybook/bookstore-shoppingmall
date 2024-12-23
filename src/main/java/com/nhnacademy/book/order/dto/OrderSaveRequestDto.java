@@ -31,6 +31,22 @@ public class OrderSaveRequestDto {
     @NotNull
     private List<OrderProductSaveRequestDto> orderProducts;
 
+    @NotNull
+    private OrderDeliveryAddress orderDeliveryAddress;
+
+
+    public Orders toOrderEntity() {
+        return Orders.builder()
+                .id(orderId)
+                .name(orderName)
+                .totalPrice(totalPrice)
+                .deliveryWishDate(deliveryWishDate)
+                .usedPoint(usedPoint)
+                .build();
+    }
+}
+@Getter
+class OrderDeliveryAddress {
     @NotBlank
     private String locationAddress;
 
@@ -45,14 +61,4 @@ public class OrderSaveRequestDto {
 
     @NotBlank
     private String recipientPhone;
-
-    public Orders toOrderEntity() {
-        return Orders.builder()
-                .id(orderId)
-                .name(orderName)
-                .totalPrice(totalPrice)
-                .deliveryWishDate(deliveryWishDate)
-                .usedPoint(usedPoint)
-                .build();
-    }
 }

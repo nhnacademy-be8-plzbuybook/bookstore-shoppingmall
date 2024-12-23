@@ -57,4 +57,8 @@ public class Orders {
 
         //TODO: 업데이트 로직
     }
+
+    public void updateOrderStatus(OrderStatus status) {
+        this.status = status;
+    }
 }

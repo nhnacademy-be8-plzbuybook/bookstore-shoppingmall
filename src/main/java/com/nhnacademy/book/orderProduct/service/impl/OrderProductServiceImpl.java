@@ -26,6 +26,10 @@ public class OrderProductServiceImpl implements OrderProductService {
     @Transactional
     @Override
     public OrderProduct saveOrderProduct(OrderProductSaveRequestDto orderProductSaveRequest) {
+        // 판매책 재고 차감
+        // 포장지 재고 차감
+        // 주문적용 쿠폰 저장
+
         long sellingBookId = orderProductSaveRequest.getSellingBookId();
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId).orElseThrow(() -> new NotFoundException("존재하지 않는 판매 책입니다."));
 
