@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,7 +20,8 @@ public class MemberPointAddResponseDto {
     private Long memberPointId;
     @NotNull
     private Long memberId;
-    private PointConditionName pointConditionName;
+    private String pointConditionName;
+    private BigDecimal point;
     private LocalDateTime addDate;
     private LocalDateTime endDate;
 

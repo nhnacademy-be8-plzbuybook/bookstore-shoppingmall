@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,8 +16,9 @@ import lombok.Setter;
 public class MemberPointAddRequestDto {
     @NotNull
     private Long memberId;
-    private PointConditionName pointConditionName;
+    private Long reviewId;
+    private PointConditionName name;
     private Integer conditionPoint;
-    private Integer conditionPercentage;
+    private BigDecimal conditionPercentage;
 
 }

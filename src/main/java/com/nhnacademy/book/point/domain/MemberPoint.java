@@ -31,7 +31,7 @@ public class MemberPoint {
     private PointCondition pointCondition;
 
     @Column(nullable = false)
-    private BigDecimal point;
+    private BigDecimal point; // 적립된 포인트 추가
 
     @Column
     private LocalDateTime addDate;

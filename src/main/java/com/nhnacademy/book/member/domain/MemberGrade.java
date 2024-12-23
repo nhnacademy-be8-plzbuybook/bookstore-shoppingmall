@@ -25,6 +25,10 @@ public class MemberGrade {
     @Column(name = "name", nullable = false, length = 10, columnDefinition = "VARCHAR(10) DEFAULT 'NORMAL'")
     private String memberGradeName;
 
+    // 등급에 따른 추가 비율 (예: 0.01 -> 1%)
+    @Column(name = "grade_percentage")
+    private BigDecimal gradePercentage;
+
     //등업 조건 주문 금액
     @Column(name = "condition_price")
     private BigDecimal conditionPrice;
