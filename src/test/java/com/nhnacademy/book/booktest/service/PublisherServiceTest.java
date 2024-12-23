@@ -1,5 +1,6 @@
 package com.nhnacademy.book.booktest.service;
 
+import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
 import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.entity.Publisher;
@@ -32,15 +33,15 @@ public class PublisherServiceTest {
 
     @Test
     void createPublisher() {
-        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
-        publisherRequestDto.setPublisherName("test");
+        PublisherRegisterDto publisherRegisterDto = new PublisherRegisterDto();
+        publisherRegisterDto.setPublisherName("test");
 
         Publisher publisher = new Publisher();
         publisher.setPublisherName("test");
 
         Mockito.when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
 
-        PublisherResponseDto createdPublisher = publisherService.createPublisher(publisherRequestDto);
+        PublisherResponseDto createdPublisher = publisherService.createPublisher(publisherRegisterDto);
 
         Mockito.verify(publisherRepository, Mockito.times(1)).save(any(Publisher.class));
         assertEquals("test", createdPublisher.getPublisherName());
@@ -48,10 +49,10 @@ public class PublisherServiceTest {
 
     @Test
     void createPublisher_PublisherNotFound() {
-        PublisherRequestDto publisherRequestDto = new PublisherRequestDto();
-        publisherRequestDto.setPublisherName(""); // 빈 값 설정
+        PublisherRegisterDto publisherRegisterDto = new PublisherRegisterDto();
+        publisherRegisterDto.setPublisherName(""); // 빈 값 설정
 
-        assertThrows(PublisherNotFoundException.class, () -> publisherService.createPublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.createPublisher(publisherRegisterDto));
     }
 
     @Test
@@ -66,7 +67,7 @@ public class PublisherServiceTest {
 
         Mockito.when(publisherRepository.findById(1L)).thenReturn(Optional.of(publisher));
 
-        publisherService.deletePublisher(publisherRequestDto);
+        publisherService.deletePublisher(1L);
 
         Mockito.verify(publisherRepository, Mockito.times(1)).delete(publisher);
     }
@@ -79,7 +80,7 @@ public class PublisherServiceTest {
         Publisher publisher = new Publisher();
         Mockito.when(publisherRepository.findById(any())).thenReturn(Optional.of(publisher));
 
-        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));}
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(1L));}
 
 
     @Test
@@ -94,7 +95,7 @@ public class PublisherServiceTest {
 
         Mockito.when(publisherRepository.findById(any())).thenReturn(Optional.of(publisher));
 
-        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(publisherRequestDto));
+        assertThrows(PublisherNotFoundException.class, () -> publisherService.deletePublisher(1L));
     }
 
 

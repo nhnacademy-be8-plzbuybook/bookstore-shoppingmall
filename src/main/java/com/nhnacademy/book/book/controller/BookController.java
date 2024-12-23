@@ -4,19 +4,29 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookController {
 
     @Autowired
-    private BookService bookService;
+    private final BookService bookService;
+
+
+    @GetMapping
+    public ResponseEntity<List<BookDetailResponseDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
 
     // 도서 상세 조회 기능
-    @GetMapping("/books/{bookId}")
+    @GetMapping("/{bookId}")
     public ResponseEntity<BookDetailResponseDto> getBookDetail(@PathVariable Long bookId) {
         return ResponseEntity.ok(bookService.getBookDetail(bookId));
     }
