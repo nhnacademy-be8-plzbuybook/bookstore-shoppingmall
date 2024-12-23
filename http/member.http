@@ -69,7 +69,7 @@ Content-Type: application/json
 {
   "memberGradeId": 1,
   "memberStateId": 2,
-  "name": "test",
+  "name": "test2",
   "phone": "010-2222-2222",
   "email": "test2@naver.com",
   "birth": "2024-12-12",

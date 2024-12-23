@@ -1,0 +1,43 @@
+### 인증 추가(일반)
+POST http://localhost:8090/api/certification
+Content-Type: application/json
+
+{
+  "memberId": 1,
+  "certification": "일반"
+}
+
+### 인증 추가(페이코)
+POST http://localhost:8090/api/certification
+Content-Type: application/json
+
+{
+  "memberId": 2,
+  "certification": "페이코"
+}
+
+
+### 회원Id로 인증 조회
+GET http://localhost:8090/api/members/1/certification
+Content-Type: application/json
+
+### 인증 방식 변경
+PATCH http://localhost:8090/api/members/1/certification
+Content-Type: application/json
+
+{
+  "certification": "페이코"
+}
+
+### 마지막 로그인 시간 갱신
+POST http://localhost:8090/api/members/1/last_login
+Content-Type: application/json
+
+
+### 인증 방식 삭제
+DELETE http://localhost:8090/api/members/1/certification
+Content-Type: application/json
+
+### 모든 인증 방식 조회
+GET http://localhost:8090/api/members/certification
+Content-Type: application/json
