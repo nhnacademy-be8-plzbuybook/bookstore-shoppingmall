@@ -9,11 +9,13 @@ import com.nhnacademy.book.book.exception.AuthorsNotFoundException;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class AuthorService {
 
     @Autowired

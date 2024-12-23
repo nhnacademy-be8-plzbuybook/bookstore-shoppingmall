@@ -35,7 +35,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-//@SpringBootTest
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
@@ -71,22 +70,21 @@ class MemberServiceImplTest {
     void createMember_Success() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
         memberCreateRequestDto.setBirth(LocalDate.now());
         memberCreateRequestDto.setPassword("123456");
 
+        // 기본 등급 및 기본 상태 설정
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"encodedPassword");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(), "encodedPassword");
 
         //mocking
         when(memberRepository.existsByEmail(memberCreateRequestDto.getEmail())).thenReturn(false);
-        when(memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())).thenReturn(Optional.of(memberGrade));
-        when(memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())).thenReturn(Optional.of(memberStatus));
+        when(memberGradeRepository.findById(1L)).thenReturn(Optional.of(memberGrade)); // 기본 등급 mock 설정
+        when(memberStatusRepository.findById(1L)).thenReturn(Optional.of(memberStatus)); // 기본 상태 mock 설정
         when(passwordEncoder.encode(memberCreateRequestDto.getPassword())).thenReturn("encodedPassword");
         when(memberRepository.save(any(Member.class))).thenReturn(member);
 
@@ -94,11 +92,12 @@ class MemberServiceImplTest {
         var response = memberService.createMember(memberCreateRequestDto);
 
         //then
-        assertNotNull(response);
-        assertEquals("윤지호", response.getName());
-        assertEquals("010-7237-3951", response.getPhone());
-        assertEquals("yoonwlgh12@naver.com", response.getEmail());
-
+        assertNotNull(response); // 응답이 null이 아닌지 확인
+        assertEquals("윤지호", response.getName()); // 이름 확인
+        assertEquals("010-7237-3951", response.getPhone()); // 전화번호 확인
+        assertEquals("yoonwlgh12@naver.com", response.getEmail()); // 이메일 확인
+        assertEquals("NORMAL", response.getMemberGradeName()); // 기본 등급 이름 확인
+        assertEquals("ACTIVE", response.getMemberStateName()); // 기본 상태 이름 확인
     }
 
     @Test
@@ -106,18 +105,16 @@ class MemberServiceImplTest {
     void createMember_DuplicateEmailException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
         memberCreateRequestDto.setBirth(LocalDate.now());
         memberCreateRequestDto.setPassword("123456");
 
-
         //mocking
         when(memberRepository.existsByEmail(memberCreateRequestDto.getEmail())).thenReturn(true);
 
+        //when, then
         assertThrows(DuplicateEmailException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
@@ -127,20 +124,17 @@ class MemberServiceImplTest {
     void createMember_MemberGradeNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
         memberCreateRequestDto.setBirth(LocalDate.now());
         memberCreateRequestDto.setPassword("123456");
 
-        //mocking
-        when(memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())).thenReturn(Optional.empty());
+        //mocking - 기본 등급 조회 실패 Mock
+        when(memberGradeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(MemberGradeNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
-
-
+        //when, then
+        assertThrows(DefaultMemberGradeNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
 
@@ -149,8 +143,6 @@ class MemberServiceImplTest {
     void createMember_MemberStatusNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
@@ -159,12 +151,12 @@ class MemberServiceImplTest {
 
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
 
-        //mocking
-        when(memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())).thenReturn(Optional.of(memberGrade));
-        when(memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())).thenReturn(Optional.empty());
+        //mocking - 기본 상태 조회 실패 Mock
+        when(memberGradeRepository.findById(1L)).thenReturn(Optional.of(memberGrade));
+        when(memberStatusRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(MemberStatusNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
-
+        //when, then
+        assertThrows(DefaultStatusGradeNotfoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
 
@@ -173,8 +165,6 @@ class MemberServiceImplTest {
     void createMember_PasswordIsEncoded() {
         // given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
@@ -184,8 +174,9 @@ class MemberServiceImplTest {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
 
-        when(memberGradeRepository.findById(memberCreateRequestDto.getMemberGradeId())).thenReturn(Optional.of(memberGrade));
-        when(memberStatusRepository.findById(memberCreateRequestDto.getMemberStateId())).thenReturn(Optional.of(memberStatus));
+        //mocking
+        when(memberGradeRepository.findById(1L)).thenReturn(Optional.of(memberGrade)); // 기본 등급
+        when(memberStatusRepository.findById(1L)).thenReturn(Optional.of(memberStatus)); // 기본 상태
         when(passwordEncoder.encode(memberCreateRequestDto.getPassword())).thenReturn("encodedPassword");
 
         Member savedMember = new Member();
@@ -217,9 +208,6 @@ class MemberServiceImplTest {
         memberCreateRequestDto.setBirth(LocalDate.now());
         memberCreateRequestDto.setPassword("1234");
 
-        // MemberGrade ID와 MemberStatus ID를 설정
-        memberCreateRequestDto.setMemberGradeId(1L);  // MemberGrade ID 설정
-        memberCreateRequestDto.setMemberStateId(1L);  // MemberState ID 설정
 
         // MemberGrade와 MemberStatus 설정
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
@@ -254,8 +242,6 @@ class MemberServiceImplTest {
     void creteMember_memberGradeNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
@@ -265,7 +251,7 @@ class MemberServiceImplTest {
         //mocking
         when(memberGradeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(MemberGradeNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
+        assertThrows(DefaultMemberGradeNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
     @Test
@@ -273,8 +259,6 @@ class MemberServiceImplTest {
     void createMember_memberStatusNotFoundException() {
         //given
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
@@ -287,7 +271,7 @@ class MemberServiceImplTest {
         when(memberGradeRepository.findById(1L)).thenReturn(Optional.of(memberGrade));
         when(memberStatusRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(MemberStatusNotFoundException.class, () -> memberService.createMember(memberCreateRequestDto));
+        assertThrows(DefaultStatusGradeNotfoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
 
@@ -303,18 +287,15 @@ class MemberServiceImplTest {
 
         when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(member));
         when(memberAuthRepository.findByMember(member)).thenReturn(memberAuthList);
-        when(passwordEncoder.encode(member.getPassword())).thenReturn("encodedPassword");
 
         var response = memberService.getMemberByEmail("yoonwlgh12@naver.com");
 
         assertNotNull(response);
         assertEquals("yoonwlgh12@naver.com", response.getEmail());
-        assertEquals("encodedPassword", response.getPassword());
         assertEquals("ADMIN", response.getAuthName());
 
         verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
         verify(memberAuthRepository).findByMember(member);
-        verify(passwordEncoder).encode(member.getPassword());
     }
 
     @Test
