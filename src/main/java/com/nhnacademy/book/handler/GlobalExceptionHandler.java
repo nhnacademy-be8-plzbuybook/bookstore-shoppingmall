@@ -4,6 +4,7 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -221,4 +222,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 
+    //OrderProductId로 OrderProduct를 조회할 때 예외
+    @ExceptionHandler(OrderProductNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleOrderProductNotFoundException(OrderProductNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
 }
