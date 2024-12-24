@@ -1,5 +1,8 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
+import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAuth;
 import com.nhnacademy.book.member.domain.MemberGrade;
@@ -20,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberAuthRepository memberAuthRepository;
 
+    private final CouponClient couponClient;
 
     //회원 생성
     @Override
@@ -66,6 +71,17 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        try {
+            // Welcome 쿠폰(회원가입 쿠폰) 발급 요청
+            WelComeCouponRequestDto welComeCouponRequestDto = new WelComeCouponRequestDto(
+                    savedMember.getMemberId(),
+                    LocalDateTime.now()
+            );
+            couponClient.issueWelcomeCoupon(welComeCouponRequestDto);
+        } catch (Exception e) {
+            throw new WelcomeCouponIssueException("Welcome 쿠폰발급이 실패 하였습니다!");
+        }
 
         // 응답 DTO 생성 및 반환
         return new MemberCreateResponseDto(

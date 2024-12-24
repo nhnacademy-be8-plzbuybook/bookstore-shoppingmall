@@ -2,6 +2,7 @@ package com.nhnacademy.book.handler;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
@@ -12,9 +13,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.View;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private final View error;
+
+    public GlobalExceptionHandler(View error) {
+        this.error = error;
+    }
+
     //중복 이메일
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ErrorResponseDto> handleDuplicateEmailException(DuplicateEmailException e) {
@@ -223,6 +231,16 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(PointConditionNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePointConditionNotFoundException(PointConditionNotFoundException e) {
+      HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+
     //OrderProductId로 OrderProduct를 조회할 때 예외
     @ExceptionHandler(OrderProductNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleOrderProductNotFoundException(OrderProductNotFoundException e) {
@@ -237,6 +255,7 @@ public class GlobalExceptionHandler {
     //회원의 인증 정보가 없을 때 예외
     @ExceptionHandler(CertificationNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleCertificationNotFoundException(CertificationNotFoundException e) {
+
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
@@ -266,4 +285,16 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
     }
+
+    //회원가입시 발행하는 Welcome 쿠폰 요청이 실패했을 때
+    @ExceptionHandler(WelcomeCouponIssueException.class)
+    public ResponseEntity<ErrorResponseDto> handleWelcomeCouponIssueException(WelcomeCouponIssueException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
+    }
+
 }

@@ -137,9 +137,11 @@ public class BookService {
                 bookRegisterDto.getBookPriceStandard(),
                 bookRegisterDto.getBookIsbn13()
         );
+        Book book2 = bookRepository.save(book);
+
 
         BookDocument bookDocument = new BookDocument();
-        bookDocument.setBookId(1L);
+        bookDocument.setBookId(book2.getBookId());
         bookDocument.setBookPriceStandard(bookRegisterDto.getBookPriceStandard());
         bookDocument.setBookIsbn13(bookRegisterDto.getBookIsbn13());
         bookDocument.setBookIndex(bookRegisterDto.getBookIndex());
@@ -148,7 +150,6 @@ public class BookService {
         bookDocument.setBookDescription(bookRegisterDto.getBookDescription());
         bookDocument.setPublisherId(bookRegisterDto.getPublisherId());
 
-        bookRepository.save(book);
         bookSearchRepository.save(bookDocument);
     }
 

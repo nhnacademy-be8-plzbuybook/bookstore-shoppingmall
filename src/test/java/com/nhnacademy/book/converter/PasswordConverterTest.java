@@ -42,5 +42,6 @@ public class PasswordConverterTest {
         assertNotEquals(rawPassword, encryptedPassword);
         assertTrue(passwordEncoder.matches(rawPassword, encryptedPassword));
     }
+
 }
 

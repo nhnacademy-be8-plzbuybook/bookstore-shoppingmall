@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -110,6 +111,21 @@ public class SellingBookController {
         List<SellingBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
         log.debug("응답 크기: {}", response.size());
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 판매책 가격과 임시 수량을 곱한 총 금액 반환
+     *
+     * @param sellingBookId 판매책 ID
+     * @param quantity 주문 수량 (임시 설정)
+     * @return 가격 * 수량의 총합
+     */
+    @GetMapping("/{sellingBookId}/calculate-price")
+    public ResponseEntity<BigDecimal> calculateOrderPrice(
+            @PathVariable Long sellingBookId,
+            @RequestParam int quantity) {
+        BigDecimal totalPrice = sellingBookService.calculateOrderPrice(sellingBookId, quantity);
+        return ResponseEntity.ok(totalPrice);
     }
 
 
