@@ -2,7 +2,8 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.member.domain.Image;
+import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
+import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
@@ -10,11 +11,10 @@ import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,4 +83,34 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         }
         wrappingPaperRepository.deleteById(id);
     }
+
+//    @Override
+//    public BigDecimal calculateFeeIfValidated(long id, Integer requiredQuantity) {
+//        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(() -> new NotFoundException("존재하지 않는 포장지입니다."));
+//
+//        if (wrappingPaper.getStock() < requiredQuantity) {
+//            throw new StockNotEnoughException("포장지의 재고가 부족합니다.");
+//        }
+//
+//        return wrappingPaper.getPrice().multiply(new BigDecimal(requiredQuantity));
+//    }
+
+    @Override
+    public BigDecimal calculateFeeIfValidated(OrderProductWrappingDto orderProductWrapping) {
+
+        if (orderProductWrapping == null) {
+            return BigDecimal.ZERO;
+        }
+
+        long id = orderProductWrapping.getWrappingPaperId();
+        int requiredQuantity = orderProductWrapping.getQuantity();
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(() -> new NotFoundException("존재하지 않는 포장지입니다."));
+
+        if (wrappingPaper.getStock() < requiredQuantity) {
+            throw new StockNotEnoughException("포장지의 재고가 부족합니다.");
+        }
+
+        return wrappingPaper.getPrice().multiply(new BigDecimal(requiredQuantity));
+    }
+
 }

@@ -4,6 +4,7 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -221,4 +222,48 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 
+
+    //OrderProductId로 OrderProduct를 조회할 때 예외
+    @ExceptionHandler(OrderProductNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleOrderProductNotFoundException(OrderProductNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    //회원의 인증 정보가 없을 때 예외
+    @ExceptionHandler(CertificationNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCertificationNotFoundException(CertificationNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    //허용되지 않은 인증 방법으로 변경하려할 때
+    @ExceptionHandler(InvalidCertificationMethodException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidCertificationMethodException(InvalidCertificationMethodException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    //중복된 인증 방법을 추가하려할 때
+    @ExceptionHandler(DuplicateCertificationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateCertificationException(DuplicateCertificationException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
 }

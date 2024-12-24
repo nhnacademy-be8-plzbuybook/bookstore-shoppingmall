@@ -34,9 +34,13 @@ public class BookDocument {
     private BigDecimal bookPriceStandard;
     private String bookIsbn13;
     private Long publisherId; // Publisher의 이름을 저장하는 필드 추가
+    private String imageUrl;
+
     private List<String> authors; // BookAuthor에서 Author 이름을 가져와서 리스트로 저장
 
-    public BookDocument(Long bookId, String bookTitle, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId, List<String> authors) {
+
+    public BookDocument(Long bookId, String bookTitle, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId, List<String> authors, String imageUrl)
+ {
         this.bookId = bookId;
         this.bookTitle = bookTitle;
         this.bookDescription = bookDescription;
@@ -45,6 +49,7 @@ public class BookDocument {
         this.bookIsbn13 = bookIsbn13;
         this.publisherId = publisherId;
         this.authors = authors;
+        this.imageUrl = imageUrl;
 
     }
 

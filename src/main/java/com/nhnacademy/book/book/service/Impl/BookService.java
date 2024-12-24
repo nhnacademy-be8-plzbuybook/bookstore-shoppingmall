@@ -12,6 +12,9 @@ import com.nhnacademy.book.book.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,29 +31,36 @@ public class BookService {
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
     private final BookSearchRepository bookSearchRepository;
+    private final BookImageRepository bookImageRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository,
-                       PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository) {
+                       PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository
+         , BookImageRepository bookImageRepository) {
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
         this.bookSearchRepository = bookSearchRepository;
+        this.bookImageRepository = bookImageRepository;
     }
 
     public List<BookDetailResponseDto> getAllBooks() {
         List<Book> books = bookRepository.findAll();
 
         return books.stream()
-                .map(book -> new BookDetailResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookIndex(),
-                        book.getBookDescription(),
-                        book.getBookPubDate(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13(),
-                        book.getPublisher().getPublisherId()
-                ))
+                .map(book -> {
+                    BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+                    return new BookDetailResponseDto(
+                            book.getBookId(),
+                            book.getBookTitle(),
+                            book.getBookIndex(),
+                            book.getBookDescription(),
+                            book.getBookPubDate(),
+                            book.getBookPriceStandard(),
+                            book.getBookIsbn13(),
+                            book.getPublisher().getPublisherId(),
+                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+                    );
+                })
                 .collect(Collectors.toList());
 
     }
@@ -59,6 +69,9 @@ public class BookService {
     public BookDetailResponseDto getBookDetail(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+
+        BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+
         return new BookDetailResponseDto(
                 book.getBookId(),
                 book.getBookTitle(),
@@ -67,7 +80,9 @@ public class BookService {
                 book.getBookPubDate(),
                 book.getBookPriceStandard(),
                 book.getBookIsbn13(),
-                book.getPublisher().getPublisherId());
+                book.getPublisher().getPublisherId(),
+                bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+        );
     }
 
     public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
@@ -94,7 +109,8 @@ public class BookService {
                 bookDocument.getBookPubDate(),
                 bookDocument.getBookPriceStandard(),
                 bookDocument.getBookIsbn13(),
-                bookDocument.getPublisherId());
+                bookDocument.getPublisherId(),
+                bookDocument.getImageUrl());
     }
 
 

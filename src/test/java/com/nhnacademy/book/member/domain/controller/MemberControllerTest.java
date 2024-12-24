@@ -37,8 +37,6 @@ class MemberControllerTest {
     @DisplayName("회원 생성")
     void createMember() {
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yoonwlgh12@naver.com");

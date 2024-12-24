@@ -1,14 +1,12 @@
 package com.nhnacademy.book.payment.entity;
 
+import com.nhnacademy.book.order.entity.Orders;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity
@@ -17,16 +15,45 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
     private Long id;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(nullable = false)
     private String paymentKey;
+
+    @Column(nullable = false)
     private LocalDateTime paidAt;
+
+    @Column(nullable = false)
     private BigDecimal amount;
-    private Long orderId;
 
+    @Column(nullable = false)
+    private String method;
 
-    public Payment(String paymentKey, LocalDateTime paidAt, BigDecimal amount, Long orderId) {
+    // 토스 주문 id
+    @Column(nullable = false)
+    private String orderId;
+
+    @Column
+    private String easyPayProvider;
+
+    @Setter
+    @OneToOne
+    @JoinColumn( name = "o_order_id", referencedColumnName = "order_id")
+    private Orders orders;
+
+    @Builder
+    public Payment(Long id, String status, String paymentKey, LocalDateTime paidAt, BigDecimal amount,
+                   String method, String orderId, String easyPayProvider, Orders orders) {
+        this.id = id;
+        this.status = status;
         this.paymentKey = paymentKey;
         this.paidAt = paidAt;
         this.amount = amount;
+        this.method = method;
         this.orderId = orderId;
+        this.easyPayProvider = easyPayProvider;
+        this.orders = orders;
     }
 }
