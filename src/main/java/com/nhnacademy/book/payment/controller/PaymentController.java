@@ -5,7 +5,6 @@ import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
 import com.nhnacademy.book.payment.entity.Payment;
 import com.nhnacademy.book.payment.service.PaymentService;
 import com.nhnacademy.book.payment.service.TossPaymentService;
-import com.nhnacademy.book.payment.service.impl.PaymentMessageService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PaymentController {
     private final PaymentService paymentService;
-    private final PaymentMessageService paymentMessageService;
     private final TossPaymentService tossPaymentService;
 
     @PostMapping("/api/orders/{orderId}/payments/cancel")

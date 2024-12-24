@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.payment.dto.PaymentConfirmRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentSaveRequestDto;
-import com.nhnacademy.book.payment.dto.PaymentSaveResponseDto;
 import com.nhnacademy.book.payment.dto.SaveAmountDto;
 import com.nhnacademy.book.payment.service.TossPaymentService;
-import com.nhnacademy.book.payment.service.impl.PaymentMessageService;
 import com.nhnacademy.book.payment.service.impl.PaymentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ExternalPaymentController {
     private final PaymentServiceImpl paymentService;
-    private final PaymentMessageService paymentMessageService;
     private final TossPaymentService tossPaymentService;
     private final ObjectMapper objectMapper;
 
