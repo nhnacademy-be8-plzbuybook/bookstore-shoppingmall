@@ -3,10 +3,11 @@ package com.nhnacademy.book.review.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.TempOrderProduct;
 import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.repository.TempOrderProductRepository;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
@@ -29,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
-//TODO orderProduct 완성된 후 수정될 예정
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceImplTest {
 
@@ -37,7 +37,7 @@ class ReviewServiceImplTest {
     private ReviewRepository reviewRepository;
 
     @Mock
-    private TempOrderProductRepository orderProductRepository;
+    private OrderProductRepository orderProductRepository;
 
     @Mock
     private MemberRepository memberRepository;
@@ -53,8 +53,14 @@ class ReviewServiceImplTest {
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
         Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(),"Password");
 
-        TempOrderProduct orderProduct = new TempOrderProduct();
-        orderProduct.setOrderProductId(1L);
+        OrderProduct orderProduct = OrderProduct.builder()
+                .id(1L)
+                .sellingBook(null)
+                .order(null)
+                .totalPrice(BigDecimal.valueOf(10000))
+                .quantity(1)
+                .status(OrderProductStatus.CANCELLED)
+                .build();
 
         Review review = new Review();
         review.setReviewId(1L);
