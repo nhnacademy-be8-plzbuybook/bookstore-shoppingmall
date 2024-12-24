@@ -1,8 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
-import com.nhnacademy.book.book.dto.request.BookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
@@ -38,7 +36,7 @@ public class BookAuthorService {
         this.authorRepository = authorRepository;
     }
 
-    public BookAuthorResponseDto createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
+    public void createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
         if (Objects.isNull(bookAuthorRequestDto.getAuthorId())) {
             throw new AuthorIdNotFoundException("Author not found");
         } else if (Objects.isNull(bookAuthorRequestDto.getBookId())) {
@@ -54,7 +52,7 @@ public class BookAuthorService {
         BookAuthor bookAuthor = new BookAuthor(book, author);
         bookAuthor = bookAuthorRepository.save(bookAuthor);
 
-        return new BookAuthorResponseDto(
+        new BookAuthorResponseDto(
                 bookAuthor.getId(),
                 bookAuthor.getBook().getBookId(),
                 bookAuthor.getBook().getBookTitle(),

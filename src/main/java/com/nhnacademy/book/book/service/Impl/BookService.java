@@ -3,6 +3,8 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.elastic.document.BookDocument;
+import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
@@ -23,12 +25,14 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
+    private final BookSearchRepository bookSearchRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository,
-                       PublisherRepository publisherRepository) {
+                       PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository) {
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
+        this.bookSearchRepository = bookSearchRepository;
     }
 
     public List<BookDetailResponseDto> getAllBooks() {
@@ -43,7 +47,7 @@ public class BookService {
                         book.getBookPubDate(),
                         book.getBookPriceStandard(),
                         book.getBookIsbn13(),
-                        book.getPublisher().getPublisherName() // publisherName을 DTO에 포함
+                        book.getPublisher().getPublisherId()
                 ))
                 .collect(Collectors.toList());
 
@@ -61,8 +65,25 @@ public class BookService {
                 book.getBookPubDate(),
                 book.getBookPriceStandard(),
                 book.getBookIsbn13(),
-                book.getPublisher().getPublisherName());
+                book.getPublisher().getPublisherId());
     }
+
+    public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
+        // Elasticsearch에서 BookDocument 조회
+        BookDocument bookDocument = bookSearchRepository.findByBookId(bookId);
+
+        // BookDetailResponseDto로 변환하여 반환
+        return new BookDetailResponseDto(
+                bookDocument.getBookId(),
+                bookDocument.getBookTitle(),
+                bookDocument.getBookIndex(),
+                bookDocument.getBookDescription(),
+                bookDocument.getBookPubDate(),
+                bookDocument.getBookPriceStandard(),
+                bookDocument.getBookIsbn13(),
+                bookDocument.getPublisherId());
+    }
+
 
     // 도서 등록 기능 (관리자)
     public void registerBook(BookRegisterDto bookRegisterDto) {
@@ -87,7 +108,19 @@ public class BookService {
                 bookRegisterDto.getBookPriceStandard(),
                 bookRegisterDto.getBookIsbn13()
         );
+
+        BookDocument bookDocument = new BookDocument();
+        bookDocument.setBookId(1L);
+        bookDocument.setBookPriceStandard(bookRegisterDto.getBookPriceStandard());
+        bookDocument.setBookIsbn13(bookRegisterDto.getBookIsbn13());
+        bookDocument.setBookIndex(bookRegisterDto.getBookIndex());
+        bookDocument.setBookTitle(bookRegisterDto.getBookTitle());
+        bookDocument.setBookPubDate(bookRegisterDto.getBookPubDate());
+        bookDocument.setBookDescription(bookRegisterDto.getBookDescription());
+        bookDocument.setPublisherId(bookRegisterDto.getPublisherId());
+
         bookRepository.save(book);
+        bookSearchRepository.save(bookDocument);
     }
 
 

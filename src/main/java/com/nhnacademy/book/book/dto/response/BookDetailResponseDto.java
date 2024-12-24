@@ -20,7 +20,7 @@ public class BookDetailResponseDto {
     private LocalDate bookPubDate;
     private BigDecimal bookPriceStandard;
     private String bookIsbn13;
-    private String publisherName;
+    private Long publisherId;
 
     public BookDetailResponseDto() {
 

@@ -4,6 +4,30 @@ POST http://localhost:8090/api/book
 ### 기본호출
 POST http://localhost:8090/api/books/sync
 
+###asd
+POST http://localhost:8090/api/books
+Content-Type: application/json
+
+{
+  "bookTitle": "Effective Java",
+  "bookIndex": "Index Content",
+  "bookDescription": "A comprehensive guide to Java programming.",
+  "bookPubDate": "2024-01-01",
+  "bookPriceStandard": "59.99",
+  "bookIsbn13": "9780134685991",
+  "publisherId": 1
+}
+
+### 출판사
+POST http://localhost:8090/api/publishers
+Content-Type: application/json
+
+{
+
+  "publisherName": "publisher test"
+
+}
+
 
 ### 특정 조건으로 호출
 # QueryType=Bestseller: 베스트셀러 조회
