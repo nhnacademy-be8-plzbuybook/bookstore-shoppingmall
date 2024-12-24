@@ -13,10 +13,10 @@ spring:
 
   config:
     activate:
-      on-profile: prod
+      on-profile: dev
 
   application:
-    name: bookstore
+    name: bookstore-dev
 
   servlet:
     multipart:
@@ -32,6 +32,7 @@ spring:
   #      password: MOW6c#y4TVxi1P5b  # MySQL 비밀번호
 
   datasource:
+    #{}에 값을 불러온다
     url: ${app.skm.database.url}
     username: ${app.skm.database.username}
     password: ${app.skm.database.password}
@@ -64,12 +65,20 @@ app:
       username: eb228aac947c4989be561ac95ee42c6b
       containerName: 4c3b4227ce904561ac012c685e35d1dd
 
+# 최대한 사용 x
+# 개발 하실때 로컬 mysql 로 테스트 해줬으면 합니다.
+# 배포환경이랑 최대한 비슷하게 개발하는게 좋다고 합니다.
+#h2:
+#    console:
+#      enabled: true  # H2 콘솔 활성화
+#      path: /h2-console  # H2 콘솔 접근 경로
+
 eureka:
   client:
     register-with-eureka: true  # Eureka에 서비스 등록
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
-      defaultZone: http://eureka:8761/eureka  # Eureka 서버 URL
+      defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
 
 aladin:
   api:
