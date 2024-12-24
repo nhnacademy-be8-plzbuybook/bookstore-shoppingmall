@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -26,11 +25,11 @@ public class WrappingPaper {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Setter
     @Column(nullable = false)
     private Long stock;
 
     @Column(nullable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     private String imagePath;

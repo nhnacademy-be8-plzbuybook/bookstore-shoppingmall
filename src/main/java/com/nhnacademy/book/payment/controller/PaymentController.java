@@ -1,41 +1,46 @@
 package com.nhnacademy.book.payment.controller;
 
-import com.nhnacademy.book.payment.PaymentService;
-import com.nhnacademy.book.payment.dto.SaveAmountDto;
-import jakarta.servlet.http.HttpServletRequest;
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
+import com.nhnacademy.book.payment.entity.Payment;
+import com.nhnacademy.book.payment.service.PaymentService;
+import com.nhnacademy.book.payment.service.TossPaymentService;
+import com.nhnacademy.book.payment.service.impl.PaymentMessageService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/payments")
 @RestController
 public class PaymentController {
     private final PaymentService paymentService;
-    private static final String WIDGET_SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
-    private static final String TOSS_PAYMENT_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+    private final PaymentMessageService paymentMessageService;
+    private final TossPaymentService tossPaymentService;
 
-    @PostMapping("/save-payment")
-    public ResponseEntity<?> saveAmount(@RequestBody SaveAmountDto saveAmount) {
-        paymentService.saveAmountOnRedis(saveAmount);
-        return ResponseEntity.ok("Success to save amount!");
-    }
+    @PostMapping("/api/orders/{orderId}/payments/cancel")
+    public ResponseEntity<?> cancelPayment(@PathVariable String orderId, @RequestBody PaymentCancelRequestDto cancelRequest) {
+//        cancelRequest.setOrderId(orderId);
 
+        try {
+            Payment payment = paymentService.getByOrderId(orderId);
+            String paymentKey = payment.getPaymentKey();
 
-    @PostMapping("/confirm/widget")
-    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) throws Exception {
-        JSONObject requestData = paymentService.parseRequestData(jsonBody);
-
-        // 결제 요청 전 저장한 정보와 같은지 비교
-        boolean isValid = paymentService.verifyPayment(requestData);
-
-        if (isValid) {
-            JSONObject response = paymentService.sendRequest(requestData, WIDGET_SECRET_KEY, TOSS_PAYMENT_CONFIRM_URL);
+            JSONObject response = tossPaymentService.cancelPayment(paymentKey, cancelRequest);
 
             int statusCode = response.containsKey("error") ? 400 : 200;
+
+            if (statusCode == 200) {
+                // paymentMessageService.sendCancelMessage(cancelRequest);
+            }
             return ResponseEntity.status(statusCode).body(response);
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return ResponseEntity.status(400).body(new JSONObject());
     }
 }
