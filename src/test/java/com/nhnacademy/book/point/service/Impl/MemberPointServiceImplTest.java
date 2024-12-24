@@ -63,33 +63,5 @@ class MemberPointServiceImplTest {
     }
 
 
-//    @Test
-//    @DisplayName("리뷰 작성 시 포인트 적립 성공 (이미지 포함)")
-//    void addReviewPointWithImage() {
-//        Review review = new Review();
-//        review.setReviewId(1L);
-//        review.setMember(member);
-//
-//        PointCondition pointCondition = new PointCondition();
-//        pointCondition.setName(PointConditionName.REVIEW);
-//        pointCondition.setConditionPoint(200);
-//
-//        PointCondition photoReviewCondition = new PointCondition();
-//        photoReviewCondition.setName(PointConditionName.PHOTO_REVIEW);
-//        photoReviewCondition.setConditionPoint(300); // 사진 리뷰 300 추가
-//
-//        // 리뷰에 이미지가 포함된 경우
-//        when(reviewImageRepository.existsByReview_ReviewId(1L)).thenReturn(true);
-//        when(pointConditionRepository.findByName(PointConditionName.REVIEW))
-//                .thenReturn(Optional.of(pointCondition));
-//        when(pointConditionRepository.findByName(PointConditionName.PHOTO_REVIEW))
-//                .thenReturn(Optional.of(photoReviewCondition));
-//
-//        memberPointService.addReviewPoint(review);
-//        verify(memberPointRepository, times(1)).save(any());
-//    }
-
-
-
 
 }

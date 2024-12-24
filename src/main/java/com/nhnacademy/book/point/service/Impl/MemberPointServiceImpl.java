@@ -19,11 +19,13 @@ import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class MemberPointServiceImpl implements MemberPointService {
