@@ -7,3 +7,5 @@ GET https://examples.http-client.intellij.net/get
 ### 쇼핑몰 서버에서 인증 서버로 요청 보내기
 
 GET http://localhost:8080/hello-from-auth
+
+

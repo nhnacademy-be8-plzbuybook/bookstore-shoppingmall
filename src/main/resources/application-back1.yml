@@ -4,15 +4,18 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 spring:
+
   elasticsearch:
-    uris: http://localhost:9200
-    username:
-    password:
+
+      uris: http://115.94.72.197:9200
+      username: elastic
+      password: nhnacademy123!
+
 
   config:
     activate:
       on-profile: back1
-    import: classpath:application-secret.yml
+#    import: classpath:application-secret.yml
 
   application:
     name: bookstore-back1

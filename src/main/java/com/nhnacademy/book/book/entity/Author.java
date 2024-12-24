@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Table(name = "author")
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Document(indexName = "author")
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
