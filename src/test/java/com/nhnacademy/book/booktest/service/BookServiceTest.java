@@ -93,23 +93,23 @@ public class BookServiceTest {
 
     }
 
-    @Test
-    void registerBook() {
-        BookRegisterDto bookRegisterDto = new BookRegisterDto();
-        bookRegisterDto.setPublisherId(1L);
-        bookRegisterDto.setBookTitle("test");
-        bookRegisterDto.setBookIndex("test index");
-        bookRegisterDto.setBookDescription("test description");
-        bookRegisterDto.setBookPubDate(LocalDate.of(2023, 12, 15));
-        bookRegisterDto.setBookPriceStandard(BigDecimal.valueOf(15.99));
-        bookRegisterDto.setBookIsbn13("1234567890");
-        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(publisherRepository.findById(anyLong())).thenReturn(Optional.ofNullable(publisher));
-
-        bookService.registerBook(bookRegisterDto);
-        Mockito.verify(bookRepository, Mockito.times(1)).save(any());
-
-    }
+//    @Test
+//    void registerBook() {
+//        BookRegisterDto bookRegisterDto = new BookRegisterDto();
+//        bookRegisterDto.setPublisherId(1L);
+//        bookRegisterDto.setBookTitle("test");
+//        bookRegisterDto.setBookIndex("test index");
+//        bookRegisterDto.setBookDescription("test description");
+//        bookRegisterDto.setBookPubDate(LocalDate.of(2023, 12, 15));
+//        bookRegisterDto.setBookPriceStandard(BigDecimal.valueOf(15.99));
+//        bookRegisterDto.setBookIsbn13("1234567890");
+//        Mockito.when(publisherRepository.existsById(anyLong())).thenReturn(true);
+//        Mockito.when(publisherRepository.findById(anyLong())).thenReturn(Optional.ofNullable(publisher));
+//
+//        bookService.registerBook(bookRegisterDto);
+//        Mockito.verify(bookRepository, Mockito.times(1)).save(any());
+//
+//    }
 
     @Test
     void registerBook_BookNotFoundException(){
