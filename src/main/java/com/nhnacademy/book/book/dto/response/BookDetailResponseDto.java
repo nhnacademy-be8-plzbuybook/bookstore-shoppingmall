@@ -24,5 +24,9 @@ public class BookDetailResponseDto {
     private String imageUrl;
 
 
+
+    public BookDetailResponseDto() {
+
+    }
 }
 

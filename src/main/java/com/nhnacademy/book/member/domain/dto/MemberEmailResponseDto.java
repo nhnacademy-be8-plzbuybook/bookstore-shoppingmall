@@ -18,14 +18,6 @@ import java.time.LocalDate;
 public class MemberEmailResponseDto {
 
 
-//    @NotBlank  
-//    @Size(max = 100)  
-//    private String name;  
-//  
-//    @NotBlank  
-//    @Size(max = 15)  
-//    private String phone;  
-
     @NotBlank
     @Email
     @Size(max = 100)
@@ -41,14 +33,4 @@ public class MemberEmailResponseDto {
     @Size(max = 100)
     private String password;
 
-//    @NotNull  
-//    private LocalDate birth;  
-//  
-//    @NotNull  
-//    private String memberGradeName;  
-//  
-//    @NotNull  
-//    private String memberStateName;  
-
-//    private String role;  
 }

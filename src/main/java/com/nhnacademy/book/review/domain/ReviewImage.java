@@ -1,4 +1,4 @@
-package com.nhnacademy.book.member.domain;
+package com.nhnacademy.book.review.domain;
 
 
 import jakarta.persistence.*;
@@ -24,7 +24,6 @@ public class ReviewImage {
     @JoinColumn(name = "ri_review_id", nullable = false)
     private Review review;
 
-    @OneToOne
-    @JoinColumn(name = "ri_image_id", nullable = false)
-    private Image image;
+    @Column(name = "image_path")
+    private String reviewImageUrl;
 }
