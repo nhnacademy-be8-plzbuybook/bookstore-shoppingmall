@@ -2,10 +2,12 @@ server:
   port: 8091
 
 spring:
+
   elasticsearch:
-    uris: http://localhost:9200
-    username:
-    password:
+
+    uris: http://115.94.72.197:9200
+    username: elastic
+    password: nhnacademy123!
 
   config:
     activate:

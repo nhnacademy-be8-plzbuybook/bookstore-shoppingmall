@@ -10,6 +10,7 @@ import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class BookService {
 
     //TODO 수정
@@ -70,7 +72,18 @@ public class BookService {
 
     public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
         // Elasticsearch에서 BookDocument 조회
+        log.debug("Searching for book with ID: {}", bookId);
+
         BookDocument bookDocument = bookSearchRepository.findByBookId(bookId);
+
+        if (bookDocument == null) {
+            log.error("Book not found with ID: {}", bookId);
+
+            throw new BookNotFoundException("Book with ID " + bookId + " not found.");
+        }
+
+
+        log.debug("Found book: {}", bookDocument);
 
         // BookDetailResponseDto로 변환하여 반환
         return new BookDetailResponseDto(

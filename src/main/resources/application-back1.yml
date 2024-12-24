@@ -2,10 +2,13 @@ server:
   port: 8090  # prod 환경에서 다른 포트 사용 (예시)
 
 spring:
+
   elasticsearch:
-      uris: http://localhost:9200
+
+      uris: http://115.94.72.197:9200
       username: elastic
       password: nhnacademy123!
+
 
   config:
     activate:

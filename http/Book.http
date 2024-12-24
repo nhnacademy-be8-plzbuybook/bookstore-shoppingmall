@@ -18,6 +18,10 @@ Content-Type: application/json
   "publisherId": 1
 }
 
+###  엘라스틱서치 조회
+GET http://localhost:8090/api/books/search/1
+
+
 ### 출판사
 POST http://localhost:8090/api/publishers
 Content-Type: application/json
@@ -27,6 +31,7 @@ Content-Type: application/json
   "publisherName": "publisher test"
 
 }
+
 
 
 ### 특정 조건으로 호출

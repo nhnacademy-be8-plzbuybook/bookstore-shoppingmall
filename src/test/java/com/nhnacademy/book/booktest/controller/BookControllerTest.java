@@ -62,7 +62,7 @@ public class BookControllerTest {
         bookDetailResponseDto.setBookIndex("test index");
         bookDetailResponseDto.setBookDescription("test description");
         bookDetailResponseDto.setBookPriceStandard(new BigDecimal(1000L));
-        bookDetailResponseDto.setPublisherName("test");
+        bookDetailResponseDto.setPublisherId(4L);
         bookDetailResponseDto.setBookPubDate(LocalDate.of(2000,1,1));
 
         BookDetailResponseDto bookDetailResponseDto2 = new BookDetailResponseDto();
@@ -72,7 +72,7 @@ public class BookControllerTest {
         bookDetailResponseDto2.setBookIndex("test index5");
         bookDetailResponseDto2.setBookDescription("test description5");
         bookDetailResponseDto2.setBookPriceStandard(new BigDecimal(1000L));
-        bookDetailResponseDto2.setPublisherName("test5");
+        bookDetailResponseDto2.setPublisherId(5L);
         bookDetailResponseDto2.setBookPubDate(LocalDate.of(2000,1,1));
 
         BookDetailResponseDto bookDetailResponseDto3 = new BookDetailResponseDto();
@@ -82,7 +82,7 @@ public class BookControllerTest {
         bookDetailResponseDto3.setBookIndex("test index6");
         bookDetailResponseDto3.setBookDescription("test description6");
         bookDetailResponseDto3.setBookPriceStandard(new BigDecimal(1000L));
-        bookDetailResponseDto3.setPublisherName("test6");
+        bookDetailResponseDto3.setPublisherId(6L);
         bookDetailResponseDto3.setBookPubDate(LocalDate.of(2000,1,1));
 
         bookDetailResponseDtoList.add(bookDetailResponseDto);
@@ -136,7 +136,7 @@ public class BookControllerTest {
         bookDetailResponseDto.setBookIndex("test index");
         bookDetailResponseDto.setBookDescription("test description");
         bookDetailResponseDto.setBookPriceStandard(new BigDecimal(1000L));
-        bookDetailResponseDto.setPublisherName("test");
+        bookDetailResponseDto.setPublisherId(1L);
         bookDetailResponseDto.setBookPubDate(LocalDate.of(2000,1,1));
 
 

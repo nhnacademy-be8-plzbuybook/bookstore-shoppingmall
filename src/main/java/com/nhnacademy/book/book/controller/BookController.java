@@ -33,7 +33,7 @@ public class BookController {
 
 
     @GetMapping("/search/{bookId}")
-    public ResponseEntity<BookDetailResponseDto> searchBooks(@RequestParam Long bookId) {
+    public ResponseEntity<BookDetailResponseDto> searchBooks(@PathVariable Long bookId) {
         return ResponseEntity.ok(bookService.getBookDetailFromElastic(bookId));
     }
 

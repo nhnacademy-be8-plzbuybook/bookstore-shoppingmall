@@ -1,6 +1,9 @@
 package com.nhnacademy.book.book.elastic.document;
 
 
+import com.nhnacademy.book.converter.LocalDateToLongConverter;
+import com.thoughtworks.xstream.converters.time.LocalDateConverter;
+import jakarta.persistence.Convert;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,6 +12,9 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.mapping.*;
 
 @Document(indexName = "book")
@@ -22,6 +28,8 @@ public class BookDocument {
     private String bookTitle;
     private String bookIndex;
     private String bookDescription;
+//    @Convert(converter = LocalDateToLongConverter.class)
+    @Field(type = FieldType.Date, pattern = "yyyy-MM-dd")
     private LocalDate bookPubDate;
     private BigDecimal bookPriceStandard;
     private String bookIsbn13;
@@ -39,6 +47,9 @@ public class BookDocument {
         this.authors = authors;
 
     }
+
+
+
 
 
     // 추가적인 필드를 Elasticsearch에서 필요로 하는 형태로 추가
