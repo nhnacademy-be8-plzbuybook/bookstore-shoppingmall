@@ -73,11 +73,27 @@ public class MemberPointServiceImpl implements MemberPointService {
 //
 //        // 기본 포인트 5%
 //        BigDecimal conditionPercentage = pointCondition.getConditionPercentage();
-//
 //        BigDecimal pointsToAdd = paymentPrice.multiply(conditionPercentage);
 //
-//        // 멤버 등급에서 불러옴
-//        BigDecimal gradePercentage = member.getMemberGrade().getGradePercentage();
+//        BigDecimal gradePercentage = BigDecimal.ZERO;
+//
+//        switch (member.getMemberGrade().getMemberGradeName()) {
+//            case "NORMAL":
+//                gradePercentage = new BigDecimal("0.01");  // 일반 등급 1%
+//                break;
+//            case "ROYAL":
+//                gradePercentage = new BigDecimal("0.02");  // 로얄 등급 2%
+//                break;
+//            case "GOLD":
+//                gradePercentage = new BigDecimal("0.03");  // 골드 등급 3%
+//                break;
+//            case "PLATINUM":
+//                gradePercentage = new BigDecimal("0.03");  // 플래티넘 등급 3%
+//                break;
+//            default:
+//                throw new IllegalStateException("알 수 없는 등급입니다.");
+//        }
+//
 //
 //        // 등급에 따른 포인트 추가
 //        pointsToAdd = pointsToAdd.add(paymentPrice.multiply(gradePercentage));
@@ -91,7 +107,7 @@ public class MemberPointServiceImpl implements MemberPointService {
 //                null
 //        );
 //        addMemberPoint(requestDto);
-//
+
 //    }
 //
 //
