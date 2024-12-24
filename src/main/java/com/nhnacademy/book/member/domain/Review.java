@@ -26,7 +26,7 @@ public class Review {
 
     @OneToOne
     @JoinColumn(name = "r_order_product_id", nullable = false)
-    private TempOrderProduct orderProduct;
+    private OrderProduct orderProduct;
 
     //평가 점수
     private Integer score;
