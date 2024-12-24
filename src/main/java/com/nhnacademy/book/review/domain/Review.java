@@ -1,7 +1,7 @@
 package com.nhnacademy.book.review.domain;
 
 import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.OrderProduct;
+import com.nhnacademy.book.member.domain.TempOrderProduct;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class Review {
 
     @OneToOne
     @JoinColumn(name = "r_order_product_id", nullable = false)
-    private OrderProduct orderProduct;
+    private TempOrderProduct orderProduct;
 
     //평가 점수
     private Integer score;

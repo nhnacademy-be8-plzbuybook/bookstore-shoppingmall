@@ -3,17 +3,15 @@ package com.nhnacademy.book.review.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.OrderProduct;
+import com.nhnacademy.book.member.domain.TempOrderProduct;
 import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
-import com.nhnacademy.book.member.domain.exception.MemberIdNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.repository.OrderProductRepository;
+import com.nhnacademy.book.member.domain.repository.TempOrderProductRepository;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
 import com.nhnacademy.book.review.repository.ReviewRepository;
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +37,7 @@ class ReviewServiceImplTest {
     private ReviewRepository reviewRepository;
 
     @Mock
-    private OrderProductRepository orderProductRepository;
+    private TempOrderProductRepository orderProductRepository;
 
     @Mock
     private MemberRepository memberRepository;
@@ -55,7 +53,7 @@ class ReviewServiceImplTest {
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
         Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(),"Password");
 
-        OrderProduct orderProduct = new OrderProduct();
+        TempOrderProduct orderProduct = new TempOrderProduct();
         orderProduct.setOrderProductId(1L);
 
         Review review = new Review();

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderProduct {
+public class TempOrderProduct {
     //리뷰 매핑을 위해 임의로 만들었습니다.
     @Id
     private Long orderProductId;
