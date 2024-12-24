@@ -104,10 +104,10 @@ public class MemberPointServiceImpl implements MemberPointService {
 //                null,
 //                PointConditionName.BOOK_PURCHASE,
 //                pointsToAdd.intValue(),
-//                null
+//                conditionPercentage
 //        );
 //        addMemberPoint(requestDto);
-
+//
 //    }
 //
 //

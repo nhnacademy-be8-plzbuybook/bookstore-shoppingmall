@@ -38,7 +38,7 @@ public class MemberPointController {
 //        try {
 //             Member member = memberRepository.findById(member_id)
 //                    .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
-//            memberPointService.addBookPurchasePoint(member_id, order_id, orderStatus);
+//            memberPointService.addBookPurchasePoint(member, order_id, orderStatus);
 //            return new ResponseEntity<>("도서 구매 포인트가 적립되었습니다.", HttpStatus.CREATED);
 //        } catch (IllegalStateException e) {
 //            return new ResponseEntity<>("구매확정 이후에만 포인트가 적립됩니다.", HttpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ public class MemberPointController {
 //            return new ResponseEntity<>("포인트 적립 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
 //    }
-//
+
 //
 //    public ResponseEntity<String> addReviewPoint(@PathVariable Long member_id, @PathVariable Long review_id) {
 //        try {
