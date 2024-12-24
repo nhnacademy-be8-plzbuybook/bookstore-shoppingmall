@@ -3,37 +3,40 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookController {
 
     @Autowired
-    private BookService bookService;
+    private final BookService bookService;
 
-//
-//    // 도서 검색 기능
-//    @GetMapping
-//    public ResponseEntity<List<BookResponseDto>> searchBooks(@ModelAttribute BookSearchRequestDto searchRequest) {
-//        return ResponseEntity.ok(bookService.searchBooks(searchRequest));
-//    }
+
+    @GetMapping
+    public ResponseEntity<List<BookDetailResponseDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
 
     // 도서 상세 조회 기능
-    @GetMapping("/books/{bookId}")
+    @GetMapping("/{bookId}")
     public ResponseEntity<BookDetailResponseDto> getBookDetail(@PathVariable Long bookId) {
         return ResponseEntity.ok(bookService.getBookDetail(bookId));
     }
 
 
-
+    @GetMapping("/search/{bookId}")
+    public ResponseEntity<BookDetailResponseDto> searchBooks(@PathVariable Long bookId) {
+        return ResponseEntity.ok(bookService.getBookDetailFromElastic(bookId));
+    }
 
     // 도서 등록 기능 (관리자)
     @PostMapping

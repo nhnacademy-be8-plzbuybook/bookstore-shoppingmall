@@ -1,5 +1,94 @@
 ### 프로젝트 실행시키면 무조건 한번 실행되는 http 요청 - 실행 버튼 안눌러도돼.
+POST http://localhost:8090/api/book
+
+### 기본호출
 POST http://localhost:8090/api/books/sync
+
+###asd
+POST http://localhost:8090/api/books
+Content-Type: application/json
+
+{
+  "bookTitle": "집가고싶다",
+  "bookIndex": "Index Content",
+  "bookDescription": "A comprehensive guide to Java programming.",
+  "bookPubDate": "2024-01-01",
+  "bookPriceStandard": "59.99",
+  "bookIsbn13": "9780134685123",
+  "publisherId": 204
+}
+
+###  엘라스틱서치 조회
+GET http://localhost:8090/api/books/search/305
+
+### 엘라스틱 출판사 조회
+GET http://localhost:8090/api/publishers/search/204
+
+### 출판사
+POST http://localhost:8090/api/publishers
+Content-Type: application/json
+
+{
+  "publisherName": "출판사 1"
+
+}
+
+### 작가 저장
+POST http://localhost:8090/api/authors
+Content-Type: application/json
+
+{
+  "authorName": "테스트작가"
+
+}
+
+### 작가 이름으로 조회
+GET http://localhost:8090/api/search/테스트작가
+
+### 이름 조회 인코딩
+GET http://localhost:8090/api/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%9E%91%EA%B0%80
+
+
+
+
+
+
+
+### 특정 조건으로 호출
+# QueryType=Bestseller: 베스트셀러 조회
+# SearchTarget=Foreign: 외국 도서만 검색
+# start=1: 첫 번째 아이템부터 시작
+# maxResults=20: 한 번에 20개씩 가져오기
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Foreign&maxResults=50
+
+
+### 신간 리스트 전체 조회 - 50개 나옴
+POST http://localhost:8090/api/books/sync?queryType=ItemNewAll&searchTarget=Book&start=1&maxResults=50
+
+### 블로거 베스트 셀러
+POST http://localhost:8090/api/books/sync?queryType=BlogBest&searchTarget=Book&start=1&maxResults=50
+
+
+### 베스트 셀러 외국 도서 - 60 개 나옴
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Foreign&start=1&maxResults=20
+
+
+### 베스트 셀러 국내도서 - 50개 나옴
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=1&maxResults=50
+
+### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
+POST http://localhost:8090/api/books/sync/isbn
+Content-Type: application/json
+
+[
+  "9791158682934",
+  "9791170403012"
+]
+
+
+### 9788936434267이라는 ISBN을 기반으로 알라딘 API를 호출하고, 도서 데이터를 저장합니다. (특정 isbn 으로 저장 가능) / 9788936434120 - 소년이 온다
+POST http://localhost:8090/api/books/sync/itemid/9791158682934
+s/sync
 
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.

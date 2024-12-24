@@ -5,6 +5,7 @@ import com.nhnacademy.book.member.domain.dto.auth.AuthRequestDto;
 import com.nhnacademy.book.member.domain.dto.auth.AuthResponseDto;
 import com.nhnacademy.book.member.domain.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,6 +43,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("권한 생성")
     void createAuth() throws Exception {
         // Given
         AuthRequestDto requestDto = new AuthRequestDto("ADMIN");
@@ -59,6 +61,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("모든 권한 조회")
     void getAllAuths() throws Exception {
 
         AuthResponseDto responseDto = new AuthResponseDto(1L, "ADMIN");
@@ -75,6 +78,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Id로 권한 조회")
     void getAuthById() throws Exception {
         // Given
         AuthResponseDto responseDto = new AuthResponseDto(1L, "ADMIN");
@@ -88,6 +92,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.name").value("ADMIN"));
     }
     @Test
+    @DisplayName("Id로 권한 조회 시 예외")
     void getAuthById_notFound() throws Exception {
         // Given
         when(authService.getAuthById(1L)).thenReturn(Optional.empty());
@@ -98,6 +103,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("권한 수정")
     void updateAuth() throws Exception {
         // Given
         AuthRequestDto requestDto = new AuthRequestDto("SUPER_ADMIN");
@@ -115,6 +121,7 @@ public class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("권한 삭제")
     void deleteAuth() throws Exception {
         // Given
         doNothing().when(authService).deleteAuth(1L);

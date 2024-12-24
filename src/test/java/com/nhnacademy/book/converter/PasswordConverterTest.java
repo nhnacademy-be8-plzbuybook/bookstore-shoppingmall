@@ -4,52 +4,56 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ActiveProfiles("test")
 public class PasswordConverterTest {
 
-    @Autowired
     private PasswordConverter passwordConverter;
-
-    private String plainPassword;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
-    public void setUp() {
-        plainPassword = "password";
+    void setUp() {
+        passwordConverter = new PasswordConverter();
+        passwordEncoder = new BCryptPasswordEncoder();
     }
 
-//    @Configuration
-//    static class TestConfig {
-//        @Bean
-//        public PasswordConverter passwordConverter() {
-//            return new PasswordConverter();
-//        }
-//    }
 
     @Test
-    public void testEncryptAndDecrypt() {
-        // 암호화
-        String encryptedPassword = passwordConverter.convertToDatabaseColumn(plainPassword);
-        log.info("Encrypted password: {}", encryptedPassword);
+    void convertToDatabaseColumn_shouldEncryptPassword() {
+        String rawPassword = "securePassword123";
 
-        assertNotEquals(plainPassword, encryptedPassword);
+        String encryptedPassword = passwordConverter.convertToDatabaseColumn(rawPassword);
 
-        String decryptedPassword = passwordConverter.convertToEntityAttribute(encryptedPassword);
-        log.info("Decrypted password: {}", decryptedPassword);
+        log.info("{}", encryptedPassword);
 
-        assertEquals(plainPassword, decryptedPassword);
+
+        assertNotNull(encryptedPassword);
+        assertNotEquals(rawPassword, encryptedPassword);
+        assertTrue(passwordEncoder.matches(rawPassword, encryptedPassword));
     }
+
+    //방식 변경으로 주석 처리
+//    @Test
+//    void convertToEntityAttribute_shouldThrowException() {
+//        String encryptedPassword = "encryptedPassword123";
+//
+//        UnsupportedOperationException exception = assertThrows(
+//                UnsupportedOperationException.class,
+//                () -> passwordConverter.convertToEntityAttribute(encryptedPassword)
+//        );
+//
+//        assertEquals("Password decryption is not supported.", exception.getMessage());
+//    }
 
 }

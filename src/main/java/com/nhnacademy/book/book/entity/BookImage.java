@@ -21,7 +21,7 @@ public class BookImage {
     @JoinColumn(name = "book_image_book_id", nullable = false)
     private Book book;
 
-    @Column(nullable = false)
-    private Long imageId;
+    @Column(name = "image_path")
+    private String imageUrl;
 }
 

@@ -40,30 +40,38 @@ public class MappingService {
      */
     public boolean processBookData(AladinResponse bookData) {
         try {
+            // 중복 데이터 체크
             if (bookRepository.existsByBookIsbn13(bookData.getIsbn13())) {
-                return false; // 중복 데이터
+                log.debug("이미 존재하는 도서: ISBN13 = {}", bookData.getIsbn13());
+                return false;
             }
 
             // Book 매핑 및 저장
             Book book = mapToBookEntity(bookData);
             bookRepository.save(book);
+            log.debug("저장된 책: {}", book.getBookTitle());
+
+            // 카테고리 저장 및 연결
+            if (bookData.getCategoryName() != null) {
+                categoryService.saveBookCategory(book, bookData.getCategoryName());
+                bookRepository.save(book); // Book 저장 (카테고리 연결 후 다시 저장)
+            }
 
             // 이미지 저장
             imageService.saveBookImage(book, bookData.getCover());
 
-            // 카테고리 저장
-            categoryService.processCategoryPath(bookData.getCategoryName());
-
-            // SellingBook 저장
+            // SellingBook 생성 및 저장
             SellingBook sellingBook = createSellingBook(book, bookData);
             sellingBookRepository.save(sellingBook);
+            log.debug("저장된 판매책: {}", sellingBook.getSellingBookId());
 
             return true; // 처리 성공
         } catch (Exception e) {
-            log.debug("데이터 처리 중 오류 발생: {}", bookData.getIsbn13(), e);
+            log.error("도서 처리 중 오류 발생: ISBN13 = {}, 오류 메시지: {}", bookData.getIsbn13(), e.getMessage(), e);
             return false;
         }
     }
+
 
     /**
      * 알라딘 API 응답 데이터를 Book 엔티티로 매핑합니다.

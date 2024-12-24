@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class BookLikeRequestDto {
-    private Long userId;
+    private Long memberId;
+    private Long sellingBookId;
 }

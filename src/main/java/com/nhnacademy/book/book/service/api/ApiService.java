@@ -25,32 +25,24 @@ public class ApiService {
         this.restTemplate = restTemplate;
         this.mappingService = mappingService;
     }
-
     /**
      * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다.
      */
-    /**
-     * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다.
-     */
-    public void saveBooksFromListApi() {
-        int itemsPerPage = 50; // 한 페이지당 결과 개수
-        int startIndex = 1;    // API 호출 시작 인덱스
-        int maxPages = 2;      // 최대 페이지 수 제한
-        int currentPage = 1;   // 현재 페이지 번호
-        int totalBooksFetched = 0; // 가져온 책의 총 개수
-        int totalBooksSaved = 0;   // 저장된 책의 총 개수
+    public void saveBooksFromListApi(String queryType, String searchTarget, int start, int maxResults) {
+        int currentPage = 1;
+        int totalBooksFetched = 0;
+        int totalBooksSaved = 0;
 
         try {
-            while (currentPage <= maxPages) {
-                // QueryType과 start를 동적으로 추가
-                String listUrl = String.format("%s&QueryType=%s&start=%d&MaxResults=%d",
-                        aladinApiUrl, "ItemNewSpecial", startIndex, itemsPerPage);
-                log.debug("API 호출 중: URL = {}", listUrl);
+            while (currentPage <= 5) { // 최대 페이지 제한
+                // URL에 동적 파라미터 추가
+                String listUrl = String.format("%s&QueryType=%s&SearchTarget=%s&start=%d&MaxResults=%d",
+                        aladinApiUrl, queryType, searchTarget, start, maxResults);
 
-                // API 호출
+                log.debug("API 호출 URL: {}", listUrl);
+
                 AladinBookListResponse response = callAladinApi(listUrl);
 
-                // API 응답 체크
                 if (response == null || response.getBooks() == null || response.getBooks().isEmpty()) {
                     log.debug("더 이상 가져올 데이터가 없습니다. 현재 페이지: {}", currentPage);
                     break;
@@ -58,9 +50,7 @@ public class ApiService {
 
                 int booksFetched = response.getBooks().size();
                 totalBooksFetched += booksFetched;
-                log.debug("가져온 데이터 수: {} (페이지: {})", booksFetched, currentPage);
 
-                // 응답 데이터 처리
                 for (AladinResponse bookData : response.getBooks()) {
                     boolean isSaved = mappingService.processBookData(bookData);
                     if (isSaved) {
@@ -71,8 +61,7 @@ public class ApiService {
                     }
                 }
 
-                // 다음 페이지로 이동
-                startIndex += itemsPerPage;
+                start += maxResults;
                 currentPage++;
             }
         } catch (Exception e) {
@@ -81,7 +70,6 @@ public class ApiService {
 
         log.debug("총 가져온 책 수: {}", totalBooksFetched);
         log.debug("총 저장된 책 수: {}", totalBooksSaved);
-        log.debug("도서 데이터 가져오기 및 저장 완료.");
     }
 
 
@@ -90,7 +78,7 @@ public class ApiService {
      *
      * @param isbns ISBN 리스트
      */
-        @Transactional
+    @Transactional
     public boolean saveBooksByIsbns(List<String> isbns) {
         boolean isSaved = false;
 

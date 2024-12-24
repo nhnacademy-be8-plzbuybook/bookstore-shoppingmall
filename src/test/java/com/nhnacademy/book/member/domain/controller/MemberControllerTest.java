@@ -7,6 +7,7 @@ import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberIdNotFoundException;
 import com.nhnacademy.book.member.domain.service.MemberService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,10 +34,9 @@ class MemberControllerTest {
     private MemberController memberController;
 
     @Test
+    @DisplayName("회원 생성")
     void createMember() {
         MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
-        memberCreateRequestDto.setMemberGradeId(1L);
-        memberCreateRequestDto.setMemberStateId(1L);
         memberCreateRequestDto.setName("윤지호");
         memberCreateRequestDto.setPhone("010-7237-3951");
         memberCreateRequestDto.setEmail("yoonwlgh12@naver.com");
@@ -74,6 +74,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원 수정")
     void modifyMember() {
         MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
         memberModifyRequestDto.setName("윤지호");
@@ -101,6 +102,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원을 email로 조회")
     void getMemberByEmail() {
         String email = "yoonwlgh12@naver.com";
 
@@ -122,6 +124,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원을 id로 조회")
     void getMemberById() {
         Long memberId = 1L;
 
@@ -154,6 +157,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원 탈퇴 controller test")
     void withdrawMember() {
         Long memberId = 1L;
 
@@ -169,6 +173,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("withdrawMember 조회시 예외")
     void withdrawMember_memberNotFound() {
         Long memberId = 1L;
 
@@ -184,7 +189,8 @@ class MemberControllerTest {
     }
 
     @Test
-    void withdrawMember_memberGradeNotFOundException() {
+    @DisplayName("withdraw상태를 조회할 때 예외처리")
+    void withdrawMember_memberGradeNotFoundException() {
         Long memberId = 1L;
 
         doThrow(new MemberGradeNotFoundException("withdraw 상태가 없다!"))
@@ -199,6 +205,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원을 조회하는 controller test")
     void getMembers() {
         MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
         memberSearchRequestDto.setPage(0);

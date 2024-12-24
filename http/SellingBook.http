@@ -1,0 +1,54 @@
+### 판매책 수정
+PUT localhost:8090/api/selling-books/1
+Content-Type: application/json
+
+{
+  "price": 20000,
+  "stock": 20,
+  "packageable": true,
+  "used": true,
+  "status": "DELETEBOOK"
+}
+
+### 판매책 특정 가격 필드값 수정
+PUT localhost:8090/api/selling-books/1
+Content-Type: application/json
+
+{
+  "price": 25000
+}
+
+### 판매책 특정 상태 필드값만 수정
+PUT localhost:8090/api/selling-books/1
+Content-Type: application/json
+
+{
+  "status": "SELLEND"
+}
+
+
+
+### 판매책 삭제
+DELETE localhost:8090/api/selling-books/1
+
+### 판매책 상세조회
+GET http://localhost:8090/api/selling-books/1
+
+### 조회수에 따른 조회
+# - {sortDirection}: 정렬 방향 (desc: 높은 순, asc: 낮은 순). 기본값은 desc.
+GET http://localhost:8090/api/selling-books/view-count?sortDirection={sortDirection}
+
+### 조회수 높은 순 조회
+# 조회수가 높은 순서로 정렬된 판매책 목록을 조회합니다.
+GET http://localhost:8090/api/selling-books/view-count/desc
+
+### 조회수 낮은 순 조회
+# 조회수가 낮은 순서로 정렬된 판매책 목록을 조회합니다.
+GET http://localhost:8090/api/selling-books/view-count/asc
+
+### 판매책을 특정 상태(예: 판매중, 품절)로 조회
+GET http://localhost:8090/api/selling-books/status?status=SELLING
+
+
+### 카테고리별 판매책 조회
+GET http://localhost:8090/api/selling-books/category/5

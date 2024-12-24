@@ -6,6 +6,7 @@ import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
+import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
@@ -42,6 +43,8 @@ public class BookServiceTest {
     @Mock
     private PublisherRepository publisherRepository;
 
+    @Mock
+    private BookImageRepository bookImageRepository; // BookImageRepository 추가
     private Publisher publisher;
 
     List<Book> books = new ArrayList<>();
@@ -50,7 +53,6 @@ public class BookServiceTest {
     void setUp() {
         publisher = new Publisher("Test Publisher");
         publisher.setPublisherId(1L);
-//        Mockito.when(publisherRepository.save(Mockito.any(Publisher.class))).thenReturn(publisher);
 
         Book book1 = new Book(
                 publisher,
@@ -72,7 +74,7 @@ public class BookServiceTest {
                 new BigDecimal("15.99"),
                 "1234567890123453"
         );
-        book1.setBookId(2L);
+        book2.setBookId(2L);
         Book book3 = new Book(
                 publisher,
                 "Find Book Title3",
@@ -82,7 +84,7 @@ public class BookServiceTest {
                 new BigDecimal("15.99"),
                 "1234567890123453"
         );
-        book1.setBookId(3L);
+        book3.setBookId(3L);
 
 
         books.add(book1);

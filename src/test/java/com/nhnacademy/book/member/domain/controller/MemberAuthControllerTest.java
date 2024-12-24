@@ -5,6 +5,7 @@ import com.nhnacademy.book.member.domain.dto.auth.MemberAuthRequestDto;
 import com.nhnacademy.book.member.domain.dto.auth.MemberAuthResponseDto;
 import com.nhnacademy.book.member.domain.service.MemberAuthService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ public class MemberAuthControllerTest {
     }
 
     @Test
+    @DisplayName("회원의 권한 등록")
     void assignAuthToMember() throws Exception {
         MemberAuthRequestDto requestDto = new MemberAuthRequestDto();
         requestDto.setMemberId(1L);
@@ -68,6 +70,7 @@ public class MemberAuthControllerTest {
     }
 
     @Test
+    @DisplayName("권한에 해당하는 회원 조회")
     void getAuthsByMember() throws Exception {
         // Given
         Long memberId = 1L;
@@ -84,6 +87,7 @@ public class MemberAuthControllerTest {
     }
 
     @Test
+    @DisplayName("회원권한 수정")
     void updateMemberAuth() throws Exception {
         // Given
         Long memberId = 1L;
@@ -109,6 +113,7 @@ public class MemberAuthControllerTest {
     }
 
     @Test
+    @DisplayName("회원권한 삭제")
     void deleteMemberAuth() throws Exception {
         Long memberId = 1L;
         Long authId = 101L;

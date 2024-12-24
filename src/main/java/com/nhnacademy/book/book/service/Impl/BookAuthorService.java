@@ -1,8 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
-import com.nhnacademy.book.book.dto.request.BookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
@@ -17,12 +15,14 @@ import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class BookAuthorService {
 
     private final BookAuthorRepository bookAuthorRepository;
@@ -36,7 +36,7 @@ public class BookAuthorService {
         this.authorRepository = authorRepository;
     }
 
-    public BookAuthorResponseDto createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
+    public void createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
         if (Objects.isNull(bookAuthorRequestDto.getAuthorId())) {
             throw new AuthorIdNotFoundException("Author not found");
         } else if (Objects.isNull(bookAuthorRequestDto.getBookId())) {
@@ -52,7 +52,7 @@ public class BookAuthorService {
         BookAuthor bookAuthor = new BookAuthor(book, author);
         bookAuthor = bookAuthorRepository.save(bookAuthor);
 
-        return new BookAuthorResponseDto(
+        new BookAuthorResponseDto(
                 bookAuthor.getId(),
                 bookAuthor.getBook().getBookId(),
                 bookAuthor.getBook().getBookTitle(),
@@ -61,17 +61,17 @@ public class BookAuthorService {
         );
     }
 
-    public void deleteBookAuthor(BookAuthor bookAuthor) {
-        if (Objects.isNull(bookAuthor)) {
+    public void deleteBookAuthor(Long bookAuthorId) {
+        if (!bookAuthorRepository.existsById(bookAuthorId)) {
             throw new BookAuthorNotFoundException("BookAuthor not found");
         }
-        bookAuthorRepository.delete(bookAuthor);
+        bookAuthorRepository.deleteById(bookAuthorId);
     }
 
     public List<BookResponseDto> findBooksByAuthorId(Long authorId) {
         List<Book> books = bookAuthorRepository.findBooksByAuthorId(authorId);
 
-        if (books == null || books.isEmpty()) {
+        if (!authorRepository.existsById(authorId)) {
             throw new AuthorIdNotFoundException("Author id: " + authorId + " not found");
         }
 
@@ -88,7 +88,7 @@ public class BookAuthorService {
     public List<AuthorResponseDto> findAuthorsByBookId(Long bookId) {
         List<Author> authors = bookAuthorRepository.findAuthorsByBookId(bookId);
 
-        if (authors == null || authors.isEmpty()) {
+        if (!bookRepository.existsById(bookId)) {
             throw new BookNotFoundException("Book id: " + bookId + " not found");
         }
 

@@ -2,15 +2,20 @@ package com.nhnacademy.book.book.service.category;
 
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class ApiCategoryService {
     private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     public ApiCategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -59,7 +64,7 @@ public class ApiCategoryService {
      * @param book Book 엔티티
      * @param categoryPath 카테고리 전체 경로 (예: "국내도서>예술/대중문화>음악>악보/작곡>피아노 및 건반악기 악보")
      */
-    private void saveBookCategory(Book book, String categoryPath) {
+    public void saveBookCategory(Book book, String categoryPath) {
         if (categoryPath != null && !categoryPath.isEmpty()) {
             // 카테고리 경로를 > 기준으로 나눠서 저장
             processCategoryPath(categoryPath);
@@ -82,7 +87,10 @@ public class ApiCategoryService {
 
             // 도서에 카테고리 연결
             book.addCategory(category);
+            bookRepository.save(book); // save 호출 확인
+
             log.debug("도서에 연결된 최하위 카테고리: {}", lastCategoryName);
         }
     }
 }
+

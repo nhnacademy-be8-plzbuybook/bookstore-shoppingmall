@@ -53,10 +53,8 @@ POST http://localhost:8090/api/members
 Content-Type: application/json
 
 {
-  "memberGradeId": 1,
-  "memberStateId": 1,
   "name": "test",
-  "phone": "010-1234-5678",
+  "phone": "010-1111-5638",
   "email": "test@naver.com",
   "birth": "2024-12-12",
   "password": "1111"
@@ -67,8 +65,6 @@ POST http://localhost:8090/api/members
 Content-Type: application/json
 
 {
-  "memberGradeId": 1,
-  "memberStateId": 2,
   "name": "test",
   "phone": "010-2222-2222",
   "email": "test2@naver.com",
@@ -81,8 +77,6 @@ POST http://localhost:8090/api/members
 Content-Type: application/json
 
 {
-  "memberGradeId": 2,
-  "memberStateId": 2,
   "name": "test",
   "phone": "010-3333-3333",
   "email": "test3@naver.com",

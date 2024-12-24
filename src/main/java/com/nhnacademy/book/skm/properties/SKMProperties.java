@@ -15,6 +15,7 @@ public class SKMProperties {
     private String keystoreFile;
     private String password;
     private Database Database;
+    private Object_storage objectStorage;
 
     @Getter
     @Setter
@@ -22,6 +23,17 @@ public class SKMProperties {
         private String url;
         private String username;
         private String password;
+    }
+
+    @Getter
+    @Setter
+    public static class Object_storage {
+        private String authUrl;
+        private String username;
+        private String password;
+        private String url;
+        private String tenantId;
+        private String containerName;
     }
 }
 
