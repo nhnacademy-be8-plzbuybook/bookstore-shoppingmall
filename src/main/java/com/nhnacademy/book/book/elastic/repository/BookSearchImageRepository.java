@@ -11,6 +11,6 @@ import java.util.Optional;
 
 
 @Repository
-public interface BookSearchImageRepository extends ElasticsearchRepository<BookImage, Long> {
+public interface BookSearchImageRepository extends ElasticsearchRepository<BookImageDocument, Long> {
     Optional<BookImageDocument> findByBook(Book book); // Book으로 이미지 조회
 }

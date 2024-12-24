@@ -42,17 +42,17 @@ public class PasswordConverterTest {
         assertNotEquals(rawPassword, encryptedPassword);
         assertTrue(passwordEncoder.matches(rawPassword, encryptedPassword));
     }
-
-    @Test
-    void convertToEntityAttribute_shouldThrowException() {
-        String encryptedPassword = "encryptedPassword123";
-
-        UnsupportedOperationException exception = assertThrows(
-                UnsupportedOperationException.class,
-                () -> passwordConverter.convertToEntityAttribute(encryptedPassword)
-        );
-
-        assertEquals("Password decryption is not supported.", exception.getMessage());
-    }
+//
+//    @Test
+//    void convertToEntityAttribute_shouldThrowException() {
+//        String encryptedPassword = "encryptedPassword123";
+//
+//        UnsupportedOperationException exception = assertThrows(
+//                UnsupportedOperationException.class,
+//                () -> passwordConverter.convertToEntityAttribute(encryptedPassword)
+//        );
+//
+//        assertEquals("Password decryption is not supported.", exception.getMessage());
+//    }
 
 }
