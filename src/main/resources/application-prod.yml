@@ -16,7 +16,7 @@ spring:
       on-profile: prod
 
   application:
-    name: bookstore-prod
+    name: bookstore
 
   servlet:
     multipart:
