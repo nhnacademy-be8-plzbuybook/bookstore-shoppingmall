@@ -11,4 +11,6 @@ public interface MemberPointService {
 //    void addReviewPoint(Review review);
     MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto);
 
+
+
 }

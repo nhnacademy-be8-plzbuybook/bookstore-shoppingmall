@@ -124,6 +124,8 @@ public class MemberPointServiceImpl implements MemberPointService {
 //    }
 //
 
+
+
     @Override
     public MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
