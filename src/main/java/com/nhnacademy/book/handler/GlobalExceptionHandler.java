@@ -17,11 +17,6 @@ import org.springframework.web.servlet.View;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private final View error;
-
-    public GlobalExceptionHandler(View error) {
-        this.error = error;
-    }
 
     //중복 이메일
     @ExceptionHandler(DuplicateEmailException.class)
@@ -233,7 +228,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PointConditionNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handlePointConditionNotFoundException(PointConditionNotFoundException e) {
-      HttpStatus.NOT_FOUND.value(),
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
                 e.getMessage()
         );

@@ -2,6 +2,7 @@ package com.nhnacademy.book.booktest.repository;
 
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.repository.CategoryRepository;
+import com.nhnacademy.book.config.JpaRepositoryConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
-@ActiveProfiles("test")
+@Import(JpaRepositoryConfig.class)
 class CategoryRepositoryTest {
 
     @Autowired

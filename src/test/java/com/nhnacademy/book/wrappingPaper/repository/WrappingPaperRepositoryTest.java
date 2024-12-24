@@ -1,11 +1,13 @@
 package com.nhnacademy.book.wrappingPaper.repository;
 
+import com.nhnacademy.book.config.JpaRepositoryConfig;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
+@Import(JpaRepositoryConfig.class)
 class WrappingPaperRepositoryTest {
     @Autowired
     private WrappingPaperRepository wrappingPaperRepository;

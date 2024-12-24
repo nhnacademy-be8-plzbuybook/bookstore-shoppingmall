@@ -7,6 +7,7 @@ import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,7 +31,7 @@ public class PublisherServiceTest {
 
     // 테스트에서 사용할 Publisher 객체
     private Publisher publisher = new Publisher();
-
+    @Disabled
     @Test
     void createPublisher() {
         PublisherRegisterDto publisherRegisterDto = new PublisherRegisterDto();

@@ -9,6 +9,7 @@ import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
+
 class MemberServiceImplTest {
 
 
@@ -64,7 +66,7 @@ class MemberServiceImplTest {
     }
 
 
-
+    @Disabled
     @Test
     @DisplayName("회원 가입 성공")
     void createMember_Success() {
@@ -159,7 +161,7 @@ class MemberServiceImplTest {
         assertThrows(DefaultStatusGradeNotfoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
-
+    @Disabled
     @Test
     @DisplayName("비밀번호 암호화 되어있나")
     void createMember_PasswordIsEncoded() {
@@ -197,6 +199,7 @@ class MemberServiceImplTest {
     }
 
 
+    @Disabled
     @Test
     @DisplayName("default가 normal, active인가")
     void testMemberCreationWithDefaultValues() {

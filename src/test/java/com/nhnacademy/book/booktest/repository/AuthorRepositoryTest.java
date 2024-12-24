@@ -2,15 +2,18 @@ package com.nhnacademy.book.booktest.repository;
 
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.repository.AuthorRepository;
+import com.nhnacademy.book.config.JpaRepositoryConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
+@Import(JpaRepositoryConfig.class)
 public class AuthorRepositoryTest {
 
     @Autowired

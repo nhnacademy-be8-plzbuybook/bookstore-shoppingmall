@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "bookstore-coupon-dev", url = "http://localhost:8083")
-public interface MemberCouponClient {
-    // 쿠폰서버의 MemberCoupon 조회 API 호출
-    @GetMapping("/api//member-coupons/{mcMemberId}")
-    ResponseEntity<Page<MemberCouponGetMemberResponseDto>> getMemberCoupons(
-            @PathVariable("mcMemberId") Long mcMemberId,
-            @RequestParam("page") int page,
-            @RequestParam("size") int size
-    );
-}
+//@FeignClient(name = "bookstore-coupon-dev", url = "http://localhost:8083")
+//public interface MemberCouponClient {
+//    // 쿠폰서버의 MemberCoupon 조회 API 호출
+//    @GetMapping("/api//member-coupons/{mcMemberId}")
+//    ResponseEntity<Page<MemberCouponGetMemberResponseDto>> getMemberCoupons(
+//            @PathVariable("mcMemberId") Long mcMemberId,
+//            @RequestParam("page") int page,
+//            @RequestParam("size") int size
+//    );
+//}
 /*
 0. 위 페인클라이언트의 목적은 '회원의 쿠폰함 조회' 를 구현하기 위함
 1. url 은 유레카인지 쿠폰서버의 url 인지 질문필요함

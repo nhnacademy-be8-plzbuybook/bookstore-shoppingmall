@@ -1,10 +1,12 @@
 package com.nhnacademy.book.deliveryFeePolicy.repository;//package com.nhnacademy.book.deliveryFeePolicy.repository;
 
+import com.nhnacademy.book.config.JpaRepositoryConfig;
 import com.nhnacademy.book.deliveryFeePolicy.entity.DeliveryFeePolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(JpaRepositoryConfig.class)
 class DeliveryFeePolicyRepositoryTest {
     @Autowired
     private DeliveryFeePolicyRepository deliveryFeePolicyRepository;

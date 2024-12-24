@@ -6,17 +6,19 @@ import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.config.JpaRepositoryConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Import(JpaRepositoryConfig.class)
 @DataJpaTest
 class SellingBookRepositoryTest {
 
