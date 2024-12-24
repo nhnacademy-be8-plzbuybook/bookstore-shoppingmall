@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -35,6 +37,14 @@ public class AuthorController {
     public ResponseEntity<List<AuthorResponseDto>> getAuthors() {
         return ResponseEntity.ok(authorService.getAllAuthors());
     }
+
+    @GetMapping("/search/{authorName}")
+    public ResponseEntity<AuthorResponseDto> searchAuthor(@PathVariable String authorName) {
+        String encodedAuthorName = URLEncoder.encode(authorName, StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok(authorService.getAuthorByNameFromElastic(encodedAuthorName));
+    }
+
 
     @DeleteMapping("/{authorId}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {

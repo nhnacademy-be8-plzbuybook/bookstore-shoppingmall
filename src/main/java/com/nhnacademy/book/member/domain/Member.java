@@ -46,7 +46,7 @@ public class Member {
     private LocalDate birth;
 
     //비밀번호
-    @Convert(converter = PasswordConverter.class)
+//    @Convert(converter = PasswordConverter.class)
     @Column(nullable = false, length = 200)
     private String password;
 

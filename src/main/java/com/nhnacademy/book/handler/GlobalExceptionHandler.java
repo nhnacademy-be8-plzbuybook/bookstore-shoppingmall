@@ -223,6 +223,16 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(PointConditionNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePointConditionNotFoundException(PointConditionNotFoundException e) {
+      HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+
     //OrderProductId로 OrderProduct를 조회할 때 예외
     @ExceptionHandler(OrderProductNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleOrderProductNotFoundException(OrderProductNotFoundException e) {
@@ -237,6 +247,7 @@ public class GlobalExceptionHandler {
     //회원의 인증 정보가 없을 때 예외
     @ExceptionHandler(CertificationNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleCertificationNotFoundException(CertificationNotFoundException e) {
+
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),

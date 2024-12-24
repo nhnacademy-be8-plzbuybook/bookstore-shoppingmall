@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -21,13 +23,14 @@ public class PointCondition {
 
 
     @Convert(converter = PointConditionNameConverter.class)
-//    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PointConditionName name;
 
+    // 회원가입시 5000p, 리뷰: 200p, 리뷰와 사진: 500p
     @Column
     private Integer conditionPoint;
 
+    // 도서구매시 기본 포인트 비율 5%
     @Column
-    private Integer conditionPercentage;
+    private BigDecimal conditionPercentage;
 }
