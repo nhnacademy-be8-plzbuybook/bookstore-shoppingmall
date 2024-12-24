@@ -8,5 +8,4 @@ import java.util.Optional;
 
 public interface MemberGradeRepository extends JpaRepository<MemberGrade, Long> {
     Optional<MemberGrade> findByMemberGradeName(String memberGradeName);
-    Optional<BigDecimal> findGradePercentageByMemberGradeName(String memberGradeName);
 }
