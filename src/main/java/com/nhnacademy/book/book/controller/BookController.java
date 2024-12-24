@@ -32,6 +32,12 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookDetail(bookId));
     }
 
+
+    @GetMapping("/search/{bookId}")
+    public ResponseEntity<BookDetailResponseDto> searchBooks(@PathVariable Long bookId) {
+        return ResponseEntity.ok(bookService.getBookDetailFromElastic(bookId));
+    }
+
     // 도서 등록 기능 (관리자)
     @PostMapping
     public ResponseEntity<Void> registerBook(@RequestBody BookRegisterDto bookRegisterDto) {

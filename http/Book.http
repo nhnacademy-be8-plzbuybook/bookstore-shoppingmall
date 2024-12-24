@@ -4,6 +4,55 @@ POST http://localhost:8090/api/book
 ### 기본호출
 POST http://localhost:8090/api/books/sync
 
+###asd
+POST http://localhost:8090/api/books
+Content-Type: application/json
+
+{
+  "bookTitle": "집가고싶다",
+  "bookIndex": "Index Content",
+  "bookDescription": "A comprehensive guide to Java programming.",
+  "bookPubDate": "2024-01-01",
+  "bookPriceStandard": "59.99",
+  "bookIsbn13": "9780134685123",
+  "publisherId": 204
+}
+
+###  엘라스틱서치 조회
+GET http://localhost:8090/api/books/search/305
+
+### 엘라스틱 출판사 조회
+GET http://localhost:8090/api/publishers/search/204
+
+### 출판사
+POST http://localhost:8090/api/publishers
+Content-Type: application/json
+
+{
+  "publisherName": "출판사 1"
+
+}
+
+### 작가 저장
+POST http://localhost:8090/api/authors
+Content-Type: application/json
+
+{
+  "authorName": "테스트작가"
+
+}
+
+### 작가 이름으로 조회
+GET http://localhost:8090/api/search/테스트작가
+
+### 이름 조회 인코딩
+GET http://localhost:8090/api/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%9E%91%EA%B0%80
+
+
+
+
+
+
 
 ### 특정 조건으로 호출
 # QueryType=Bestseller: 베스트셀러 조회

@@ -1,6 +1,7 @@
-package com.nhnacademy.book.book.entity;
+package com.nhnacademy.book.book.elastic.document;
 
 
+import com.nhnacademy.book.book.entity.BookAuthor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,31 +10,20 @@ import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Entity
-@Getter
-@Setter
-@Table(name = "author")
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "author")
-public class Author {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Getter
+@Setter
+public class AuthorDocument {
+
+    @org.springframework.data.annotation.Id
     private Long authorId;
 
-    @Column(name= "author_name")
     private String authorName;
 
-    @OneToMany(mappedBy = "author")
     private List<BookAuthor> bookAuthors = new ArrayList<>();
 
-
-    @Override
-    public String toString() {
-        return "authorId: " + authorId + ", " +"authorName: "+authorName;
-    }
 }
