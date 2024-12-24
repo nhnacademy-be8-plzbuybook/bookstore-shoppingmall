@@ -54,7 +54,7 @@ Content-Type: application/json
 
 {
   "name": "test",
-  "phone": "010-1234-5678",
+  "phone": "010-1111-5638",
   "email": "test@naver.com",
   "birth": "2024-12-12",
   "password": "1111"
