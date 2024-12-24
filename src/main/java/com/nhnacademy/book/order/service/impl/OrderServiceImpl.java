@@ -56,11 +56,8 @@ public class OrderServiceImpl implements OrderService {
             // calculateFeeIfValidated(orderProduct.getSellingBookId(), orderProduct.getQuantity());
 
             // 포장지 재고 검증
-            if (orderProduct.getWrapping() != null) {
-                OrderProductWrappingDto orderProductWrapping = orderProduct.getWrapping();
-                BigDecimal wrappingPaperPrice = wrappingPaperService.calculateFeeIfValidated(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
-                totalPrice = totalPrice.add(wrappingPaperPrice);
-            }
+            BigDecimal wrappingPaperPrice = wrappingPaperService.calculateFeeIfValidated(orderProduct.getWrapping());
+            totalPrice = totalPrice.add(wrappingPaperPrice);
             // TODO: 사용할 쿠폰 검증
 
             // TODO: 사용할 포인트 검증
@@ -78,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
                 .totalPrice(totalPrice)
                 // 임시값들
                 .usedPoint(1000)
-                .number("123456789")
+                .number("123456789") // orderNumber
                 .deliveryWishDate(saveRequest.getDeliveryWishDate())
                 .build();
         orderRepository.save(order);

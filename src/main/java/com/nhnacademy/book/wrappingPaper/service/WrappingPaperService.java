@@ -1,5 +1,6 @@
 package com.nhnacademy.book.wrappingPaper.service;
 
+import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,7 @@ public interface WrappingPaperService {
     WrappingPaperSaveResponseDto createWrappingPaper(WrappingPaperSaveRequestDto saveRequest, MultipartFile imageFile);
     WrappingPaperUpdateResponseDto modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest, MultipartFile imageFile);
     void removeWrappingPaper(long id);
-    BigDecimal calculateFeeIfValidated(long id, Integer quantity);
-
+//    BigDecimal calculateFeeIfValidated(long id, Integer quantity);
+    BigDecimal calculateFeeIfValidated(OrderProductWrappingDto orderProductWrapping);
 }
 
