@@ -16,11 +16,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class MemberCreateRequestDto {
-    @NotNull
-    private Long memberGradeId;
-
-    @NotNull
-    private Long memberStateId;
+//    @NotNull
+//    private Long memberGradeId;
+//
+//    @NotNull
+//    private Long memberStateId;
 
     @NotBlank
     @Size(max = 100)

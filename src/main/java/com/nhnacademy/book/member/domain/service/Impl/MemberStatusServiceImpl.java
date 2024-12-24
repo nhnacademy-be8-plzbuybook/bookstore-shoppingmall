@@ -7,7 +7,9 @@ import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class MemberStatusServiceImpl implements MemberStatusService {

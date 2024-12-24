@@ -6,6 +6,7 @@ import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
+import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
@@ -42,6 +43,8 @@ public class BookServiceTest {
     @Mock
     private PublisherRepository publisherRepository;
 
+    @Mock
+    private BookImageRepository bookImageRepository; // BookImageRepository 추가
     private Publisher publisher;
 
     List<Book> books = new ArrayList<>();

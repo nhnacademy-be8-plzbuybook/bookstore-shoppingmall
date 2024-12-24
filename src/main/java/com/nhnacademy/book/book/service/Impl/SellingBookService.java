@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class SellingBookService {
 
     private final SellingBookRepository sellingBookRepository;
@@ -164,15 +165,15 @@ public class SellingBookService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 특정 조회수 이상 판매책 조회
-     */
-    public List<SellingBookResponseDto> getSellingBooksByViewCountGreaterThan(Long minViewCount) {
-        return sellingBookRepository.findBySellingBookViewCountGreaterThanEqual(minViewCount)
-                .stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
-    }
+//    /**
+//     * 특정 조회수 이상 판매책 조회
+//     */
+//    public List<SellingBookResponseDto> getSellingBooksByViewCountGreaterThan(Long minViewCount) {
+//        return sellingBookRepository.findBySellingBookViewCountGreaterThanEqual(minViewCount)
+//                .stream()
+//                .map(this::toResponseDto)
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * 특정 도서(Book) ID로 연결된 판매책 조회
@@ -196,23 +197,6 @@ public class SellingBookService {
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
     }
-
-
-//    public List<SellingBookResponseDto> findSellingBooksByCategory(Long categoryId) {
-//        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryId(categoryId);
-//
-//        log.debug("카테고리 ID {}에서 찾은 판매책: {}", categoryId, sellingBooks);
-//
-//        if (sellingBooks.isEmpty()) {
-//            throw new CategoryNotFoundException("No selling books found for category ID: " + categoryId + ". Please check the category or add related selling books.");
-//        }
-//
-//        return sellingBooks.stream()
-//                .map(this::toResponseDto)
-//                .collect(Collectors.toList());
-//    }
-
-
 
     /**
      * SellingBook -> SellingBookResponseDto 변환

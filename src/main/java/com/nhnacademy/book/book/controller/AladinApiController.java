@@ -19,24 +19,20 @@ public class AladinApiController {
         this.aladinApiService = aladinApiService;
     }
 
-//
-//    /**
-//     * ISBN 리스트를 받아서 개별 조회 후 저장
-//     */
-//    @PostMapping("/sync/isbn")
-//    public ResponseEntity<Void> syncBooksByIsbn(@RequestBody List<String> isbns) {
-//        aladinApiService.saveBooksByIsbns(isbns);
-//        return ResponseEntity.ok().build();
-//    }
-
     /**
      * 기본 ItemList API를 통해 저장 -> 대량 저장
      */
     @PostMapping("/sync")
-    public ResponseEntity<Void> syncBooksFromListApi() {
-        aladinApiService.saveBooksFromListApi();
+    public ResponseEntity<Void> syncBooksFromListApi(
+            @RequestParam(defaultValue = "ItemNewAll") String queryType,
+            @RequestParam(defaultValue = "Book") String searchTarget,
+            @RequestParam(defaultValue = "3") int start,
+            @RequestParam(defaultValue = "50") int maxResults) {
+
+        aladinApiService.saveBooksFromListApi(queryType, searchTarget, start, maxResults);
         return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/sync/isbn")
     public ResponseEntity<Map<String, Object>> syncBooksByIsbns(@RequestBody List<String> isbns) {

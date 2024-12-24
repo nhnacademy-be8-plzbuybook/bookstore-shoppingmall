@@ -44,7 +44,7 @@ eureka:
 
 aladin:
   api:
-    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&SearchTarget=Book&output=js&Version=20131101
+    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&output=js&Version=20131101
 
 #    lookup:
 #      url: http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbfkqlaus1419001&Query=김영한&QueryType=Name&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101
