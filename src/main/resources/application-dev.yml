@@ -1,18 +1,22 @@
 server:
   port: 8090
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
 spring:
   elasticsearch:
     uris: http://localhost:9200
-    username:
-    password:
+    username: elastic
+    password: nhnacademy123!
 
   config:
     activate:
-      on-profile: back2
+      on-profile: dev
 
   application:
-    name: bookstore-back2
+    name: bookstore-dev
 
   servlet:
     multipart:
@@ -61,6 +65,9 @@ app:
         username: eb228aac947c4989be561ac95ee42c6b
         containerName: 4c3b4227ce904561ac012c685e35d1dd
 
+# 최대한 사용 x
+# 개발 하실때 로컬 mysql 로 테스트 해줬으면 합니다.
+# 배포환경이랑 최대한 비슷하게 개발하는게 좋다고 합니다.
 #h2:
 #    console:
 #      enabled: true  # H2 콘솔 활성화
