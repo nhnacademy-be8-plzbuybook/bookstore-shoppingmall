@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final WrappingPaperService wrappingPaperService;
     private final SellingBookService sellingBookService;
-    private final OrderProductService orderProductService;
+//    private final OrderProductService orderProductService;
     private final BookService bookService;
 
     @Override
