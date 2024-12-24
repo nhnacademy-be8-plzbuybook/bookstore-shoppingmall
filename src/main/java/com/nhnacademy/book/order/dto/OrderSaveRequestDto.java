@@ -1,10 +1,10 @@
 package com.nhnacademy.book.order.dto;
 
-import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.orderProduct.dto.OrderProductSaveRequestDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -13,12 +13,6 @@ import java.util.List;
 
 @Getter
 public class OrderSaveRequestDto {
-    @NotBlank
-    private String orderId;
-
-    @NotBlank
-    private String orderName;
-
     @NotBlank
     private BigDecimal totalPrice;
 
@@ -34,15 +28,14 @@ public class OrderSaveRequestDto {
     @NotNull
     private OrderDeliveryAddress orderDeliveryAddress;
 
-
-    public Orders toOrderEntity() {
-        return Orders.builder()
-                .id(orderId)
-                .name(orderName)
-                .totalPrice(totalPrice)
-                .deliveryWishDate(deliveryWishDate)
-                .usedPoint(usedPoint)
-                .build();
+    @Builder
+    public OrderSaveRequestDto(BigDecimal totalPrice, @Nullable LocalDate deliveryWishDate, Integer usedPoint,
+                               List<OrderProductSaveRequestDto> orderProducts, OrderDeliveryAddress orderDeliveryAddress) {
+        this.totalPrice = totalPrice;
+        this.deliveryWishDate = deliveryWishDate;
+        this.usedPoint = usedPoint;
+        this.orderProducts = orderProducts;
+        this.orderDeliveryAddress = orderDeliveryAddress;
     }
 }
 @Getter
