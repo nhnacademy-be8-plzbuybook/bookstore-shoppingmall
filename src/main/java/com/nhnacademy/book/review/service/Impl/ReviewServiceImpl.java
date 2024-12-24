@@ -1,11 +1,10 @@
 package com.nhnacademy.book.review.service.Impl;
 
 import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.OrderProduct;
+import com.nhnacademy.book.member.domain.TempOrderProduct;
 import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
-import com.nhnacademy.book.member.domain.exception.MemberIdNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.repository.OrderProductRepository;
+import com.nhnacademy.book.member.domain.repository.TempOrderProductRepository;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
@@ -26,7 +25,7 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
 
     private final MemberRepository memberRepository;
-    private final OrderProductRepository orderProductRepository;
+    private final TempOrderProductRepository orderProductRepository;
     private final ReviewRepository reviewRepository;
 
     @Override
@@ -34,7 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new MemberEmailNotFoundException("email에 해당하는 멤버가 없다!"));
 
-        OrderProduct orderProduct = orderProductRepository.findById(orderProductId)
+        TempOrderProduct orderProduct = orderProductRepository.findById(orderProductId)
                 .orElseThrow(() -> new OrderProductNotFoundException("OrderProductId에 해당하는 OrderProduct가 없다!"));
 
 
