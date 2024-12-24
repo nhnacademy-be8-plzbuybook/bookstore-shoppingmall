@@ -29,10 +29,10 @@ Content-Type: application/json
 
 
 ### 판매책 삭제
-DELETE localhost:8090/api/selling-books/1
+DELETE localhost:8090/api/selling-books/100
 
 ### 판매책 상세조회
-GET http://localhost:8090/api/selling-books/1
+GET http://localhost:8090/api/selling-books/100
 
 ### 조회수에 따른 조회
 # - {sortDirection}: 정렬 방향 (desc: 높은 순, asc: 낮은 순). 기본값은 desc.
@@ -52,3 +52,9 @@ GET http://localhost:8090/api/selling-books/status?status=SELLING
 
 ### 카테고리별 판매책 조회
 GET http://localhost:8090/api/selling-books/category/5
+
+### 회원의 장바구니에들어있는 책의 수량 * 판매책 서버에 있는 판매책 가격
+GET http://127.0.0.1:8090/api/selling-books/100/calculate-price?quantity=2
+
+
+
