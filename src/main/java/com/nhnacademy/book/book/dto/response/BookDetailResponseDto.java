@@ -21,8 +21,12 @@ public class BookDetailResponseDto {
     private BigDecimal bookPriceStandard;
     private String bookIsbn13;
     private String publisherName;
+    private String imageUrl;
+
+
 
     public BookDetailResponseDto() {
 
     }
 }
+
