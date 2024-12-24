@@ -21,8 +21,9 @@ public class PasswordConverter implements AttributeConverter<String, String> {
     }
 
     @Override
+    //converting을 안하더라도 암호화 된값이라도 가져와야 회원-권한의 관계를 생성할 수 있기때문에 이렇게 했습니다
     public String convertToEntityAttribute(String dbData) {
-        throw new UnsupportedOperationException("Password decryption is not supported.");
+        return dbData;
     }
 
 }
