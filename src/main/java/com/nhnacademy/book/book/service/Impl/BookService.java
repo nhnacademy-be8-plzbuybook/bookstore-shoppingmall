@@ -8,6 +8,9 @@ import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,36 +24,44 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
+    private final BookImageRepository bookImageRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository,
-                       PublisherRepository publisherRepository) {
+                       PublisherRepository publisherRepository, BookImageRepository bookImageRepository) {
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
+        this.bookImageRepository = bookImageRepository;
     }
 
     public List<BookDetailResponseDto> getAllBooks() {
         List<Book> books = bookRepository.findAll();
 
         return books.stream()
-                .map(book -> new BookDetailResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookIndex(),
-                        book.getBookDescription(),
-                        book.getBookPubDate(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13(),
-                        book.getPublisher().getPublisherName() // publisherName을 DTO에 포함
-                ))
+                .map(book -> {
+                    BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+                    return new BookDetailResponseDto(
+                            book.getBookId(),
+                            book.getBookTitle(),
+                            book.getBookIndex(),
+                            book.getBookDescription(),
+                            book.getBookPubDate(),
+                            book.getBookPriceStandard(),
+                            book.getBookIsbn13(),
+                            book.getPublisher().getPublisherName(),
+                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+                    );
+                })
                 .collect(Collectors.toList());
-
     }
 
     // 도서 상세 조회 기능
     public BookDetailResponseDto getBookDetail(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+
+        BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+
         return new BookDetailResponseDto(
                 book.getBookId(),
                 book.getBookTitle(),
@@ -59,9 +70,10 @@ public class BookService {
                 book.getBookPubDate(),
                 book.getBookPriceStandard(),
                 book.getBookIsbn13(),
-                book.getPublisher().getPublisherName());
+                book.getPublisher().getPublisherName(),
+                bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+        );
     }
-
     // 도서 등록 기능 (관리자)
     public void registerBook(BookRegisterDto bookRegisterDto) {
         if(Objects.isNull(bookRegisterDto)){
