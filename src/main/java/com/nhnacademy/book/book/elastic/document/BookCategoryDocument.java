@@ -19,18 +19,11 @@ public class BookCategoryDocument {
     private Long id;
 
     @Setter
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
+    private Long bookId;
 
     @Setter
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private Long categoryId;
 
-    public BookCategoryDocument(Book book, Category category) {
-        this.book = book;
-        this.category = category;
-    }
+
 }
 

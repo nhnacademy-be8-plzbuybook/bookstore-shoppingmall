@@ -28,11 +28,6 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
     // index에 특정 문자열 조회
     List<BookDocument> findByBookIndexContaining(String bookIndex);
 
-    // 특정 출판사의 책 조회
-    List<BookDocument> findByPublisher_PublisherId(Long publisherId);
-
-    // 특정 카테고리에 속한 책 조회
-    List<BookDocument> findByBookCategories_Category_CategoryId(Long categoryId);
 
 
 }

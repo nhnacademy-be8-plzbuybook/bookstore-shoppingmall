@@ -23,20 +23,14 @@ public class CategoryDocument {
     @org.springframework.data.annotation.Id
     private Long categoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "category_parent_id", nullable = true)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Category> childrenCategory = new ArrayList<>();
 
-    @Column(length = 100)
     private String categoryName;
 
-    @Column(nullable = false)
     private Integer categoryDepth;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookCategory> bookCategories = new ArrayList<>();
 
 

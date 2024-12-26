@@ -20,11 +20,8 @@ public class BookImageDocument {
     @org.springframework.data.annotation.Id
     private Long bookImageId;
 
-    @ManyToOne
-    @JoinColumn(name = "book_image_book_id", nullable = false)
-    private Book book;
+    private Long bookId;
 
-    @Column(name = "image_path")
     private String imageUrl;
 }
 
