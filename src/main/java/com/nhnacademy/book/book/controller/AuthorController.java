@@ -52,4 +52,10 @@ public class AuthorController {
         return ResponseEntity.ok().build();
     }
 
+//    // Soft Delete API
+//    @DeleteMapping("/{authorId}")
+//    public void deleteAuthor(@PathVariable Long authorId) {
+//        authorService.deleteAuthor(authorId);
+//    }
+
 }

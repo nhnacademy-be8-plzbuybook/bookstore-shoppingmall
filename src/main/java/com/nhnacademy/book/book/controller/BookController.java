@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ public class BookController {
 
     @Autowired
     private final BookService bookService;
+    @Autowired
+    private BookAuthorService bookAuthorService;
 
 
     @GetMapping
@@ -57,6 +60,12 @@ public class BookController {
     public ResponseEntity<Void> updateBook(@PathVariable Long bookId, @RequestBody BookRegisterDto bookUpdateRequest) {
         bookService.updateBook(bookId, bookUpdateRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search/test/{authorId}")
+    public ResponseEntity<List<BookDetailResponseDto>> getAllBooksByAuthor(@PathVariable Long authorId) {
+        bookAuthorService.findBooksByAuthorIdFromElastic(authorId);
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 
 }
