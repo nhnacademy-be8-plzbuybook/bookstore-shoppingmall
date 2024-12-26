@@ -43,6 +43,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
 
+    //특정 회원 조회(이메일 - myPage 에서 사용)
+    @GetMapping("/members/my/email")
+    public ResponseEntity<MemberDto> getMemberMyByEmail(@RequestHeader("X-USER-ID") String email){
+        return ResponseEntity.ok(memberService.getMemberMyByEmail(email));
+    }
+
 
     //특정 회원 조회(id)
     @GetMapping("/members/{member_id}")
