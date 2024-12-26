@@ -1,7 +1,12 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
 import com.nhnacademy.book.member.domain.*;
-import com.nhnacademy.book.member.domain.dto.*;
+import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberSearchRequestDto;
+import com.nhnacademy.book.member.domain.dto.MemberSearchResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -16,10 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,12 +35,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-
 class MemberServiceImplTest {
 
 
@@ -56,6 +56,9 @@ class MemberServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private CouponClient couponClient;
 
 
     @InjectMocks
@@ -277,6 +280,32 @@ class MemberServiceImplTest {
         assertThrows(DefaultStatusGradeNotfoundException.class, () -> memberService.createMember(memberCreateRequestDto));
     }
 
+    @Test
+    @DisplayName("회원가입시 Welcome 쿠폰 발급 요청이 호출되는지")
+    void createMember_Welcome() {
+        // 회원가입 요청
+        MemberCreateRequestDto memberCreateRequestDto = new MemberCreateRequestDto();
+        memberCreateRequestDto.setName("윤지호");
+        memberCreateRequestDto.setPhone("010-7237-3951");
+        memberCreateRequestDto.setEmail("yonnwlgh12@naver.com");
+        memberCreateRequestDto.setBirth(LocalDate.now());
+        memberCreateRequestDto.setPassword("123456");
+
+        // 회원 생성
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yonnwlgh12@naver.com", LocalDate.now(), "encodedPassword");
+
+        when(memberRepository.existsByEmail(memberCreateRequestDto.getEmail())).thenReturn(false);
+        when(memberGradeRepository.findById(1L)).thenReturn(Optional.of(memberGrade));
+        when(memberStatusRepository.findById(1L)).thenReturn(Optional.of(memberStatus));
+        when(memberRepository.save(any(Member.class))).thenReturn(member);
+
+        memberService.createMember(memberCreateRequestDto);
+
+        // 쿠폰 요청 메서드 호출 확인
+        verify(couponClient, times(1)).issueWelcomeCoupon(any(WelComeCouponRequestDto.class));
+    }
 
     @Test
     @DisplayName("이메일로 회원을 조회할 때 값이 잘 나오는 지")
@@ -284,7 +313,7 @@ class MemberServiceImplTest {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
         Auth auth = new Auth(1L, "ADMIN");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"Password");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(), "Password");
         MemberAuth memberAuth = new MemberAuth(1L, auth, member);
         List<MemberAuth> memberAuthList = List.of(memberAuth);
 
@@ -306,7 +335,7 @@ class MemberServiceImplTest {
     void getMemberByEmail_exception() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.now(),"Password");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(), "Password");
 
         when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(member));
         when(memberAuthRepository.findByMember(member)).thenReturn(List.of());
@@ -318,7 +347,6 @@ class MemberServiceImplTest {
         verify(memberRepository).findByEmail(member.getEmail());
         verify(memberAuthRepository).findByMember(member);
         verifyNoInteractions(passwordEncoder);
-
 
 
     }
@@ -339,7 +367,7 @@ class MemberServiceImplTest {
     void getMemberById() {
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.of(2000, 3, 9),"Password");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.of(2000, 3, 9), "Password");
 
         //id로 멤버 조회
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
@@ -400,7 +428,7 @@ class MemberServiceImplTest {
         assertEquals(LocalDate.of(2000, 3, 10), response.getBirth());
         verify(passwordEncoder).encode("newPassword");
         verify(memberRepository).findById(memberId);
-        verify(memberRepository,times(1)).save(any(Member.class));
+        verify(memberRepository, times(1)).save(any(Member.class));
     }
 
 
@@ -422,13 +450,13 @@ class MemberServiceImplTest {
         memberModifyRequestDto.setBirth(member.getBirth());
         memberModifyRequestDto.setPassword("password");
 
-       when(memberRepository.findById(member.getMemberId())).thenReturn(Optional.of(member));
-       when(passwordEncoder.matches("password", "EncodedPassword")).thenReturn(true);
+        when(memberRepository.findById(member.getMemberId())).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches("password", "EncodedPassword")).thenReturn(true);
 
-       assertThrows(DuplicateMemberModificationException.class, () -> memberService.modify(member.getMemberId(), memberModifyRequestDto));
+        assertThrows(DuplicateMemberModificationException.class, () -> memberService.modify(member.getMemberId(), memberModifyRequestDto));
 
-       verify(memberRepository).findById(member.getMemberId());
-       verify(passwordEncoder).matches("password", "EncodedPassword");
+        verify(memberRepository).findById(member.getMemberId());
+        verify(passwordEncoder).matches("password", "EncodedPassword");
 
     }
 
@@ -507,14 +535,14 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("회원 조회를 성공적으로 하는가")
     void getMembers_success() {
-       MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
-       memberSearchRequestDto.setPage(0);
-       memberSearchRequestDto.setSize(10);
+        MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();
+        memberSearchRequestDto.setPage(0);
+        memberSearchRequestDto.setSize(10);
 
         MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
         MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com",LocalDate.of(2000, 3, 9),"Password");
-        Member member2 = new Member(2L, memberGrade, memberStatus, "윤지호2", "010-7237-3952", "yoonwlgh123@naver.com",LocalDate.of(2001, 3, 9),"Password");
+        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.of(2000, 3, 9), "Password");
+        Member member2 = new Member(2L, memberGrade, memberStatus, "윤지호2", "010-7237-3952", "yoonwlgh123@naver.com", LocalDate.of(2001, 3, 9), "Password");
 
         Page<Member> page = new PageImpl<>(List.of(member, member2));
 
