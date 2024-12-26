@@ -22,4 +22,5 @@ public class BookRegisterDto {
     private BigDecimal bookPriceStandard;
     private String bookIsbn13;
     private Long publisherId;
+    private String imageUrl;
 }

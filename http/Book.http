@@ -9,14 +9,16 @@ POST http://localhost:8090/api/books
 Content-Type: application/json
 
 {
-  "bookTitle": "집가고싶다",
-  "bookIndex": "Index Content",
-  "bookDescription": "A comprehensive guide to Java programming.",
+  "bookTitle": "GD2 도서",
+  "bookIndex": "GD2 목차",
+  "bookDescription": "GD2 설명",
   "bookPubDate": "2024-01-01",
-  "bookPriceStandard": "59.99",
-  "bookIsbn13": "9780134685123",
-  "publisherId": 204
+  "bookPriceStandard": "50000.00",
+  "bookIsbn13": "130922",
+  "publisherId": 75,
+  "imageUrl": "https://i1.sndcdn.com/artworks-mCr382qpxrNfyfbc-tVzfKw-t500x500.jpg"
 }
+
 
 ###  엘라스틱서치 조회
 GET http://localhost:8090/api/books/search/305
