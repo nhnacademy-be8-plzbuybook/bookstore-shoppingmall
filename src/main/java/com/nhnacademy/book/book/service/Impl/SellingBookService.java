@@ -2,6 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
@@ -27,12 +28,14 @@ public class SellingBookService {
     private final SellingBookRepository sellingBookRepository;
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private final SellingBookSearchRepository sellingBookSearchRepository;
 
     @Autowired
-    public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository) {
+    public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository, SellingBookSearchRepository sellingBookSearchRepository) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
+        this.sellingBookSearchRepository = sellingBookSearchRepository;
     }
 
     /**
@@ -103,6 +106,7 @@ public class SellingBookService {
             throw new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId);
         }
         sellingBookRepository.deleteById(sellingBookId);
+        sellingBookSearchRepository.deleteById(sellingBookId);
     }
 
 

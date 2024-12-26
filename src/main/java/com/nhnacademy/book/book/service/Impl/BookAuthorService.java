@@ -4,6 +4,11 @@ import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
+import com.nhnacademy.book.book.elastic.document.BookDocument;
+import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
+import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
+import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
@@ -28,12 +33,24 @@ public class BookAuthorService {
     private final BookAuthorRepository bookAuthorRepository;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private final AuthorSearchRepository authorSearchRepository;
+    private final BookSearchRepository bookSearchRepository;
+    private final BookAuthorSearchRepository bookAuthorSearchRepository;
 
     @Autowired
-    public BookAuthorService(BookAuthorRepository bookAuthorRepository, BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookAuthorService(BookAuthorRepository bookAuthorRepository, BookRepository bookRepository, AuthorRepository authorRepository,
+                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository, BookAuthorSearchRepository bookAuthorSearchRepository) {
         this.bookAuthorRepository = bookAuthorRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
+        this.authorSearchRepository = authorSearchRepository;
+        this.bookSearchRepository = bookSearchRepository;
+        this.bookAuthorSearchRepository = bookAuthorSearchRepository;
+    }
+
+    public boolean existsByBookIdAndAuthorId(Long bookId, Long authorId) {
+        List<BookAuthorDocument> results = bookAuthorSearchRepository.findByBookIdAndAuthorId(bookId, authorId);
+        return !results.isEmpty();
     }
 
     public void createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
@@ -42,6 +59,13 @@ public class BookAuthorService {
         } else if (Objects.isNull(bookAuthorRequestDto.getBookId())) {
             throw new BookNotFoundException("Book not found");
         }
+
+        boolean exists = existsByBookIdAndAuthorId(bookAuthorRequestDto.getBookId(), bookAuthorRequestDto.getAuthorId());
+        if (exists) {
+            throw new IllegalArgumentException("This relationship already exists.");
+        }
+
+
 
         Book book = bookRepository.findById(bookAuthorRequestDto.getBookId())
                 .orElseThrow(() -> new BookNotFoundException("Book not found"));
@@ -84,6 +108,35 @@ public class BookAuthorService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<BookResponseDto> findBooksByAuthorIdFromElastic(Long authorId) {
+
+        if (!authorSearchRepository.existsById(authorId)) {
+            throw new AuthorIdNotFoundException("Author id: " + authorId + " not found");
+        }
+
+        // 작가의 책들을 Elasticsearch에서 조회
+        List<BookAuthorDocument> bookAuthorDocuments = bookAuthorSearchRepository.findBooksByAuthorId(authorId);
+
+
+        // BookAuthorDocument에서 책 ID를 추출하여 책 정보를 조회하고, BookResponseDto로 변환
+        List<Long> bookIds = bookAuthorDocuments.stream()
+                .map(BookAuthorDocument::getBookId)
+                .collect(Collectors.toList());
+
+        // 책 ID로 책 정보를 Elasticsearch에서 조회
+        List<BookDocument> books = (List<BookDocument>) bookSearchRepository.findAllById(bookIds);
+
+        // 책 정보를 BookResponseDto로 변환
+        return books.stream()
+                .map(book -> new BookResponseDto(
+                        book.getBookId(),
+                        book.getBookTitle(),
+                        book.getBookPriceStandard(),        // 예시: 책 가격, BookDocument에 가격 정보가 있을 경우
+                        book.getBookIsbn13()))       // 예시: 책 재고, BookDocument에 재고 정보가 있을 경우
+                .collect(Collectors.toList());
+    }
+
 
     public List<AuthorResponseDto> findAuthorsByBookId(Long bookId) {
         List<Author> authors = bookAuthorRepository.findAuthorsByBookId(bookId);

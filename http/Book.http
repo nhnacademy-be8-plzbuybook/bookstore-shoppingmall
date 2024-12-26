@@ -24,6 +24,9 @@ GET http://localhost:8090/api/books/search/305
 ### 엘라스틱 출판사 조회
 GET http://localhost:8090/api/publishers/search/204
 
+### 작가아이디로 작가가 쓴 책 조회
+GET http://localhost:8090/api/books/search/test/414
+
 ### 출판사
 POST http://localhost:8090/api/publishers
 Content-Type: application/json
@@ -33,14 +36,22 @@ Content-Type: application/json
 
 }
 
+### 셀링북 삭제
+DELETE localhost:8090/api/selling-books/272
+
+
+
 ### 작가 저장
 POST http://localhost:8090/api/authors
 Content-Type: application/json
 
 {
-  "authorName": "테스트작가"
+  "authorName": "리얼루다가2"
 
 }
+
+###작가 삭제
+DELETE localhost:8090/api/authors/
 
 ### 작가 이름으로 조회
 GET http://localhost:8090/api/search/테스트작가

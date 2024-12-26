@@ -33,6 +33,8 @@ public class AuthorService {
     }
 
 
+
+
     public List<AuthorResponseDto> getAllAuthors() {
         List<Author> authors = authorRepository.findAll();
 
@@ -75,7 +77,7 @@ public class AuthorService {
         AuthorDocument authorDocument = new AuthorDocument();
         authorDocument.setAuthorId(savedAuthor.getAuthorId());
         authorDocument.setAuthorName(savedAuthor.getAuthorName());
-        authorSearchRepository.save(authorDocument);
+//        authorSearchRepository.save(authorDocument);
 
         return toResponseDto(savedAuthor);
     }
@@ -85,6 +87,7 @@ public class AuthorService {
             throw new AuthorsNotFoundException("Author not found");
         }
         authorRepository.deleteById(id);
+        authorSearchRepository.deleteById(id);
     }
 
 
