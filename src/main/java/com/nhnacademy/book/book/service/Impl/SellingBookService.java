@@ -106,7 +106,6 @@ public class SellingBookService {
             throw new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId);
         }
         sellingBookRepository.deleteById(sellingBookId);
-        sellingBookSearchRepository.deleteById(sellingBookId);
     }
 
 
