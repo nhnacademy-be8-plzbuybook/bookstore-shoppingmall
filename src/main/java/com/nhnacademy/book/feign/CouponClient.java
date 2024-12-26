@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@FeignClient(name = "bookstore-coupon-dev")
+@FeignClient(name = "bookstore-coupon")
 public interface CouponClient {
+
 
     @PostMapping("/api/coupons/welcome-coupon")
     void issueWelcomeCoupon(@RequestBody WelComeCouponRequestDto requestDto);

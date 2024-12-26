@@ -140,6 +140,16 @@ public class BookService {
         Book book2 = bookRepository.save(book);
 
 
+        // 이미지 URL 처리 (BookImage 엔티티 생성 및 저장)
+        if (bookRegisterDto.getImageUrl() != null && !bookRegisterDto.getImageUrl().isEmpty()) {
+            BookImage bookImage = new BookImage();
+            bookImage.setBook(book2);
+            bookImage.setImageUrl(bookRegisterDto.getImageUrl());
+            bookImageRepository.save(bookImage);
+            log.info("BookImage 저장 완료: {}", bookImage.getBookImageId());
+        } else {
+            log.warn("이미지 URL이 설정되지 않아 BookImage를 저장하지 않았습니다.");
+        }
         BookDocument bookDocument = new BookDocument();
         bookDocument.setBookId(book2.getBookId());
         bookDocument.setBookPriceStandard(bookRegisterDto.getBookPriceStandard());

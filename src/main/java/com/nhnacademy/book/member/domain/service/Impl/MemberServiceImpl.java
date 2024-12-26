@@ -16,6 +16,7 @@ import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -72,6 +74,24 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(member);
 
+        // 응답 DTO 생성 및 반환
+        MemberCreateResponseDto memberCreateResponseDto = new MemberCreateResponseDto(
+                savedMember.getName(),
+                savedMember.getPhone(),
+                savedMember.getEmail(),
+                savedMember.getBirth(),
+                memberGrade.getMemberGradeName(),
+                memberStatus.getMemberStateName()
+        );
+
+        // Welcome 쿠폰발급 요청
+        issuedWelcomeCoupon(savedMember);
+
+        return memberCreateResponseDto;
+    }
+
+    // 회원 등록 -> Welcome 쿠폰발급 요청 메서드 분리
+    private void issuedWelcomeCoupon(Member savedMember) {
         try {
             // Welcome 쿠폰(회원가입 쿠폰) 발급 요청
             WelComeCouponRequestDto welComeCouponRequestDto = new WelComeCouponRequestDto(
@@ -80,18 +100,9 @@ public class MemberServiceImpl implements MemberService {
             );
             couponClient.issueWelcomeCoupon(welComeCouponRequestDto);
         } catch (Exception e) {
-            throw new WelcomeCouponIssueException("Welcome 쿠폰발급이 실패 하였습니다!");
+            // 에러를 던지면 로직이 멈추기 떄문에 에러 로그 출력만 하도록 변경
+            log.error("Welcome 쿠폰발급이 실패 하였습니다!");
         }
-
-        // 응답 DTO 생성 및 반환
-        return new MemberCreateResponseDto(
-                savedMember.getName(),
-                savedMember.getPhone(),
-                savedMember.getEmail(),
-                savedMember.getBirth(),
-                memberGrade.getMemberGradeName(),
-                memberStatus.getMemberStateName()
-        );
     }
 
     //회원 수정 (수정하려는 값이 하나도 없는데 수정하는 경우 예외 발생)
@@ -167,6 +178,24 @@ public class MemberServiceImpl implements MemberService {
 
         return memberEmailResponseDto;
 
+
+    }
+
+    //이메일로 특정 회원 조회(myPage에서 사용)
+    @Override
+    public MemberDto getMemberMyByEmail(String email) {
+        Member member = memberRepository.findByEmailWithGradeAndStatus(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        return new MemberDto(
+                member.getName(),
+                member.getPhone(),
+                member.getPassword(),
+                member.getEmail(),
+                member.getBirth(),
+                member.getMemberGrade().getMemberGradeName(),
+                member.getMemberStatus().getMemberStateName()
+        );
 
     }
 
