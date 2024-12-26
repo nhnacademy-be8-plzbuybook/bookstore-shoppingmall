@@ -13,7 +13,7 @@ spring:
 
   config:
     activate:
-      on-profile: dev
+      on-profile: back1
 
   application:
     name: bookstore
