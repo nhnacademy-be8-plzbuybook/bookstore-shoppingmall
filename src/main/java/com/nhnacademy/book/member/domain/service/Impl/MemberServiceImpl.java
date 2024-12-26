@@ -181,6 +181,24 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    //이메일로 특정 회원 조회(myPage에서 사용)
+    @Override
+    public MemberDto getMemberMyByEmail(String email) {
+        Member member = memberRepository.findByEmailWithGradeAndStatus(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        return new MemberDto(
+                member.getName(),
+                member.getPhone(),
+                member.getPassword(),
+                member.getEmail(),
+                member.getBirth(),
+                member.getMemberGrade().getMemberGradeName(),
+                member.getMemberStatus().getMemberStateName()
+        );
+
+    }
+
     //id로 특정 회원 조회
     @Override
     public MemberIdResponseDto getMemberById(Long id) {
