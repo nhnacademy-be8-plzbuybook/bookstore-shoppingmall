@@ -352,9 +352,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
     }
 
-
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleCategoryNotFoundException(CategoryNotFoundException e) {
+    //회원 가입시 권한이 없을 시 오류
+    @ExceptionHandler(DefaultAuthNotfoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleDefaultAuthNotfoundException(DefaultAuthNotfoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
@@ -381,7 +381,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
-
 
 
 
