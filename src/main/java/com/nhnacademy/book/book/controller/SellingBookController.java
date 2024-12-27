@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,15 @@ public class SellingBookController {
     @Autowired
     public SellingBookController(SellingBookService sellingBookService) {
         this.sellingBookService = sellingBookService;
+    }
+
+    /**
+     * 프론트에서 판매책 리스트 불러올때 사용
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<List<BookDetailResponseDto>> getBooks() {
+        return ResponseEntity.ok(sellingBookService.getBooks());
     }
 
 
@@ -52,11 +62,12 @@ public class SellingBookController {
 
     /**
      * 판매책 상세조회 -> 특정 판매책을 ID 로조회
+     *
      * @param sellingBookId
      * @return
      */
     @GetMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookResponseDto> getSellingBook(@PathVariable Long sellingBookId) {
+    public ResponseEntity<BookDetailResponseDto> getSellingBook(@PathVariable Long sellingBookId) {
         return ResponseEntity.ok(sellingBookService.getSellingBook(sellingBookId));
     }
 

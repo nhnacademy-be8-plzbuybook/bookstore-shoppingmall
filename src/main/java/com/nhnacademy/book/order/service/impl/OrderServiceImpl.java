@@ -95,8 +95,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     protected String generateOrderName(List<OrderProductSaveRequestDto> orderProductList) {
         Long sellingBookId = orderProductList.getFirst().getSellingBookId();
-        // 이거 판매책쪽 도메인에서 메소드로 구현하는 게??
-        SellingBookResponseDto sellingBook = sellingBookService.getSellingBook(sellingBookId);
+        // 이거 판매책쪽 도메인에서 메소드로 구현하는 게?? -> BookDetailResponseDto로 변경했습니다.......
+        BookDetailResponseDto sellingBook = sellingBookService.getSellingBook(sellingBookId);
         Long bookId = sellingBook.getBookId();
         BookDetailResponseDto book = bookService.getBookDetail(bookId);
         String bookTitle = book.getBookTitle();
