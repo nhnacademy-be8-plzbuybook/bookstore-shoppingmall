@@ -1,5 +1,6 @@
 package com.nhnacademy.book.handler;
 
+import com.nhnacademy.book.book.exception.*;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
@@ -292,5 +293,95 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
+
+    @ExceptionHandler(AuthorIdNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthorIdNotFoundException(AuthorIdNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+    @ExceptionHandler(AuthorNameNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthorNameNotFoundException(AuthorNameNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+    @ExceptionHandler(AuthorsNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthorsNotFoundException(AuthorsNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+    @ExceptionHandler(BookAuthorNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleBookAuthorNotFoundException(BookAuthorNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleBookNotFoundException(BookNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+    @ExceptionHandler(CategoryAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleCategoryAlreadyExistsException(CategoryAlreadyExistsException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCategoryNotFoundException(CategoryNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(PublisherNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePublisherNotFoundException(PublisherNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+    @ExceptionHandler(SellingBookNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleSellingBookNotFoundException(SellingBookNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+
+
+
 
 }
