@@ -32,15 +32,17 @@ public class BookService {
     private final PublisherRepository publisherRepository;
     private final BookSearchRepository bookSearchRepository;
     private final BookImageRepository bookImageRepository;
+    private final SellingBookRepository sellingBookRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository,
                        PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository
-         , BookImageRepository bookImageRepository) {
+         , BookImageRepository bookImageRepository, SellingBookRepository sellingBookRepository) {
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
         this.bookSearchRepository = bookSearchRepository;
         this.bookImageRepository = bookImageRepository;
+        this.sellingBookRepository =  sellingBookRepository;
     }
 
     public List<BookDetailResponseDto> getAllBooks() {
@@ -48,9 +50,11 @@ public class BookService {
 
         return books.stream()
                 .map(book -> {
+                    SellingBook sellingBook = sellingBookRepository.findByBook(book);
                     BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
                     return new BookDetailResponseDto(
                             book.getBookId(),
+                            sellingBook != null ? sellingBook.getSellingBookId() : null, // SellingBook ID 추가
                             book.getBookTitle(),
                             book.getBookIndex(),
                             book.getBookDescription(),

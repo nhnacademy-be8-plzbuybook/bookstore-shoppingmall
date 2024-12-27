@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Setter
 public class BookDetailResponseDto {
     private Long bookId;
+    private Long sellingBookId; // 추가
     private String bookTitle;
     private String bookIndex;
     private String bookDescription;
@@ -27,7 +28,7 @@ public class BookDetailResponseDto {
     }
 
 
-    public BookDetailResponseDto(long bookId, String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId,String imageUrl) {
+    public BookDetailResponseDto(long bookId,  String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId,String imageUrl) {
 
         this.bookId = bookId;
         this.bookTitle = bookTitle;
@@ -40,5 +41,6 @@ public class BookDetailResponseDto {
         this.imageUrl = imageUrl;
 
     }
+
 }
 

@@ -1,12 +1,15 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.BookImage;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
+import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +30,41 @@ public class SellingBookService {
     private final SellingBookRepository sellingBookRepository;
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
 
     @Autowired
-    public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository) {
+    public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,BookImageRepository bookImageRepository ) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
+        this.bookImageRepository = bookImageRepository;
+
     }
+    public List<BookDetailResponseDto> getBooks() {
+        List<Book> books = bookRepository.findAll();
+        log.info("Fetched Books: {}", books);
+
+        return books.stream()
+                .map(book -> {
+                    SellingBook sellingBook = sellingBookRepository.findByBook(book);
+                    BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+                    log.info("Fetched SellingBook: {}", sellingBook);
+                    return new BookDetailResponseDto(
+                            book.getBookId(),
+                            sellingBook != null ? sellingBook.getSellingBookId() : null,
+                            book.getBookTitle(),
+                            book.getBookIndex(),
+                            book.getBookDescription(),
+                            book.getBookPubDate(),
+                            book.getBookPriceStandard(),
+                            book.getBookIsbn13(),
+                            book.getPublisher().getPublisherId(),
+                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * 판매책 등록
@@ -111,11 +142,36 @@ public class SellingBookService {
     /**
      * 판매책 상세 조회
      */
-    public SellingBookResponseDto getSellingBook(Long sellingBookId) {
+//    public SellingBookResponseDto getSellingBook(Long sellingBookId) {
+//        SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
+//                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+//        return toResponseDto(sellingBook);
+//    }
+    public BookDetailResponseDto getSellingBook(Long sellingBookId) {
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
                 .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
-        return toResponseDto(sellingBook);
+
+        Book book = sellingBook.getBook();
+
+        // BookImage를 Book 기준으로 검색
+        BookImage bookImage = bookImageRepository.findByBook(book)
+                .orElseThrow(() -> new RuntimeException("BookImage not found for Book ID: " + book.getBookId()));
+
+
+        return new BookDetailResponseDto(
+                book.getBookId(),
+                sellingBook.getSellingBookId(),
+                book.getBookTitle(),
+                book.getBookIndex(),
+                book.getBookDescription(),
+                book.getBookPubDate(),
+                book.getBookPriceStandard(),
+                book.getBookIsbn13(),
+                book.getPublisher().getPublisherId(),
+                bookImage.getImageUrl() // BookImage에서 이미지 URL 가져오기
+        );
     }
+
 
 
     /**

@@ -49,5 +49,8 @@ public class SellingBook {
     }
     public SellingBook() {
     }
+    public String getBookTitle() {
+        return this.book.getBookTitle(); // Book 연관 객체에서 제목 가져오기
+    }
 }
 

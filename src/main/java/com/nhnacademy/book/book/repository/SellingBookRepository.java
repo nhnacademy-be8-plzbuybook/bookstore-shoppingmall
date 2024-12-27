@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.repository;
 
+import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.SellingBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,7 @@ import java.util.List;
 @Repository
 public interface SellingBookRepository extends JpaRepository<SellingBook, Long> {
 
+    SellingBook findByBook(Book book);
     // 도서 상태별 조회 ㅇㅇ
     List<SellingBook> findBySellingBookStatus(SellingBook.SellingBookStatus status);
 
