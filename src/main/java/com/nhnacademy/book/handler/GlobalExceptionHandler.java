@@ -293,4 +293,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 
+    //회원 가입시 권한이 없을 시 오류
+    @ExceptionHandler(DefaultAuthNotfoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleDefaultAuthNotfoundException(DefaultAuthNotfoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
 }
