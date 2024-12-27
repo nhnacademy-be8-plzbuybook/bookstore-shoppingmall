@@ -294,6 +294,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 
+
+    // 여기서부터 Book 관련
     @ExceptionHandler(AuthorIdNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleAuthorIdNotFoundException(AuthorIdNotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
