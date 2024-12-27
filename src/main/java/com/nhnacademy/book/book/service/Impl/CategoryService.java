@@ -2,6 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
+import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
@@ -129,5 +130,13 @@ public class CategoryService {
                 category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null,
                 childCategories
         );
+    }
+
+
+    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
+        return categoryRepository.findByCategoryNameContaining(keyword)
+                .stream()
+                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
     }
 }
