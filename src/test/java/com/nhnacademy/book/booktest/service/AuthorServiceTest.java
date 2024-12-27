@@ -2,6 +2,7 @@ package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
 import com.nhnacademy.book.book.exception.AuthorsNotFoundException;
@@ -33,6 +34,9 @@ public class AuthorServiceTest {
     @Mock
     private AuthorRepository authorRepository;
 
+    @Mock
+    private AuthorSearchRepository authorSearchRepository;
+
     List<Author> authorList = new ArrayList<>();
 
     @BeforeEach
@@ -58,7 +62,6 @@ public class AuthorServiceTest {
         authorList.add(author3);
         authorList.add(author4);
     }
-    @Disabled
     @Test
     void createAuthor() {
         AuthorRequestDto requestDto = new AuthorRequestDto("test_created");
@@ -112,7 +115,6 @@ public class AuthorServiceTest {
     }
 
     @Test
-    @Disabled
     void deleteAuthorById() {
         Author author = new Author();
         author.setAuthorId(5L);

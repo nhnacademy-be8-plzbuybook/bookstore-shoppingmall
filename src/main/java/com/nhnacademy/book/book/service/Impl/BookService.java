@@ -139,18 +139,6 @@ public class BookService {
         );
         Book book2 = bookRepository.save(book);
 
-
-        BookDocument bookDocument = new BookDocument();
-        bookDocument.setBookId(book2.getBookId());
-        bookDocument.setBookPriceStandard(bookRegisterDto.getBookPriceStandard());
-        bookDocument.setBookIsbn13(bookRegisterDto.getBookIsbn13());
-        bookDocument.setBookIndex(bookRegisterDto.getBookIndex());
-        bookDocument.setBookTitle(bookRegisterDto.getBookTitle());
-        bookDocument.setBookPubDate(bookRegisterDto.getBookPubDate());
-        bookDocument.setBookDescription(bookRegisterDto.getBookDescription());
-        bookDocument.setPublisherId(bookRegisterDto.getPublisherId());
-
-        bookSearchRepository.save(bookDocument);
     }
 
 
@@ -161,6 +149,7 @@ public class BookService {
             throw new BookNotFoundException("존재하지 않는 도서 ID입니다.");
         }
         bookRepository.deleteById(bookId);
+        bookSearchRepository.deleteById(bookId);
     }
 
     // 도서 수정 기능 (관리자)

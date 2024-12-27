@@ -55,10 +55,7 @@ public class BookAuthorService {
         this.sellingBookRepository = sellingBookRepository;
     }
 
-    public boolean existsByBookIdAndAuthorId(Long bookId, Long authorId) {
-        List<BookAuthorDocument> results = bookAuthorSearchRepository.findByBookIdAndAuthorId(bookId, authorId);
-        return !results.isEmpty();
-    }
+
 
     public void createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
         if (Objects.isNull(bookAuthorRequestDto.getAuthorId())) {
@@ -66,13 +63,6 @@ public class BookAuthorService {
         } else if (Objects.isNull(bookAuthorRequestDto.getBookId())) {
             throw new BookNotFoundException("Book not found");
         }
-
-        boolean exists = existsByBookIdAndAuthorId(bookAuthorRequestDto.getBookId(), bookAuthorRequestDto.getAuthorId());
-        if (exists) {
-            throw new IllegalArgumentException("This relationship already exists.");
-        }
-
-
 
         Book book = bookRepository.findById(bookAuthorRequestDto.getBookId())
                 .orElseThrow(() -> new BookNotFoundException("Book not found"));
@@ -97,6 +87,7 @@ public class BookAuthorService {
             throw new BookAuthorNotFoundException("BookAuthor not found");
         }
         bookAuthorRepository.deleteById(bookAuthorId);
+        bookAuthorSearchRepository.deleteById(bookAuthorId);
     }
 
     public List<BookResponseDto> findBooksByAuthorId(Long authorId) {
