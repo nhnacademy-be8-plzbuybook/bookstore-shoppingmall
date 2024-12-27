@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,12 @@ public class BookController {
     public ResponseEntity<List<BookDetailResponseDto>> getAllBooksByAuthor(@PathVariable Long authorId) {
         bookAuthorService.findBooksByAuthorIdFromElastic(authorId);
         return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @GetMapping("/{authorId}/selling-books")
+    public ResponseEntity<List<SellingBookResponseDto>> getBooksByAuthorWithSellingInfo(@PathVariable Long authorId) {
+        List<SellingBookResponseDto> sellingBooks = bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId);
+        return ResponseEntity.ok(sellingBooks);
     }
 
 }
