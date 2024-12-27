@@ -11,9 +11,8 @@ public interface MemberService {
     MemberCreateResponseDto createMember(MemberCreateRequestDto memberCreateRequestDto);
     MemberModifyResponseDto modify(Long memberId, MemberModifyRequestDto memberModifyRequestDto);
     MemberEmailResponseDto getMemberByEmail(String email);
+    MemberDto getMemberMyByEmail(String email);
     MemberIdResponseDto getMemberById(Long id);
     void withdrawMember(Long memberId);
     Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto);
-
-
 }

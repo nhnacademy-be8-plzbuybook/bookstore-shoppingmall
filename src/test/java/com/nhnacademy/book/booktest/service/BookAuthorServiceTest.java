@@ -4,6 +4,7 @@ package com.nhnacademy.book.booktest.service;
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
@@ -17,6 +18,7 @@ import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -50,6 +52,9 @@ public class BookAuthorServiceTest {
 
     @Mock
     private AuthorRepository authorRepository;
+
+    @Mock
+    private BookAuthorSearchRepository bookAuthorSearchRepository;
 
     @Mock
     private BookRepository bookRepository;
@@ -107,6 +112,7 @@ public class BookAuthorServiceTest {
     }
 
 
+
     @Test
     void createBookAuthor() {
         BookAuthorRequestDto bookAuthorRequestDto = new BookAuthorRequestDto();
@@ -153,7 +159,6 @@ public class BookAuthorServiceTest {
         assertThrows(BookNotFoundException.class, () -> bookAuthorService.createBookAuthor(bookAuthorRequestDto));
 
     }
-
     @Test
     void createBook_BookException() {
         BookAuthorRequestDto bookAuthorRequestDto = new BookAuthorRequestDto();
@@ -185,6 +190,8 @@ public class BookAuthorServiceTest {
         bookAuthorService.deleteBookAuthor(anyLong());
 
         Mockito.verify(bookAuthorRepository, Mockito.times(1)).deleteById(anyLong());
+        Mockito.verify(bookAuthorSearchRepository, Mockito.times(1)).deleteById(anyLong());
+
     }
 
     @Test

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,11 @@ public class Author {
 
     @OneToMany(mappedBy = "author")
     private List<BookAuthor> bookAuthors = new ArrayList<>();
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;  // Soft Delete 필드
+
+
 
 
     @Override

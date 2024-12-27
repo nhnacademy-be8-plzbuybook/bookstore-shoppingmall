@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -25,7 +26,9 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
     List<SellingBook> findBySellingBookViewCountGreaterThanEqual(Long minViewCount);
 
     // 특정 도서(Book)와 연결된 판매 도서 조회 ㅇㅇ
-    List<SellingBook> findByBook_BookId(Long bookId);
+//    List<SellingBook> findByBook_BookId(Long bookId);
+
+    SellingBook findByBook_BookId(Long bookId);
 
     @Query("SELECT DISTINCT sb FROM SellingBook sb " +
             "JOIN sb.book b " +
@@ -34,5 +37,7 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
             "WHERE c.categoryId = :categoryId " +
             "OR (c.parentCategory IS NOT NULL AND c.parentCategory.categoryId = :categoryId)")
     List<SellingBook> findByCategoryIdOrParent(@Param("categoryId") Long categoryId);
+
+
 
 }

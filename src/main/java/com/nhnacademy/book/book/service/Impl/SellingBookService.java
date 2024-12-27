@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookImage;
 import com.nhnacademy.book.book.entity.SellingBook;
@@ -63,6 +64,7 @@ public class SellingBookService {
                     );
                 })
                 .collect(Collectors.toList());
+
     }
 
 
@@ -231,15 +233,15 @@ public class SellingBookService {
 //                .collect(Collectors.toList());
 //    }
 
-    /**
-     * 특정 도서(Book) ID로 연결된 판매책 조회
-     */
-    public List<SellingBookResponseDto> getSellingBooksByBookId(Long bookId) {
-        return sellingBookRepository.findByBook_BookId(bookId)
-                .stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
-    }
+//    /**
+//     * 특정 도서(Book) ID로 연결된 판매책 조회
+//     */
+//    public List<SellingBookResponseDto> getSellingBooksByBookId(Long bookId) {
+//        return sellingBookRepository.findByBook_BookId(bookId)
+//                .stream()
+//                .map(this::toResponseDto)
+//                .collect(Collectors.toList());
+//    }
 
 
     /**

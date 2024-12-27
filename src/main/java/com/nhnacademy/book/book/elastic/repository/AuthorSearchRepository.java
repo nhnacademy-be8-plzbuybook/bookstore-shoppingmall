@@ -12,4 +12,7 @@ public interface AuthorSearchRepository extends ElasticsearchRepository<AuthorDo
 
     AuthorDocument findByAuthorName(String authorName);
 
+
+    void deleteByAuthorId(Long authorId);
+
 }

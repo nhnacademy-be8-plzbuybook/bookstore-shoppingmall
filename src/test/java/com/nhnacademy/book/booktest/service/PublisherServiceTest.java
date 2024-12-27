@@ -3,6 +3,7 @@ package com.nhnacademy.book.booktest.service;
 import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
 import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
+import com.nhnacademy.book.book.elastic.repository.PublisherSearchRepository;
 import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
@@ -29,15 +30,18 @@ public class PublisherServiceTest {
     @Mock
     private PublisherRepository publisherRepository;
 
+    @Mock
+    private PublisherSearchRepository publisherSearchRepository;
+
     // 테스트에서 사용할 Publisher 객체
     private Publisher publisher = new Publisher();
-    @Disabled
     @Test
     void createPublisher() {
         PublisherRegisterDto publisherRegisterDto = new PublisherRegisterDto();
         publisherRegisterDto.setPublisherName("test");
 
         Publisher publisher = new Publisher();
+        publisher.setPublisherId(1L);
         publisher.setPublisherName("test");
 
         Mockito.when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);

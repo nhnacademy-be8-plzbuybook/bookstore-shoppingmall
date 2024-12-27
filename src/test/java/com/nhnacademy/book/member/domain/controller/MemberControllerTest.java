@@ -124,6 +124,37 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("특정 회원 email로 조회(myPage)")
+    void getMemberMyByEmail() {
+        String email = "yoonwlgh12@naver.com";
+
+        MemberDto memberDto = new MemberDto(
+                "윤지호",
+                "010-7237-3951",
+                "1111",
+                "yoonwlgh12@naver.com",
+                LocalDate.of(2000,3,9),
+                "NORMAL",
+                "ACTIVE"
+        );
+
+        when(memberService.getMemberMyByEmail(email)).thenReturn(memberDto);
+
+        ResponseEntity<MemberDto> responseEntity = memberController.getMemberMyByEmail(email);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(memberDto.getName(), responseEntity.getBody().getName());
+        assertEquals(memberDto.getPhone(), responseEntity.getBody().getPhone());
+        assertEquals(memberDto.getPassword(), responseEntity.getBody().getPassword());
+        assertEquals(memberDto.getEmail(), responseEntity.getBody().getEmail());
+        assertEquals(memberDto.getBirth(), responseEntity.getBody().getBirth());
+        assertEquals(memberDto.getMemberGradeName(), responseEntity.getBody().getMemberGradeName());
+        assertEquals(memberDto.getMemberStateName(), responseEntity.getBody().getMemberStateName());
+
+    }
+
+    @Test
     @DisplayName("회원을 id로 조회")
     void getMemberById() {
         Long memberId = 1L;

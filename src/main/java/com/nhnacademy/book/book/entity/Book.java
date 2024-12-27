@@ -1,11 +1,13 @@
 package com.nhnacademy.book.book.entity;
 
+import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.math.BigDecimal;
@@ -20,6 +22,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class Book {
+
 
     public Book(Publisher publisher, String bookTitle, String bookIndex, String bookDescription,
                 LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13) {
@@ -85,4 +88,6 @@ public class Book {
         this.bookAuthors.add(bookAuthor);
         author.getBookAuthors().add(bookAuthor);
     }
+
+
 }
