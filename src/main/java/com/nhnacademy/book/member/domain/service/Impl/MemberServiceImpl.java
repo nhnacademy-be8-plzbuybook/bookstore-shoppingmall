@@ -3,10 +3,7 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
 import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberAuth;
-import com.nhnacademy.book.member.domain.MemberGrade;
-import com.nhnacademy.book.member.domain.MemberStatus;
+import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
@@ -41,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberAuthRepository memberAuthRepository;
 
     private final CouponClient couponClient;
+    private final AuthRepository authRepository;
 
     //회원 생성
     @Override
@@ -58,6 +56,9 @@ public class MemberServiceImpl implements MemberService {
         MemberStatus memberStatus = memberStatusRepository.findById(1L)
                 .orElseThrow(() -> new DefaultStatusGradeNotfoundException("기본 회원 상태를 찾을 수 없습니다!"));
 
+        Auth defaultAuth = authRepository.findById(2L)
+                .orElseThrow(() -> new DefaultAuthNotfoundException("기본 권한을 찾을 수 없습니다!"));
+
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
 
@@ -73,6 +74,11 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        MemberAuth memberAuth = new MemberAuth();
+        memberAuth.setMember(savedMember);
+        memberAuth.setAuth(defaultAuth);
+        memberAuthRepository.save(memberAuth);
 
         // 응답 DTO 생성 및 반환
         MemberCreateResponseDto memberCreateResponseDto = new MemberCreateResponseDto(
