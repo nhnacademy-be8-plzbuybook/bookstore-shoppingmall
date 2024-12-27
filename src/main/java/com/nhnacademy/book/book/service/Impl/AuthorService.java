@@ -87,7 +87,7 @@ public class AuthorService {
             throw new AuthorsNotFoundException("Author not found");
         }
         authorRepository.deleteById(id);
-        authorSearchRepository.deleteById(id);
+        authorSearchRepository.deleteByAuthorId(id);
     }
 
 

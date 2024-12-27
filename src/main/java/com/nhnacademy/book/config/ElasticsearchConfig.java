@@ -19,9 +19,9 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
-//                .connectedTo("localhost:9200") // 원격 서버 URL
+                .connectedTo("localhost:9200") // 원격 서버 URL
 
-                .connectedTo("115.94.72.197:9200") // 원격 서버 URL
+//                .connectedTo("115.94.72.197:9200") // 원격 서버 URL
                 .withBasicAuth("elastic", "nhnacademy123!") // 기본 인증 추가
                 .build();
     }

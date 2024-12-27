@@ -8,9 +8,19 @@ import java.util.List;
 
 public interface BookAuthorSearchRepository extends ElasticsearchRepository<BookAuthorDocument, Long> {
 
+
+
     // 작가가 쓴 책 모두 조회
-    @Query("{\"bool\": {\"must\": [{\"term\": {\"authorId\": \"?0\"}}]}}")
-    List<BookAuthorDocument> findBooksByAuthorId(Long authorId);
+//    @Query("""
+//    {
+//        "bool": {
+//            "must": [
+//                { "term": { "authorId": "?0" }}
+//            ]
+//        }
+//    }
+//""")
+    List<BookAuthorDocument> findByAuthorId(Long authorId);
 
     // 책을 쓴 작가 모두 조회
     @Query("{\"bool\": {\"must\": [{\"term\": {\"bookId\": \"?0\"}}]}}")

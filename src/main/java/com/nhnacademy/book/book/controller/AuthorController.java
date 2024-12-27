@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.service.Impl.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class AuthorController {
 
     @Autowired
     private final AuthorService authorService;
+    @Autowired
+    private AuthorSearchRepository authorSearchRepository;
 
 
     @PostMapping
@@ -49,13 +52,9 @@ public class AuthorController {
     @DeleteMapping("/{authorId}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {
         authorService.deleteAuthorById(authorId);
+        authorSearchRepository.deleteById(authorId);
         return ResponseEntity.ok().build();
     }
 
-//    // Soft Delete API
-//    @DeleteMapping("/{authorId}")
-//    public void deleteAuthor(@PathVariable Long authorId) {
-//        authorService.deleteAuthor(authorId);
-//    }
 
 }

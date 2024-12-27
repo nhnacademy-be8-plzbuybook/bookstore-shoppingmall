@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.repository;
 
+import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
