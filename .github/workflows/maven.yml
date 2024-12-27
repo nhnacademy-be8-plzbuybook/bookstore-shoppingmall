@@ -1,11 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Java CI with Maven
 
 on:
@@ -16,37 +8,63 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
-    - name : upload file
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SSH_IP }}
-        username: ${{ secrets.SSH_ID }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        source: "target/*.jar"
-        target: "/home/nhnacademy/shoppingmall"
-        rm: false
+      - name: Run SonarQube
+        run: mvn clean verify sonar:sonar -Dsonar.projectKey=${{secrets.SONAR_KEY}} -Dsonar.projectName=${{secrets.SONAR_NAME}} -Dsonar.host.url=${{secrets.SONAR_HOST}} -Dsonar.token=${{secrets.SONAR_TOKEN}}
 
-    - name: execute shell script
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_IP }}
-        username: ${{ secrets.SSH_ID }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script_stop: true
-        script: "/home/nhnacademy/shoppingmall/shoppingmallStartup.sh"
+      - name: Delete file in server
+        run: sudo rm -rf /home/nhnacademy/shoppingmall
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "."
+          target: "/home/nhnacademy/shoppingmall"
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/nhnacademy/shoppingmall
+            
+            # 첫 번째 컨테이너 배포
+            sudo docker stop shoppingmall-instance1 || true
+            sudo docker rm shoppingmall-instance1 || true
+            sudo docker build -t shoppingmall-image .
+            sudo docker run -d -p 8090:8090 --name shoppingmall-instance1 --network front_network -e "SPRING_PROFILES_ACTIVE=prod" shoppingmall-image
+
+            while [[ "$(sudo docker inspect -f '{{.State.Status}}' shoppingmall-instance1)" != "running" ]]; do \
+              echo "Waiting for shoppingmall-instance1 container to become healthy..."; \
+              sleep 5; \
+            done
+            
+            # 두 번째 컨테이너 배포
+            sudo docker stop shoppingmall-instance2 || true
+            sudo docker rm shoppingmall-instance2 || true
+            sudo docker build -t shoppingmall-image .
+            sudo docker run -d -p 8091:8091 --name shoppingmall-instance2 --network front_network -e "SPRING_PROFILES_ACTIVE=prod" shoppingmall-image
+
+            while [[ "$(sudo docker inspect -f '{{.State.Status}}' shoppingmall-instance2)" != "running" ]]; do \
+              echo "Waiting for shoppingmall-instance2 container to become healthy..."; \
+              sleep 5; \
+            done

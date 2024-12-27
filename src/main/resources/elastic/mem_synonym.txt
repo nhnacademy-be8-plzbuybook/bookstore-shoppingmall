@@ -1,0 +1,10 @@
+책, 도서
+Korea, 코리아
+tree, 나무
+Crimson, 크림슨
+Lake, 레이크
+마지막, 끝
+시작, 처음
+마무리, 끝
+Love, 사랑
+Wolf, 울프

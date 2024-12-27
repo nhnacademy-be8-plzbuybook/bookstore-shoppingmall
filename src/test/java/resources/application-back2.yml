@@ -1,0 +1,64 @@
+server:
+  port: 8091
+
+spring:
+  elasticsearch:
+    uris: http://localhost:9200
+    username:
+    password:
+
+  config:
+    activate:
+      on-profile: back2
+
+  application:
+    name: bookstore-back2
+
+
+  #  datasource:
+  #    url: jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore  # MySQL 데이터베이스 URL
+  #    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
+  #    username: project_be8_plzbuybook # MySQL 사용자명
+  #    password: MOW6c#y4TVxi1P5b  # MySQL 비밀번호
+
+  datasource:
+    #{}에 값을 불러온다
+    url: ${app.skm.database.url}
+    username: ${app.skm.database.username}
+    password: ${app.skm.database.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # 애플리케이션 실행 시 DB 스키마 자동 업데이트
+    show-sql: true  # 실행되는 SQL을 콘솔에 출력
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
+
+app:
+  skm:
+    url: https://api-keymanager.nhncloudservice.com
+    appKey: qTQNj7LyHhdAazH3
+    keystoreFile: skm.p12
+    password: 4444
+    database:
+      url: 1117490ed9294c8798e83f2cb162982d
+      username: 7f2f713f0a6c4d82acb64ed3aa831cee
+      password: 7ac2c65487d34a7fa73997fada11d730
+
+#  h2:
+#    console:
+#      enabled: true  # H2 콘솔 활성화
+#      path: /h2-console  # H2 콘솔 접근 경로
+
+eureka:
+  client:
+    register-with-eureka: true  # Eureka에 서비스 등록
+    fetch-registry: true  # Eureka에서 서비스 목록 가져오기
+    service-url:
+      defaultZone: http://localhost:8761/eureka  # Eureka 서버 URL
+
+aladin:
+  api:
+    url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&QueryType=ItemNewAll&MaxResults=10&start=1&SearchTarget=Book&output=js&Version=20131101"

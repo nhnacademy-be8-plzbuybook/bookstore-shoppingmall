@@ -7,3 +7,40 @@ GET https://examples.http-client.intellij.net/get
 ### 쇼핑몰 서버에서 인증 서버로 요청 보내기
 
 GET http://localhost:8080/hello-from-auth
+
+
+
+
+input {
+  jdbc {
+    # MySQL 연결 정보
+    jdbc_connection_string => "jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore"
+    jdbc_user => "project_be8_plzbuybook"
+    jdbc_password => "MOW6c#y4TVxi1P5b"
+    jdbc_driver_library => "/path/to/mysql-connector-java.jar"  # MySQL JDBC 드라이버 경로
+    jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+
+    # 실행할 쿼리
+    statement => "SELECT * FROM selling_book"
+
+    # 주기적으로 데이터를 읽기 위한 설정 (cron 형식)
+    schedule => "* * * * *"  # 예시: 매 분마다 실행
+  }
+}
+
+filter {
+  # 필요한 경우 데이터 필터링이나 변환을 수행
+  # 예: 날짜 형식 변환, 필드 이름 변경 등
+}
+
+output {
+  # Elasticsearch로 데이터를 전송
+  elasticsearch {
+    hosts => ["http://115.94.72.197:9200"]
+    index => "selling_book_4zo"  # 데이터를 저장할 Elasticsearch 인덱스 이름
+    user => "elastic"  # Elasticsearch 사용자 (필요 시)
+    password => "nhnacademy123!"  # Elasticsearch 비밀번호 (필요 시)
+    ssl => false  # SSL 사용 여부
+    doc_as_upsert => true  # 기존 문서가 있으면 업데이트
+  }
+}

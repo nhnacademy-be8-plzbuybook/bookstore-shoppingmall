@@ -1,0 +1,124 @@
+### 회원 등급 추가1 (값 추가를 위함)
+POST http://localhost:8090/api/members/grade
+Content-Type: application/json
+
+{
+  "memberGradeName": "NORMAL",
+  "conditionPrice": 10000.00,
+  "gradeChange": "2024-12-11T12:00:00"
+
+}
+
+### 회원 등급 추가2 (값 추가를 위함)
+POST http://localhost:8090/api/members/grade
+Content-Type: application/json
+
+{
+  "memberGradeName": "GOLD",
+  "conditionPrice": 10000.00,
+  "gradeChange": "2024-12-11T12:00:00"
+
+}
+
+### 회원 상태 추가1 (값 추가를 위함)
+POST http://localhost:8090/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "ACTIVE"
+}
+
+
+### 회원 상태 추가2 (값 추가를 위함)
+POST http://localhost:8090/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "DORMANT"
+}
+
+
+### 회원 상태 추가3 (값 추가를 위함)
+POST http://localhost:8090/api/members/status
+Content-Type: application/json
+
+{
+  "memberStateName": "WITHDRAWAL"
+}
+
+
+
+### Member1 회원 가입
+POST http://localhost:8090/api/members
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phone": "010-1111-5638",
+  "email": "test@naver.com",
+  "birth": "2024-12-12",
+  "password": "1111"
+}
+
+### Member2 회원 가입
+POST http://localhost:8090/api/members
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phone": "010-2222-2222",
+  "email": "test2@naver.com",
+  "birth": "2024-12-12",
+  "password": "1111"
+}
+
+### Member3 회원 가입
+POST http://localhost:8090/api/members
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phone": "010-3333-3333",
+  "email": "test3@naver.com",
+  "birth": "2024-12-12",
+  "password": "1111"
+}
+
+### 특정 회원 조회(이메일)
+GET http://localhost:8090/api/members/email?email=test@naver.com
+Content-Type: application/json
+
+### 특정 회원 조회(id)
+GET http://localhost:8090/api/members/1
+Content-Type: application/json
+
+### 회원 수정
+PUT http://localhost:8090/api/members/1
+Content-Type: application/json
+
+{
+  "name": "testtest",
+  "phone": "010-1111-1111",
+  "email": "test22@naver.com",
+  "birth": "2024-11-11",
+  "password": "1111"
+}
+
+### 회원 수정(수정된게 없을 경우 예외)
+PUT http://localhost:8090/api/members/1
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phone": "010-1234-5678",
+  "email": "test@naver.com",
+  "birth": "2024-12-12",
+  "password": "1111"
+}
+
+### 회원 삭제 (withdraw로 상태 변경)
+PUT http://localhost:8090/api/members/1/withdrawal
+Content-Type: application/json
+
+### 전체 회원 조회
+GET http://localhost:8090/api/members?page=0&size=2
