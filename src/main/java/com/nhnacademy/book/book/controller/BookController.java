@@ -4,8 +4,10 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.dto.response.BookSearchResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
+import com.nhnacademy.book.book.service.Impl.BookSearchService;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class BookController {
     private BookAuthorService bookAuthorService;
     @Autowired
     private SellingBookService sellingBookService;
+    @Autowired
+    private BookSearchService bookSearchService;
 
 
     @GetMapping
@@ -83,6 +87,12 @@ public class BookController {
     public ResponseEntity<List<SellingBookResponseDto>> getBooksByAuthorWithSellingInfo(@PathVariable Long authorId) {
         List<SellingBookResponseDto> sellingBooks = bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId);
         return ResponseEntity.ok(sellingBooks);
+    }
+
+    @GetMapping("/search2")
+    public ResponseEntity<List<BookSearchResponseDto>> searchBooks(@RequestParam String searchKeyword) {
+        List<BookSearchResponseDto> books = bookSearchService.searchBooks(searchKeyword);
+        return ResponseEntity.ok(books);
     }
 
 }

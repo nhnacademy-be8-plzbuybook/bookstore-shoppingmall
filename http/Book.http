@@ -53,7 +53,7 @@ Content-Type: application/json
 
 ### asd
 
-GET localhost:8090/api/books/463/selling-books
+GET localhost:8090/api/books/434/selling-books
 
 ###작가 삭제
 DELETE localhost:8090/api/authors/108
@@ -65,8 +65,12 @@ GET http://localhost:8090/api/search/테스트작가
 GET http://localhost:8090/api/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%9E%91%EA%B0%80
 
 
+### 키워드 검색
+GET localhost:8090/api/books/search2?searchKeyword=한강
 
 
+### 카테고리 검색
+GET localhost:8090/api/categories/search?keyword=국내
 
 
 
