@@ -3,8 +3,11 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.dto.response.BookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.BookService;
+import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ public class BookController {
     private final BookService bookService;
     @Autowired
     private BookAuthorService bookAuthorService;
+    @Autowired
+    private SellingBookService sellingBookService;
 
 
     @GetMapping
@@ -62,10 +67,22 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/search/test/{authorId}")
-    public ResponseEntity<List<BookDetailResponseDto>> getAllBooksByAuthor(@PathVariable Long authorId) {
-        bookAuthorService.findBooksByAuthorIdFromElastic(authorId);
-        return ResponseEntity.ok(bookService.getAllBooks());
+
+    //작가 아이디로 작가가 집필한 책 검색
+    @GetMapping("/{authorId}")
+    public ResponseEntity<List<BookResponseDto>> getBooksByAuthor(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookAuthorService.findBooksByAuthorId(authorId));
+    }
+
+    @GetMapping("/selling/{authorId}")
+    public ResponseEntity<List<SellingBookResponseDto>> findBooksByAuthorIdWithSellingInfo(@PathVariable Long authorId) {
+        return ResponseEntity.ok(bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId));
+    }
+
+    @GetMapping("/{authorId}/selling-books")
+    public ResponseEntity<List<SellingBookResponseDto>> getBooksByAuthorWithSellingInfo(@PathVariable Long authorId) {
+        List<SellingBookResponseDto> sellingBooks = bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId);
+        return ResponseEntity.ok(sellingBooks);
     }
 
 }
