@@ -181,11 +181,9 @@ public class SellingBookService {
     /**
      * 특정 도서(Book) ID로 연결된 판매책 조회
      */
-    public List<SellingBookResponseDto> getSellingBooksByBookId(Long bookId) {
-        return sellingBookRepository.findByBook_BookId(bookId)
-                .stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
+    public SellingBookResponseDto getSellingBooksByBookId(Long bookId) {
+//        return sellingBookRepository.findByBook_BookId(bookId)
+          return null;
     }
 
 

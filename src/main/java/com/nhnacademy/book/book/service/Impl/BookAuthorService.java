@@ -4,6 +4,7 @@ import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
@@ -12,12 +13,14 @@ import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
+import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.exception.AuthorIdNotFoundException;
 import com.nhnacademy.book.book.exception.BookAuthorNotFoundException;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.repository.BookAuthorRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.AuthorRepository;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,16 +39,18 @@ public class BookAuthorService {
     private final AuthorSearchRepository authorSearchRepository;
     private final BookSearchRepository bookSearchRepository;
     private final BookAuthorSearchRepository bookAuthorSearchRepository;
+    private final SellingBookRepository sellingBookRepository;
 
     @Autowired
     public BookAuthorService(BookAuthorRepository bookAuthorRepository, BookRepository bookRepository, AuthorRepository authorRepository,
-                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository, BookAuthorSearchRepository bookAuthorSearchRepository) {
+                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository, BookAuthorSearchRepository bookAuthorSearchRepository, SellingBookRepository sellingBookRepository) {
         this.bookAuthorRepository = bookAuthorRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.authorSearchRepository = authorSearchRepository;
         this.bookSearchRepository = bookSearchRepository;
         this.bookAuthorSearchRepository = bookAuthorSearchRepository;
+        this.sellingBookRepository = sellingBookRepository;
     }
 
     public boolean existsByBookIdAndAuthorId(Long bookId, Long authorId) {
@@ -134,6 +139,35 @@ public class BookAuthorService {
                         book.getBookTitle(),
                         book.getBookPriceStandard(),        // 예시: 책 가격, BookDocument에 가격 정보가 있을 경우
                         book.getBookIsbn13()))       // 예시: 책 재고, BookDocument에 재고 정보가 있을 경우
+                .collect(Collectors.toList());
+    }
+
+    public List<SellingBookResponseDto> findBooksByAuthorIdWithSellingInfo(Long authorId) {
+        // 1. 작가가 집필한 책 정보 조회
+        List<Book> books = bookAuthorRepository.findBooksByAuthorId(authorId);
+
+        if (!authorRepository.existsById(authorId)) {
+            throw new AuthorIdNotFoundException("Author id: " + authorId + " not found");
+        }
+
+        // 2. 각 책 ID로 판매 정보 조회 및 결합
+        return books.stream()
+                .map(book -> {
+                    // 책 ID로 판매책 정보 조회
+                    SellingBook sellingBook = sellingBookRepository.findByBook_BookId(book.getBookId());
+
+                    // BookResponseDto로 책 정보를 포함하여 판매책 정보 반환
+                    return new SellingBookResponseDto(
+                            sellingBook.getSellingBookId(),                // 판매책 ID
+                            book.getBookId(),                  // 책 ID
+                            sellingBook.getSellingBookPrice(), // 판매 가격
+                            sellingBook.getSellingBookPackageable(), // 포장 가능 여부
+                            sellingBook.getSellingBookStock(), // 재고
+                            sellingBook.getSellingBookStatus(), // 판매 상태
+                            sellingBook.getUsed(),             // 중고 여부
+                            sellingBook.getSellingBookViewCount() // 조회 수
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

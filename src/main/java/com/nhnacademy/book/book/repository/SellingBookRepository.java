@@ -23,7 +23,7 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
     List<SellingBook> findBySellingBookViewCountGreaterThanEqual(Long minViewCount);
 
     // 특정 도서(Book)와 연결된 판매 도서 조회 ㅇㅇ
-    List<SellingBook> findByBook_BookId(Long bookId);
+    SellingBook findByBook_BookId(Long bookId);
 
     @Query("SELECT DISTINCT sb FROM SellingBook sb " +
             "JOIN sb.book b " +
