@@ -10,6 +10,7 @@ import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,11 @@ public class BookServiceTest {
 
     @Mock
     private BookImageRepository bookImageRepository; // BookImageRepository 추가
+
+    @Mock
+    private SellingBookRepository sellingBookRepository;
+
+    @Mock
     private Publisher publisher;
 
     List<Book> books = new ArrayList<>();
