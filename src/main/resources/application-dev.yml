@@ -65,6 +65,17 @@ app:
       username: eb228aac947c4989be561ac95ee42c6b
       containerName: 4c3b4227ce904561ac012c685e35d1dd
 
+    order_redis:
+      host: 6a3cb866ffb043a7aa455f6a019e322d
+      port: 5921efed8af14a18a4db38b48808431c
+      password: b8ca506f6efe4248927c4aee64e6c695
+      range: 2aa15df0aa2c434999f6498f0251e9f1
+
+    cart_redis:
+      host: 87e11d8fd3eb4f2a8bd6215c5507d3be
+      port: 8665cb8cfad34d99a1d906b513bebc71
+      password: 6b63e66844dc47f295e2012d18d5b8e9
+      range: 87dd6ba543394f86961f59dc68704e5d
 # 최대한 사용 x
 # 개발 하실때 로컬 mysql 로 테스트 해줬으면 합니다.
 # 배포환경이랑 최대한 비슷하게 개발하는게 좋다고 합니다.
