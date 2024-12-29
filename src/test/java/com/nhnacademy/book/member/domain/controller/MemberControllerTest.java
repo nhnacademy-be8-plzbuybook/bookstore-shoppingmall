@@ -102,6 +102,25 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원 수정(header email)")
+    void updateMember() {
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName("윤지호");
+        memberModifyRequestDto.setPhone("010-7237-3951");
+        memberModifyRequestDto.setEmail("yoonwlgh12@naver.com");
+        memberModifyRequestDto.setBirth(LocalDate.of(2000, 3,9));
+        memberModifyRequestDto.setPassword("1111");
+
+        ResponseEntity<String> responseEntity = memberController.updateMember("yoonwlgh12@naver.com", memberModifyRequestDto);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertNotNull(responseEntity.getBody());
+        assertEquals("수정 되었습니다!", responseEntity.getBody());
+
+
+    }
+
+    @Test
     @DisplayName("회원을 email로 조회")
     void getMemberByEmail() {
         String email = "yoonwlgh12@naver.com";
