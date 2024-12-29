@@ -10,17 +10,11 @@ import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
-import com.nhnacademy.book.book.entity.Author;
-import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.entity.BookAuthor;
-import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.AuthorIdNotFoundException;
 import com.nhnacademy.book.book.exception.BookAuthorNotFoundException;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
-import com.nhnacademy.book.book.repository.BookAuthorRepository;
-import com.nhnacademy.book.book.repository.BookRepository;
-import com.nhnacademy.book.book.repository.AuthorRepository;
-import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.book.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +34,15 @@ public class BookAuthorService {
     private final BookSearchRepository bookSearchRepository;
     private final BookAuthorSearchRepository bookAuthorSearchRepository;
     private final SellingBookRepository sellingBookRepository;
+    private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
 
 
 
     @Autowired
     public BookAuthorService(BookAuthorRepository bookAuthorRepository, BookRepository bookRepository, AuthorRepository authorRepository,
-                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository, BookAuthorSearchRepository bookAuthorSearchRepository, SellingBookRepository sellingBookRepository) {
+                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository,
+                             BookAuthorSearchRepository bookAuthorSearchRepository,
+                             SellingBookRepository sellingBookRepository, BookImageRepository bookImageRepository) {
         this.bookAuthorRepository = bookAuthorRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
@@ -53,6 +50,7 @@ public class BookAuthorService {
         this.bookSearchRepository = bookSearchRepository;
         this.bookAuthorSearchRepository = bookAuthorSearchRepository;
         this.sellingBookRepository = sellingBookRepository;
+        this.bookImageRepository = bookImageRepository;
     }
 
 
@@ -163,6 +161,7 @@ public class BookAuthorService {
                 .map(book -> {
                     // 책 ID로 판매책 정보 조회
                     SellingBook sellingBook = sellingBookRepository.findByBook_BookId(book.getBookId());
+                    BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
 
                     // BookResponseDto로 책 정보를 포함하여 판매책 정보 반환
                     return new SellingBookResponseDto(
@@ -173,7 +172,8 @@ public class BookAuthorService {
                             sellingBook.getSellingBookStock(), // 재고
                             sellingBook.getSellingBookStatus(), // 판매 상태
                             sellingBook.getUsed(),             // 중고 여부
-                            sellingBook.getSellingBookViewCount() // 조회 수
+                            sellingBook.getSellingBookViewCount(), // 조회 수
+                            bookImage.getImageUrl() // BookImage에서 이미지 URL 가져오기
                     );
                 })
                 .collect(Collectors.toList());

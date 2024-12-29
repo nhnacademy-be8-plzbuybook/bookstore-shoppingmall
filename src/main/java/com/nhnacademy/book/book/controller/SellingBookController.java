@@ -30,7 +30,7 @@ public class SellingBookController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<List<BookDetailResponseDto>> getBooks() {
+    public ResponseEntity<List<SellingBookResponseDto>> getBooks() {
         return ResponseEntity.ok(sellingBookService.getBooks());
     }
 
