@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(OrderStatus.PAYMENT_PENDING)
                 .id(orderId)
                 .name(orderName)
-                .totalPrice(totalPrice)
+                .orderPrice(totalPrice)
                 // 임시값들
                 .usedPoint(1000)
                 .number("123456789") // orderNumber
