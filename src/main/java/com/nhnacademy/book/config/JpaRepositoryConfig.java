@@ -1,10 +1,16 @@
 package com.nhnacademy.book.config;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
+@EnableJpaAuditing
 @EnableJpaRepositories(basePackages = {
         "com.nhnacademy.book.book.repository",
         "com.nhnacademy.book.member.domain.repository",
@@ -18,4 +24,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.nhnacademy.book.skm.properties"
 })
 public class JpaRepositoryConfig {
+    @PersistenceContext
+    private EntityManager entityManager;
+    @Bean
+    public JPAQueryFactory queryFactory() {
+        return new JPAQueryFactory(entityManager);
+    }
 }
