@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @Getter
 public class OrderProductWrappingRequestDto {
@@ -14,4 +16,7 @@ public class OrderProductWrappingRequestDto {
     @Min(1)
     @NotNull
     private Integer quantity;
+
+    @NotNull
+    private BigDecimal price;
 }

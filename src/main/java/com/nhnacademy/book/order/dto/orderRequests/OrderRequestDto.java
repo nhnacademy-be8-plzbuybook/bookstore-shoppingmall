@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -19,7 +20,9 @@ public class OrderRequestDto {
     @NotNull
     private Integer usedPoint;
     @NotNull
-    private OrderDeliveryAddress orderDeliveryAddress;
+    private List<OrderProductRequestDto> orderProducts;
+    @NotNull
+    private OrderDeliveryAddressDto orderDeliveryAddressDto;
     @NotNull
     private OrderProductWrappingDto orderProductWrapping;
 }

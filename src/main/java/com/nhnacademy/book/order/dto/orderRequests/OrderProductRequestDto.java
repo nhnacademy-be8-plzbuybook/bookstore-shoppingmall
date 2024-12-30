@@ -6,19 +6,23 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
 public class OrderProductRequestDto {
     @NotNull
-    private Long sellingBookId;
+    private Long productId;
+
+    @NotNull
+    private BigDecimal price;
 
     @Min(1)
     @NotNull
     private Integer quantity;
 
     @Nullable
-    private List<Long> appliedCouponIds;
+    private List<OrderProductAppliedCouponDto> appliedCoupons;
 
     @Nullable
     private OrderProductWrappingDto wrapping;
