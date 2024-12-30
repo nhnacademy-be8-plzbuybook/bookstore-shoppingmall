@@ -539,6 +539,100 @@ class MemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("회원 수정을 잘하는지(header email)")
+    void updateMember_success() {
+        String originalEmail = "yoonwlgh12@naver.com";
+        String newEmail = "yoonwlgh123@naver.com";
+        Member member = new Member();
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail(originalEmail);
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("encodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName("융징홍");
+        memberModifyRequestDto.setPhone("010-1111-1111");
+        memberModifyRequestDto.setEmail(newEmail);
+        memberModifyRequestDto.setBirth(LocalDate.of(2000, 3, 10));
+        memberModifyRequestDto.setPassword("newPassword");
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+        when(memberRepository.existsByEmail(memberModifyRequestDto.getEmail())).thenReturn(false);
+        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        memberService.updateMember(originalEmail, memberModifyRequestDto);
+
+        assertEquals("융징홍", member.getName());
+        assertEquals("010-1111-1111", member.getPhone());
+        assertEquals("yoonwlgh123@naver.com", member.getEmail());
+        assertEquals("encodedNewPassword", member.getPassword());
+        assertEquals(LocalDate.of(2000, 3, 10), member.getBirth());
+
+        verify(memberRepository, times(1)).findByEmail(originalEmail);
+        verify(memberRepository, times(1)).existsByEmail(newEmail);
+        verify(memberRepository, times(1)).save(member);
+
+
+    }
+
+
+    @Test
+    @DisplayName("회원 수정 값이 없을 때 예외를 잘 처리 하는지(header email)")
+    void updateMember_DuplicateMemberModificationException() {
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("EncodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName(member.getName());
+        memberModifyRequestDto.setPhone(member.getPhone());
+        memberModifyRequestDto.setEmail(member.getEmail());
+        memberModifyRequestDto.setBirth(member.getBirth());
+        memberModifyRequestDto.setPassword("password");
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches("password", "EncodedPassword")).thenReturn(true);
+
+        assertThrows(DuplicateMemberModificationException.class, () -> memberService.updateMember(member.getEmail(), memberModifyRequestDto));
+
+        verify(memberRepository).findByEmail(member.getEmail());
+        verify(passwordEncoder).matches("password", "EncodedPassword");
+
+    }
+
+
+    @Test
+    @DisplayName("회원 수정하는데 중복된 이메일로 수정하려 할 떄(header email)")
+    void updateMember_DuplicateEmailException() {
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setName("윤지호");
+        member.setPhone("010-7237-3951");
+        member.setEmail("yoonwlgh12@naver.com");
+        member.setBirth(LocalDate.of(2000, 3, 9));
+        member.setPassword("EncodedPassword");
+
+        MemberModifyRequestDto memberModifyRequestDto = new MemberModifyRequestDto();
+        memberModifyRequestDto.setName("융징홍");
+        memberModifyRequestDto.setPhone("010-1111-1111");
+        memberModifyRequestDto.setEmail("duplicate@naver.com");
+        memberModifyRequestDto.setBirth(LocalDate.of(2000, 3, 10));
+        memberModifyRequestDto.setPassword("password");
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(memberRepository.existsByEmail("duplicate@naver.com")).thenReturn(true);
+
+        assertThrows(DuplicateEmailException.class, () -> memberService.updateMember(member.getEmail(), memberModifyRequestDto));
+
+    }
+
+    @Test
     @DisplayName("삭제시 회원 상태가 withdraw로 변경 되는지")
     void withdrawMember_Success() {
         MemberStatus withdrawalStatus = new MemberStatus();

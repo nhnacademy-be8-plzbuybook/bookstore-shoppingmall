@@ -56,7 +56,7 @@ public class BookServiceTest {
 
     @Mock
     private SellingBookRepository sellingBookRepository;
-    
+
     @Mock
     private Publisher publisher;
 
