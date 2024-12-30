@@ -279,6 +279,26 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    // 회원 탈퇴
+    @Override
+    public void withdrawState(String email) {
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+                .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        if (member.getMemberStatus().getMemberStateName().equals("WITHDRAWAL")) {
+            throw new IllegalStateException("이미 탈퇴한 회원입니다.");
+        }
+
+        member.setMemberStatus(withdrawStatus);
+        memberRepository.save(member);
+    }
+
+
+
+
     @Override
     public Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto) {
         Pageable pageable = PageRequest.of(memberSearchRequestDto.getPage(), memberSearchRequestDto.getSize());

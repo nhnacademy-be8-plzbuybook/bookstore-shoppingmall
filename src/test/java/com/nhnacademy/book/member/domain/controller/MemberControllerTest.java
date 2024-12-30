@@ -255,6 +255,21 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원 탈퇴 정상 처리")
+    void withdrawState_success() {
+        String email = "test@naver.com";
+
+        doNothing().when(memberService).withdrawState(email);
+
+        ResponseEntity<String> responseEntity = memberController.withdrawState(email);
+
+        verify(memberService, times(1)).withdrawState(email);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertEquals("탈퇴 처리 됐습니다.", responseEntity.getBody());
+    }
+
+    @Test
     @DisplayName("회원을 조회하는 controller test")
     void getMembers() {
         MemberSearchRequestDto memberSearchRequestDto = new MemberSearchRequestDto();

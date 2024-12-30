@@ -677,6 +677,27 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any(Member.class));
     }
 
+    @Test
+    @DisplayName("이메일로 조회 후 회원 탈퇴")
+    void withdrawState_Success() {
+        // given
+        String email = "test@example.com";
+        MemberStatus withdrawStatus = new MemberStatus(1L, "WITHDRAWAL");
+        MemberStatus activeStatus = new MemberStatus(2L, "ACTIVE");
+        Member member = new Member(1L, null, activeStatus, "Test", "010-1234-5678", email, LocalDate.now(), "encodedPassword");
+
+        // mocking
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.of(withdrawStatus));
+
+        // when
+        memberService.withdrawState(email);
+
+        // then
+        assertEquals("WITHDRAWAL", member.getMemberStatus().getMemberStateName());
+        verify(memberRepository, times(1)).save(member);
+    }
+
 
     @Test
     @DisplayName("회원 조회를 성공적으로 하는가")
