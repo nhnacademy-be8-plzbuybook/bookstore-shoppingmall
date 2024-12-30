@@ -151,6 +151,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
+
         // 수정된 회원 저장
         Member updatedMember = memberRepository.save(member);
 
@@ -161,6 +162,51 @@ public class MemberServiceImpl implements MemberService {
                 updatedMember.getEmail(),
                 updatedMember.getBirth()
         );
+    }
+
+    //header 이메일을 통해 회원 정보 수정
+    @Override
+    @Transactional
+    public void updateMember(String email, MemberModifyRequestDto memberModifyRequestDto) {
+        boolean isModified = false;
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
+
+        if (memberModifyRequestDto.getName() != null && !memberModifyRequestDto.getName().equals(member.getName())) {
+            member.setName(memberModifyRequestDto.getName());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPhone() != null && !memberModifyRequestDto.getPhone().equals(member.getPhone())) {
+            member.setPhone(memberModifyRequestDto.getPhone());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getEmail() != null && !memberModifyRequestDto.getEmail().equals(member.getEmail())) {
+            if (memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
+                throw new DuplicateEmailException("이메일이 이미 존재!");
+            }
+            member.setEmail(memberModifyRequestDto.getEmail());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getBirth() != null && !memberModifyRequestDto.getBirth().equals(member.getBirth())) {
+            member.setBirth(memberModifyRequestDto.getBirth());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPassword() != null && !passwordEncoder.matches(memberModifyRequestDto.getPassword(), member.getPassword())) {
+            member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
+            isModified = true;
+        }
+
+        if(!isModified) {
+            throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
+        }
+
+        memberRepository.save(member);
+
     }
 
     //이메일로 특정 회원 조회

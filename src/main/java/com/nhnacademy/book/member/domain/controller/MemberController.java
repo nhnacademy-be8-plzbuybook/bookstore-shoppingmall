@@ -36,6 +36,13 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //회원 수정(header를 통해)
+    @PostMapping("/members/me")
+    public ResponseEntity<String> updateMember(@RequestHeader("X-USER-ID") String email, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
+        memberService.updateMember(email, memberModifyRequestDto);
+        return ResponseEntity.ok("수정 되었습니다!");
+    }
+
 
     //특정 회원 조회(이메일)
     @GetMapping("/members/email")
