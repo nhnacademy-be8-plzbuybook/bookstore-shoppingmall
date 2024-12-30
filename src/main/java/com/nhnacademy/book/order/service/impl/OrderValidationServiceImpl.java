@@ -24,7 +24,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     @Transactional(readOnly = true)
     @Override
     public void validateOrder(OrderRequestDto order) {
-        for (OrderProductRequestDto orderProduct: order.getOrderProducts()) {
+        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
             validateOrderProduct(orderProduct);
         }
         validatePoint(order.getUsedPoint());
@@ -45,7 +45,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         // 쿠폰 검증
         if (isCouponApplied(orderProduct)) {
             assert orderProduct.getAppliedCoupons() != null; // ?
-            for(OrderProductAppliedCouponDto appliedCoupon: orderProduct.getAppliedCoupons()) {
+            for (OrderProductAppliedCouponDto appliedCoupon : orderProduct.getAppliedCoupons()) {
                 validateCoupon(appliedCoupon);
             }
         }
@@ -123,11 +123,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         return orderProduct.getAppliedCoupons() != null && !orderProduct.getAppliedCoupons().isEmpty();
     }
 
-    /**
-     * 쿠폰 검증
-     *
-     * @param couponId
-     */
+
     private void validateCoupon(OrderProductAppliedCouponDto appliedCoupon) {
         //TODO: 쿠폰 검증
         // 할인가 검증
