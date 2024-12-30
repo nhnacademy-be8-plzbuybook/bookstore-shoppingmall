@@ -1,7 +1,6 @@
 package com.nhnacademy.book.order.dto.orderRequests;
 
 import com.nhnacademy.book.order.enums.OrderType;
-import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,6 +22,4 @@ public class OrderRequestDto {
     private List<OrderProductRequestDto> orderProducts;
     @NotNull
     private OrderDeliveryAddressDto orderDeliveryAddressDto;
-    @NotNull
-    private OrderProductWrappingDto orderProductWrapping;
 }
