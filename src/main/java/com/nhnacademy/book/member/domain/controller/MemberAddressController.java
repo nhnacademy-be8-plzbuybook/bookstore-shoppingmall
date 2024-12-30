@@ -24,10 +24,23 @@ public class MemberAddressController {
         return new ResponseEntity<>(addressResponseDto, HttpStatus.CREATED);
     }
 
+    //배송지 등록(header email을 통해)
+    @PostMapping("/members/address")
+    public ResponseEntity<MemberAddressResponseDto> createAddress(@RequestHeader("X-USER-ID") String email, @RequestBody MemberAddressRequestDto addressRequestDto) {
+        MemberAddressResponseDto addressResponseDto = memberAddressService.createAddress(email, addressRequestDto);
+        return new ResponseEntity<>(addressResponseDto, HttpStatus.CREATED);
+    }
+
     // 배송지 목록 조회
     @GetMapping("/members/{member_id}/address")
     public List<MemberAddressResponseDto> getAddressList(@PathVariable Long member_id) {
         return memberAddressService.getAddressList(member_id);
+    }
+
+    //배송지 목록 조회(header email을 통해)
+    @GetMapping("/members/address")
+    public List<MemberAddressResponseDto> getAddressListByMemberEmail(@RequestHeader("X-USER-ID") String email) {
+        return memberAddressService.getAddressListByMemberEmail(email);
     }
 
     // 배송지 상세 조회
