@@ -19,6 +19,7 @@ public class BookDetailResponseDto {
     private LocalDate bookPubDate;      // 출판일
     private BigDecimal bookPriceStandard; // 정가
     private BigDecimal sellingPrice;    // 판매가 (추가)
+    private int selling_book_stock;     // 재고
     private String bookIsbn13;          // ISBN
     private Long publisherId;           // 출판사 ID
     private String publisher;           // 출판사 이름 (추가)
