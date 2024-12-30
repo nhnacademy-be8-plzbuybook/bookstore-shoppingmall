@@ -22,4 +22,5 @@ public class SellingBookResponseDto {
     private SellingBookStatus sellingBookStatus;
     private Boolean used;
     private Long sellingBookViewCount;
+    private String imageUrl;
 }
