@@ -21,7 +21,6 @@ public class Orders {
     @Id
     @Column(name = "order_id", nullable = false)
     private String id;
-
     private String number;
     private String name;
     private LocalDateTime orderedAt;
@@ -36,11 +35,11 @@ public class Orders {
 
     @Builder
     public Orders(String id, String number, String name, LocalDate deliveryWishDate, Integer usedPoint,
-                  BigDecimal totalPrice, OrderStatus status) {
+                  LocalDateTime orderedAt, BigDecimal totalPrice, OrderStatus status) {
         this.id = id;
         this.number = number;
         this.name = name;
-        this.orderedAt = LocalDateTime.now();
+        this.orderedAt = orderedAt;
         this.deliveryWishDate = deliveryWishDate;
         this.usedPoint = usedPoint;
         this.totalPrice = totalPrice;
