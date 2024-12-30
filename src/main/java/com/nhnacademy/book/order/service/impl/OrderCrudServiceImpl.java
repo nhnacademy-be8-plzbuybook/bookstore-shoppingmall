@@ -11,6 +11,7 @@ import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
     private final SellingBookService sellingBookService;
 
+    @Transactional
     @Override
     public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
         // 주문 생성

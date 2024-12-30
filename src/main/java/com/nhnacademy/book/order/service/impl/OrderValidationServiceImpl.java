@@ -13,6 +13,7 @@ import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +21,8 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     private final SellingBookService sellingBookService;
     private final WrappingPaperService wrappingPaperService;
 
+    @Transactional(readOnly = true)
+    @Override
     public void validateOrder(OrderRequestDto order) {
         for (OrderProductRequestDto orderProduct: order.getOrderProducts()) {
             validateOrderProduct(orderProduct);
@@ -27,6 +30,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         validatePoint(order.getUsedPoint());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public void validateOrderProduct(OrderProductRequestDto orderProduct) {
         // 판매책 검증
@@ -67,9 +71,11 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      *
      * @param orderProduct 주문상품
      */
+
     private void validateSellingBook(OrderProductRequestDto orderProduct) {
         BookDetailResponseDto product = sellingBookService.getSellingBook(orderProduct.getProductId());
 
+        //TODO: 판매책 재고 검증
 //        if (product.getStock < orderProduct.getQuantity()) {
 //            throw new StockNotEnoughException(product.getBookTitle() + "의 재고가 부족합니다.");
 //        }

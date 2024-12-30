@@ -4,18 +4,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.service.OrderCacheService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.concurrent.TimeUnit;
 
-@RequiredArgsConstructor
 @Service
 public class OrderCacheServiceImpl implements OrderCacheService {
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    public OrderCacheServiceImpl(ObjectMapper objectMapper,
+                                 @Qualifier("redisTemplate") RedisTemplate<String, Object> redisTemplate) {
+        this.objectMapper = objectMapper;
+        this.redisTemplate = redisTemplate;
+    }
+
 
     /**
      * 주문 캐시데이터 저장
@@ -23,6 +29,7 @@ public class OrderCacheServiceImpl implements OrderCacheService {
      * @param orderId 주문 ID
      * @param order 주문요청 DTO
      */
+    @Transactional
     @Override
     public void saveOrderCache(String orderId, OrderRequestDto order) {
         String key = getOrderCacheKey(orderId);
