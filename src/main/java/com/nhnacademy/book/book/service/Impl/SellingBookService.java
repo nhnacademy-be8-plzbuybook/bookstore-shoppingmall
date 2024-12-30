@@ -58,6 +58,7 @@ public class SellingBookService {
                     return new SellingBookResponseDto(
                             sellingBook.getSellingBookId(),
                             sellingBook.getBook().getBookId(),
+                            sellingBook.getBookTitle(),
                             sellingBook.getSellingBookPrice(),
                             sellingBook.getSellingBookPackageable(),
                             sellingBook.getSellingBookStock(),
@@ -284,6 +285,7 @@ public class SellingBookService {
         return new SellingBookResponseDto(
                 sellingBook.getSellingBookId(),
                 book.getBookId(),
+                sellingBook.getBookTitle(),
                 sellingBook.getSellingBookPrice(),
                 sellingBook.getSellingBookPackageable(),
                 sellingBook.getSellingBookStock(),
