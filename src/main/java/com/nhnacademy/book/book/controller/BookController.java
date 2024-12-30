@@ -32,11 +32,11 @@ public class BookController {
     @Autowired
     private BookSearchService bookSearchService;
 
-
-    @GetMapping
-    public ResponseEntity<List<BookDetailResponseDto>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAllBooks());
-    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<BookDetailResponseDto>> getAllBooks() {
+//        return ResponseEntity.ok(bookService.getAllBooks());
+//    }
 
     // 도서 상세 조회 기능
     @GetMapping("/{bookId}")
@@ -73,23 +73,13 @@ public class BookController {
 
 
     //작가 아이디로 작가가 집필한 책 검색
-    @GetMapping("/{authorId}")
+    @GetMapping("/authors/{authorId}")
     public ResponseEntity<List<BookResponseDto>> getBooksByAuthor(@PathVariable Long authorId) {
         return ResponseEntity.ok(bookAuthorService.findBooksByAuthorId(authorId));
     }
 
-    @GetMapping("/selling/{authorId}")
-    public ResponseEntity<List<SellingBookResponseDto>> findBooksByAuthorIdWithSellingInfo(@PathVariable Long authorId) {
-        return ResponseEntity.ok(bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId));
-    }
-
-    @GetMapping("/{authorId}/selling-books")
-    public ResponseEntity<List<SellingBookResponseDto>> getBooksByAuthorWithSellingInfo(@PathVariable Long authorId) {
-        List<SellingBookResponseDto> sellingBooks = bookAuthorService.findBooksByAuthorIdWithSellingInfo(authorId);
-        return ResponseEntity.ok(sellingBooks);
-    }
-
-    @GetMapping("/search2")
+    //키워드로 검색(책 이름, 작가, 카테고리 등)
+    @GetMapping
     public ResponseEntity<List<BookSearchResponseDto>> searchBooks(@RequestParam String searchKeyword) {
         List<BookSearchResponseDto> books = bookSearchService.searchBooks(searchKeyword);
         return ResponseEntity.ok(books);
