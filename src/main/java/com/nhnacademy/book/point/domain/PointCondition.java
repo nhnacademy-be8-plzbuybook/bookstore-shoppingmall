@@ -26,7 +26,7 @@ public class PointCondition {
     @Column(nullable = false)
     private PointConditionName name;
 
-    // 회원가입시 5000p, 리뷰: 200p, 리뷰와 사진: 500p
+    // 회원가입시 5000p, 리뷰: 200p, 리뷰와 사진: 500
     @Column
     private Integer conditionPoint;
 
