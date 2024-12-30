@@ -35,7 +35,7 @@ public class OrderCacheServiceImpl implements OrderCacheService {
         String key = getOrderCacheKey(orderId);
         try {
             String jsonString = objectMapper.writeValueAsString(order);
-            redisTemplate.opsForValue().set(key, jsonString, 15L, TimeUnit.MINUTES);  // 15분간 주문정보 캐시 유지
+            redisTemplate.opsForValue().set(key, jsonString, 15, TimeUnit.MINUTES);  // 15분간 주문정보 캐시 유지
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException("주문정보 변환 오류가 발생했습니다.", e);
