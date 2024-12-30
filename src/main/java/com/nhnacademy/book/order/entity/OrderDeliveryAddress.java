@@ -1,9 +1,7 @@
 package com.nhnacademy.book.order.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,17 +17,18 @@ public class OrderDeliveryAddress {
     private String detailAddress;
     private String recipient;
     private String recipientPhone;
+    @Setter
     @OneToOne
     @JoinColumn(name = "oda_order_id", referencedColumnName = "order_id")
     private Orders order;
 
+    @Builder
     public OrderDeliveryAddress(String locationAddress, String zipCode, String detailAddress, String recipient,
-                                String recipientPhone, Orders order) {
+                                String recipientPhone) {
         this.locationAddress = locationAddress;
         this.zipCode = zipCode;
         this.detailAddress = detailAddress;
         this.recipient = recipient;
         this.recipientPhone = recipientPhone;
-        this.order = order;
     }
 }
