@@ -351,6 +351,46 @@ class MemberAddressControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    @DisplayName("배송지 삭제 성공(header email을 통해서)")
+    void deleteAddressByEmail() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(memberAddressController).build();
+
+        // 테스트용 데이터
+        addressRequestDto = new MemberAddressRequestDto(
+                true,
+                "광주 동구 필문대로 309",
+                "IT융합대학 4225",
+                "61452",
+                "학교",
+                "test1",
+                "010-1234-5678"
+        );
+
+        addressResponseDto = new MemberAddressResponseDto(
+                1L,
+                true,
+                "광주 동구 필문대로 309",
+                "IT융합대학 4225",
+                "61452",
+                "학교",
+                "test1",
+                "010-1234-5678"
+        );
+
+        String email = "yoonwlgh12@naver.com";
+        Long addressId = 1L;
+
+        // given
+        doNothing().when(memberAddressService).deleteAddressByEmail(eq(email), eq(addressId));
+
+        // when
+        mockMvc.perform(delete("/api/members/address/{address_id}", addressId)
+                        .header("X-USER-ID", email))
+                .andExpect(status().isNoContent());
+
+    }
+
 }
 
 

@@ -15,4 +15,5 @@ public interface MemberAddressService {
     MemberAddressResponseDto getAddress(Long memberId, Long addressId);
     MemberAddressResponseDto updateAddress(Long memberId, Long addressId, MemberAddressRequestDto addressRequestDto);
     void deleteAddress(Long memberId, Long addressId);
+    void deleteAddressByEmail(String email, Long addressId);
 }

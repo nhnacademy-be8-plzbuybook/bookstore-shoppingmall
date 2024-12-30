@@ -258,6 +258,29 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
     }
 
+    @Override
+    public void deleteAddressByEmail(String email, Long addressId) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("email에 해당하는 회원이 없다!"));
 
+        MemberAddress existingAddress = memberAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+
+        // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
+        if (existingAddress.getDefaultAddress()) {
+            List<MemberAddress> memberAddress = memberAddressRepository.findByMember_memberId(member.getMemberId());
+
+            if (!memberAddress.isEmpty()) {
+                // 첫번째 주소를 기본 주소로 설정
+                MemberAddress newDefaultAddress = memberAddress.stream()
+                        .filter(address -> !address.getDefaultAddress())
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException(("기본 주소로 설정할 다른 주소가 없습니다")));
+                newDefaultAddress.setDefaultAddress(true);
+                memberAddressRepository.save(newDefaultAddress);
+            }
+        }
+        memberAddressRepository.delete(existingAddress);
+
+    }
 }
 

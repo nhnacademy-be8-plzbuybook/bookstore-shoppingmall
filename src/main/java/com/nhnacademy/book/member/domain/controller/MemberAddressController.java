@@ -62,4 +62,11 @@ public class MemberAddressController {
         return ResponseEntity.noContent().build();
     }
 
+    //배송지 삭제(header email을 통해)
+    @DeleteMapping("/members/address/{address_id}")
+    public ResponseEntity<Void> deleteAddress(@RequestHeader("X-USER-ID") String email, @PathVariable Long address_id) {
+        memberAddressService.deleteAddressByEmail(email, address_id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
