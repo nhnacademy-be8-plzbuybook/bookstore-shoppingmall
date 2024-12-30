@@ -2,6 +2,8 @@ package com.nhnacademy.book.book.repository;
 
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.SellingBook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +40,8 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
             "OR (c.parentCategory IS NOT NULL AND c.parentCategory.categoryId = :categoryId)")
     List<SellingBook> findByCategoryIdOrParent(@Param("categoryId") Long categoryId);
 
+    //조회수가 일정 이상인 판매 도서를 페이징해서 가져오도록 메서드
+    Page<SellingBook> findBySellingBookViewCountGreaterThanEqual(Long minViewCount, Pageable pageable);
 
 
 }
