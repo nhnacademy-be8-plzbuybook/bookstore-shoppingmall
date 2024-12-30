@@ -17,7 +17,7 @@ public class BookImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookImageId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_image_book_id", nullable = false)
     private Book book;
 
