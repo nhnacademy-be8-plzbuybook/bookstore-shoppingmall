@@ -62,8 +62,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     }
 
 
-
-
     private String completeOrderRequest(String orderId, OrderRequestDto orderRequest) {
         // 배송지저장
         orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddressDto());
@@ -79,22 +77,12 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 
 
     private void addOrderByMemberType(String orderId, OrderRequestDto orderRequest) {
-        if (isMemberOrder(orderRequest)) {
-            MemberOrderRequestDto memberOrderRequestDto = (MemberOrderRequestDto) orderRequest;
+        if (orderRequest instanceof MemberOrderRequestDto memberOrderRequestDto) {
             memberOrderService.addMemberOrder(new MemberOrderSaveRequestDto(memberOrderRequestDto.getMemberEmail(), orderId));
-        } else {
-            NonMemberOrderRequestDto nonMemberOrderRequestDto = (NonMemberOrderRequestDto) orderRequest;
+        } else if (orderRequest instanceof NonMemberOrderRequestDto nonMemberOrderRequestDto) {
             nonMemberOrderService.addNonMemberOrder(new NonMemberOrderSaveRequestDto(orderId, nonMemberOrderRequestDto.getNonMemberPassword()));
+        } else {
+            throw new IllegalArgumentException("Invalid order request type");
         }
-    }
-
-    /**
-     * 회원 | 비회원 구분
-     *
-     * @param orderRequest 주문요청 DTO
-     * @return boolean
-     */
-    private boolean isMemberOrder(OrderRequestDto orderRequest) {
-        return orderRequest instanceof MemberOrderRequestDto;
     }
 }
