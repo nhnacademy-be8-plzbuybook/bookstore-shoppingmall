@@ -65,7 +65,15 @@ GET http://localhost:8080/api/selling-books?page=1&size=12&sortBy=sellingBookId&
 
 ### 페이징 처리 확인 2
 # curl -X GET "http://GATEWAY/api/selling-books?page=0&size=12&sortBy=sellingBookId&sortDir=desc"
-GET http://GATEWAY/api/selling-books?page=0&size=12&sortBy=sellingBookId&sortDir=desc
+GET http://localhost:8080/api/selling-books?page=0&size=12&sortBy=sellingBookId&sortDir=desc
 
 ###
+GET http://localhost:8080/api/selling-books/301
+
+###
+# curl -X GET "http://GATEWAY/api/selling-books?page=0&size=12&sortBy=sellingBookId&sortDir=desc"
+GET http://localhost:8080/api/selling-books?page=0&size=12&sortBy=sellingBookId&sortDir=desc
+
+###
+GET http://localhost:8080/api/selling-books/301
 
