@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class OrderProductWrapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_product_wrapping")
+    @Column(name = "order_product_wrapping_id")
     private Long id;
 
     @ManyToOne // 현재는 1 종류의 상품에 1 종류의 포장지만 적용가능, 확장성을 위해 manyToOn으로 설정
