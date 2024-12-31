@@ -1,16 +1,12 @@
 package com.nhnacademy.book.order.service;
 
-import com.nhnacademy.book.order.dto.OrderSaveRequestDto;
-import com.nhnacademy.book.order.dto.OrderSaveResponseDto;
-import com.nhnacademy.book.order.dto.OrderUpdateRequestDto;
+import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.entity.Orders;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface OrderService {
-    Orders getOrderById(String orderId);
-    List<Orders> getOrders();
-    OrderSaveResponseDto createOrder(OrderSaveRequestDto saveRequest);
-    String modifyOrder(String orderId, OrderUpdateRequestDto updateRequest);
-//    void removeOrder(String orderId);
+    Page<OrderDto> getOrders(OrderSearchRequestDto searchRequest, Pageable pageable);
 }

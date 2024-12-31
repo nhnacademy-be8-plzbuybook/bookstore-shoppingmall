@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.dto.orderRequests;
 
+import com.nhnacademy.book.order.entity.OrderDeliveryAddress;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -26,5 +27,9 @@ public class OrderDeliveryAddressDto {
         this.detailAddress = detailAddress;
         this.recipient = recipient;
         this.recipientPhone = recipientPhone;
+    }
+
+    public OrderDeliveryAddress toEntity() {
+        return new OrderDeliveryAddress(locationAddress, zipCode, detailAddress, recipient, recipientPhone);
     }
 }

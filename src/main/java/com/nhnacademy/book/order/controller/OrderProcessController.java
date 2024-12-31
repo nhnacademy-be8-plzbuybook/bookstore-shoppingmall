@@ -29,6 +29,7 @@ public class OrderProcessController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> requestMemberOrder(@RequestHeader("X-USER-ID") String xUserId,
                                                                @Valid @RequestBody MemberOrderRequestDto memberOrderRequest) {
+        // 회원 검증
         if (xUserId == null || xUserId.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -36,6 +37,7 @@ public class OrderProcessController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         memberOrderRequest.setMemberEmail(xUserId);
+
         OrderResponseDto orderResponse = orderProcessService.processRequestedOrder(memberOrderRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
