@@ -39,13 +39,14 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         BigDecimal couponDiscount = calculateCouponDiscount(orderRequest);
         Orders order = Orders.builder()
                 .id(generateOrderId())
-                .name(generateOrderName(orderRequest))
-                .deliveryWishDate(orderRequest.getDeliveryWishDate())
-                .status(OrderStatus.PAYMENT_PENDING)
-                .usedPoint(orderRequest.getUsedPoint())
                 .number(generateOrderNumber(currentTime))
-                .orderedAt(currentTime)
+                .name(generateOrderName(orderRequest))
                 .orderPrice(orderPrice)
+                .usedPoint(orderRequest.getUsedPoint())
+                .couponDiscount(couponDiscount)
+                .deliveryWishDate(orderRequest.getDeliveryWishDate())
+                .orderedAt(currentTime)
+                .status(OrderStatus.PAYMENT_PENDING)
                 .build();
 
         // 주문 저장
@@ -60,13 +61,21 @@ public class OrderCrudServiceImpl implements OrderCrudService {
      * @param order 주문 요청
      * @return 생성된 주문이름
      */
+//    private String generateOrderName(OrderRequestDto order) {
+//        List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
+//        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
+//        if (orderProducts.size() > 1) {
+//            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+//        }
+//        return book.getBookTitle();
+//    }
+    //TODO: 임시
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
-        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
         }
-        return book.getBookTitle();
+        return "수학의 정석";
     }
 
     /**

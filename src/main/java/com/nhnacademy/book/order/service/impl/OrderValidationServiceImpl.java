@@ -1,12 +1,12 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
-import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderValidationServiceImpl implements OrderValidationService {
     private final SellingBookService sellingBookService;
     private final WrappingPaperService wrappingPaperService;
+    private final OrderCacheService orderCacheService;
 
     @Transactional(readOnly = true)
     @Override
@@ -51,13 +52,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         }
     }
 
-    private void validateMemberOrderRequest(MemberOrderRequestDto orderRequest) {
-        for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
-            validateOrderProduct(orderProductRequest);
-        }
-        // 포인트 검증
-        validatePoint(orderRequest.getUsedPoint());
-    }
 
     private void validatePoint(int usedPoint) {
         // 포인트를 사용했을 때만 검증
@@ -71,18 +65,44 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      *
      * @param orderProduct 주문상품
      */
-
     private void validateSellingBook(OrderProductRequestDto orderProduct) {
         BookDetailResponseDto product = sellingBookService.getSellingBook(orderProduct.getProductId());
-
-        //TODO: 판매책 재고 검증
-//        if (product.getStock < orderProduct.getQuantity()) {
-//            throw new StockNotEnoughException(product.getBookTitle() + "의 재고가 부족합니다.");
+        // 재고선점
+        orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
+        //TODO: 임시
+//        if (product.getSellingPrice().compareTo(orderProduct.getPrice()) != 0) {
+//            throw new IllegalArgumentException(product.getBookTitle() + "의 가격이 변동되었습니다.");
 //        }
-        if (product.getSellingPrice().compareTo(orderProduct.getPrice()) != 0) {
+        if (false) {
             throw new IllegalArgumentException(product.getBookTitle() + "의 가격이 변동되었습니다.");
         }
+    }
 
+
+    /**
+     * 주문 포장지 검증
+     *
+     * @param orderProductWrapping 주문상품 포장 요청
+     */
+    private void validateWrappingPaper(OrderProductWrappingDto orderProductWrapping) {
+        WrappingPaperDto wrappingPaper = wrappingPaperService.getWrappingPaper(orderProductWrapping.getWrappingPaperId());
+        // 재고선점
+        orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
+
+        if (wrappingPaper.getPrice().compareTo(orderProductWrapping.getPrice()) != 0) {
+            throw new IllegalArgumentException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
+        }
+    }
+
+
+    /**
+     * 쿠폰 적용 여부
+     *
+     * @param orderProduct 주문상품
+     * @return 쿠폰 적용 여부
+     */
+    private boolean isCouponApplied(OrderProductRequestDto orderProduct) {
+        return orderProduct.getAppliedCoupons() != null && !orderProduct.getAppliedCoupons().isEmpty();
     }
 
 
@@ -94,33 +114,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      */
     private boolean isWrapping(OrderProductRequestDto orderProduct) {
         return orderProduct.getWrapping() != null;
-    }
-
-
-    /**
-     * 주문 포장지 검증
-     *
-     * @param orderProductWrapping 주문상품 포장 요청
-     */
-    private void validateWrappingPaper(OrderProductWrappingDto orderProductWrapping) {
-        WrappingPaperDto wrappingPaper = wrappingPaperService.getWrappingPaper(orderProductWrapping.getWrappingPaperId());
-
-        if (wrappingPaper.getStock() < orderProductWrapping.getQuantity()) {
-            throw new StockNotEnoughException(wrappingPaper.getName() + "의 재고가 부족합니다.");
-        }
-        if (wrappingPaper.getPrice().compareTo(orderProductWrapping.getPrice()) != 0) {
-            throw new IllegalArgumentException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
-        }
-    }
-
-    /**
-     * 쿠폰 적용 여부
-     *
-     * @param orderProduct 주문상품
-     * @return 쿠폰 적용 여부
-     */
-    private boolean isCouponApplied(OrderProductRequestDto orderProduct) {
-        return orderProduct.getAppliedCoupons() != null && !orderProduct.getAppliedCoupons().isEmpty();
     }
 
 

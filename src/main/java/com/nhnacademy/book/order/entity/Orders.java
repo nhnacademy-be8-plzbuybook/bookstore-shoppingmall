@@ -1,6 +1,9 @@
 package com.nhnacademy.book.order.entity;
 
 import com.nhnacademy.book.order.dto.OrderUpdateRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import jakarta.persistence.*;
@@ -27,6 +30,7 @@ public class Orders {
     private LocalDate deliveryWishDate;
     private Integer usedPoint;
     private BigDecimal orderPrice;
+    private BigDecimal couponDiscount;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -35,7 +39,7 @@ public class Orders {
 
     @Builder
     public Orders(String id, String number, String name, LocalDate deliveryWishDate, Integer usedPoint,
-                  LocalDateTime orderedAt, BigDecimal orderPrice, OrderStatus status) {
+                  LocalDateTime orderedAt, BigDecimal orderPrice, OrderStatus status, BigDecimal couponDiscount) {
         this.id = id;
         this.number = number;
         this.name = name;
@@ -44,6 +48,7 @@ public class Orders {
         this.usedPoint = usedPoint;
         this.orderPrice = orderPrice;
         this.status = status;
+        this.couponDiscount = couponDiscount;
         this.orderProducts = new ArrayList<>();
     }
 
@@ -59,5 +64,9 @@ public class Orders {
 
     public void updateOrderStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public BigDecimal getPaymentPrice() {
+        return orderPrice.subtract(BigDecimal.valueOf(usedPoint)).subtract(couponDiscount);
     }
 }
