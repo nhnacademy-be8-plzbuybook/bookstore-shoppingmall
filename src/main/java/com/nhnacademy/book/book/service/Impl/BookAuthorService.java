@@ -167,6 +167,7 @@ public class BookAuthorService {
                     return new SellingBookResponseDto(
                             sellingBook.getSellingBookId(),                // 판매책 ID
                             book.getBookId(),                  // 책 ID
+                            sellingBook.getBookTitle(),
                             sellingBook.getSellingBookPrice(), // 판매 가격
                             sellingBook.getSellingBookPackageable(), // 포장 가능 여부
                             sellingBook.getSellingBookStock(), // 재고

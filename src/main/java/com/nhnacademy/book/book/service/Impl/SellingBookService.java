@@ -74,6 +74,27 @@ public class SellingBookService {
 //                .collect(Collectors.toList());
 //
 //    }
+//     public List<SellingBookResponseDto> getBooks() {
+//         List<SellingBook> sellingBooks = sellingBookRepository.findAll();
+//         log.info("Fetched SellingBooks: {}", sellingBooks);
+
+//         return sellingBooks.stream()
+//                 .map(sellingBook -> {
+//                     BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
+//                     return new SellingBookResponseDto(
+//                             sellingBook.getSellingBookId(),
+//                             sellingBook.getBook().getBookId(),
+//                             sellingBook.getBookTitle(),
+//                             sellingBook.getSellingBookPrice(),
+//                             sellingBook.getSellingBookPackageable(),
+//                             sellingBook.getSellingBookStock(),
+//                             sellingBook.getSellingBookStatus(),
+//                             sellingBook.getUsed(),
+//                             sellingBook.getSellingBookViewCount(),
+//                             bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+//                     );
+//                 })
+//                 .collect(Collectors.toList());
 
     public Page<SellingBookResponseDto> getBooks(Pageable pageable) {
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
@@ -294,6 +315,7 @@ public class SellingBookService {
         return new SellingBookResponseDto(
                 sellingBook.getSellingBookId(),
                 book.getBookId(),
+                sellingBook.getBookTitle(),
                 sellingBook.getSellingBookPrice(),
                 sellingBook.getSellingBookPackageable(),
                 sellingBook.getSellingBookStock(),
