@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -19,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 public class OrderCacheServiceImpl implements OrderCacheService {
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> orderRedisTemplate;
+
+    private static final String STOCK_KEY = "stock:";
+    private static final String ORDER_KEY = "order:";
 
     public OrderCacheServiceImpl(ObjectMapper objectMapper,
                                  @Qualifier("redisTemplate") RedisTemplate<String, Object> orderRedisTemplate) {
@@ -75,7 +79,62 @@ public class OrderCacheServiceImpl implements OrderCacheService {
         }
     }
 
-    private String getOrderCacheKey(String orderId) {
-        return "order:" + orderId;
+    /**
+     * 재고 캐시 데이터를 차감(재고 선점)
+     *
+     * @param productId 상품 ID
+     * @param quantity 차감할 재고 수량
+     */
+    @Override
+    public void preemptStockCache(Long productId, Integer quantity) {
+        String key = getStockCacheKey(productId);
+        Long stock = orderRedisTemplate.opsForValue().decrement(key, quantity);
+//        if (stock == null) {
+//            //TODO: db에서 재고 받아오기
+//        }
+        if (stock == null || stock < 0) {
+            orderRedisTemplate.opsForValue().increment(key, quantity); // 차감한 재고 복구
+            log.warn("재고 부족: productId={}, 요청 수량={}, 현재 재고={}", productId, quantity, (stock != null ? stock : 0) + quantity);
+            throw new StockNotEnoughException("재고가 부족합니다.");
+        }
     }
+
+
+    /**
+     * 재고 캐시 데이터를 추가
+     *
+     * @param productId 상품 ID
+     * @param quantity 추가할 재고 수량
+     */
+    @Override
+    public void addStockCache(Long productId, Integer quantity) {
+        String key = getStockCacheKey(productId);
+        if (orderRedisTemplate.hasKey(key)) {
+            orderRedisTemplate.opsForValue().increment(key, quantity);
+        } else {
+            orderRedisTemplate.opsForValue().set(key, quantity);
+        }
+    }
+
+    /**
+     * 상품 재고 캐시 조회
+     *
+     * @param productId 상품 ID
+     * @return 상품 재고
+     */
+    @Override
+    public int getStockCache(Long productId) {
+        String key = getStockCacheKey(productId);
+        Object stock = orderRedisTemplate.opsForValue().get(key);
+
+        if (stock == null) {
+            throw new RuntimeException("재고 캐시를 찾을 수 없습니다.");
+        }
+        return (int) stock;
+    }
+
+    private String getOrderCacheKey(String orderId) {
+        return ORDER_KEY + orderId;
+    }
+    private String getStockCacheKey(long productId) {return STOCK_KEY + productId;}
 }
