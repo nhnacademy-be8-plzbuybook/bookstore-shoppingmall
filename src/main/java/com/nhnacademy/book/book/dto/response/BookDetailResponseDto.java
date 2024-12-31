@@ -58,5 +58,8 @@ public class BookDetailResponseDto {
 
     public BookDetailResponseDto(Long bookId, Long aLong, String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId, String imageUrl) {
     }
+
+    public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, BigDecimal sellingBookPrice, Integer sellingBookStock, String bookIsbn13, Long publisherId, String publisherName, String imageUrl, List<String> categoryNames, List<String> authorNames, String name, Object o) {
+    }
 }
 
