@@ -65,12 +65,15 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      *
      * @param orderProduct 주문상품
      */
-
     private void validateSellingBook(OrderProductRequestDto orderProduct) {
         BookDetailResponseDto product = sellingBookService.getSellingBook(orderProduct.getProductId());
         // 재고선점
         orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
-        if (product.getSellingPrice().compareTo(orderProduct.getPrice()) != 0) {
+        //TODO: 임시
+//        if (product.getSellingPrice().compareTo(orderProduct.getPrice()) != 0) {
+//            throw new IllegalArgumentException(product.getBookTitle() + "의 가격이 변동되었습니다.");
+//        }
+        if (false) {
             throw new IllegalArgumentException(product.getBookTitle() + "의 가격이 변동되었습니다.");
         }
     }

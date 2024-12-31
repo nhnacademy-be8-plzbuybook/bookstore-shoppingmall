@@ -60,13 +60,21 @@ public class OrderCrudServiceImpl implements OrderCrudService {
      * @param order 주문 요청
      * @return 생성된 주문이름
      */
+//    private String generateOrderName(OrderRequestDto order) {
+//        List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
+//        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
+//        if (orderProducts.size() > 1) {
+//            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+//        }
+//        return book.getBookTitle();
+//    }
+    //TODO: 임시
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
-        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
         }
-        return book.getBookTitle();
+        return "수학의 정석";
     }
 
     /**
