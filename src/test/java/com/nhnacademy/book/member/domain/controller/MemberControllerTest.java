@@ -148,6 +148,7 @@ class MemberControllerTest {
         String email = "yoonwlgh12@naver.com";
 
         MemberDto memberDto = new MemberDto(
+                1L,
                 "윤지호",
                 "010-7237-3951",
                 "1111",
