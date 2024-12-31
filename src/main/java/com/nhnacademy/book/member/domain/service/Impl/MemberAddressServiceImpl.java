@@ -94,9 +94,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
             throw new DuplicateAddressException("해당 주소는 이미 등록되어 있습니다.");
         }
 
+        // 새로운 주소 생성
         MemberAddress memberAddress = new MemberAddress();
         memberAddress.setMember(member);
-        memberAddress.setDefaultAddress(addressRequestDto.getDefaultAddress());
         memberAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         memberAddress.setDetailAddress(addressRequestDto.getDetailAddress());
         memberAddress.setZipCode(addressRequestDto.getZipCode());
@@ -104,15 +104,19 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberAddress.setRecipient(addressRequestDto.getRecipient());
         memberAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
 
-        memberAddress.setLocationAddress(addressRequestDto.getLocationAddress());
-
-        if (existingAddresses.isEmpty()) {
+        // 기본 배송지 설정
+        if (addressRequestDto.getDefaultAddress() || existingAddresses.isEmpty()) {
+            // 기존 기본 배송지 해제
+            for (MemberAddress existingAddressItem : existingAddresses) {
+                if (existingAddressItem.getDefaultAddress()) {
+                    existingAddressItem.setDefaultAddress(false);
+                    memberAddressRepository.save(existingAddressItem);
+                }
+            }
             memberAddress.setDefaultAddress(true);
         } else {
             memberAddress.setDefaultAddress(false);
         }
-
-        memberAddress.setMember(member);
 
         MemberAddress savedAddress = memberAddressRepository.save(memberAddress);
 
@@ -230,9 +234,43 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 updateAddress.getRecipient(),
                 updateAddress.getRecipientPhone()
         );
-
-
     }
+
+    @Override
+    public MemberAddressResponseDto updateAddressByEmail(String email, Long addressId, MemberAddressRequestDto addressRequestDto) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
+
+        MemberAddress existingAddress = memberAddressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+
+        existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
+        existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
+        existingAddress.setZipCode(addressRequestDto.getZipCode());
+        existingAddress.setNickName(addressRequestDto.getNickName());
+        existingAddress.setRecipient(addressRequestDto.getRecipient());
+        existingAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
+
+        if (addressRequestDto.getDefaultAddress() != null && addressRequestDto.getDefaultAddress()) {
+            memberAddressRepository.findByMember_memberId(member.getMemberId()).stream()
+                    .filter(memberAddress -> memberAddress.getDefaultAddress())
+                    .forEach(memberAddress -> memberAddress.setDefaultAddress(false));
+            existingAddress.setDefaultAddress(true);
+        }
+
+        MemberAddress updateAddress = memberAddressRepository.save(existingAddress);
+
+        return new MemberAddressResponseDto(
+                updateAddress.getMemberAddressId(),
+                updateAddress.getDefaultAddress(),
+                updateAddress.getLocationAddress(),
+                updateAddress.getDetailAddress(),
+                updateAddress.getZipCode(),
+                updateAddress.getNickName(),
+                updateAddress.getRecipient(),
+                updateAddress.getRecipientPhone()
+        );
+    }
+
     @Override
     public void deleteAddress(Long memberId, Long addressId) {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));

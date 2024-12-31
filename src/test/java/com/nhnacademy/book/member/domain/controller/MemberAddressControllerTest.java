@@ -313,6 +313,71 @@ class MemberAddressControllerTest {
 
     }
 
+    @Test
+    @DisplayName("배송지 수정 성공(header email을 통해서)")
+    void updateAddressByEmail() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(memberAddressController).build();
+
+        // 테스트용 데이터
+        addressRequestDto = new MemberAddressRequestDto(
+                true,
+                "광주 동구 필문대로 309",
+                "IT융합대학 4225",
+                "61452",
+                "학교",
+                "test1",
+                "010-1234-5678"
+        );
+
+        addressResponseDto = new MemberAddressResponseDto(
+                1L,
+                true,
+                "광주 동구 필문대로 309",
+                "IT융합대학 4225",
+                "61452",
+                "학교",
+                "test1",
+                "010-1234-5678"
+        );
+
+        String email = "yoonwlgh12@naver.com";
+        Long memberId = 1L;
+        Long addressId = 1L;
+
+        MemberAddressRequestDto updateRequestDto = new MemberAddressRequestDto(
+                true,
+                "광주 동구 필문대로 309",
+                "공과대학",
+                "64133",
+                "학교",
+                "test",
+                "010-1234-5678"
+        );
+
+        MemberAddressResponseDto updatedAddressResponseDto = new MemberAddressResponseDto(
+                addressId,
+                true,
+                "광주 동구 필문대로 309",
+                "공과대학",
+                "64133",
+                "학교",
+                "test",
+                "010-1234-5678"
+        );
+
+        when(memberAddressService.updateAddressByEmail(eq(email), eq(addressId), any(MemberAddressRequestDto.class)))
+                .thenReturn(updatedAddressResponseDto);
+
+        mockMvc.perform(post("/api/members/address/" + addressId)
+                        .header("X-USER-ID", email)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequestDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(updatedAddressResponseDto)));
+
+    }
+
 
     @Test
     @DisplayName("배송지 삭제 성공")
