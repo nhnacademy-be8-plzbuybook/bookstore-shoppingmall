@@ -234,9 +234,43 @@ public class MemberAddressServiceImpl implements MemberAddressService {
                 updateAddress.getRecipient(),
                 updateAddress.getRecipientPhone()
         );
-
-
     }
+
+    @Override
+    public MemberAddressResponseDto updateAddressByEmail(String email, MemberAddressRequestDto addressRequestDto) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
+
+        MemberAddress existingAddress = memberAddressRepository.findById(member.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+
+        existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
+        existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
+        existingAddress.setZipCode(addressRequestDto.getZipCode());
+        existingAddress.setNickName(addressRequestDto.getNickName());
+        existingAddress.setRecipient(addressRequestDto.getRecipient());
+        existingAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
+
+        if (addressRequestDto.getDefaultAddress() != null && addressRequestDto.getDefaultAddress()) {
+            memberAddressRepository.findByMember_memberId(member.getMemberId()).stream()
+                    .filter(memberAddress -> memberAddress.getDefaultAddress())
+                    .forEach(memberAddress -> memberAddress.setDefaultAddress(false));
+            existingAddress.setDefaultAddress(true);
+        }
+
+        MemberAddress updateAddress = memberAddressRepository.save(existingAddress);
+
+        return new MemberAddressResponseDto(
+                updateAddress.getMemberAddressId(),
+                updateAddress.getDefaultAddress(),
+                updateAddress.getLocationAddress(),
+                updateAddress.getDetailAddress(),
+                updateAddress.getZipCode(),
+                updateAddress.getNickName(),
+                updateAddress.getRecipient(),
+                updateAddress.getRecipientPhone()
+        );
+    }
+
     @Override
     public void deleteAddress(Long memberId, Long addressId) {
         memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
