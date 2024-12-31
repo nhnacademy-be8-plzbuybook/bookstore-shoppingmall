@@ -14,6 +14,8 @@ import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,28 +50,55 @@ public class SellingBookService {
     }
 
 
-    public List<SellingBookResponseDto> getBooks() {
-        List<SellingBook> sellingBooks = sellingBookRepository.findAll();
-        log.info("Fetched SellingBooks: {}", sellingBooks);
+//    public List<SellingBookResponseDto> getBooks(
+//
+//    ) {
+//        List<SellingBook> sellingBooks = sellingBookRepository.findAll();
+//        log.info("Fetched SellingBooks: {}", sellingBooks);
+//
+//        return sellingBooks.stream()
+//                .map(sellingBook -> {
+//                    BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
+//                    return new SellingBookResponseDto(
+//                            sellingBook.getSellingBookId(),
+//                            sellingBook.getBook().getBookId(),
+//                            sellingBook.getSellingBookPrice(),
+//                            sellingBook.getSellingBookPackageable(),
+//                            sellingBook.getSellingBookStock(),
+//                            sellingBook.getSellingBookStatus(),
+//                            sellingBook.getUsed(),
+//                            sellingBook.getSellingBookViewCount(),
+//                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//
+//    }
+//     public List<SellingBookResponseDto> getBooks() {
+//         List<SellingBook> sellingBooks = sellingBookRepository.findAll();
+//         log.info("Fetched SellingBooks: {}", sellingBooks);
 
-        return sellingBooks.stream()
-                .map(sellingBook -> {
-                    BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
-                    return new SellingBookResponseDto(
-                            sellingBook.getSellingBookId(),
-                            sellingBook.getBook().getBookId(),
-                            sellingBook.getBookTitle(),
-                            sellingBook.getSellingBookPrice(),
-                            sellingBook.getSellingBookPackageable(),
-                            sellingBook.getSellingBookStock(),
-                            sellingBook.getSellingBookStatus(),
-                            sellingBook.getUsed(),
-                            sellingBook.getSellingBookViewCount(),
-                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
-                    );
-                })
-                .collect(Collectors.toList());
+//         return sellingBooks.stream()
+//                 .map(sellingBook -> {
+//                     BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
+//                     return new SellingBookResponseDto(
+//                             sellingBook.getSellingBookId(),
+//                             sellingBook.getBook().getBookId(),
+//                             sellingBook.getBookTitle(),
+//                             sellingBook.getSellingBookPrice(),
+//                             sellingBook.getSellingBookPackageable(),
+//                             sellingBook.getSellingBookStock(),
+//                             sellingBook.getSellingBookStatus(),
+//                             sellingBook.getUsed(),
+//                             sellingBook.getSellingBookViewCount(),
+//                             bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
+//                     );
+//                 })
+//                 .collect(Collectors.toList());
 
+    public Page<SellingBookResponseDto> getBooks(Pageable pageable) {
+        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
+        return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
     }
 
 
@@ -157,7 +186,7 @@ public class SellingBookService {
         Book book = sellingBook.getBook();
 
         // BookImage를 Book 기준으로 검색
-        BookImage bookImage = bookImageRepository.findByBook(book)
+        BookImage bookImage = bookImageRepository.findByBook(book) // book으로 이미지 조회
                 .orElseThrow(() -> new RuntimeException("BookImage not found for Book ID: " + book.getBookId()));
 
         // 카테고리 이름 가져오기
@@ -181,6 +210,7 @@ public class SellingBookService {
                 book.getBookPubDate(),
                 book.getBookPriceStandard(),
                 sellingBook.getSellingBookPrice(), // 판매가 추가
+                sellingBook.getSellingBookStock(),
                 book.getBookIsbn13(),
                 book.getPublisher().getPublisherId(),
                 book.getPublisher().getPublisherName(), // 출판사 이름 추가
