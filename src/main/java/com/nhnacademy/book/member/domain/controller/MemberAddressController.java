@@ -55,6 +55,12 @@ public class MemberAddressController {
         return memberAddressService.updateAddress(member_id, address_id, addressRequestDto);
     }
 
+    // 배송지 수정(header email을 통해)
+    @PutMapping("/members/address/{address_id}")
+    public MemberAddressResponseDto updateAddress(@RequestHeader ("X-USER-ID") String email, @RequestBody MemberAddressRequestDto addressRequestDto) {
+        return memberAddressService.updateAddressByEmail(email, addressRequestDto);
+    }
+
     // 배송지 삭제
     @DeleteMapping("/members/{member_id}/address/{address_id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long member_id, @PathVariable Long address_id) {
