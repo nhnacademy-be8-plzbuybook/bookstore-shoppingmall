@@ -134,7 +134,7 @@ public class OrderCacheServiceImpl implements OrderCacheService {
         if (stock == null) {
             throw new RuntimeException("재고 캐시를 찾을 수 없습니다.");
         }
-        return (int) stock;
+        return Integer.parseInt((String) stock);
     }
 
     private String getOrderCacheKey(String orderId) {

@@ -5,6 +5,7 @@ import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
+import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
@@ -27,7 +28,7 @@ public class OrderProductServiceImpl implements OrderProductService {
 
     @Transactional
     @Override
-    public OrderProduct saveOrderProduct(OrderProductRequestDto orderProductRequest) {
+    public OrderProduct saveOrderProduct(Orders order, OrderProductRequestDto orderProductRequest) {
         SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
         // 판매책 재고 차감
         sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
@@ -42,6 +43,7 @@ public class OrderProductServiceImpl implements OrderProductService {
                 .price(orderProductRequest.getPrice())
                 .status(OrderProductStatus.PAID)
                 .couponDiscount(couponDiscount)
+                .order(order)
                 .build();
         return orderProductRepository.save(orderProduct);
     }

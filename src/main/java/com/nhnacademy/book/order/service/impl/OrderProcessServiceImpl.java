@@ -64,11 +64,11 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     public String completeOrder(String orderId) {
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
         // 주문캐시정보 가져오기
-        OrderRequestDto orderRequest = orderCacheService.fetchOrderCache(orderId);
+        OrderRequestDto orderCache = orderCacheService.fetchOrderCache(orderId);
 
-        for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
+        for (OrderProductRequestDto orderProductRequest : orderCache.getOrderProducts()) {
             // 주문상품 저장
-            OrderProduct orderProduct = orderProductService.saveOrderProduct(orderProductRequest);
+            OrderProduct orderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
             order.addOrderProduct(orderProduct);
 
             // 주문상품-포장 저장
@@ -77,9 +77,9 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // TODO: 쿠폰 사용처리
         }
         // 배송지저장
-        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
+        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
-        addOrderByMemberType(orderId, orderRequest);
+        addOrderByMemberType(orderId, orderCache);
         // TODO: 포인트 사용처리
 
         // 주문상태 "결제완료"로 변경

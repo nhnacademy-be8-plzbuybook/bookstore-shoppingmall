@@ -39,13 +39,14 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         BigDecimal couponDiscount = calculateCouponDiscount(orderRequest);
         Orders order = Orders.builder()
                 .id(generateOrderId())
-                .name(generateOrderName(orderRequest))
-                .deliveryWishDate(orderRequest.getDeliveryWishDate())
-                .status(OrderStatus.PAYMENT_PENDING)
-                .usedPoint(orderRequest.getUsedPoint())
                 .number(generateOrderNumber(currentTime))
-                .orderedAt(currentTime)
+                .name(generateOrderName(orderRequest))
                 .orderPrice(orderPrice)
+                .usedPoint(orderRequest.getUsedPoint())
+                .couponDiscount(couponDiscount)
+                .deliveryWishDate(orderRequest.getDeliveryWishDate())
+                .orderedAt(currentTime)
+                .status(OrderStatus.PAYMENT_PENDING)
                 .build();
 
         // 주문 저장
