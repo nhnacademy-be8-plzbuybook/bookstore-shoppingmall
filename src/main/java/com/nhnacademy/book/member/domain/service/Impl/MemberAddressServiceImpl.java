@@ -94,9 +94,9 @@ public class MemberAddressServiceImpl implements MemberAddressService {
             throw new DuplicateAddressException("해당 주소는 이미 등록되어 있습니다.");
         }
 
+        // 새로운 주소 생성
         MemberAddress memberAddress = new MemberAddress();
         memberAddress.setMember(member);
-        memberAddress.setDefaultAddress(addressRequestDto.getDefaultAddress());
         memberAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         memberAddress.setDetailAddress(addressRequestDto.getDetailAddress());
         memberAddress.setZipCode(addressRequestDto.getZipCode());
@@ -104,15 +104,19 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberAddress.setRecipient(addressRequestDto.getRecipient());
         memberAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
 
-        memberAddress.setLocationAddress(addressRequestDto.getLocationAddress());
-
-        if (existingAddresses.isEmpty()) {
+        // 기본 배송지 설정
+        if (addressRequestDto.getDefaultAddress() || existingAddresses.isEmpty()) {
+            // 기존 기본 배송지 해제
+            for (MemberAddress existingAddressItem : existingAddresses) {
+                if (existingAddressItem.getDefaultAddress()) {
+                    existingAddressItem.setDefaultAddress(false);
+                    memberAddressRepository.save(existingAddressItem);
+                }
+            }
             memberAddress.setDefaultAddress(true);
         } else {
             memberAddress.setDefaultAddress(false);
         }
-
-        memberAddress.setMember(member);
 
         MemberAddress savedAddress = memberAddressRepository.save(memberAddress);
 

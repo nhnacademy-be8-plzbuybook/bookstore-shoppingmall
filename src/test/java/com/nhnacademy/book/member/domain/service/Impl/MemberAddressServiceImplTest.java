@@ -680,7 +680,7 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소추가 성공 header email을 통해서")
     void testCreateAddress_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
+        addressRequestDto.setDefaultAddress(true); // 기본 배송지로 설정 요청
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -688,16 +688,21 @@ public class MemberAddressServiceImplTest {
         addressRequestDto.setRecipient("test");
         addressRequestDto.setRecipientPhone("010-1234-5679");
 
-
         member = new Member();
         member.setMemberId(1L);
         member.setEmail("test@test.com");
 
+        // 기존 등록된 주소(기본 배송지 있음)
+        MemberAddress existingAddress = new MemberAddress();
+        existingAddress.setDefaultAddress(true); // 기존 기본 배송지
+        existingAddress.setMember(member);
+
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(memberAddressRepository.findByMember_memberId(member.getMemberId()))
+                .thenReturn(List.of(existingAddress)); // 기존 주소 반환
 
         MemberAddress savedAddress = new MemberAddress();
-        savedAddress.setMemberAddressId(1L);
-        savedAddress.setDefaultAddress(true);
+        savedAddress.setDefaultAddress(true); // 새 주소를 기본 배송지로 설정
         savedAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         savedAddress.setDetailAddress(addressRequestDto.getDetailAddress());
         savedAddress.setZipCode(addressRequestDto.getZipCode());
@@ -705,10 +710,16 @@ public class MemberAddressServiceImplTest {
         savedAddress.setRecipient(addressRequestDto.getRecipient());
         savedAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
 
-        when(memberAddressRepository.save(any(MemberAddress.class))).thenReturn(savedAddress);
+        when(memberAddressRepository.save(any(MemberAddress.class))).thenAnswer(invocation -> {
+            MemberAddress inputAddress = invocation.getArgument(0);
+            inputAddress.setMemberAddressId(1L); // Mocking: 데이터베이스에서 ID가 자동 생성된 것처럼 설정
+            return inputAddress;
+        });
 
+        // Act
         MemberAddressResponseDto response = memberAddressService.createAddress(member.getEmail(), addressRequestDto);
 
+        // Assert
         assertNotNull(response);
         assertEquals(addressRequestDto.getLocationAddress(), response.getLocationAddress());
         assertEquals(addressRequestDto.getDetailAddress(), response.getDetailAddress());
@@ -716,7 +727,12 @@ public class MemberAddressServiceImplTest {
         assertEquals(addressRequestDto.getNickName(), response.getNickName());
         assertEquals(addressRequestDto.getRecipient(), response.getRecipient());
         assertEquals(addressRequestDto.getRecipientPhone(), response.getRecipientPhone());
-        assertTrue(response.getDefaultAddress());
+        assertTrue(response.getDefaultAddress()); // 새 주소가 기본 배송지로 설정되었는지 확인
+
+        // 기존 기본 배송지가 해제되었는지 확인
+        verify(memberAddressRepository, times(1)).save(argThat(address ->
+                address.getDefaultAddress() == false // 기존 기본 배송지가 해제되었는지 확인
+        ));
     }
 
     @Test
