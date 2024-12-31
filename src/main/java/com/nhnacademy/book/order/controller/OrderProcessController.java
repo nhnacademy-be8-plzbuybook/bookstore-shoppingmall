@@ -26,7 +26,7 @@ public class OrderProcessController {
      * @param memberOrderRequest 주문요청 DTO
      * @return 결제정보가 포함된 주문응답 DTO
      */
-    @PostMapping
+    @PostMapping("/member")
     public ResponseEntity<OrderResponseDto> requestMemberOrder(@RequestHeader("X-USER-ID") String xUserId,
                                                                @Valid @RequestBody MemberOrderRequestDto memberOrderRequest) {
         // 회원 검증
