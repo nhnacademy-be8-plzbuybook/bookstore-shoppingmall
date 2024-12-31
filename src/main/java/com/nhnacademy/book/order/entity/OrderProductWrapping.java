@@ -3,8 +3,12 @@ package com.nhnacademy.book.order.entity;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Entity
 public class OrderProductWrapping {
@@ -22,4 +26,10 @@ public class OrderProductWrapping {
     private WrappingPaper wrappingPaper;
 
     private int quantity;
+
+    public OrderProductWrapping(OrderProduct orderProduct, WrappingPaper wrappingPaper, int quantity) {
+        this.orderProduct = orderProduct;
+        this.wrappingPaper = wrappingPaper;
+        this.quantity = quantity;
+    }
 }
