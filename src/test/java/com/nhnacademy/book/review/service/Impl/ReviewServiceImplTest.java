@@ -57,7 +57,7 @@ class ReviewServiceImplTest {
                 .id(1L)
                 .sellingBook(null)
                 .order(null)
-                .totalPrice(BigDecimal.valueOf(10000))
+                .price(BigDecimal.valueOf(10000))
                 .quantity(1)
                 .status(OrderProductStatus.CANCELLED)
                 .build();
