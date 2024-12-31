@@ -404,6 +404,31 @@ class MemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("탈퇴한 회원은 로그인시 예외처리 하는지")
+    void testGetMemberMyByEmail_WithdrawnMember() {
+        // given
+        String email = "test@naver.com";
+        Member withdrawnMember = new Member();
+        withdrawnMember.setEmail(email);
+        withdrawnMember.setName("Test");
+        withdrawnMember.setPhone("010-2456-7890");
+        withdrawnMember.setPassword("password");
+        withdrawnMember.setBirth(LocalDate.of(2002, 7, 23));
+        withdrawnMember.setMemberGrade(new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now()));
+        withdrawnMember.setMemberStatus(new MemberStatus(3L, "WITHDRAWAL"));
+
+        when(memberRepository.findByEmailWithGradeAndStatus(email))
+                .thenReturn(Optional.of(withdrawnMember));
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            memberService.getMemberMyByEmail(email);
+        });
+
+        assertEquals("탈퇴한 회원입니다.", exception.getMessage());
+    }
+
+
+    @Test
     void getMemberMyByEmail_memberEmailNotFoundException() {
         String email = "yoonwlgh12@naver.com";
         when(memberRepository.findByEmailWithGradeAndStatus(email)).thenReturn(Optional.empty());
@@ -675,6 +700,27 @@ class MemberServiceImplTest {
 
         assertThrows(MemberIdNotFoundException.class, () -> memberService.withdrawMember(1L));
         verify(memberRepository, never()).save(any(Member.class));
+    }
+
+    @Test
+    @DisplayName("이메일로 조회 후 회원 탈퇴")
+    void withdrawState_Success() {
+        // given
+        String email = "test@example.com";
+        MemberStatus withdrawStatus = new MemberStatus(1L, "WITHDRAWAL");
+        MemberStatus activeStatus = new MemberStatus(2L, "ACTIVE");
+        Member member = new Member(1L, null, activeStatus, "Test", "010-1234-5678", email, LocalDate.now(), "encodedPassword");
+
+        // mocking
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.of(withdrawStatus));
+
+        // when
+        memberService.withdrawState(email);
+
+        // then
+        assertEquals("WITHDRAWAL", member.getMemberStatus().getMemberStateName());
+        verify(memberRepository, times(1)).save(member);
     }
 
 

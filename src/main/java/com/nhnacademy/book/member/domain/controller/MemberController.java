@@ -70,6 +70,15 @@ public class MemberController {
         return ResponseEntity.ok("탈퇴 처리 됐습니다.");
     }
 
+    // 회원 탈퇴
+    @PostMapping("/members/withdrawal")
+    public ResponseEntity<String> withdrawState(@RequestHeader("X-USER-ID") String email) {
+        memberService.withdrawState(email);
+        return ResponseEntity.ok("탈퇴 처리 됐습니다.");
+
+    }
+
+
     //전체 회원 조회
     @GetMapping("/members")
     public ResponseEntity<Page<MemberSearchResponseDto>> getMembers(@ModelAttribute MemberSearchRequestDto memberSearchRequestDto) {

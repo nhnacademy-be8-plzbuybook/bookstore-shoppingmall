@@ -213,7 +213,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberEmailResponseDto getMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() ->new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
+                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
 
         List<MemberAuth> memberAuthList = memberAuthRepository.findByMember(member);
 
@@ -226,10 +226,10 @@ public class MemberServiceImpl implements MemberService {
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
         memberEmailResponseDto.setEmail(member.getEmail());
         memberEmailResponseDto.setPassword(member.getPassword());
-        memberEmailResponseDto.setAuthName(authName);// 권한 정보 추가
+        memberEmailResponseDto.setAuthName(authName);
+        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
 
         return memberEmailResponseDto;
-
 
     }
 
@@ -238,6 +238,10 @@ public class MemberServiceImpl implements MemberService {
     public MemberDto getMemberMyByEmail(String email) {
         Member member = memberRepository.findByEmailWithGradeAndStatus(email)
                 .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        if ("WITHDRAWAL".equalsIgnoreCase(member.getMemberStatus().getMemberStateName())) {
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
 
         return new MemberDto(
                 member.getName(),
@@ -278,6 +282,26 @@ public class MemberServiceImpl implements MemberService {
         member.setMemberStatus(withdrawStatus);
         memberRepository.save(member);
     }
+
+    // 회원 탈퇴
+    @Override
+    public void withdrawState(String email) {
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+                .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        if (member.getMemberStatus().getMemberStateName().equals("WITHDRAWAL")) {
+            throw new IllegalStateException("이미 탈퇴한 회원입니다.");
+        }
+
+        member.setMemberStatus(withdrawStatus);
+        memberRepository.save(member);
+    }
+
+
+
 
     @Override
     public Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto) {
