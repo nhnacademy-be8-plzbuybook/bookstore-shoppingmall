@@ -45,13 +45,10 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     public <T extends OrderRequestDto> OrderResponseDto processRequestedOrder(T orderRequest) {
         // 주문 검증
         orderValidationService.validateOrder(orderRequest);
-        //TODO: 주문재고 차감처리
-
         // 주문 저장
         OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
         // 주문정보 캐싱
         orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
-
         return orderResponseDto;
     }
 

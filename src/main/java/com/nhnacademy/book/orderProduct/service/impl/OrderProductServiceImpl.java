@@ -1,65 +1,48 @@
-//package com.nhnacademy.book.orderProduct.service.impl;
-//
-//import com.nhnacademy.book.book.entity.SellingBook;
-//import com.nhnacademy.book.book.repository.SellingBookRepository;
-//import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-//import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
-//import com.nhnacademy.book.orderProduct.dto.OrderProductSaveRequestDto;
-//import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
-//import com.nhnacademy.book.orderProduct.entity.OrderProduct;
-//import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
-//import com.nhnacademy.book.orderProduct.service.OrderProductService;
-//import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
-//import jakarta.transaction.Transactional;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//
-//import java.math.BigDecimal;
-//
-//@RequiredArgsConstructor
-//@Service
-//public class OrderProductServiceImpl implements OrderProductService {
-//    private final OrderProductRepository orderProductRepository;
-//    private final SellingBookRepository sellingBookRepository;
-//    private final WrappingPaperService wrappingPaperService;
-//
-//    @Transactional
-//    @Override
-//    public OrderProduct saveOrderProduct(OrderProductSaveRequestDto orderProductSaveRequest) {
-//        // 판매책 재고 차감
-//        // 포장지 재고 차감
-//        // 주문적용 쿠폰 저장
-//
-//        long sellingBookId = orderProductSaveRequest.getSellingBookId();
-//        SellingBook sellingBook = sellingBookRepository.findById(sellingBookId).orElseThrow(() -> new NotFoundException("존재하지 않는 판매 책입니다."));
-//
-//        // 판매 책 검증 -> 판매책에서 담당하도록
-//        if (!sellingBook.getSellingBookStatus().equals(SellingBook.SellingBookStatus.SELLING)) {
-//            throw new IllegalArgumentException("판매 중인 책이 아닙니다.");
-//        }
-//        if (sellingBook.getSellingBookStock() < orderProductSaveRequest.getQuantity()) {
-//            throw new StockNotEnoughException("판매책의 재고가 부족합니다.");
-//        }
-//        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() - orderProductSaveRequest.getQuantity());
-//
-//        BigDecimal totalPrice = sellingBook.getSellingBookPrice().multiply(new BigDecimal(orderProductSaveRequest.getQuantity()));
-//
-//        // 포장지 검증
-//        if (orderProductSaveRequest.getWrapping() != null) {
-//            OrderProductWrappingDto orderProductWrapping = orderProductSaveRequest.getWrapping();
-//            long wrappingPaperId = orderProductWrapping.getWrappingPaperId();
-//            int wrappingPaperQuantity = orderProductWrapping.getQuantity();
-//
-//            BigDecimal consumedWrappingPaperPrice = wrappingPaperService.calculateFeeIfValidated(wrappingPaperId, wrappingPaperQuantity);
-//            totalPrice = totalPrice.add(consumedWrappingPaperPrice);
-//        }
-//
-//        OrderProduct orderProduct = OrderProduct.builder()
-//                .quantity(orderProductSaveRequest.getQuantity())
-//                .sellingBook(sellingBook)
-//                .totalPrice(totalPrice)
-//                .couponDiscountPrice(orderProductSaveRequest.getCouponDiscount())
-//                .build();
-//        return orderProductRepository.save(orderProduct);
-//    }
-//}
+package com.nhnacademy.book.orderProduct.service.impl;
+
+import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
+import com.nhnacademy.book.order.service.OrderCacheService;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
+import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+@RequiredArgsConstructor
+@Service
+public class OrderProductServiceImpl implements OrderProductService {
+    private final OrderProductRepository orderProductRepository;
+    private final SellingBookRepository sellingBookRepository;
+    private final WrappingPaperService wrappingPaperService;
+    private final OrderCacheService orderCacheService;
+
+    @Transactional
+    @Override
+    public OrderProduct saveOrderProduct(OrderProductRequestDto orderProductRequest) {
+        SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
+        // 판매책 재고 차감
+        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
+
+        BigDecimal couponDiscount = BigDecimal.ZERO;
+        if (orderProductRequest.getAppliedCoupons() != null && !orderProductRequest.getAppliedCoupons().isEmpty()) {
+            couponDiscount = orderProductRequest.getAppliedCoupons().stream().map(OrderProductAppliedCouponDto::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        OrderProduct orderProduct = OrderProduct.builder()
+                .sellingBook(sellingBook)
+                .quantity(orderProductRequest.getQuantity())
+                .price(orderProductRequest.getPrice())
+                .status(OrderProductStatus.PAID)
+                .couponDiscount(couponDiscount)
+                .build();
+        return orderProductRepository.save(orderProduct);
+    }
+}
