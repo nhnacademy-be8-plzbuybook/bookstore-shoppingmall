@@ -240,6 +240,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
 
         return new MemberDto(
+                member.getMemberId(),
                 member.getName(),
                 member.getPhone(),
                 member.getPassword(),

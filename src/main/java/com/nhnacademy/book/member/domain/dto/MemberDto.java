@@ -14,6 +14,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberDto {
+
+    private Long memberId;
+
     @NotBlank
     @Size(max = 100)
     private String name;
