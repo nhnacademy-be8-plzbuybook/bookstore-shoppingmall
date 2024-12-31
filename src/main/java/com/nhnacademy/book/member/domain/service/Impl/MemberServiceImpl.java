@@ -244,6 +244,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return new MemberDto(
+                member.getMemberId(),
                 member.getName(),
                 member.getPhone(),
                 member.getPassword(),
