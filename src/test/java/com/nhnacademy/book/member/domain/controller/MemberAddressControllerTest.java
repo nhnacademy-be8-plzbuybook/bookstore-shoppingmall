@@ -368,7 +368,7 @@ class MemberAddressControllerTest {
         when(memberAddressService.updateAddressByEmail(eq(email), eq(addressId), any(MemberAddressRequestDto.class)))
                 .thenReturn(updatedAddressResponseDto);
 
-        mockMvc.perform(put("/api/members/address/" + addressId)
+        mockMvc.perform(post("/api/members/address/" + addressId)
                         .header("X-USER-ID", email)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
