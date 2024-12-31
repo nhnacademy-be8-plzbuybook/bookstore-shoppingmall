@@ -9,11 +9,13 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
 import com.nhnacademy.book.point.domain.PointConditionName;
+import com.nhnacademy.book.point.dto.MemberMyPointRequestDto;
 import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
 import com.nhnacademy.book.point.dto.MemberPointAddResponseDto;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
+import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -112,34 +114,33 @@ public class MemberPointServiceImpl implements MemberPointService {
 //    }
 //
 //
-//    // 리뷰 작성시
-//    @Override
-//    public void addReviewPoint(Review review) {
-//        PointCondition pointCondition = pointConditionRepository.findByName(PointConditionName.REVIEW)
-//                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
-//
-//        BigDecimal pointsToAdd = new BigDecimal(pointCondition.getConditionPoint()); // 기본 200
-//
-//        // 이미지 여부 확인
-//        if (reviewImageRepository.existsByReview_ReviewId(review.getReviewId())) {
-//            PointCondition photoReviewCondition = pointConditionRepository.findByName(PointConditionName.PHOTO_REVIEW)
-//                    .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
-//
-//            pointsToAdd = pointsToAdd.add(new BigDecimal(photoReviewCondition.getConditionPoint())); // 추가 300
-//
-//        }
-//
-//        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
-//                review.getMember().getMemberId(),
-//                review.getReviewId(),
-//                PointConditionName.REVIEW,
-//                pointsToAdd.intValue(),
-//                null
-//        );
-//        addMemberPoint(requestDto);
-//
-//    }
-//
+    // 리뷰 작성시
+    @Override
+    public MemberPointAddResponseDto addReviewPoint(Review review) {
+        PointCondition pointCondition = pointConditionRepository.findByName(PointConditionName.REVIEW)
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        BigDecimal pointsToAdd = new BigDecimal(pointCondition.getConditionPoint()); // 기본 200
+
+        // 이미지 여부 확인
+        if (reviewImageRepository.existsByReview_ReviewId(review.getReviewId())) {
+            PointCondition photoReviewCondition = pointConditionRepository.findByName(PointConditionName.PHOTO_REVIEW)
+                    .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+            pointsToAdd = pointsToAdd.add(new BigDecimal(photoReviewCondition.getConditionPoint())); // 추가 300
+        }
+
+        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
+                review.getMember().getMemberId(),
+                review.getReviewId(),
+                PointConditionName.REVIEW,
+                pointsToAdd.intValue(),
+                null
+        );
+
+        return addMemberPoint(requestDto);
+    }
+
 
 
 
@@ -173,6 +174,7 @@ public class MemberPointServiceImpl implements MemberPointService {
 
 
     }
+
 
 }
 

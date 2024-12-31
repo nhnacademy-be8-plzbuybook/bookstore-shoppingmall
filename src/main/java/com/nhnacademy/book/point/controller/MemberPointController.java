@@ -4,6 +4,8 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
+import com.nhnacademy.book.review.domain.Review;
+import com.nhnacademy.book.review.exception.ReviewNotFoundException;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,18 +50,19 @@ public class MemberPointController {
 //    }
 
 //
-//    public ResponseEntity<String> addReviewPoint(@PathVariable Long member_id, @PathVariable Long review_id) {
-//        try {
-//            Review review = reviewRepository.findById(review_id)
-//                    .orElseThrow(() -> new ReviewNotFoundException("리뷰가 존재하지 않습니다."));
-//            memberPointService.addReviewPoint(review);
-//            return new ResponseEntity<>("리뷰 포인트가 적립되었습니다.", HttpStatus.CREATED);
-//        } catch (ReviewNotFoundException e) {
-//            return new ResponseEntity<>("리뷰가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-//        }  catch (Exception e) {
-//            return new ResponseEntity<>("포인트 적립 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @PostMapping("members/{member_id}/points/reviews/{review_id}")
+    public ResponseEntity<String> addReviewPoint(@PathVariable Long member_id, @PathVariable Long review_id) {
+        try {
+            Review review = reviewRepository.findById(review_id)
+                    .orElseThrow(() -> new ReviewNotFoundException("리뷰가 존재하지 않습니다."));
+            memberPointService.addReviewPoint(review);
+            return new ResponseEntity<>("리뷰 포인트가 적립되었습니다.", HttpStatus.CREATED);
+        } catch (ReviewNotFoundException e) {
+            return new ResponseEntity<>("리뷰가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }  catch (Exception e) {
+            return new ResponseEntity<>("포인트 적립 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 //
 
 

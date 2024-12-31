@@ -8,6 +8,8 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.point.repository.MemberPointRepository;
+import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
@@ -41,6 +43,12 @@ class ReviewServiceImplTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private MemberPointService memberPointService;
+
+    @Mock
+    private MemberPointRepository memberPointRepository;
 
     @InjectMocks
     private ReviewServiceImpl reviewService;
