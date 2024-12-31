@@ -77,7 +77,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // TODO: 쿠폰 사용처리
         }
         // 배송지저장
-        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddressDto());
+        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
         addOrderByMemberType(orderId, orderRequest);
         // TODO: 포인트 사용처리

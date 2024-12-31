@@ -14,7 +14,7 @@ public class NonMemberOrderRequestDto extends OrderRequestDto {
     private String nonMemberPassword;
 
     public NonMemberOrderRequestDto(@Nullable LocalDate deliveryWishDate, Integer usedPoint,
-                                    OrderDeliveryAddressDto orderDeliveryAddressDto, List<OrderProductRequestDto> orderProducts) {
-        super(OrderType.NON_MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddressDto);
+                                    OrderDeliveryAddressDto orderDeliveryAddress, List<OrderProductRequestDto> orderProducts) {
+        super(OrderType.NON_MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddress);
     }
 }

@@ -23,5 +23,5 @@ public class OrderRequestDto {
     @NotNull
     private List<OrderProductRequestDto> orderProducts;
     @NotNull
-    private OrderDeliveryAddressDto orderDeliveryAddressDto;
+    private OrderDeliveryAddressDto orderDeliveryAddress;
 }
