@@ -404,6 +404,31 @@ class MemberServiceImplTest {
     }
 
     @Test
+    @DisplayName("탈퇴한 회원은 로그인시 예외처리 하는지")
+    void testGetMemberMyByEmail_WithdrawnMember() {
+        // given
+        String email = "test@naver.com";
+        Member withdrawnMember = new Member();
+        withdrawnMember.setEmail(email);
+        withdrawnMember.setName("Test");
+        withdrawnMember.setPhone("010-2456-7890");
+        withdrawnMember.setPassword("password");
+        withdrawnMember.setBirth(LocalDate.of(2002, 7, 23));
+        withdrawnMember.setMemberGrade(new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now()));
+        withdrawnMember.setMemberStatus(new MemberStatus(3L, "WITHDRAWAL"));
+
+        when(memberRepository.findByEmailWithGradeAndStatus(email))
+                .thenReturn(Optional.of(withdrawnMember));
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            memberService.getMemberMyByEmail(email);
+        });
+
+        assertEquals("탈퇴한 회원입니다.", exception.getMessage());
+    }
+
+
+    @Test
     void getMemberMyByEmail_memberEmailNotFoundException() {
         String email = "yoonwlgh12@naver.com";
         when(memberRepository.findByEmailWithGradeAndStatus(email)).thenReturn(Optional.empty());
