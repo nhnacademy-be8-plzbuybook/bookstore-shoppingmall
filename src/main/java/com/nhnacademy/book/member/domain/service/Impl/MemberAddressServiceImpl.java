@@ -237,10 +237,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     }
 
     @Override
-    public MemberAddressResponseDto updateAddressByEmail(String email, MemberAddressRequestDto addressRequestDto) {
+    public MemberAddressResponseDto updateAddressByEmail(String email, Long addressId, MemberAddressRequestDto addressRequestDto) {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
 
-        MemberAddress existingAddress = memberAddressRepository.findById(member.getMemberId())
+        MemberAddress existingAddress = memberAddressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
 
         existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());

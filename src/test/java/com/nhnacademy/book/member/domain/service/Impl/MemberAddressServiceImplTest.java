@@ -527,7 +527,7 @@ public class MemberAddressServiceImplTest {
 
 
         when(memberAddressRepository.save(existingAddress)).thenReturn(updatedAddress);
-        MemberAddressResponseDto result = memberAddressService.updateAddressByEmail(member.getEmail(), addressRequestDto);
+        MemberAddressResponseDto result = memberAddressService.updateAddressByEmail(member.getEmail(), addressId, addressRequestDto);
 
         assertNotNull(result);
         assertEquals(addressId, result.getMemberAddressId());

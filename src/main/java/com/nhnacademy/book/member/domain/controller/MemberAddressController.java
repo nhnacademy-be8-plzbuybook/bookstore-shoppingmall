@@ -57,8 +57,8 @@ public class MemberAddressController {
 
     // 배송지 수정(header email을 통해)
     @PutMapping("/members/address/{address_id}")
-    public MemberAddressResponseDto updateAddress(@RequestHeader ("X-USER-ID") String email, @RequestBody MemberAddressRequestDto addressRequestDto) {
-        return memberAddressService.updateAddressByEmail(email, addressRequestDto);
+    public MemberAddressResponseDto updateAddress(@RequestHeader ("X-USER-ID") String email,@PathVariable Long address_id, @RequestBody MemberAddressRequestDto addressRequestDto) {
+        return memberAddressService.updateAddressByEmail(email, address_id, addressRequestDto);
     }
 
     // 배송지 삭제
