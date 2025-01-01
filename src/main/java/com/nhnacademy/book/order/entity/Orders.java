@@ -82,6 +82,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -101,6 +102,8 @@ public class Orders {
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
     private Integer usedPoint;
+    @Setter
+    private BigDecimal orderPrice;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -109,7 +112,7 @@ public class Orders {
 
     @Builder
     public Orders(String id, String number, String name, LocalDate deliveryWishDate, Integer usedPoint,
-                  LocalDateTime orderedAt, OrderStatus status) {
+                  LocalDateTime orderedAt, OrderStatus status, BigDecimal orderPrice) {
         this.id = id;
         this.number = number;
         this.name = name;
@@ -117,6 +120,7 @@ public class Orders {
         this.deliveryWishDate = deliveryWishDate;
         this.usedPoint = usedPoint;
         this.status = status;
+        this.orderPrice = orderPrice;
         this.orderProducts = new ArrayList<>();
     }
 

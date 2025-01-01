@@ -14,15 +14,15 @@ public class ValidatedOrderDto {
     private int usedPoint;
     private BigDecimal deliveryFee;
     private LocalDate deliveryWishDate;
-    private BigDecimal paymentPrice;
+    private BigDecimal orderPrice;
 
     public ValidatedOrderDto(List<ValidatedOrderProductDto> orderProducts, LocalDate deliveryWishDate,
-                             int usedPoint, BigDecimal deliveryFee, BigDecimal paymentPrice) {
+                             int usedPoint, BigDecimal deliveryFee, BigDecimal orderPrice) {
 
         this.orderProducts = orderProducts;
         this.deliveryWishDate = deliveryWishDate;
         this.usedPoint = usedPoint;
         this.deliveryFee = deliveryFee;
-        this.paymentPrice = paymentPrice;
+        this.orderPrice = orderPrice;
     }
 }

@@ -1,7 +1,6 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -68,12 +66,13 @@ public class OrderCrudServiceImpl implements OrderCrudService {
                 .usedPoint(orderRequest.getUsedPoint())
                 .deliveryWishDate(orderRequest.getDeliveryWishDate())
                 .orderedAt(currentTime)
+                .orderPrice(orderRequest.getOrderPrice())
                 .status(OrderStatus.PAYMENT_PENDING)
                 .build();
 
         // 주문 저장
         Orders savedOrder = orderRepository.save(order);
-        return new OrderResponseDto(savedOrder.getId(), orderRequest.getPaymentPrice(), savedOrder.getName());
+        return new OrderResponseDto(savedOrder.getId(), orderRequest.getOrderPrice(), savedOrder.getName());
     }
 
     /**
