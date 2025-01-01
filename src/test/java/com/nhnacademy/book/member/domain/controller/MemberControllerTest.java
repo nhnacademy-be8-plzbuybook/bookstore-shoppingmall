@@ -302,5 +302,30 @@ class MemberControllerTest {
 
 
     }
+
+    @Test
+    @DisplayName("회원 상태를 ACTIVE로 변경")
+    void updateActiveStatus_success() {
+        String email = "test@naver.com";
+        doNothing().when(memberService).updateActiveStatus(email);
+        ResponseEntity<String> responseEntity = memberController.updateActiveStatus(email);
+
+        verify(memberService, times(1)).updateActiveStatus(email);
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertEquals("회원 상태가 ACTIVE로 변경되었습니다.", responseEntity.getBody());
+
+    }
+
+    @Test
+    @DisplayName("3개월 이상 미로그인 회원 상태를 DORMANT로 변경")
+    void updateDormantStatus_success() {
+        doNothing().when(memberService).updateDormantStatus();
+        ResponseEntity<String> responseEntity = memberController.updateDormantStatus();
+
+        verify(memberService, times(1)).updateDormantStatus();
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertEquals("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.", responseEntity.getBody());
+    }
+
 }
 

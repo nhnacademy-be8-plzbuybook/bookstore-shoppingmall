@@ -85,13 +85,14 @@ public class MemberController {
     }
 
     // 회원 상태 변경 (dormant → active)
-    @PostMapping("/status")
+    @PostMapping("/members/status/active")
     public ResponseEntity<String> updateActiveStatus(@RequestHeader("X-USER-ID") String email) {
         memberService.updateActiveStatus(email);
         return ResponseEntity.ok("회원 상태가 ACTIVE로 변경되었습니다.");
     }
 
-    @PostMapping("/status/dormant")
+    // 회원 상태 변경 (active -> dormant)
+    @PostMapping("/members/status/dormant")
     public ResponseEntity<String> updateDormantStatus() {
         memberService.updateDormantStatus();
         return ResponseEntity.ok("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.");
