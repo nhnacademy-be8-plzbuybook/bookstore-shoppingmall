@@ -139,7 +139,6 @@ public class BookSearchService {
 //    }
 
     public Page<BookSearchResponseDto> searchBooksByKeyword(String keyword, Pageable pageable) {
-        // 책 제목, 작가, 카테고리에서 모든 결과 가져오기 (페이징 처리 안함)
         List<BookDocument> titleList = bookSearchRepository.findByBookTitleContaining(keyword);
         List<AuthorDocument> authorList = authorSearchRepository.findByAuthorNameContaining(keyword);
         List<CategoryDocument> categoryList = categorySearchRepository.findByCategoryNameContaining(keyword);
@@ -158,8 +157,10 @@ public class BookSearchService {
 
         // 카테고리에서 책 ID 추출
         categoryList.forEach(categoryDoc -> {
-            List<Long> bookIdsFromCategory = bookCategorySearchRepository.findBookIdsByCategoryId(categoryDoc.getCategoryId());
-            bookIds.addAll(bookIdsFromCategory);
+            List<BookCategoryDocument> bookIdsFromCategory = bookCategorySearchRepository.findBookIdsByCategoryId(categoryDoc.getCategoryId());
+
+            // bookIdsFromCategory에서 각 책 ID를 bookIds에 추가
+            bookIdsFromCategory.forEach(bookCategoryDoc -> bookIds.add(bookCategoryDoc.getBookId()));
         });
 
         // 중복 제거 후 책 ID 리스트로 변환
@@ -177,8 +178,6 @@ public class BookSearchService {
         List<BookAuthor> bookAuthors = bookAuthorRepository.findByBook_BookIdIn(pagedBookIds.subList(start, end));
         List<BookImage> bookImages = bookImageRepository.findByBook_BookIdIn(pagedBookIds.subList(start, end));
 
-        // 결과 변환
-// 책 ID에 맞는 sellingBook을 찾기 위해, sellingBook들을 찾고, bookId와 매칭하여 DTO로 변환
         List<BookSearchResponseDto> responseDtos = pagedBookIds.subList(start, end).stream().map(bookId -> {
             // 책 정보를 찾기
             Book book = bookRepository.findById(bookId).orElse(null); // 책 ID에 해당하는 책 찾기 (필요시 repository 수정)
@@ -186,7 +185,6 @@ public class BookSearchService {
             // 해당 책 ID에 맞는 sellingBook 찾기
             List<SellingBook> sellingBooksList = sellingBookRepository.findByBook_BookId(bookId);
 
-// sellingBooksList가 비어 있지 않으면 첫 번째 요소 반환, 비어 있으면 null 반환
             SellingBook sellingBook = (sellingBooksList.isEmpty()) ? null : sellingBooksList.getFirst();
 
             // 카테고리, 작가, 이미지 정보 가져오기
