@@ -95,10 +95,10 @@ public class OrderCacheServiceImpl implements OrderCacheService {
             throw new IllegalArgumentException("주문정보가 만료되었습니다.");
         }
         try {
-            if (((String) value).contains(OrderType.MEMBER_ORDER.name())) {
-                return objectMapper.readValue((String) value, MemberOrderRequestDto.class);
+            if (((String) value).contains(OrderType.NON_MEMBER_ORDER.name())) {
+                return objectMapper.readValue((String) value, NonMemberOrderRequestDto.class);
             }
-            return objectMapper.readValue((String) value, NonMemberOrderRequestDto.class);
+            return objectMapper.readValue((String) value, MemberOrderRequestDto.class);
 
 
         } catch (JsonProcessingException e) {
