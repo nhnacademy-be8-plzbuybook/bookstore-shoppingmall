@@ -36,15 +36,16 @@ class BirthdayCouponSchedulerTest {
         verify(birthdayCouponService, times(1)).issueBirthdayCoupons(eq(month), eq(expectedPageable));
     }
 
-//    @DisplayName("특정 달에 스케줄러가 작동하는지 테스트")
-//    @Test
-//    void testScheduledTrigger() {
-//        LocalDate date = LocalDate.of(2024, 1, 1);
-//        int month = date.getMonthValue();
-//        Pageable pageable = PageRequest.of(0, 100, Sort.by("memberId"));
-//
-//        birthdayCouponScheduler.birthdayCoupon();
-//
-//        verify(birthdayCouponService, times(1)).issueBirthdayCoupons(eq(month), eq(pageable));
-//    }
+    @DisplayName("특정 달에 스케줄러가 작동하는지 테스트")
+    @Test
+    void testScheduledTrigger() {
+        LocalDate date = LocalDate.now();
+        int month = date.getMonthValue();
+        Pageable pageable = PageRequest.of(0, 100, Sort.by("memberId"));
+
+        birthdayCouponScheduler.birthdayCoupon();
+
+        verify(birthdayCouponService, times(1)).issueBirthdayCoupons(eq(month), eq(pageable));
+    }
+
 }
