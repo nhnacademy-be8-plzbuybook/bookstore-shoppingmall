@@ -1,11 +1,11 @@
 package com.nhnacademy.book.order.service.impl;
 
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
+import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
+import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderProductDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,29 +29,50 @@ public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
     private final SellingBookService sellingBookService;
 
+//    @Transactional
+//    @Override
+//    public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
+//        // 주문 생성
+//        LocalDateTime currentTime = LocalDateTime.now();
+//        BigDecimal orderPrice = calculateOrderPrice(orderRequest);
+//        BigDecimal couponDiscount = calculateCouponDiscount(orderRequest);
+//        Orders order = Orders.builder()
+//                .id(generateOrderId())
+//                .number(generateOrderNumber(currentTime))
+//                .name(generateOrderName(orderRequest))
+//                .orderPrice(orderPrice)
+//                .usedPoint(orderRequest.getUsedPoint())
+//                .couponDiscount(couponDiscount)
+//                .deliveryWishDate(orderRequest.getDeliveryWishDate())
+//                .orderedAt(currentTime)
+//                .status(OrderStatus.PAYMENT_PENDING)
+//                .build();
+//
+//        // 주문 저장
+//        Orders savedOrder = orderRepository.save(order);
+//        BigDecimal paymentPrice = orderPrice.subtract(couponDiscount).subtract(BigDecimal.valueOf(orderRequest.getUsedPoint()));
+//        return new OrderResponseDto(savedOrder.getId(), paymentPrice, savedOrder.getName());
+//    }
+
     @Transactional
     @Override
-    public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
+    public OrderResponseDto createOrder(ValidatedOrderDto orderRequest) {
         // 주문 생성
         LocalDateTime currentTime = LocalDateTime.now();
-        BigDecimal orderPrice = calculateOrderPrice(orderRequest);
-        BigDecimal couponDiscount = calculateCouponDiscount(orderRequest);
         Orders order = Orders.builder()
                 .id(generateOrderId())
                 .number(generateOrderNumber(currentTime))
                 .name(generateOrderName(orderRequest))
-                .orderPrice(orderPrice)
                 .usedPoint(orderRequest.getUsedPoint())
-                .couponDiscount(couponDiscount)
                 .deliveryWishDate(orderRequest.getDeliveryWishDate())
                 .orderedAt(currentTime)
+                .orderPrice(orderRequest.getOrderPrice())
                 .status(OrderStatus.PAYMENT_PENDING)
                 .build();
 
         // 주문 저장
         Orders savedOrder = orderRepository.save(order);
-        BigDecimal paymentPrice = orderPrice.subtract(couponDiscount).subtract(BigDecimal.valueOf(orderRequest.getUsedPoint()));
-        return new OrderResponseDto(savedOrder.getId(), paymentPrice, savedOrder.getName());
+        return new OrderResponseDto(savedOrder.getId(), orderRequest.getOrderPrice(), savedOrder.getName());
     }
 
     /**
@@ -72,6 +92,14 @@ public class OrderCrudServiceImpl implements OrderCrudService {
     //TODO: 임시
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
+        if (orderProducts.size() > 1) {
+            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
+        }
+        return "수학의 정석";
+    }
+
+    private String generateOrderName(ValidatedOrderDto order) {
+        List<ValidatedOrderProductDto> orderProducts = order.getOrderProducts();
         if (orderProducts.size() > 1) {
             return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
         }
@@ -101,33 +129,33 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         return UUID.randomUUID().toString();
     }
 
-
-    private BigDecimal calculateOrderPrice(OrderRequestDto order) {
-        BigDecimal orderPrice = BigDecimal.ZERO;
-
-        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
-            // 주문상품 가격 계산
-            orderPrice = orderPrice.add(orderProduct.getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())));
-            // 주문상품 포장지 가격 계산
-            if (orderProduct.getWrapping() != null) {
-                orderPrice = orderPrice.add(orderProduct.getWrapping().getPrice().multiply(BigDecimal.valueOf(orderProduct.getWrapping().getQuantity())));
-            }
-        }
-        return orderPrice;
-    }
-
-
-    private BigDecimal calculateCouponDiscount(OrderRequestDto order) {
-        BigDecimal couponDiscount = BigDecimal.ZERO;
-
-        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
-            // 주문상품 적용 쿠폰 계산
-            if (orderProduct.getAppliedCoupons() != null && !orderProduct.getAppliedCoupons().isEmpty()) {
-                for (OrderProductAppliedCouponDto coupon : orderProduct.getAppliedCoupons()) {
-                    couponDiscount = couponDiscount.add(coupon.getDiscount());
-                }
-            }
-        }
-        return couponDiscount;
-    }
+//
+//    private BigDecimal calculateOrderPrice(OrderRequestDto order) {
+//        BigDecimal orderPrice = BigDecimal.ZERO;
+//
+//        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
+//            // 주문상품 가격 계산
+//            orderPrice = orderPrice.add(orderProduct.getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())));
+//            // 주문상품 포장지 가격 계산
+//            if (orderProduct.getWrapping() != null) {
+//                orderPrice = orderPrice.add(orderProduct.getWrapping().getPrice().multiply(BigDecimal.valueOf(orderProduct.getWrapping().getQuantity())));
+//            }
+//        }
+//        return orderPrice;
+//    }
+//
+//
+//    private BigDecimal calculateCouponDiscount(OrderRequestDto order) {
+//        BigDecimal couponDiscount = BigDecimal.ZERO;
+//
+//        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
+//            // 주문상품 적용 쿠폰 계산
+//            if (orderProduct.getAppliedCoupons() != null && !orderProduct.getAppliedCoupons().isEmpty()) {
+//                for (OrderProductAppliedCouponDto coupon : orderProduct.getAppliedCoupons()) {
+//                    couponDiscount = couponDiscount.add(coupon.getDiscount());
+//                }
+//            }
+//        }
+//        return couponDiscount;
+//    }
 }
