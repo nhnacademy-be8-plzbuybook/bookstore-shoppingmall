@@ -23,6 +23,15 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            core: DEBUG
+      elasticsearch:
+        client: DEBUG
 
 
   #    datasource:

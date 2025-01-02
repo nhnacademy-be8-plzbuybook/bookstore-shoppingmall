@@ -148,35 +148,7 @@ public class BookAuthorService {
                 .collect(Collectors.toList());
     }
 
-    public List<SellingBookResponseDto> findBooksByAuthorIdWithSellingInfo(Long authorId) {
-        // 1. 작가가 집필한 책 정보 조회
-        List<Book> books = bookAuthorRepository.findBooksByAuthorId(authorId);
 
-        if (!authorRepository.existsById(authorId)) {
-            throw new AuthorIdNotFoundException("Author id: " + authorId + " not found");
-        }
 
-        // 2. 각 책 ID로 판매 정보 조회 및 결합
-        return books.stream()
-                .map(book -> {
-                    // 책 ID로 판매책 정보 조회
-                    SellingBook sellingBook = sellingBookRepository.findByBook_BookId(book.getBookId());
-                    BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
 
-                    // BookResponseDto로 책 정보를 포함하여 판매책 정보 반환
-                    return new SellingBookResponseDto(
-                            sellingBook.getSellingBookId(),                // 판매책 ID
-                            book.getBookId(),                  // 책 ID
-                            sellingBook.getBookTitle(),
-                            sellingBook.getSellingBookPrice(), // 판매 가격
-                            sellingBook.getSellingBookPackageable(), // 포장 가능 여부
-                            sellingBook.getSellingBookStock(), // 재고
-                            sellingBook.getSellingBookStatus(), // 판매 상태
-                            sellingBook.getUsed(),             // 중고 여부
-                            sellingBook.getSellingBookViewCount(), // 조회 수
-                            bookImage.getImageUrl() // BookImage에서 이미지 URL 가져오기
-                    );
-                })
-                .collect(Collectors.toList());
-    }
 }

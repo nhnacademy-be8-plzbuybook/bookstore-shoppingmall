@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ public class AuthorDocument {
 
     @org.springframework.data.annotation.Id
     private Long authorId;
-
+    @Field(type = FieldType.Text)
     private String authorName;
 
     private List<BookAuthor> bookAuthors = new ArrayList<>();

@@ -36,6 +36,7 @@ class BirthdayCouponSchedulerTest {
         verify(birthdayCouponService, times(1)).issueBirthdayCoupons(eq(month), eq(expectedPageable));
     }
 
+
     @DisplayName("특정 달에 스케줄러가 작동하는지 테스트")
     @Test
     void testScheduledTrigger() {

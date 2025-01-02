@@ -2,15 +2,20 @@ package com.nhnacademy.book.book.elastic.repository;
 
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Repository
 public interface BookSearchRepository extends ElasticsearchRepository<BookDocument, Long> {
 
+    @Query("{\"match\": {\"book_title\": \"?0\"}}")
     BookDocument findByBookId(Long bookId);
 
     // ISBN 13으로 책 조회
@@ -22,11 +27,38 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
     // 제목으로 책 조회
     List<BookDocument> findByBookTitle(String bookTitle);
 
+
     // 제목에 특정 문자열이 포함된 책 조회
-    List<BookDocument> findByBookTitleContaining(String bookTitle);
+//    @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
+//    List<BookDocument> findByBookTitleContaining(String keyword);
+
+    @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
+    Page<BookDocument> findByBookTitleContaining(String keyword, Pageable pageable);
+
 
     // index에 특정 문자열 조회
     List<BookDocument> findByBookIndexContaining(String bookIndex);
+
+    @Query("""
+    {
+      "query": {
+        "bool": {
+          "should": [
+            { "match_phrase": { "authorName": "?0" } },
+            { "match_phrase": { "bookTitle": "?0" } },
+            { "match_phrase": { "categoryName": "?0" } }
+          ]
+        }
+      }
+    }
+    """)
+    Page<BookDocument> searchBooksByKeyword(String searchKeyword, Pageable pageable);
+
+
+
+
+    List<BookDocument> findByBookIdIn(List<Long> bookIds);
+
 
 
 
