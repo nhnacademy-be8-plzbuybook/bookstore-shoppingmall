@@ -1,6 +1,5 @@
 package com.nhnacademy.book.order.dto.orderRequests;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nhnacademy.book.order.enums.OrderType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -13,8 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class OrderRequestDto {
-    @JsonIgnore
-    @NotNull
     private final OrderType orderType;
     @Nullable
     private LocalDate deliveryWishDate;
@@ -24,4 +21,6 @@ public class OrderRequestDto {
     private List<OrderProductRequestDto> orderProducts;
     @NotNull
     private OrderDeliveryAddressDto orderDeliveryAddress;
+//    @NotNull
+//    private BigDecimal deliveryFee;
 }

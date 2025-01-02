@@ -3,10 +3,13 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.*;
+import com.nhnacademy.book.book.elastic.document.BookDocument;
+import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.BookSearchService;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +34,8 @@ public class BookController {
     private SellingBookService sellingBookService;
     @Autowired
     private BookSearchService bookSearchService;
+    @Autowired
+    private BookSearchRepository bookSearchRepository;
 
 //
 //    @GetMapping
@@ -77,29 +82,54 @@ public class BookController {
     public ResponseEntity<List<BookResponseDto>> getBooksByAuthor(@PathVariable Long authorId) {
         return ResponseEntity.ok(bookAuthorService.findBooksByAuthorId(authorId));
     }
+//
+//    //키워드로 검색(책 이름, 작가, 카테고리 등)
+//    @GetMapping
+//    public ResponseEntity<BookSearchPagedResponseDto> searchBooks(
+//            @RequestParam String searchKeyword,
+//            @RequestParam(defaultValue = "0") int page,         // 기본값으로 첫 번째 페이지
+//            @RequestParam(defaultValue = "3") int size        // 기본값으로 한 페이지에 3개
+//    ) {
+//        // Pageable 객체 생성
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        // BookSearchService를 통해 페이징된 데이터 가져오기
+//        Page<BookSearchResponseDto> booksPage = bookSearchService.searchBooks(searchKeyword, pageable);
+//
+//        // 전체 책 개수를 가져오기 (검색된 전체 데이터 개수)
+//        long totalElements = bookSearchService.totalElements(searchKeyword);
+//
+//        // 전체 페이지 수 계산
+//        long totalPages = (long) Math.ceil((double) totalElements / size);
+//
+//        // BookSearchPagedResponseDto 생성 및 반환
+//        BookSearchPagedResponseDto response = new BookSearchPagedResponseDto(
+//                booksPage.getContent(),       // 현재 페이지의 데이터 리스트
+//                booksPage.getNumber(),        // 현재 페이지 번호
+//                (int) totalPages,            // 전체 페이지 수
+//                totalElements                // 전체 데이터 수
+//        );
+//
+//        return ResponseEntity.ok(response);
+//    }
 
-    //키워드로 검색(책 이름, 작가, 카테고리 등)
+
+//    @GetMapping
+//    public ResponseEntity<List<BookSearchResponseDto>> searchBooks(
+//            @RequestParam String searchKeyword) {
+//
+//        return ResponseEntity.ok(bookSearchService.searchBooksByKeyword(searchKeyword));
+//    }
+
     @GetMapping
-    public ResponseEntity<BookSearchPagedResponseDto> searchBooks(
+    public ResponseEntity<Page<BookSearchResponseDto>> searchBooks(
             @RequestParam String searchKeyword,
-            @RequestParam(defaultValue = "0") int page,         // 기본값으로 첫 번째 페이지
-            @RequestParam(defaultValue = "9") int size        // 기본값으로 한 페이지에 12개
-    ) {
-        // Pageable 객체 생성
-        Pageable pageable = PageRequest.of(page, size);
-
-        // BookSearchService를 통해 페이징된 데이터 가져오기
-        Page<BookSearchResponseDto> booksPage = bookSearchService.searchBooks(searchKeyword, pageable);
-
-        // BookSearchPagedResponseDto 생성 및 반환
-        BookSearchPagedResponseDto response = new BookSearchPagedResponseDto(
-                booksPage.getContent(),       // 현재 페이지의 데이터 리스트
-                booksPage.getNumber(),        // 현재 페이지 번호
-                booksPage.getTotalPages(),    // 전체 페이지 수
-                booksPage.getTotalElements()  // 전체 데이터 수
-        );
-
-        return ResponseEntity.ok(response);
+            @RequestParam(defaultValue = "0") int page   // 기본값은 0 (첫 페이지)
+            )  // 기본값은 10 (한 페이지당 10개)
+    {
+        Pageable pageable = PageRequest.of(page, 3);  // Pageable 객체 생성
+        return ResponseEntity.ok(bookSearchService.searchBooksByKeyword(searchKeyword, pageable));
     }
+
 
 }

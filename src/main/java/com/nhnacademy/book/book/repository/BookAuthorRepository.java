@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,6 +27,9 @@ public interface BookAuthorRepository extends JpaRepository<BookAuthor, Long> {
     List<Author> findAuthorsByBookId(@Param("bookId") Long bookId);
 
     List<BookAuthor> findByBook_BookId(Long bookId);
+
+    List<BookAuthor> findByBook_BookIdIn(List<Long> longs);
+
 
     // Book과 연결된 카테고리를 조회하는 메서드
 //    @Query("SELECT c FROM Category c JOIN c.bookCategories bc WHERE bc.book.bookId = :bookId")

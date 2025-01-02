@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,6 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
     // 특정 도서(Book)와 연결된 판매 도서 조회 ㅇㅇ
 //    List<SellingBook> findByBook_BookId(Long bookId);
 
-    SellingBook findByBook_BookId(Long bookId);
 
     @Query("SELECT DISTINCT sb FROM SellingBook sb " +
             "JOIN sb.book b " +
@@ -43,5 +43,7 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
     //조회수가 일정 이상인 판매 도서를 페이징해서 가져오도록 메서드
     Page<SellingBook> findBySellingBookViewCountGreaterThanEqual(Long minViewCount, Pageable pageable);
 
+    List<SellingBook> findByBook_BookId(Long bookId); // bookId를 기준으로 SellingBook 조회
 
+    List<SellingBook> findByBook_BookIdIn(List<Long> longs);
 }

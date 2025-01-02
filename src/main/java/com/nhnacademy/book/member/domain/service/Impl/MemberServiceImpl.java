@@ -6,6 +6,7 @@ import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.member.domain.repository.MemberCertificationRepository;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
@@ -39,6 +40,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final CouponClient couponClient;
     private final AuthRepository authRepository;
+    private final MemberCertificationRepository memberCertificationRepository;
 
     //회원 생성
     @Override
@@ -322,5 +324,49 @@ public class MemberServiceImpl implements MemberService {
                         member.getMemberGrade().getMemberGradeName(),
                         member.getMemberStatus().getMemberStateName()
                 ));
+    }
+
+    // 회원 상태 변경 (dormant -> active)
+    @Override
+    public void updateActiveStatus(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("이메일에 해당하는 회원이 없습니다."));
+
+        MemberStatus activeStatus = memberStatusRepository.findByMemberStateName("ACTIVE")
+                .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
+
+        if (member.getMemberStatus().equals(activeStatus)) {
+            // 이미 ACTIVE 상태면 아무 작업도 하지 않고 종료
+            return;
+        }
+
+        member.setMemberStatus(activeStatus);
+        memberRepository.save(member);
+
+    }
+
+    // 3개월 이상 미로그인시 (active -> dormant) 로 변경
+    public void updateDormantStatus() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+
+        List<MemberCertification> inactiveMember = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
+
+        if (inactiveMember.isEmpty()) {
+            // 3개월 이상 미로그인 회원이 없으면 작업 종료
+            return;
+        }
+        MemberStatus dormantStatus = memberStatusRepository.findByMemberStateName("DORMANT")
+                .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
+
+        // 상태 변경
+        for (MemberCertification memberCertification : inactiveMember) {
+            Member member = memberCertification.getMember();
+            member.setMemberStatus(dormantStatus);
+        }
+
+            memberRepository.saveAll(inactiveMember.stream()
+                    .map(MemberCertification::getMember)
+                    .toList());
+
     }
 }

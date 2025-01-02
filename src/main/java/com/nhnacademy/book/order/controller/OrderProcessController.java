@@ -22,21 +22,21 @@ public class OrderProcessController {
     /**
      * 회원 주문요청
      *
-     * @param xUserId            액세스토큰에서 추출된 X-USER-ID
+     * @param memberEmail            액세스토큰에서 추출된 X-USER-ID
      * @param memberOrderRequest 주문요청 DTO
      * @return 결제정보가 포함된 주문응답 DTO
      */
-    @PostMapping("/member")
-    public ResponseEntity<OrderResponseDto> requestMemberOrder(@RequestHeader("X-USER-ID") String xUserId,
+    @PostMapping
+    public ResponseEntity<OrderResponseDto> requestMemberOrder(@RequestHeader("X-USER-ID") String memberEmail,
                                                                @Valid @RequestBody MemberOrderRequestDto memberOrderRequest) {
         // 회원 검증
-        if (xUserId == null || xUserId.isBlank()) {
+        if (memberEmail == null || memberEmail.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        if (memberService.getMemberByEmail(xUserId) == null) {
+        if (memberService.getMemberByEmail(memberEmail) == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        memberOrderRequest.setMemberEmail(xUserId);
+        memberOrderRequest.setMemberEmail(memberEmail);
 
         OrderResponseDto orderResponse = orderProcessService.processRequestedOrder(memberOrderRequest);
 
@@ -65,7 +65,7 @@ public class OrderProcessController {
      * @return 주문 ID
      */
     @PostMapping("/{order-id}/complete")
-    public ResponseEntity<?> completeOrder(@PathVariable("order-id") String orderId) {
+    public ResponseEntity<String> completeOrder(@PathVariable("order-id") String orderId) {
         orderProcessService.completeOrder(orderId);
 
         return ResponseEntity.ok(orderId);

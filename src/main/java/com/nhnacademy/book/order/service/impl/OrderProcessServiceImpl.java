@@ -8,6 +8,7 @@ import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
+import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -16,8 +17,11 @@ import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @Service
@@ -37,16 +41,15 @@ public class OrderProcessServiceImpl implements OrderProcessService {
      * 주문요청 처리 (검증, 저장, 캐싱)
      *
      * @param orderRequest 주문요청
-     * @param <T>          회원 주문요청 | 비회원 주문요청
      * @return 주문응답 DTO (결제요청을 위한 데이터)
      */
     @Transactional
     @Override
-    public <T extends OrderRequestDto> OrderResponseDto processRequestedOrder(T orderRequest) {
+    public OrderResponseDto processRequestedOrder(OrderRequestDto orderRequest) {
         // 주문 검증
-        orderValidationService.validateOrder(orderRequest);
+        ValidatedOrderDto validatedOrderRequest = orderValidationService.validateOrder(orderRequest);
         // 주문 저장
-        OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
+        OrderResponseDto orderResponseDto = orderCrudService.createOrder(validatedOrderRequest);
         // 주문정보 캐싱
         orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
         return orderResponseDto;
@@ -62,18 +65,17 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     @Transactional
     @Override
     public String completeOrder(String orderId) {
-        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
         // 주문캐시정보 가져오기
         OrderRequestDto orderCache = orderCacheService.fetchOrderCache(orderId);
 
         for (OrderProductRequestDto orderProductRequest : orderCache.getOrderProducts()) {
             // 주문상품 저장
-            OrderProduct orderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
-            order.addOrderProduct(orderProduct);
+            OrderProduct savedOrderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
+            order.addOrderProduct(savedOrderProduct);
 
             // 주문상품-포장 저장
-            savedOrderProductWrapping(orderProductRequest);
-
+            savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
             // TODO: 쿠폰 사용처리
         }
         // 배송지저장
@@ -86,6 +88,25 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
 
         return orderId;
+    }
+
+
+    /**
+     * 주문상품-포장 저장
+     *
+     * @param orderProduct 주문상품 요청 DTO
+     */
+    private void savedOrderProductWrapping(OrderProduct savedOrderProduct, OrderProductRequestDto orderProduct) {
+        if (orderProduct.getWrapping() != null) {
+            OrderProductWrappingDto orderProductWrapping = orderProduct.getWrapping();
+            orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(),
+                    orderProductWrapping.getWrappingPaperId(), orderProduct.getQuantity());
+        }
+    }
+
+    @Override
+    public BigDecimal getOrderTotalPrice(OrderRequestDto orderRequest) {
+        return null;
     }
 
 
@@ -106,16 +127,4 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     }
 
 
-    /**
-     * 주문상품-포장 저장
-     *
-     * @param orderProduct 주문상품 요청 DTO
-     */
-    private void savedOrderProductWrapping(OrderProductRequestDto orderProduct) {
-        if (orderProduct.getWrapping() != null) {
-            OrderProductWrappingDto orderProductWrapping = orderProduct.getWrapping();
-            orderProductWrappingService.saveOrderProductWrapping(orderProduct.getProductId(),
-                    orderProductWrapping.getWrappingPaperId(), orderProduct.getQuantity());
-        }
-    }
 }
