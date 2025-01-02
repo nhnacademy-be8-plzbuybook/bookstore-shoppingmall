@@ -6,6 +6,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class NonMemberOrderRequestDto extends OrderRequestDto {
     private final OrderType orderType = OrderType.NON_MEMBER_ORDER;
 
     public NonMemberOrderRequestDto(@Nullable LocalDate deliveryWishDate, Integer usedPoint,
-                                    OrderDeliveryAddressDto orderDeliveryAddress, List<OrderProductRequestDto> orderProducts) {
-        super(OrderType.NON_MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddress);
+                                    OrderDeliveryAddressDto orderDeliveryAddress, List<OrderProductRequestDto> orderProducts,
+                                    BigDecimal deliveryFee, BigDecimal orderPrice) {
+        super(OrderType.NON_MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddress, deliveryFee, orderPrice);
     }
 }
