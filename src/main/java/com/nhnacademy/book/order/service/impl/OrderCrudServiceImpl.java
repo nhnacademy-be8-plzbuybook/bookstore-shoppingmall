@@ -30,7 +30,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
 
     @Transactional
     @Override
-    public OrderResponseDto createOrder(ValidatedOrderDto orderRequest) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
         // 주문 생성
         LocalDateTime currentTime = LocalDateTime.now();
         Orders order = Orders.builder()
