@@ -3,11 +3,11 @@ package com.nhnacademy.book.order.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
-import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
+import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +95,7 @@ public class OrderCacheServiceImpl implements OrderCacheService {
             throw new IllegalArgumentException("주문정보가 만료되었습니다.");
         }
         try {
-            if (value instanceof MemberOrderRequestDto) {
+            if (((String) value).contains(OrderType.MEMBER_ORDER.name())) {
                 return objectMapper.readValue((String) value, MemberOrderRequestDto.class);
             }
             return objectMapper.readValue((String) value, NonMemberOrderRequestDto.class);

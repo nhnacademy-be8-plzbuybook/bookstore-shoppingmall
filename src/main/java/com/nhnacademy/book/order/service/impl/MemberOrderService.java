@@ -20,7 +20,7 @@ public class MemberOrderService {
 
     public Long addMemberOrder(MemberOrderSaveRequestDto saveRequest) {
         Orders order = orderRepository.findById(saveRequest.getOrderId()).orElseThrow(() -> new NotFoundException("존재하지 않는 주문입니다."));
-        Member member = memberRepository.findById(saveRequest.getMemberId()).orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmail(saveRequest.getMemberEmail()).orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
         MemberOrder saved = memberOrderRepository.save(new MemberOrder(member, order));
         return saved.getId();
     }
