@@ -3,15 +3,15 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
-import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
-import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.entity.BookAuthor;
-import com.nhnacademy.book.book.entity.BookImage;
-import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.dto.MemberEmailResponseDto;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,10 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.nhnacademy.book.book.entity.Category;
-import com.nhnacademy.book.book.entity.Author;
-
+import com.nhnacademy.book.member.domain.dto.MemberDto;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,65 +34,29 @@ public class SellingBookService {
     private final CategoryRepository categoryRepository;
     private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
     private final BookAuthorRepository bookAuthorRepository;
+    private final LikesRepository likesRepository;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService; // 추가
 
     @Autowired
     public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
-                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository) {
+                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository,
+                              MemberRepository memberRepository, MemberService memberService) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.bookImageRepository = bookImageRepository;
         this.bookAuthorRepository = bookAuthorRepository;
-
+        this.likesRepository = likesRepository;
+        this.memberRepository = memberRepository;
+        this.memberService = memberService;
     }
 
-
-//    public List<SellingBookResponseDto> getBooks(
-//
-//    ) {
-//        List<SellingBook> sellingBooks = sellingBookRepository.findAll();
-//        log.info("Fetched SellingBooks: {}", sellingBooks);
-//
-//        return sellingBooks.stream()
-//                .map(sellingBook -> {
-//                    BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
-//                    return new SellingBookResponseDto(
-//                            sellingBook.getSellingBookId(),
-//                            sellingBook.getBook().getBookId(),
-//                            sellingBook.getSellingBookPrice(),
-//                            sellingBook.getSellingBookPackageable(),
-//                            sellingBook.getSellingBookStock(),
-//                            sellingBook.getSellingBookStatus(),
-//                            sellingBook.getUsed(),
-//                            sellingBook.getSellingBookViewCount(),
-//                            bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
-//                    );
-//                })
-//                .collect(Collectors.toList());
-//
-//    }
-//     public List<SellingBookResponseDto> getBooks() {
-//         List<SellingBook> sellingBooks = sellingBookRepository.findAll();
-//         log.info("Fetched SellingBooks: {}", sellingBooks);
-
-//         return sellingBooks.stream()
-//                 .map(sellingBook -> {
-//                     BookImage bookImage = bookImageRepository.findByBook(sellingBook.getBook()).orElse(null);
-//                     return new SellingBookResponseDto(
-//                             sellingBook.getSellingBookId(),
-//                             sellingBook.getBook().getBookId(),
-//                             sellingBook.getBookTitle(),
-//                             sellingBook.getSellingBookPrice(),
-//                             sellingBook.getSellingBookPackageable(),
-//                             sellingBook.getSellingBookStock(),
-//                             sellingBook.getSellingBookStatus(),
-//                             sellingBook.getUsed(),
-//                             sellingBook.getSellingBookViewCount(),
-//                             bookImage != null ? bookImage.getImageUrl() : null // 이미지 URL 추가
-//                     );
-//                 })
-//                 .collect(Collectors.toList());
-
+    /**
+     * 홈페이지 로드시 페이징 처리후 보여짐
+     * @param pageable
+     * @return
+     */
     public Page<SellingBookResponseDto> getBooks(Pageable pageable) {
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
@@ -173,13 +134,11 @@ public class SellingBookService {
         sellingBookRepository.deleteById(sellingBookId);
     }
 
-
-    // 조회(검색) 는 엘라스틱으로 !
-
     /**
      * 판매책 상세 조회
      */
     public BookDetailResponseDto getSellingBook(Long sellingBookId) {
+
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
                 .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
 
@@ -201,6 +160,10 @@ public class SellingBookService {
                 .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
                 .collect(Collectors.toList());
 
+        // 특정 판매책에 대한 좋아요 수 조회
+        Long likeCount = likesRepository.countBySellingBookId(sellingBookId);
+
+
         return new BookDetailResponseDto(
                 book.getBookId(),
                 sellingBook.getSellingBookId(),
@@ -218,8 +181,7 @@ public class SellingBookService {
                 categoryNames,
                 authorNames,
                 sellingBook.getSellingBookStatus().name(), // 상태 추가
-                null //좋아요 수는 일단 null
-
+                likeCount
         );
     }
 

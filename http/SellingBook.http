@@ -77,3 +77,7 @@ GET http://localhost:8080/api/selling-books?page=0&size=12&sortBy=sellingBookId&
 ###
 GET http://localhost:8080/api/selling-books/301
 
+###
+POST http://localhost:8080/api/selling-books/like/301
+Content-Type: application/json
+X-USER-ID: yoonwlgh12@naver.com
