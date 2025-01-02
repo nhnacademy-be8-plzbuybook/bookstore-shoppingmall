@@ -17,4 +17,6 @@ public interface MemberService {
     void withdrawMember(Long memberId);
     void withdrawState(String email);
     Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto);
+    void updateActiveStatus(String email);
+    void updateDormantStatus();
 }

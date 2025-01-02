@@ -78,10 +78,23 @@ public class MemberController {
 
     }
 
-
     //전체 회원 조회
     @GetMapping("/members")
     public ResponseEntity<Page<MemberSearchResponseDto>> getMembers(@ModelAttribute MemberSearchRequestDto memberSearchRequestDto) {
         return ResponseEntity.ok(memberService.getMembers(memberSearchRequestDto));
+    }
+
+    // 회원 상태 변경 (dormant → active)
+    @PostMapping("/members/status/active")
+    public ResponseEntity<String> updateActiveStatus(@RequestHeader("X-USER-ID") String email) {
+        memberService.updateActiveStatus(email);
+        return ResponseEntity.ok("회원 상태가 ACTIVE로 변경되었습니다.");
+    }
+
+    // 회원 상태 변경 (active -> dormant)
+    @PostMapping("/members/status/dormant")
+    public ResponseEntity<String> updateDormantStatus() {
+        memberService.updateDormantStatus();
+        return ResponseEntity.ok("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.");
     }
 }

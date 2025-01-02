@@ -26,8 +26,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.meta.When;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -705,20 +707,17 @@ class MemberServiceImplTest {
     @Test
     @DisplayName("이메일로 조회 후 회원 탈퇴")
     void withdrawState_Success() {
-        // given
-        String email = "test@example.com";
+        String email = "test@naver.com";
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now());
         MemberStatus withdrawStatus = new MemberStatus(1L, "WITHDRAWAL");
         MemberStatus activeStatus = new MemberStatus(2L, "ACTIVE");
-        Member member = new Member(1L, null, activeStatus, "Test", "010-1234-5678", email, LocalDate.now(), "encodedPassword");
+        Member member = new Member(1L, memberGrade, activeStatus, "Test", "010-1234-5678", email, LocalDate.of(2002, 7, 23), "Password");
 
-        // mocking
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
         when(memberStatusRepository.findByMemberStateName("WITHDRAWAL")).thenReturn(Optional.of(withdrawStatus));
 
-        // when
         memberService.withdrawState(email);
 
-        // then
         assertEquals("WITHDRAWAL", member.getMemberStatus().getMemberStateName());
         verify(memberRepository, times(1)).save(member);
     }
@@ -770,4 +769,41 @@ class MemberServiceImplTest {
         assertEquals("등록된 회원이 없다!", exception.getMessage());
 
     }
+
+    @Test
+    @DisplayName("회원 상태를 ACTIVE로 변경시키는지")
+    void updateActiveStatus_success() {
+        String email = "test@naver.com";
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now());
+        MemberStatus dormantStatus = new MemberStatus(2L,"DORMANT");
+        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, dormantStatus, "test", "010-1234-5678", "test@naver.com", LocalDate.of(2002, 7, 23), "Password");
+
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("ACTIVE")).thenReturn(Optional.of(activeStatus));
+
+        memberService.updateActiveStatus(email);
+
+        assertEquals("ACTIVE", member.getMemberStatus().getMemberStateName());
+        verify(memberRepository).save(member);
+
+    }
+
+    @Test
+    @DisplayName("회원 상태가 이미 ACTIVE 일때 변경하지 않는지")
+    void updateActiveStatus_alreadyActive() {
+        String email = "test@naver.com";
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now());
+        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, activeStatus, "test", "010-1234-5678", "test@naver.com", LocalDate.of(2002, 7, 23), "Password");
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("ACTIVE")).thenReturn(Optional.of(activeStatus));
+
+        memberService.updateActiveStatus(email);
+
+        verify(memberRepository, never()).save(any());
+    }
+
 }
