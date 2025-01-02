@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.repository;
 
+import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.QOrderDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
@@ -24,6 +25,8 @@ import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
+import static com.nhnacademy.book.order.entity.QOrderDeliveryAddress.orderDeliveryAddress;
+import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -84,6 +87,19 @@ public class OrderQueryRepository {
 
         return orderPage;
     }
+
+//    public OrderDetail findOrderDetail(String orderId) {
+//        queryFactory
+//                .select()
+//                .from(orders)
+//                .innerJoin(orders.orderProducts, orderProduct)
+//                .innerJoin(orderProduct.sellingBook, sellingBook)
+//                .innerJoin(sellingBook.book, book)
+//                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+//                .innerJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
+//                .where(orders.id.eq(orderId))
+//                .fetchOne();
+//    }
 
 
 

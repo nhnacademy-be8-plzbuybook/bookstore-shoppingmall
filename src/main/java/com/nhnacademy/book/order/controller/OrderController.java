@@ -9,10 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,7 +18,7 @@ public class OrderController {
     private final MemberService memberService;
 
     /**
-     * 주문조회(관리자)
+     * 주문 목록조회(관리자)
      *
      * @param searchRequest 주문조회 DTO
      * @param pageable      페이지 정보
@@ -35,6 +32,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    /**
+     * 내 주문내역 조회
+     *
+     * @param memberEmail 회원 이메일
+     * @param searchRequest 검색 파라미터
+     * @param pageable 페이징
+     * @return 주문목록 페이지
+     */
     @GetMapping("/api/my/orders")
     public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
                                                       @ModelAttribute OrderSearchRequestDto searchRequest,
@@ -55,6 +60,19 @@ public class OrderController {
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
         return ResponseEntity.ok(orders);
+    }
+
+    /**
+     * 주문 상세조회
+     *
+     * @param orderId 주문 아이디
+     * @return
+     */
+    @GetMapping("/api/orders/{order-id}")
+    public ResponseEntity<?> getOrderDetail(@PathVariable("order-id") String orderId,
+                                            @RequestParam(value = "nonMemberOrderPassword", required = false) String password) {
+
+        return null;
     }
 
 }
