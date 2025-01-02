@@ -17,7 +17,7 @@ public class OrderProductWrapping {
     @Column(name = "order_product_wrapping_id")
     private Long id;
 
-    @ManyToOne // 현재는 1 종류의 상품에 1 종류의 포장지만 적용가능, 확장성을 위해 manyToOn으로 설정
+    @ManyToOne // 현재는 1 종류의 상품에 1 종류의 포장지만 적용가능, 확장성을 위해 manyToOne 으로 설정
     @JoinColumn(name = "opw_order_product_id", referencedColumnName = "order_product_id")
     private OrderProduct orderProduct;
 

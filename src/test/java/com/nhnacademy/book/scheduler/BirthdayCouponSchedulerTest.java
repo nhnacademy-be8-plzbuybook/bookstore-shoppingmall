@@ -47,4 +47,5 @@ class BirthdayCouponSchedulerTest {
 
         verify(birthdayCouponService, times(1)).issueBirthdayCoupons(eq(month), eq(pageable));
     }
+
 }
