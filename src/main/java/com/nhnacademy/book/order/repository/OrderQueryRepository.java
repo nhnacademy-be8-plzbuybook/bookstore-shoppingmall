@@ -1,8 +1,10 @@
 package com.nhnacademy.book.order.repository;
 
+import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.QOrderDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
+import static com.nhnacademy.book.order.entity.QOrderDeliveryAddress.orderDeliveryAddress;
+import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -32,10 +36,11 @@ public class OrderQueryRepository {
 
     // 기본 날짜/내림차순 정렬
     // 전체 주문목록 조회
-    public Page<OrderDto> findAllOrders(String memberId, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
+    public Page<OrderDto> findOrders(String memberEmail, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
                 .select(new QOrderDto(
+                        orders.id,
                         orders.orderedAt,
                         orders.status,
                         orders.name,
@@ -44,11 +49,12 @@ public class OrderQueryRepository {
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
                 .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .leftJoin(member).on(memberOrder.member.eq(member))
                 .innerJoin(orders.orderProducts, orderProduct)
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberId),
+                        eqMemberId(memberEmail),
                         eqProductName(productName),
                         eqOrderDate(orderDate),
                         eqOrderStatus(orderStatus)
@@ -63,11 +69,13 @@ public class OrderQueryRepository {
                 .select(orders.count())
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
+                .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .leftJoin(member).on(memberOrder.member.eq(member))
                 .innerJoin(orders.orderProducts, orderProduct)
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberId),
+                        eqMemberId(memberEmail),
                         eqProductName(productName),
                         eqOrderDate(orderDate),
                         eqOrderStatus(orderStatus)
@@ -80,11 +88,27 @@ public class OrderQueryRepository {
         return orderPage;
     }
 
-    private BooleanExpression eqMemberId(String memberId) {
-        if (memberId == null) {
+//    public OrderDetail findOrderDetail(String orderId) {
+//        queryFactory
+//                .select()
+//                .from(orders)
+//                .innerJoin(orders.orderProducts, orderProduct)
+//                .innerJoin(orderProduct.sellingBook, sellingBook)
+//                .innerJoin(sellingBook.book, book)
+//                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+//                .innerJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
+//                .where(orders.id.eq(orderId))
+//                .fetchOne();
+//    }
+
+
+
+
+    private BooleanExpression eqMemberId(String memberEmail) {
+        if (memberEmail == null) {
             return null;
         }
-        return member.email.eq(memberId);
+        return member.email.eq(memberEmail);
     }
 
     private BooleanExpression eqProductName(String bookTitle) {
