@@ -5,6 +5,7 @@ import com.netflix.discovery.converters.Auto;
 import com.nhnacademy.book.book.controller.AuthorController;
 import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.service.Impl.AuthorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ public class AuthorControllerTest {
 
     @MockBean
     private AuthorService authorService;
+
+    @MockBean
+    private AuthorSearchRepository authorSearchRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

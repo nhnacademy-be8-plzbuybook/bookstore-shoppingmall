@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.dto;
 
+import com.nhnacademy.book.order.dto.orderRequests.OrderDeliveryAddressDto;
 import com.nhnacademy.book.orderProduct.dto.OrderProductSaveRequestDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
@@ -26,32 +27,15 @@ public class OrderSaveRequestDto {
     private List<OrderProductSaveRequestDto> orderProducts;
 
     @NotNull
-    private OrderDeliveryAddress orderDeliveryAddress;
+    private OrderDeliveryAddressDto orderDeliveryAddressDto;
 
     @Builder
     public OrderSaveRequestDto(BigDecimal totalPrice, @Nullable LocalDate deliveryWishDate, Integer usedPoint,
-                               List<OrderProductSaveRequestDto> orderProducts, OrderDeliveryAddress orderDeliveryAddress) {
+                               List<OrderProductSaveRequestDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddressDto) {
         this.totalPrice = totalPrice;
         this.deliveryWishDate = deliveryWishDate;
         this.usedPoint = usedPoint;
         this.orderProducts = orderProducts;
-        this.orderDeliveryAddress = orderDeliveryAddress;
+        this.orderDeliveryAddressDto = orderDeliveryAddressDto;
     }
-}
-@Getter
-class OrderDeliveryAddress {
-    @NotBlank
-    private String locationAddress;
-
-    @NotBlank
-    private String zipCode;
-
-    @NotBlank
-    private String detailAddress;
-
-    @NotBlank
-    private String recipient;
-
-    @NotBlank
-    private String recipientPhone;
 }

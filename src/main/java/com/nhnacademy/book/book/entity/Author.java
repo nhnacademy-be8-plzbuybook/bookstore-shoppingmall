@@ -35,13 +35,7 @@ public class Author {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;  // Soft Delete 필드
 
-    public void softDelete() {
-        this.deletedAt = LocalDateTime.now();  // 삭제된 시간을 기록
-    }
 
-    public boolean isDeleted() {
-        return this.deletedAt != null;  // 삭제된 상태 체크
-    }
 
 
     @Override

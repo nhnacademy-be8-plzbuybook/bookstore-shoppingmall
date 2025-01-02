@@ -2,7 +2,11 @@ package com.nhnacademy.book.book.repository;
 
 import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,6 +22,27 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // 제목으로 책 조회
     List<Book> findByBookTitle(String bookTitle);
+
+//    @Query("SELECT b FROM Book b " +
+//            "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
+//            "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +
+//            "LEFT JOIN BookCategory bc ON b.bookId = bc.book.bookId " +
+//            "LEFT JOIN Category c ON bc.category.categoryId = c.categoryId " +
+//            "WHERE b.bookTitle LIKE %:searchKeyword% " +
+//            "OR a.authorName LIKE %:searchKeyword% " +
+//            "OR c.categoryName LIKE %:searchKeyword%")
+//    List<Book> findBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword);
+
+    @Query("SELECT b FROM Book b " +
+            "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
+            "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +
+            "LEFT JOIN BookCategory bc ON b.bookId = bc.book.bookId " +
+            "LEFT JOIN Category c ON bc.category.categoryId = c.categoryId " +
+            "WHERE b.bookTitle LIKE %:searchKeyword% " +
+            "OR a.authorName LIKE %:searchKeyword% " +
+            "OR c.categoryName LIKE %:searchKeyword%")
+    Page<Book> findBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+
 
 
 

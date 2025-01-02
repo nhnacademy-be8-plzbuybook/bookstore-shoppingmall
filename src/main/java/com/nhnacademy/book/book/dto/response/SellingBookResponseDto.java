@@ -16,10 +16,12 @@ public class SellingBookResponseDto {
 
     private Long sellingBookId;
     private Long bookId;
+    private String bookTitle;
     private BigDecimal sellingBookPrice;
     private Boolean sellingBookPackageable;
     private Integer sellingBookStock;
     private SellingBookStatus sellingBookStatus;
     private Boolean used;
     private Long sellingBookViewCount;
+    private String imageUrl;
 }

@@ -1,14 +1,19 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,6 +27,31 @@ public class SellingBookController {
     @Autowired
     public SellingBookController(SellingBookService sellingBookService) {
         this.sellingBookService = sellingBookService;
+    }
+
+    /**
+     * 프론트에서 판매책 리스트 불러올때 사용
+     *
+     * @return
+     */
+    @GetMapping
+    public Page<SellingBookResponseDto> getBooks(
+            @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호 (0부터 시작)
+            @RequestParam(defaultValue = "16") int size,        // 페이지 크기
+            @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 기본 정렬 필드
+            @RequestParam(defaultValue = "desc") String sortDir // 정렬 방향
+    ) {
+
+        // 정렬 기준 매핑
+        List<String> validSortFields = List.of(
+                "sellingBookId", "sellingBookViewCount", "sellingBookPrice", "averageRating", "reviewCount"
+        );
+        if (!validSortFields.contains(sortBy)) {
+            sortBy = "sellingBookId"; // 기본값 설정
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+        return sellingBookService.getBooks(pageable);
     }
 
 
@@ -52,11 +82,12 @@ public class SellingBookController {
 
     /**
      * 판매책 상세조회 -> 특정 판매책을 ID 로조회
+     *
      * @param sellingBookId
      * @return
      */
     @GetMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookResponseDto> getSellingBook(@PathVariable Long sellingBookId) {
+    public ResponseEntity<BookDetailResponseDto> getSellingBook(@PathVariable Long sellingBookId) {
         return ResponseEntity.ok(sellingBookService.getSellingBook(sellingBookId));
     }
 

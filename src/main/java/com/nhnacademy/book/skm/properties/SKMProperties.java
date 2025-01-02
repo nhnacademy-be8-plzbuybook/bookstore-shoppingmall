@@ -16,6 +16,8 @@ public class SKMProperties {
     private String password;
     private Database Database;
     private Object_storage objectStorage;
+    private Order_redis orderRedis;
+    private Cart_redis cartRedis;
 
     @Getter
     @Setter
@@ -34,6 +36,24 @@ public class SKMProperties {
         private String url;
         private String tenantId;
         private String containerName;
+    }
+
+    @Getter
+    @Setter
+    public static class Order_redis {
+        private String host;
+        private String port;
+        private String password;
+        private String range;
+    }
+
+    @Getter
+    @Setter
+    public static class Cart_redis {
+        private String host;
+        private String port;
+        private String password;
+        private String range;
     }
 }
 

@@ -32,15 +32,17 @@ public class BookService {
     private final PublisherRepository publisherRepository;
     private final BookSearchRepository bookSearchRepository;
     private final BookImageRepository bookImageRepository;
+    private final SellingBookRepository sellingBookRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository,
                        PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository
-         , BookImageRepository bookImageRepository) {
+         , BookImageRepository bookImageRepository, SellingBookRepository sellingBookRepository) {
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
         this.bookSearchRepository = bookSearchRepository;
         this.bookImageRepository = bookImageRepository;
+        this.sellingBookRepository =  sellingBookRepository;
     }
 
     public List<BookDetailResponseDto> getAllBooks() {
@@ -48,9 +50,11 @@ public class BookService {
 
         return books.stream()
                 .map(book -> {
+                    SellingBook sellingBook = sellingBookRepository.findByBook(book);
                     BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
                     return new BookDetailResponseDto(
                             book.getBookId(),
+                            sellingBook != null ? sellingBook.getSellingBookId() : null, // SellingBook ID 추가
                             book.getBookTitle(),
                             book.getBookIndex(),
                             book.getBookDescription(),
@@ -140,27 +144,7 @@ public class BookService {
         Book book2 = bookRepository.save(book);
 
 
-        // 이미지 URL 처리 (BookImage 엔티티 생성 및 저장)
-        if (bookRegisterDto.getImageUrl() != null && !bookRegisterDto.getImageUrl().isEmpty()) {
-            BookImage bookImage = new BookImage();
-            bookImage.setBook(book2);
-            bookImage.setImageUrl(bookRegisterDto.getImageUrl());
-            bookImageRepository.save(bookImage);
-            log.info("BookImage 저장 완료: {}", bookImage.getBookImageId());
-        } else {
-            log.warn("이미지 URL이 설정되지 않아 BookImage를 저장하지 않았습니다.");
-        }
-        BookDocument bookDocument = new BookDocument();
-        bookDocument.setBookId(book2.getBookId());
-        bookDocument.setBookPriceStandard(bookRegisterDto.getBookPriceStandard());
-        bookDocument.setBookIsbn13(bookRegisterDto.getBookIsbn13());
-        bookDocument.setBookIndex(bookRegisterDto.getBookIndex());
-        bookDocument.setBookTitle(bookRegisterDto.getBookTitle());
-        bookDocument.setBookPubDate(bookRegisterDto.getBookPubDate());
-        bookDocument.setBookDescription(bookRegisterDto.getBookDescription());
-        bookDocument.setPublisherId(bookRegisterDto.getPublisherId());
 
-        bookSearchRepository.save(bookDocument);
     }
 
 
@@ -171,6 +155,7 @@ public class BookService {
             throw new BookNotFoundException("존재하지 않는 도서 ID입니다.");
         }
         bookRepository.deleteById(bookId);
+        bookSearchRepository.deleteById(bookId);
     }
 
     // 도서 수정 기능 (관리자)
@@ -185,4 +170,6 @@ public class BookService {
         book.setBookIsbn13(bookUpdateRequest.getBookIsbn13());
         bookRepository.save(book);
     }
+
+
 }

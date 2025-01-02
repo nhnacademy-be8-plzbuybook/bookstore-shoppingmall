@@ -3,10 +3,7 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
 import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberAuth;
-import com.nhnacademy.book.member.domain.MemberGrade;
-import com.nhnacademy.book.member.domain.MemberStatus;
+import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
@@ -41,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberAuthRepository memberAuthRepository;
 
     private final CouponClient couponClient;
+    private final AuthRepository authRepository;
 
     //회원 생성
     @Override
@@ -58,6 +56,9 @@ public class MemberServiceImpl implements MemberService {
         MemberStatus memberStatus = memberStatusRepository.findById(1L)
                 .orElseThrow(() -> new DefaultStatusGradeNotfoundException("기본 회원 상태를 찾을 수 없습니다!"));
 
+        Auth defaultAuth = authRepository.findById(2L)
+                .orElseThrow(() -> new DefaultAuthNotfoundException("기본 권한을 찾을 수 없습니다!"));
+
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberCreateRequestDto.getPassword());
 
@@ -73,6 +74,11 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        MemberAuth memberAuth = new MemberAuth();
+        memberAuth.setMember(savedMember);
+        memberAuth.setAuth(defaultAuth);
+        memberAuthRepository.save(memberAuth);
 
         // 응답 DTO 생성 및 반환
         MemberCreateResponseDto memberCreateResponseDto = new MemberCreateResponseDto(
@@ -145,6 +151,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
+
         // 수정된 회원 저장
         Member updatedMember = memberRepository.save(member);
 
@@ -157,11 +164,56 @@ public class MemberServiceImpl implements MemberService {
         );
     }
 
+    //header 이메일을 통해 회원 정보 수정
+    @Override
+    @Transactional
+    public void updateMember(String email, MemberModifyRequestDto memberModifyRequestDto) {
+        boolean isModified = false;
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
+
+        if (memberModifyRequestDto.getName() != null && !memberModifyRequestDto.getName().equals(member.getName())) {
+            member.setName(memberModifyRequestDto.getName());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPhone() != null && !memberModifyRequestDto.getPhone().equals(member.getPhone())) {
+            member.setPhone(memberModifyRequestDto.getPhone());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getEmail() != null && !memberModifyRequestDto.getEmail().equals(member.getEmail())) {
+            if (memberRepository.existsByEmail(memberModifyRequestDto.getEmail())) {
+                throw new DuplicateEmailException("이메일이 이미 존재!");
+            }
+            member.setEmail(memberModifyRequestDto.getEmail());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getBirth() != null && !memberModifyRequestDto.getBirth().equals(member.getBirth())) {
+            member.setBirth(memberModifyRequestDto.getBirth());
+            isModified = true;
+        }
+
+        if (memberModifyRequestDto.getPassword() != null && !passwordEncoder.matches(memberModifyRequestDto.getPassword(), member.getPassword())) {
+            member.setPassword(passwordEncoder.encode(memberModifyRequestDto.getPassword()));
+            isModified = true;
+        }
+
+        if(!isModified) {
+            throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
+        }
+
+        memberRepository.save(member);
+
+    }
+
     //이메일로 특정 회원 조회
     @Override
     public MemberEmailResponseDto getMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() ->new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
+                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 멤버가 없다!"));
 
         List<MemberAuth> memberAuthList = memberAuthRepository.findByMember(member);
 
@@ -174,10 +226,10 @@ public class MemberServiceImpl implements MemberService {
         MemberEmailResponseDto memberEmailResponseDto = new MemberEmailResponseDto();
         memberEmailResponseDto.setEmail(member.getEmail());
         memberEmailResponseDto.setPassword(member.getPassword());
-        memberEmailResponseDto.setAuthName(authName);// 권한 정보 추가
+        memberEmailResponseDto.setAuthName(authName);
+        memberEmailResponseDto.setMemberStateName(member.getMemberStatus().getMemberStateName());
 
         return memberEmailResponseDto;
-
 
     }
 
@@ -187,7 +239,12 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmailWithGradeAndStatus(email)
                 .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
 
+        if ("WITHDRAWAL".equalsIgnoreCase(member.getMemberStatus().getMemberStateName())) {
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
+
         return new MemberDto(
+                member.getMemberId(),
                 member.getName(),
                 member.getPhone(),
                 member.getPassword(),
@@ -226,6 +283,26 @@ public class MemberServiceImpl implements MemberService {
         member.setMemberStatus(withdrawStatus);
         memberRepository.save(member);
     }
+
+    // 회원 탈퇴
+    @Override
+    public void withdrawState(String email) {
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+                .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
+
+        if (member.getMemberStatus().getMemberStateName().equals("WITHDRAWAL")) {
+            throw new IllegalStateException("이미 탈퇴한 회원입니다.");
+        }
+
+        member.setMemberStatus(withdrawStatus);
+        memberRepository.save(member);
+    }
+
+
+
 
     @Override
     public Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto) {

@@ -23,13 +23,13 @@ public class MemberAddress {
     @JoinColumn(name = "ma_member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(name = "default_address", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean defaultAddress;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "location_address", length = 100, nullable = false)
     private String locationAddress;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "detail_address", length = 100, nullable = false)
     private String detailAddress;
 
     @Column(name = "zipcode", length = 20, nullable = false)
@@ -41,7 +41,7 @@ public class MemberAddress {
     @Column(length = 100)
     private String recipient;
 
-    @Column(length = 15)
+    @Column(name = "recipient_phone", length = 15)
     private String recipientPhone;
 
 

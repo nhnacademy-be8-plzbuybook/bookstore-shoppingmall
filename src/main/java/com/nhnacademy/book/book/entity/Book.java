@@ -69,25 +69,31 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookAuthor> bookAuthors = new ArrayList<>();
 
+
     @Override
     public String toString() {
-        return "bookId : " +
-                bookId + ", bookTitle : "
-                + bookTitle+ '\'' +
+        return "Book{" +
+                "bookId=" + bookId +
+                ", bookTitle='" + bookTitle + '\'' +
                 '}';
     }
     // addCategory 메서드 추가
     public void addCategory(Category category) {
-        BookCategory bookCategory = new BookCategory(this, category);
-        this.bookCategories.add(bookCategory);
-        category.getBookCategories().add(bookCategory);
+        if (bookCategories.stream().noneMatch(bc -> bc.getCategory().equals(category))) {
+            BookCategory bookCategory = new BookCategory(this, category);
+            this.bookCategories.add(bookCategory);
+            category.getBookCategories().add(bookCategory);
+        }
     }
 
     public void addAuthor(Author author) {
-        BookAuthor bookAuthor = new BookAuthor(this, author);
-        this.bookAuthors.add(bookAuthor);
-        author.getBookAuthors().add(bookAuthor);
+        if (bookAuthors.stream().noneMatch(ba -> ba.getAuthor().equals(author))) {
+            BookAuthor bookAuthor = new BookAuthor(this, author);
+            this.bookAuthors.add(bookAuthor);
+            author.getBookAuthors().add(bookAuthor);
+        }
     }
+
 
 
 }

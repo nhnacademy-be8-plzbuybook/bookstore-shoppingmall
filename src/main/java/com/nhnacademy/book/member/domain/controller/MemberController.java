@@ -36,6 +36,13 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //회원 수정(header를 통해)
+    @PostMapping("/members/me")
+    public ResponseEntity<String> updateMember(@RequestHeader("X-USER-ID") String email, @RequestBody MemberModifyRequestDto memberModifyRequestDto) {
+        memberService.updateMember(email, memberModifyRequestDto);
+        return ResponseEntity.ok("수정 되었습니다!");
+    }
+
 
     //특정 회원 조회(이메일)
     @GetMapping("/members/email")
@@ -62,6 +69,15 @@ public class MemberController {
         memberService.withdrawMember(member_id);
         return ResponseEntity.ok("탈퇴 처리 됐습니다.");
     }
+
+    // 회원 탈퇴
+    @PostMapping("/members/withdrawal")
+    public ResponseEntity<String> withdrawState(@RequestHeader("X-USER-ID") String email) {
+        memberService.withdrawState(email);
+        return ResponseEntity.ok("탈퇴 처리 됐습니다.");
+
+    }
+
 
     //전체 회원 조회
     @GetMapping("/members")

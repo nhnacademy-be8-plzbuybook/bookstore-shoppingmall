@@ -2,6 +2,8 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
+import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
+import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
@@ -21,9 +23,11 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategorySearchRepository categorySearchRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, CategorySearchRepository categorySearchRepository) {
         this.categoryRepository = categoryRepository;
+        this.categorySearchRepository = categorySearchRepository;
     }
 
     public CategoryResponseDto findCategoryById(Long id) {
@@ -103,10 +107,10 @@ public class CategoryService {
 
 
     public void deleteCategoryById(Long categoryId) {
-        if (!categoryRepository.existsById(categoryId)) {
+        if (!categoryRepository.existsById(categoryId) || !categorySearchRepository.existsById(categoryId)) {
             throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
         }
-
+        categorySearchRepository.deleteById(categoryId);
         categoryRepository.deleteById(categoryId);
     }
 
@@ -129,5 +133,13 @@ public class CategoryService {
                 category.getParentCategory() != null ? category.getParentCategory().getCategoryId() : null,
                 childCategories
         );
+    }
+
+
+    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
+        return categoryRepository.findByCategoryNameContaining(keyword)
+                .stream()
+                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
     }
 }

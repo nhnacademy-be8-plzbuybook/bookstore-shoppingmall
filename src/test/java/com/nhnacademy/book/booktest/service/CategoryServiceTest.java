@@ -2,6 +2,7 @@ package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
+import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
@@ -34,6 +35,8 @@ public class CategoryServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+    @Mock
+    private CategorySearchRepository categorySearchRepository;
 
     private Category category;
     private Category parentCategory;
@@ -213,10 +216,14 @@ public class CategoryServiceTest {
     @Test
     void deleteCategoryById() {
         Mockito.when(categoryRepository.existsById(2L)).thenReturn(true);
+        Mockito.when(categorySearchRepository.existsById(2L)).thenReturn(true);
+
 
         categoryService.deleteCategoryById(2L);
 
         assertFalse(categoryRepository.findById(2L).isPresent());
+        assertFalse(categorySearchRepository.findById(2L).isPresent());
+
     }
 
     @Test

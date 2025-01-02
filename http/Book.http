@@ -27,7 +27,7 @@ GET http://localhost:8090/api/books/search/305
 GET http://localhost:8090/api/publishers/search/204
 
 ### 작가아이디로 작가가 쓴 책 조회
-GET http://localhost:8090/api/books/search/test/414
+GET http://localhost:8090/api/books/search/test/413
 
 ### 출판사
 POST http://localhost:8090/api/publishers
@@ -41,19 +41,24 @@ Content-Type: application/json
 ### 셀링북 삭제
 DELETE localhost:8090/api/selling-books/272
 
-
+### 작가로 검색 db
+GET localhost:8090/api/books/search/books/434
 
 ### 작가 저장
 POST http://localhost:8090/api/authors
 Content-Type: application/json
 
 {
-  "authorName": "리얼루다가2"
+  "authorName": "리얼루다가3"
 
 }
 
+### asd
+
+GET localhost:8090/api/books/434/selling-books
+
 ###작가 삭제
-DELETE localhost:8090/api/authors/
+DELETE localhost:8090/api/authors/108
 
 ### 작가 이름으로 조회
 GET http://localhost:8090/api/search/테스트작가
@@ -62,9 +67,16 @@ GET http://localhost:8090/api/search/테스트작가
 GET http://localhost:8090/api/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%9E%91%EA%B0%80
 
 
+### 키워드 검색
+GET localhost:8090/api/books?searchKeyword=한강
 
 
+### 카테고리 검색
+GET localhost:8090/api/categories/search?keyword=국내
 
+### 페이징
+
+GET http://localhost:8090/api/books?searchKeyword=한강&page=0&size=1
 
 
 ### 특정 조건으로 호출
