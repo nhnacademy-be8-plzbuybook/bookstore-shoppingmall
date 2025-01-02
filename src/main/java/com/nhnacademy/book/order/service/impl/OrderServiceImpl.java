@@ -19,7 +19,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public Page<OrderDto> getOrders(OrderSearchRequestDto searchRequest, Pageable pageable) {
-        return orderQueryRepository.findAllOrders(searchRequest.getMemberId(), searchRequest.getProductName(),
+        return orderQueryRepository.findOrders(searchRequest.getMemberId(), searchRequest.getProductName(),
                 searchRequest.getOrderDate(), searchRequest.getOrderStatus(), pageable);
     }
 
