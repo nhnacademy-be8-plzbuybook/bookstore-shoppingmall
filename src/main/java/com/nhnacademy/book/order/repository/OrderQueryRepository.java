@@ -32,7 +32,7 @@ public class OrderQueryRepository {
 
     // 기본 날짜/내림차순 정렬
     // 전체 주문목록 조회
-    public Page<OrderDto> findAllOrders(String memberId, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
+    public Page<OrderDto> findAllOrders(String memberEmail, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
                 .select(new QOrderDto(
@@ -44,11 +44,12 @@ public class OrderQueryRepository {
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
                 .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .leftJoin(member).on(memberOrder.member.eq(member))
                 .innerJoin(orders.orderProducts, orderProduct)
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberId),
+                        eqMemberId(memberEmail),
                         eqProductName(productName),
                         eqOrderDate(orderDate),
                         eqOrderStatus(orderStatus)
@@ -63,11 +64,13 @@ public class OrderQueryRepository {
                 .select(orders.count())
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
+                .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .leftJoin(member).on(memberOrder.member.eq(member))
                 .innerJoin(orders.orderProducts, orderProduct)
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberId),
+                        eqMemberId(memberEmail),
                         eqProductName(productName),
                         eqOrderDate(orderDate),
                         eqOrderStatus(orderStatus)
@@ -80,11 +83,14 @@ public class OrderQueryRepository {
         return orderPage;
     }
 
-    private BooleanExpression eqMemberId(String memberId) {
-        if (memberId == null) {
+
+
+
+    private BooleanExpression eqMemberId(String memberEmail) {
+        if (memberEmail == null) {
             return null;
         }
-        return member.email.eq(memberId);
+        return member.email.eq(memberEmail);
     }
 
     private BooleanExpression eqProductName(String bookTitle) {
