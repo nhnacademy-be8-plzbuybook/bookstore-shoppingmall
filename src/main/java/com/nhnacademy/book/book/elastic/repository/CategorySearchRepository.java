@@ -27,7 +27,7 @@ public interface CategorySearchRepository extends ElasticsearchRepository<Catego
 
 
     @Query("{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
-    Page<CategoryDocument> findByCategoryNameContaining(String keyword, Pageable pageable);
+    List<CategoryDocument> findByCategoryNameContaining(String keyword);
 
 
 }
