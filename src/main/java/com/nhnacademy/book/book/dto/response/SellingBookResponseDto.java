@@ -16,6 +16,7 @@ public class SellingBookResponseDto {
 
     private Long sellingBookId;
     private Long bookId;
+    private String bookTitle;
     private BigDecimal sellingBookPrice;
     private Boolean sellingBookPackageable;
     private Integer sellingBookStock;

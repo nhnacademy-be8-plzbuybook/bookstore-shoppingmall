@@ -18,6 +18,7 @@ public class BookDetailResponseDto {
     private String bookDescription;     // 설명
     private LocalDate bookPubDate;      // 출판일
     private BigDecimal bookPriceStandard; // 정가
+    private Integer selling_book_stock;     // 재고
     private BigDecimal sellingPrice;    // 판매가 (추가)
     private String bookIsbn13;          // ISBN
     private Long publisherId;           // 출판사 ID
@@ -57,6 +58,30 @@ public class BookDetailResponseDto {
     }
 
     public BookDetailResponseDto(Long bookId, Long aLong, String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId, String imageUrl) {
+    }
+
+    public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex,
+                                 String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                                 BigDecimal sellingBookPrice, Integer sellingBookStock, String bookIsbn13,
+                                 Long publisherId, String publisherName, String imageUrl, List<String> categoryNames,
+                                 List<String> authorNames, String status, Long likeCount) {
+        this.bookId = bookId;
+        this.sellingBookId = sellingBookId;
+        this.bookTitle = bookTitle;
+        this.bookIndex = bookIndex;
+        this.bookDescription = bookDescription;
+        this.bookPubDate = bookPubDate;
+        this.bookPriceStandard = bookPriceStandard;
+        this.sellingPrice = sellingBookPrice;
+        this.selling_book_stock = sellingBookStock;
+        this.bookIsbn13 = bookIsbn13;
+        this.publisherId = publisherId;
+        this.publisher = publisherName;
+        this.imageUrl = imageUrl;
+        this.categories = categoryNames;
+        this.authorName = authorNames;
+        this.status = status;
+        this.likeCount = likeCount;
     }
 }
 

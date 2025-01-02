@@ -62,7 +62,7 @@ public class RedisConfig {
         return secureKeyManagerService.fetchSecret(skmProperties.getCartRedis().getRange());
     }
 
-    @Bean
+    @Bean(name = "orderRedisConnectionFactory")
     public RedisConnectionFactory orderRedisConnectionFactory() {
         String host = secureKeyManagerService.fetchSecret(skmProperties.getOrderRedis().getHost());
         int port = Integer.parseInt(secureKeyManagerService.fetchSecret(skmProperties.getOrderRedis().getPort()));
@@ -78,7 +78,7 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisConfig);
     }
 
-    @Bean
+    @Bean(name = "cartRedisConnectionFactory")
     public RedisConnectionFactory cartRedisConnectionFactory() {
         String host = secureKeyManagerService.fetchSecret(skmProperties.getCartRedis().getHost());
         int port = Integer.parseInt(secureKeyManagerService.fetchSecret(skmProperties.getCartRedis().getPort()));
@@ -94,18 +94,17 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisConfig);
     }
 
-    @Bean(name = "redisTemplate")
+    @Bean(name = "orderRedisTemplate")
     public RedisTemplate<String, Object> orderRedisTemplate(RedisConnectionFactory orderRedisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(orderRedisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
 
-    @Bean
+    @Bean(name = "cartRedisTemplate")
     public RedisTemplate<String, Object> cartRedisTemplate(RedisConnectionFactory cartRedisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(cartRedisConnectionFactory);
@@ -113,6 +112,19 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return redisTemplate;
+    }
+
+    @Primary
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory orderRedisConnectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(orderRedisConnectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
 }
