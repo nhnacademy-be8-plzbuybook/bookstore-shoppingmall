@@ -45,5 +45,5 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
 
     List<SellingBook> findByBook_BookId(Long bookId); // bookId를 기준으로 SellingBook 조회
 
-    List<SellingBook> findByBook_BookIdIn(ArrayList<Long> longs);
+    List<SellingBook> findByBook_BookIdIn(List<Long> longs);
 }
