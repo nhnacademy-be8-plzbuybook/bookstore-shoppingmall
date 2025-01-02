@@ -17,7 +17,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.mapping.*;
 
-@Document(indexName = "book1")
+@Document(indexName = "book_4")
 @Getter
 @Setter
 @RequiredArgsConstructor
