@@ -20,6 +20,7 @@ import static com.nhnacademy.book.book.entity.QBook.book;
 import static com.nhnacademy.book.book.entity.QSellingBook.sellingBook;
 import static com.nhnacademy.book.member.domain.QMember.member;
 import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
+import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
 
@@ -42,6 +43,7 @@ public class OrderQueryRepository {
                 )
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
+                .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
                 .innerJoin(orders.orderProducts, orderProduct)
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)

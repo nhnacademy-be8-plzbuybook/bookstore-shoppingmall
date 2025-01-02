@@ -65,7 +65,7 @@ public class OrderProcessController {
      * @return 주문 ID
      */
     @PostMapping("/{order-id}/complete")
-    public ResponseEntity<?> completeOrder(@PathVariable("order-id") String orderId) {
+    public ResponseEntity<String> completeOrder(@PathVariable("order-id") String orderId) {
         orderProcessService.completeOrder(orderId);
 
         return ResponseEntity.ok(orderId);
