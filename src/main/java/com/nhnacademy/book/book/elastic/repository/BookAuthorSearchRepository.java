@@ -38,4 +38,6 @@ public interface BookAuthorSearchRepository extends ElasticsearchRepository<Book
     """)
     List<BookAuthorDocument> findByBookIdAndAuthorId(Long bookId, Long authorId);
 
+    @Query("{\"bool\": {\"must\": [{\"term\": {\"author_id\": ?0}}]}}")
+    List<BookAuthorDocument> findBookIdsByAuthorId(Long authorId);
 }

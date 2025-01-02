@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -31,4 +32,5 @@ public interface BookCategoryRepository extends JpaRepository<BookCategory, Long
     @Query("SELECT bc.book FROM BookCategory bc WHERE bc.category = :category OR bc.category.parentCategory = :category")
     List<Book> findBooksByCategoryIncludingSubCategories(Category category);
 
+    List<BookCategory> findByBook_BookIdIn(ArrayList<Long> longs);
 }

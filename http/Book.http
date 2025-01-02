@@ -42,7 +42,7 @@ Content-Type: application/json
 DELETE localhost:8090/api/selling-books/272
 
 ### 작가로 검색 db
-GET localhost:8090/api/books/search/books/434
+GET localhost:8090/api/books/authors/334
 
 ### 작가 저장
 POST http://localhost:8090/api/authors
@@ -61,7 +61,7 @@ GET localhost:8090/api/books/434/selling-books
 DELETE localhost:8090/api/authors/108
 
 ### 작가 이름으로 조회
-GET http://localhost:8090/api/search/테스트작가
+GET http://localhost:8090/api/search/한강
 
 ### 이름 조회 인코딩
 GET http://localhost:8090/api/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%9E%91%EA%B0%80
@@ -76,7 +76,13 @@ GET localhost:8090/api/categories/search?keyword=국내
 
 ### 페이징
 
-GET http://localhost:8090/api/books?searchKeyword=한강&page=0&size=1
+GET http://localhost:8090/api/books?searchKeyword=한강&page=0&size=3
+
+
+### asd
+
+GET http://localhost:8090/api/books/test2
+
 
 
 ### 특정 조건으로 호출

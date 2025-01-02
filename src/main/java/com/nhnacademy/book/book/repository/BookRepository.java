@@ -33,15 +33,42 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 //            "OR c.categoryName LIKE %:searchKeyword%")
 //    List<Book> findBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword);
 
-    @Query("SELECT b FROM Book b " +
+    @Query("SELECT DISTINCT b FROM Book b " +
             "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
             "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +
             "LEFT JOIN BookCategory bc ON b.bookId = bc.book.bookId " +
             "LEFT JOIN Category c ON bc.category.categoryId = c.categoryId " +
-            "WHERE b.bookTitle LIKE %:searchKeyword% " +
-            "OR a.authorName LIKE %:searchKeyword% " +
-            "OR c.categoryName LIKE %:searchKeyword%")
+            "WHERE " +
+            "(:searchKeyword IS NOT NULL AND " +
+            "   (a.authorName LIKE %:searchKeyword% AND b.bookTitle NOT LIKE %:searchKeyword% AND c.categoryName NOT LIKE %:searchKeyword%) " + // 작가 검색 시, 책 제목과 카테고리에는 검색되지 않음
+            "OR :searchKeyword IS NOT NULL AND " +
+            "   (b.bookTitle LIKE %:searchKeyword% AND a.authorName NOT LIKE %:searchKeyword% AND c.categoryName NOT LIKE %:searchKeyword%) " + // 책 제목 검색 시, 작가와 카테고리에는 검색되지 않음
+            "OR :searchKeyword IS NOT NULL AND " +
+            "   (c.categoryName LIKE %:searchKeyword% AND a.authorName NOT LIKE %:searchKeyword% AND b.bookTitle NOT LIKE %:searchKeyword%))")
     Page<Book> findBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+
+
+    @Query("SELECT COUNT(b) FROM Book b " +
+            "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
+            "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +
+            "LEFT JOIN BookCategory bc ON b.bookId = bc.book.bookId " +
+            "LEFT JOIN Category c ON bc.category.categoryId = c.categoryId " +
+            "WHERE " +
+            "(:searchKeyword IS NOT NULL AND (" +
+            "(a.authorName LIKE %:searchKeyword% AND b.bookTitle NOT LIKE %:searchKeyword% AND c.categoryName NOT LIKE %:searchKeyword%) " + // 작가 검색 시
+            "OR (b.bookTitle LIKE %:searchKeyword% AND a.authorName NOT LIKE %:searchKeyword% AND c.categoryName NOT LIKE %:searchKeyword%) " + // 책 제목 검색 시
+            "OR (c.categoryName LIKE %:searchKeyword% AND a.authorName NOT LIKE %:searchKeyword% AND b.bookTitle NOT LIKE %:searchKeyword%)) " + // 카테고리 검색 시
+            "OR :searchKeyword IS NULL)")
+    long countBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword);
+
+
+
+    @Query("SELECT b FROM Book b JOIN b.bookAuthors ba JOIN ba.author a WHERE a.authorName LIKE %:keyword%")
+    List<Book> findByBookAuthorContaining(@Param("keyword") String keyword);
+
+    // 카테고리 이름에 키워드 포함
+    @Query("SELECT b FROM Book b JOIN b.bookCategories bc JOIN bc.category c WHERE c.categoryName LIKE %:keyword%")
+    List<Book> findByCategoryContaining(@Param("keyword") String keyword);
 
 
 

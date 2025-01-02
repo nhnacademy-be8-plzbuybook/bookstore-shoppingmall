@@ -25,6 +25,7 @@ public class BookSearchResponseDto {
     private String bookIndex;
     private String bookDescription;
     private LocalDate bookPubDate;
+    private long totalElements;  // 전체 검색 결과 수
 
     // 추가된 필드
     private List<String> authorName;
@@ -50,6 +51,7 @@ public class BookSearchResponseDto {
         this.bookIndex = bookIndex;
         this.bookDescription = bookDescription;
         this.bookPubDate = bookPubDate;
+
     }
 
     // getter, setter 생략
