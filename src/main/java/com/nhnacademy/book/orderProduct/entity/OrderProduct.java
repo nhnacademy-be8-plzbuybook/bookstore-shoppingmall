@@ -30,25 +30,25 @@ public class OrderProduct {
     private Orders order;
 
     @Column(nullable = false)
-    private BigDecimal totalPrice;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private Integer quantity;
 
-    private BigDecimal couponDiscountPrice = BigDecimal.ZERO;
+    private BigDecimal couponDiscount = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     private OrderProductStatus status;
 
     @Builder
-    public OrderProduct(Long id, SellingBook sellingBook, Orders order, BigDecimal totalPrice, Integer quantity,
-                        BigDecimal couponDiscountPrice, OrderProductStatus status) {
+    public OrderProduct(Long id, SellingBook sellingBook, Orders order, BigDecimal price, Integer quantity,
+                        BigDecimal couponDiscount, OrderProductStatus status) {
         this.orderProductId = id;
         this.sellingBook = sellingBook;
         this.order = order;
-        this.totalPrice = totalPrice;
+        this.price = price;
         this.quantity = quantity;
-        this.couponDiscountPrice = couponDiscountPrice;
+        this.couponDiscount = couponDiscount;
         this.status = status;
     }
 }

@@ -15,5 +15,6 @@ public interface MemberService {
     MemberDto getMemberMyByEmail(String email);
     MemberIdResponseDto getMemberById(Long id);
     void withdrawMember(Long memberId);
+    void withdrawState(String email);
     Page<MemberSearchResponseDto> getMembers(MemberSearchRequestDto memberSearchRequestDto);
 }

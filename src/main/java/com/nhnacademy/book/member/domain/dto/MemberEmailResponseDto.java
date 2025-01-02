@@ -33,4 +33,7 @@ public class MemberEmailResponseDto {
     @Size(max = 100)
     private String password;
 
+    @NotBlank
+    private String memberStateName;
+
 }

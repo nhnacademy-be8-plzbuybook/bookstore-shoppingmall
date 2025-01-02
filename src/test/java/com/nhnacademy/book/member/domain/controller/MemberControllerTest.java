@@ -148,6 +148,7 @@ class MemberControllerTest {
         String email = "yoonwlgh12@naver.com";
 
         MemberDto memberDto = new MemberDto(
+                1L,
                 "윤지호",
                 "010-7237-3951",
                 "1111",
@@ -252,6 +253,21 @@ class MemberControllerTest {
         assertEquals("withdraw 상태가 없다!", exception.getMessage());
 
         verify(memberService, times(1)).withdrawMember(memberId);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 정상 처리")
+    void withdrawState_success() {
+        String email = "test@naver.com";
+
+        doNothing().when(memberService).withdrawState(email);
+
+        ResponseEntity<String> responseEntity = memberController.withdrawState(email);
+
+        verify(memberService, times(1)).withdrawState(email);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertEquals("탈퇴 처리 됐습니다.", responseEntity.getBody());
     }
 
     @Test
