@@ -3,6 +3,7 @@ package com.nhnacademy.book.order.repository;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.QOrderDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,11 @@ public class OrderQueryRepository {
 
     // 기본 날짜/내림차순 정렬
     // 전체 주문목록 조회
-    public Page<OrderDto> findAllOrders(String memberEmail, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
+    public Page<OrderDto> findOrders(String memberEmail, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
                 .select(new QOrderDto(
+                        orders.id,
                         orders.orderedAt,
                         orders.status,
                         orders.name,

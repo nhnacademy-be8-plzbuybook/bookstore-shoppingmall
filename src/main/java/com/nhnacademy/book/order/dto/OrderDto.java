@@ -4,7 +4,6 @@ import com.nhnacademy.book.order.enums.OrderStatus;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class OrderDto {
+    private String id;
     // 주문일
     private LocalDate orderDate;
     // 주문상태
@@ -24,7 +24,8 @@ public class OrderDto {
     private BigDecimal paymentAmount;
 
     @QueryProjection
-    public OrderDto(LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount) {
+    public OrderDto(String id, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount) {
+        this.id = id;
         this.orderDate = orderedAt.toLocalDate();
         this.orderStatus = orderStatus;
         this.orderName = orderName;
