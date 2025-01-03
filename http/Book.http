@@ -121,6 +121,17 @@ Content-Type: application/json
 POST http://localhost:8090/api/books/sync/itemid/9791158682934
 s/sync
 
+### ㅁㄴㅇㄴ
+
+GET http://localhost:8080/api/books?searchKeyword=한강&page=0
+
+###ㅁㄴㅇ
+GET http://localhost:8080/api/books?searchKeyword=한강&searchAfter=321
+
+###
+
+
+
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
 POST http://localhost:8090/api/books/sync/isbn
