@@ -2,7 +2,11 @@ package com.nhnacademy.book.order.repository;
 
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.QOrderDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderDeliveryAddressDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.orderProduct.dto.OrderProductDto;
+import com.nhnacademy.book.payment.dto.PaymentDto;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,7 +28,9 @@ import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
-
+import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
+import static com.nhnacademy.book.book.entity.QBookImage.bookImage;
+import static com.nhnacademy.book.payment.entity.QPayment.payment;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Repository
@@ -43,7 +49,7 @@ public class OrderQueryRepository {
                         orders.name,
                         orders.orderPrice,
                         getMemberEmail()
-                ))
+                )).distinct()
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
                 .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
@@ -97,6 +103,46 @@ public class OrderQueryRepository {
 //                .innerJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
 //                .where(orders.id.eq(orderId))
 //                .fetchOne();
+//    }
+
+    public List<OrderProductDto> findOrderProducts(String orderId) {
+        List<OrderProductDto> orderProductDtos = queryFactory
+                .select(
+                        Projections.fields(OrderProductDto.class,
+                                bookImage.imageUrl.as("imageUrl"),
+                                orderProduct.sellingBook.sellingBookId.as("bookId"),
+                                orderProduct.sellingBook.book.bookTitle,
+                                orderProduct.quantity,
+                                orderProduct.price,
+                                orderProduct.status,
+                                orderProductWrapping.wrappingPaper.name.as("wrappingName"),
+                                orderProductWrapping.quantity.as("wrappingQuantity"),
+                                orderProductWrapping.wrappingPaper.price.as("wrappingPrice") // orderProductWrapping에도 가격 저장필요
+                        )
+                )
+                .from(orderProduct)
+                .where(orderProduct.order.id.eq(orderId))
+                .innerJoin(bookImage).on(bookImage.book.eq(orderProduct.sellingBook.book))
+                .leftJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
+                .fetch();
+
+        return orderProductDtos;
+    }
+
+
+//    public PaymentDto findOrderPayment(String orderId) {
+//        PaymentDto paymentDto = queryFactory
+//                .select(Projections.fields(PaymentDto.class,
+//                        payment.amount,
+//                        payment.method,
+//                        payment.easyPayProvider.as("provider"),
+//                        payment.paidAt
+//                        ))
+//                .from(payment)
+//                .where(payment.orderId.eq(orderId))
+//                .fetchOne();
+//
+//        return paymentDto;
 //    }
 
 
