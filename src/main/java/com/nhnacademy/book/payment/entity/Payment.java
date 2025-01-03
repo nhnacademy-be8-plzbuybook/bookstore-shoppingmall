@@ -31,28 +31,23 @@ public class Payment {
     @Column(nullable = false)
     private String method;
 
-    // 토스 주문 id
-    @Column(nullable = false)
-    private String orderId;
-
     @Column
     private String easyPayProvider;
 
     @Setter
     @OneToOne
-    @JoinColumn( name = "o_order_id", referencedColumnName = "order_id")
+    @JoinColumn( name = "p_order_id", referencedColumnName = "order_id")
     private Orders orders;
 
     @Builder
     public Payment(Long id, String status, String paymentKey, LocalDateTime paidAt, BigDecimal amount,
-                   String method, String orderId, String easyPayProvider, Orders orders) {
+                   String method, String easyPayProvider, Orders orders) {
         this.id = id;
         this.status = status;
         this.paymentKey = paymentKey;
         this.paidAt = paidAt;
         this.amount = amount;
         this.method = method;
-        this.orderId = orderId;
         this.easyPayProvider = easyPayProvider;
         this.orders = orders;
     }

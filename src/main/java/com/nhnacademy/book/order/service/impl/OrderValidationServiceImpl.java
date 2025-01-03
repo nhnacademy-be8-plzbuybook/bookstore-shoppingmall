@@ -1,8 +1,9 @@
 package com.nhnacademy.book.order.service.impl;
 
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
@@ -23,7 +24,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Service
 public class OrderValidationServiceImpl implements OrderValidationService {
-    private final SellingBookService sellingBookService;
+    private final SellingBookRepository sellingBookRepository;
     private final WrappingPaperService wrappingPaperService;
     private final OrderCacheService orderCacheService;
     private final DeliveryFeePolicyService deliveryFeePolicyService;
@@ -42,7 +43,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         // 배송 희망날짜 검증
         validateDeliveryWishDate(order.getDeliveryWishDate());
         // 주문금액 검증
-        validateOrderPrice(order);
+        //validateOrderPrice(order);
     }
 
 
@@ -96,16 +97,18 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      */
     @Override
     public void validateSellingBook(OrderProductRequestDto orderProduct) {
-        BookDetailResponseDto product = sellingBookService.getSellingBook(orderProduct.getProductId());
-        //TODO: 임시
-//        if (product.getSellingPrice().compareTo(orderProduct.getPrice()) != 0) {
-//            throw new IllegalArgumentException(product.getBookTitle() + "의 가격이 변동되었습니다.");
-//        }
-        if (false) {
-            throw new PriceMismatchException(product.getBookTitle() + "의 가격이 변동되었습니다.");
+        SellingBook sellingBook = sellingBookRepository.findById(orderProduct.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
+
+        if (sellingBook.getSellingBookPrice().compareTo(orderProduct.getPrice()) != 0) {
+            throw new PriceMismatchException(sellingBook.getBookTitle() + "의 가격이 변동되었습니다.");
         }
         // 재고선점
-        orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
+        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
+        if (preemptedQuantity == null) {
+            // 재고 업데이트
+            Long stock = (long) (sellingBook.getSellingBookStock() - orderProduct.getQuantity());
+            orderCacheService.addStockCache(sellingBook.getSellingBookId(), stock);
+        }
     }
 
 
@@ -123,7 +126,12 @@ public class OrderValidationServiceImpl implements OrderValidationService {
             throw new PriceMismatchException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
         }
         // 재고선점
-        orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
+        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
+        if (preemptedQuantity == null) {
+            // 재고 업데이트
+            Long requiredQuantity = wrappingPaper.getStock() - orderProductWrapping.getQuantity();
+            orderCacheService.addStockCache(wrappingPaper.getId(), requiredQuantity);
+        }
     }
 
 
@@ -156,7 +164,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
                 }
             }
         }
-        BigDecimal orderPrice=  productPrice
+        BigDecimal orderPrice = productPrice
                 .add(wrappingPrice)
                 .subtract(couponDiscount)
                 .subtract(BigDecimal.valueOf(order.getUsedPoint()));

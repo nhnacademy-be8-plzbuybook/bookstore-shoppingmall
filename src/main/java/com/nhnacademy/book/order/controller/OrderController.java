@@ -1,6 +1,7 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
 import com.nhnacademy.book.order.service.OrderService;
@@ -25,7 +26,7 @@ public class OrderController {
      * @return 주문목록 DTO
      */
     @GetMapping("/api/orders")
-    public ResponseEntity<Page<OrderDto>> getAllOrders(@RequestBody OrderSearchRequestDto searchRequest,
+    public ResponseEntity<Page<OrderDto>> getAllOrders(@ModelAttribute OrderSearchRequestDto searchRequest,
                                                        Pageable pageable) {
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
@@ -69,10 +70,10 @@ public class OrderController {
      * @return
      */
     @GetMapping("/api/orders/{order-id}")
-    public ResponseEntity<?> getOrderDetail(@PathVariable("order-id") String orderId,
+    public ResponseEntity<OrderDetail> getOrderDetail(@PathVariable("order-id") String orderId,
                                             @RequestParam(value = "nonMemberOrderPassword", required = false) String password) {
-
-        return null;
+        OrderDetail orderDetail = orderService.getOrderDetail(orderId);
+        return ResponseEntity.ok(orderDetail);
     }
 
 }
