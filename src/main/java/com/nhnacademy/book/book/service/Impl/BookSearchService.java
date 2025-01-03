@@ -141,87 +141,87 @@ public class BookSearchService {
 //    }
 
 
-    public Page<BookSearchResponseDto> searchBooksByKeyword(String keyword, Pageable pageable) {
-        // 1. 책 제목, 작가 이름, 카테고리 이름에서 책 ID 추출 (페이징 처리된 결과)
-        Page<BookDocument> titlePage = bookSearchRepository.findByBookTitleContaining(keyword, pageable);
-        Page<AuthorDocument> authorPage = authorSearchRepository.findByAuthorNameContaining(keyword, pageable);  // 페이징 처리된 작가 검색
-        Page<CategoryDocument> categoryPage = categorySearchRepository.findByCategoryNameContaining(keyword, pageable);  // 페이징 처리된 카테고리 검색
-
-        // Set을 사용하여 중복된 책 ID 제거
-        Set<Long> bookIds = new HashSet<>();
-
-        // 책 제목에서 책 ID 추출 (페이징 처리된 결과)
-        titlePage.forEach(book -> bookIds.add(book.getBookId()));
-
-        // 작가 이름에서 책 ID 추출 (작가와 책 관계)
-        authorPage.forEach(authorDoc -> {
-            // 작가 ID로 책 ID 가져오기 (작가와 책 관계)
-            List<BookAuthorDocument> bookIdsFromAuthor = bookAuthorSearchRepository.findBookIdsByAuthorId(authorDoc.getAuthorId());
-            bookIdsFromAuthor.forEach(bookAuthorDoc -> bookIds.add(bookAuthorDoc.getBookId()));
-        });
-
-        // 카테고리 이름에서 책 ID 추출 (카테고리와 책 관계)
-        categoryPage.forEach(categoryDoc -> {
-            List<Long> bookIdsFromCategory = bookCategorySearchRepository.findBookIdsByCategoryId(categoryDoc.getCategoryId());
-            bookIds.addAll(bookIdsFromCategory);
-        });
-
-        // 2. 판매책 정보 가져오기
-        List<SellingBook> sellingBooks = sellingBookRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
-
-        // 3. 카테고리, 작가, 이미지 정보 가져오기
-        List<BookCategory> bookCategories = bookCategoryRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
-        List<BookAuthor> bookAuthors = bookAuthorRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
-        List<BookImage> bookImages = bookImageRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
-
-        // 4. BookSearchResponseDto로 변환
-        List<BookSearchResponseDto> responseDtos = new ArrayList<>();
-
-        for (SellingBook sellingBook : sellingBooks) {
-            Book book = sellingBook.getBook();
-
-            // 책의 카테고리 정보 가져오기
-            List<String> categories = bookCategories.stream()
-                    .filter(bookCategory -> bookCategory.getBook().getBookId().equals(book.getBookId()))
-                    .map(bookCategory -> bookCategory.getCategory().getCategoryName())
-                    .collect(Collectors.toList());
-
-            // 책의 작가 정보 가져오기
-            List<String> authors = bookAuthors.stream()
-                    .filter(bookAuthor -> bookAuthor.getBook().getBookId().equals(book.getBookId()))
-                    .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
-                    .collect(Collectors.toList());
-
-            // 책 이미지 URL 리스트 가져오기
-            List<String> bookImageList = bookImages.stream()
-                    .filter(bookImage -> bookImage.getBook().getBookId().equals(book.getBookId()))
-                    .map(BookImage::getImageUrl)
-                    .collect(Collectors.toList());
-
-            // BookSearchResponseDto로 변환
-            BookSearchResponseDto dto = new BookSearchResponseDto(
-                    book.getBookId(),
-                    book.getBookTitle(),
-                    book.getBookIsbn13(),
-                    book.getBookPriceStandard(),
-                    sellingBook.getSellingBookId(),
-                    sellingBook.getSellingBookPrice(),
-                    sellingBook.getSellingBookStock(),
-                    sellingBook.getSellingBookStatus(),
-                    authors,
-                    categories,
-                    bookImageList,
-                    book.getBookIndex(),
-                    book.getBookDescription(),
-                    book.getBookPubDate()
-            );
-
-            responseDtos.add(dto);
-        }
-
-        // 페이지 결과 반환 (현재 페이지에 해당하는 데이터만 포함)
-        return new PageImpl<>(responseDtos, pageable, sellingBooks.size());
-    }
+//    public Page<BookSearchResponseDto> searchBooksByKeyword(String keyword, Pageable pageable) {
+//        // 1. 책 제목, 작가 이름, 카테고리 이름에서 책 ID 추출 (페이징 처리된 결과)
+//        Page<BookDocument> titlePage = bookSearchRepository.findByBookTitleContaining(keyword, pageable);
+//        Page<AuthorDocument> authorPage = authorSearchRepository.findByAuthorNameContaining(keyword, pageable);  // 페이징 처리된 작가 검색
+//        Page<CategoryDocument> categoryPage = categorySearchRepository.findByCategoryNameContaining(keyword, pageable);  // 페이징 처리된 카테고리 검색
+//
+//        // Set을 사용하여 중복된 책 ID 제거
+//        Set<Long> bookIds = new HashSet<>();
+//
+//        // 책 제목에서 책 ID 추출 (페이징 처리된 결과)
+//        titlePage.forEach(book -> bookIds.add(book.getBookId()));
+//
+//        // 작가 이름에서 책 ID 추출 (작가와 책 관계)
+//        authorPage.forEach(authorDoc -> {
+//            // 작가 ID로 책 ID 가져오기 (작가와 책 관계)
+//            List<BookAuthorDocument> bookIdsFromAuthor = bookAuthorSearchRepository.findBookIdsByAuthorId(authorDoc.getAuthorId());
+//            bookIdsFromAuthor.forEach(bookAuthorDoc -> bookIds.add(bookAuthorDoc.getBookId()));
+//        });
+//
+//        // 카테고리 이름에서 책 ID 추출 (카테고리와 책 관계)
+//        categoryPage.forEach(categoryDoc -> {
+//            List<Long> bookIdsFromCategory = bookCategorySearchRepository.findBookIdsByCategoryId(categoryDoc.getCategoryId());
+//            bookIds.addAll(bookIdsFromCategory);
+//        });
+//
+//        // 2. 판매책 정보 가져오기
+//        List<SellingBook> sellingBooks = sellingBookRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
+//
+//        // 3. 카테고리, 작가, 이미지 정보 가져오기
+//        List<BookCategory> bookCategories = bookCategoryRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
+//        List<BookAuthor> bookAuthors = bookAuthorRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
+//        List<BookImage> bookImages = bookImageRepository.findByBook_BookIdIn(new ArrayList<>(bookIds));
+//
+//        // 4. BookSearchResponseDto로 변환
+//        List<BookSearchResponseDto> responseDtos = new ArrayList<>();
+//
+//        for (SellingBook sellingBook : sellingBooks) {
+//            Book book = sellingBook.getBook();
+//
+//            // 책의 카테고리 정보 가져오기
+//            List<String> categories = bookCategories.stream()
+//                    .filter(bookCategory -> bookCategory.getBook().getBookId().equals(book.getBookId()))
+//                    .map(bookCategory -> bookCategory.getCategory().getCategoryName())
+//                    .collect(Collectors.toList());
+//
+//            // 책의 작가 정보 가져오기
+//            List<String> authors = bookAuthors.stream()
+//                    .filter(bookAuthor -> bookAuthor.getBook().getBookId().equals(book.getBookId()))
+//                    .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
+//                    .collect(Collectors.toList());
+//
+//            // 책 이미지 URL 리스트 가져오기
+//            List<String> bookImageList = bookImages.stream()
+//                    .filter(bookImage -> bookImage.getBook().getBookId().equals(book.getBookId()))
+//                    .map(BookImage::getImageUrl)
+//                    .collect(Collectors.toList());
+//
+//            // BookSearchResponseDto로 변환
+//            BookSearchResponseDto dto = new BookSearchResponseDto(
+//                    book.getBookId(),
+//                    book.getBookTitle(),
+//                    book.getBookIsbn13(),
+//                    book.getBookPriceStandard(),
+//                    sellingBook.getSellingBookId(),
+//                    sellingBook.getSellingBookPrice(),
+//                    sellingBook.getSellingBookStock(),
+//                    sellingBook.getSellingBookStatus(),
+//                    authors,
+//                    categories,
+//                    bookImageList,
+//                    book.getBookIndex(),
+//                    book.getBookDescription(),
+//                    book.getBookPubDate()
+//            );
+//
+//            responseDtos.add(dto);
+//        }
+//
+//        // 페이지 결과 반환 (현재 페이지에 해당하는 데이터만 포함)
+//        return new PageImpl<>(responseDtos, pageable, sellingBooks.size());
+//    }
 
 
 
