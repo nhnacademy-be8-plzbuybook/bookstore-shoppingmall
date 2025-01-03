@@ -1,11 +1,10 @@
 package com.nhnacademy.book.order.repository;
 
-import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.QOrderDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,8 +24,6 @@ import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
-import static com.nhnacademy.book.order.entity.QOrderDeliveryAddress.orderDeliveryAddress;
-import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,8 +41,9 @@ public class OrderQueryRepository {
                         orders.orderedAt,
                         orders.status,
                         orders.name,
-                        orders.orderPrice)
-                )
+                        orders.orderPrice,
+                        getMemberEmail()
+                ))
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
                 .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
@@ -102,7 +100,9 @@ public class OrderQueryRepository {
 //    }
 
 
-
+    private StringExpression getMemberEmail() {
+        return member.email.coalesce("비회원"); // member.email이 null일 때 "비회원을 반환"
+    }
 
     private BooleanExpression eqMemberId(String memberEmail) {
         if (memberEmail == null) {

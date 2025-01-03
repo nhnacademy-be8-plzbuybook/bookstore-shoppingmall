@@ -25,8 +25,8 @@ public class OrderController {
      * @return 주문목록 DTO
      */
     @GetMapping("/api/orders")
-    public ResponseEntity<Page<OrderDto>> getMemberOrders(@ModelAttribute OrderSearchRequestDto searchRequest,
-                                                          Pageable pageable) {
+    public ResponseEntity<Page<OrderDto>> getAllOrders(@RequestBody OrderSearchRequestDto searchRequest,
+                                                       Pageable pageable) {
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
         return ResponseEntity.ok(orders);

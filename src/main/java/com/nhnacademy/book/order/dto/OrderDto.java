@@ -22,13 +22,15 @@ public class OrderDto {
     private String orderName;
     // 결제금액
     private BigDecimal paymentAmount;
+    private String orderer;
 
     @QueryProjection
-    public OrderDto(String id, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount) {
+    public OrderDto(String id, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount, String orderer) {
         this.id = id;
         this.orderDate = orderedAt.toLocalDate();
         this.orderStatus = orderStatus;
         this.orderName = orderName;
         this.paymentAmount = paymentAmount;
+        this.orderer = orderer;
     }
 }
