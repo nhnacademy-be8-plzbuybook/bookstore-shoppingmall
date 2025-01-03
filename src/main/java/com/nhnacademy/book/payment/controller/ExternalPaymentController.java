@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.payment.dto.PaymentConfirmRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentSaveRequestDto;
-import com.nhnacademy.book.payment.dto.SaveAmountDto;
 import com.nhnacademy.book.payment.service.PaymentService;
 import com.nhnacademy.book.payment.service.TossPaymentService;
 import lombok.RequiredArgsConstructor;

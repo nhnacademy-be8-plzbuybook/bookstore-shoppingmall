@@ -13,6 +13,8 @@ import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.point.repository.MemberPointRepository;
+import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberStatusRepository memberStatusRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberAuthRepository memberAuthRepository;
+    private final MemberPointService memberPointService;
 
     private final CouponClient couponClient;
     private final AuthRepository authRepository;
@@ -95,6 +98,9 @@ public class MemberServiceImpl implements MemberService {
         // Welcome 쿠폰발급 요청
         issuedWelcomeCoupon(savedMember);
 
+        // 회원가입시 포인트
+        issueSignUpPoint(savedMember);
+
         return memberCreateResponseDto;
     }
 
@@ -110,6 +116,15 @@ public class MemberServiceImpl implements MemberService {
         } catch (Exception e) {
             // 에러를 던지면 로직이 멈추기 떄문에 에러 로그 출력만 하도록 변경
             log.error("Welcome 쿠폰발급이 실패 하였습니다!");
+        }
+    }
+
+    // 회원등록 -> 회원가입시 포인트
+    private void issueSignUpPoint(Member savedMember) {
+        try {
+            memberPointService.addSignUpPoint(savedMember);
+        } catch (Exception e) {
+            log.error("회원 가입 포인트 적립이 실패하였습니다! {}", e.getMessage());
         }
     }
 

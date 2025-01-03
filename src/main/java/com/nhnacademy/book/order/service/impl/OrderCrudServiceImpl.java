@@ -1,6 +1,5 @@
 package com.nhnacademy.book.order.service.impl;
 
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -27,36 +27,10 @@ import java.util.UUID;
 @Service
 public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
-    private final SellingBookService sellingBookService;
-
-//    @Transactional
-//    @Override
-//    public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
-//        // 주문 생성
-//        LocalDateTime currentTime = LocalDateTime.now();
-//        BigDecimal orderPrice = calculateOrderPrice(orderRequest);
-//        BigDecimal couponDiscount = calculateCouponDiscount(orderRequest);
-//        Orders order = Orders.builder()
-//                .id(generateOrderId())
-//                .number(generateOrderNumber(currentTime))
-//                .name(generateOrderName(orderRequest))
-//                .orderPrice(orderPrice)
-//                .usedPoint(orderRequest.getUsedPoint())
-//                .couponDiscount(couponDiscount)
-//                .deliveryWishDate(orderRequest.getDeliveryWishDate())
-//                .orderedAt(currentTime)
-//                .status(OrderStatus.PAYMENT_PENDING)
-//                .build();
-//
-//        // 주문 저장
-//        Orders savedOrder = orderRepository.save(order);
-//        BigDecimal paymentPrice = orderPrice.subtract(couponDiscount).subtract(BigDecimal.valueOf(orderRequest.getUsedPoint()));
-//        return new OrderResponseDto(savedOrder.getId(), paymentPrice, savedOrder.getName());
-//    }
 
     @Transactional
     @Override
-    public OrderResponseDto createOrder(ValidatedOrderDto orderRequest) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequest) {
         // 주문 생성
         LocalDateTime currentTime = LocalDateTime.now();
         Orders order = Orders.builder()
@@ -72,7 +46,8 @@ public class OrderCrudServiceImpl implements OrderCrudService {
 
         // 주문 저장
         Orders savedOrder = orderRepository.save(order);
-        return new OrderResponseDto(savedOrder.getId(), orderRequest.getOrderPrice(), savedOrder.getName());
+        BigDecimal paymentPrice = orderRequest.getOrderPrice().add(orderRequest.getDeliveryFee());
+        return new OrderResponseDto(savedOrder.getId(), paymentPrice, savedOrder.getName());
     }
 
     /**

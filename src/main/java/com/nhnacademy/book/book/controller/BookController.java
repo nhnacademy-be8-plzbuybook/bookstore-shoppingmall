@@ -122,15 +122,7 @@ public class BookController {
 //        return ResponseEntity.ok(bookSearchService.searchBooksByKeyword(searchKeyword));
 //    }
 
-    @GetMapping("/test")
-    public ResponseEntity<Page<BookSearchResponseDto>> searchBooks(
-            @RequestParam String searchKeyword,
-            @RequestParam(defaultValue = "0") int page   // 기본값은 0 (첫 페이지)
-            )  // 기본값은 10 (한 페이지당 10개)
-    {
-        Pageable pageable = PageRequest.of(page, 3);  // Pageable 객체 생성
-        return ResponseEntity.ok(bookSearchService.searchBooksByKeyword(searchKeyword, pageable));
-    }
+
 
     @GetMapping
     public ResponseEntity<Page<BookInfoResponseDto>> searchBooks2(
@@ -142,7 +134,7 @@ public class BookController {
         return ResponseEntity.ok(bookSearchService.searchBooksByKeyword2(searchKeyword, pageable));
     }
 
-
+  
 
 
 }

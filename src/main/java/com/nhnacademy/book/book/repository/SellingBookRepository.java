@@ -45,5 +45,13 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
 
     List<SellingBook> findByBook_BookId(Long bookId); // bookId를 기준으로 SellingBook 조회
 
-    List<SellingBook> findByBook_BookIdIn(List<Long> longs);
+    List<SellingBook> findByBook_BookIdIn(ArrayList<Long> longs);
+
+    @Query("SELECT sb FROM SellingBook sb " +
+            "LEFT JOIN Likes l ON l.sellingBook.sellingBookId = sb.sellingBookId " +
+            "GROUP BY sb.sellingBookId " +
+            "ORDER BY COUNT(l.likesId) DESC")
+    Page<SellingBook> findAllWithLikeCount(Pageable pageable);
+
+
 }
