@@ -57,7 +57,13 @@ public class SellingBookService {
      * @param pageable
      * @return
      */
-    public Page<SellingBookResponseDto> getBooks(Pageable pageable) {
+    public Page<SellingBookResponseDto> getBooks(Pageable pageable, String sortBy) {
+        if ("likeCount".equals(sortBy)) {
+            // 좋아요 수 기준 정렬
+            Page<SellingBook> books = sellingBookRepository.findAllWithLikeCount(pageable);
+            return books.map(this::toResponseDto);
+        }
+        //기본 정렬
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
     }

@@ -81,3 +81,21 @@ GET http://localhost:8080/api/selling-books/301
 POST http://localhost:8080/api/selling-books/like/301
 Content-Type: application/json
 X-USER-ID: yoonwlgh12@naver.com
+
+### 좋아요 순
+GET http://localhost:8080/api/selling-books?page=0&size=16&sortBy=likeCount
+
+
+### 일반 정렬 - 판매가격 오름 차순
+GET http://localhost:8080/api/selling-books?page=0&size=16&sortBy=low-price&sortDir=asc
+
+
+### 인기순 - 판매책 id 순서
+GET http://localhost:8080/api/selling-books?page=0&size=16&sortBy=sellingBookId&sortDir=desc
+
+
+###
+GET http://localhost:8080/index?page=0&size=16&sortBy=new&sortDir=desc
+
+### 좋아요순
+GET http://localhost:8080/index?sortBy=likeCount&sortDir=desc&page=0&size=16
