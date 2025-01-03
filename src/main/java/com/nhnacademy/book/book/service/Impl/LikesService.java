@@ -23,11 +23,11 @@ public class LikesService {
     private final SellingBookRepository sellingBookRepository;
     private final LikesRepository likesRepository;
 
-    public Long toggleLikeBook(Long sellingBookId, String memberEmail) {
-        log.info("좋아요 요청 처리 시작 - 판매책 ID: {}, 회원 이메일: {}", sellingBookId, memberEmail);
+    public Long toggleLikeBook( String email,Long sellingBookId) {
+        log.info("좋아요 요청 처리 시작 - 판매책 ID: {}, 회원 이메일: {}", sellingBookId, email);
 
         // 1. 회원 이메일로 사용자 찾기
-        Member member = memberRepository.findByEmail(memberEmail)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원 이메일이 존재하지 않습니다."));
         log.info("회원 조회 성공: {}", member.getEmail());
 
