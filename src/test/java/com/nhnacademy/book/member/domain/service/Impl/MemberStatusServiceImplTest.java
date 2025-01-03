@@ -1,8 +1,9 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.member.domain.MemberStatus;
+import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateMemberStateException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +28,9 @@ class MemberStatusServiceImplTest {
 
     @Mock
     private MemberStatusRepository memberStatusRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
 
     @InjectMocks
     private MemberStatusServiceImpl memberStatusService;
@@ -79,5 +86,23 @@ class MemberStatusServiceImplTest {
         verify(memberStatusRepository, times(1)).findByMemberStateName(stateName);
         //중복 상태일 때는 절대 저장되면 안되므로 never로 함
         verify(memberStatusRepository, never()).save(any(MemberStatus.class));
+    }
+
+    @Test
+    @DisplayName("회원 상태 변경 성공")
+    void updateMemberStatus_success() {
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus dormantStatus = new MemberStatus(2L, "DORMANT");
+        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, dormantStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(), "encodedPassword");
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(memberStatusRepository.findByMemberStateName("ACTIVE")).thenReturn(Optional.of(activeStatus));
+
+        memberStatusService.updateMemberStatusActiveByEmail(member.getEmail());
+
+        assertEquals("ACTIVE", member.getMemberStatus().getMemberStateName());
+        verify(memberRepository).save(any(Member.class));
+
     }
 }
