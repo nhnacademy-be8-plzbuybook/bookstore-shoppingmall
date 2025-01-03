@@ -53,4 +53,5 @@ public interface SellingBookRepository extends JpaRepository<SellingBook, Long> 
             "ORDER BY COUNT(l.likesId) DESC")
     Page<SellingBook> findAllWithLikeCount(Pageable pageable);
 
+
 }

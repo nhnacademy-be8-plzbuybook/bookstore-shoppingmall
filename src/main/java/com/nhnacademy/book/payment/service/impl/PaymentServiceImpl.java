@@ -32,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = saveRequest.toEntity();
         Payment savedPayment = paymentRepository.save(payment);
 
+
         return savedPayment.getOrderId();
     }
 
@@ -49,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new NotFoundException("주문 캐시를 찾을 수 없습니다.");
         }
 
-        BigDecimal paymentPrice = calculatePaymentPrice(orderCache);
+        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee());
         if (confirmRequest.getAmount().compareTo(paymentPrice) != 0) {
             throw new IllegalArgumentException("주문결제 정보가 일치하지 않습니다."); //400
         }

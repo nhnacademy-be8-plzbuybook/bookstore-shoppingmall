@@ -33,7 +33,7 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
 //    List<BookDocument> findByBookTitleContaining(String keyword);
 
     @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
-    Page<BookDocument> findByBookTitleContaining(String keyword, Pageable pageable);
+    List<BookDocument> findByBookTitleContaining(String keyword);
 
 
     // index에 특정 문자열 조회

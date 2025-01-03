@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Setter
-@Document(indexName = "publisher")
+@Document(indexName = "publisher_4")
 @Getter
 @RequiredArgsConstructor
 public class PublisherDocument {

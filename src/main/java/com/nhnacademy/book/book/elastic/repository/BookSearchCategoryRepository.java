@@ -15,6 +15,6 @@ import java.util.List;
 @Repository
 public interface BookSearchCategoryRepository extends ElasticsearchRepository<BookCategoryDocument, Long> {
 
-    @Query("{\"query\": {\"term\": {\"category_id\": ?0}}}, \"_source\": [\"book_id\"]")
-    List<Long> findBookIdsByCategoryId(Long categoryId);
+    @Query("{\"bool\": {\"must\": [{\"term\": {\"category_id\": ?0}}]}}")
+    List<BookCategoryDocument> findBookIdsByCategoryId(Long categoryId);
 }
