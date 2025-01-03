@@ -22,5 +22,4 @@ public interface CouponClient {
     // 생일 쿠폰
     @PostMapping("/api/coupons/birthday")
     ResponseEntity<String> issueBirthdayCoupon(@RequestBody BirthdayCouponRequestDto requestDto);
-
 }
