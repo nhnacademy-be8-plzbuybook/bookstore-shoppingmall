@@ -23,7 +23,7 @@ public interface AuthorSearchRepository extends ElasticsearchRepository<AuthorDo
 //    List<AuthorDocument> findByAuthorNameContaining(String keyword);
 
     @Query("{\"match\": {\"author_name\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
-    public Page<AuthorDocument> findByAuthorNameContaining(String keyword, Pageable pageable);
+    List<AuthorDocument> findByAuthorNameContaining(String keyword);
 
 
 

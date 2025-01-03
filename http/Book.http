@@ -76,7 +76,7 @@ GET localhost:8090/api/categories/search?keyword=국내
 
 ### 페이징
 
-GET http://localhost:8090/api/books?searchKeyword=한강&page=0&size=3
+GET http://localhost:8090/api/books?searchKeyword=한강&page=0
 
 
 ### asd
