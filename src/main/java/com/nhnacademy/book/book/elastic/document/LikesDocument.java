@@ -12,7 +12,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "likes")
+@Document(indexName = "likes_4")
 
 public class LikesDocument {
 

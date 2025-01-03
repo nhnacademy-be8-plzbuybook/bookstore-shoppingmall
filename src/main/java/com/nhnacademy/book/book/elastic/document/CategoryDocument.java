@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-@Document(indexName = "category")
+@Document(indexName = "category_4")
 
 public class CategoryDocument {
 

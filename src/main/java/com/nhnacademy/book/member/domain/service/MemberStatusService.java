@@ -5,4 +5,5 @@ import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 
 public interface MemberStatusService {
     MemberStatus createMemberStatus(MemberStatusCreateRequestDto memberStatusCreateRequestDto);
+    void updateMemberStatusActiveByEmail(String email);
 }

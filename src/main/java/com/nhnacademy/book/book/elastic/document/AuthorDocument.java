@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "author")
+@Document(indexName = "author_4")
 @Getter
 @Setter
 public class AuthorDocument {

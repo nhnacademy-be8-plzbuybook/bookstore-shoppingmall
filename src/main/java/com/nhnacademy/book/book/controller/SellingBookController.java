@@ -29,29 +29,40 @@ public class SellingBookController {
         this.sellingBookService = sellingBookService;
     }
 
-    /**
-     * 프론트에서 판매책 리스트 불러올때 사용
-     *
-     * @return
-     */
     @GetMapping
     public Page<SellingBookResponseDto> getBooks(
-            @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호 (0부터 시작)
+            @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
             @RequestParam(defaultValue = "16") int size,        // 페이지 크기
-            @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 기본 정렬 필드
+            @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 정렬 기준
             @RequestParam(defaultValue = "desc") String sortDir // 정렬 방향
     ) {
+        Pageable pageable;
+        if ("likeCount".equals(sortBy)) {
+            // 좋아요 수 기준 정렬
+            pageable = PageRequest.of(page, size);
+            return sellingBookService.getBooks(pageable, sortBy);
+        } else {
+            // 일반 정렬 기준 적용
+            String sortField;
+            switch (sortBy) {
+                case "new":           // 신상품 (출판 날짜 기준)
+                    sortField = "book.bookPubDate";
+                    break;
+                case "low-price":     // 최저가
+                    sortField = "sellingBookPrice";
+                    sortDir = "asc"; // 강제로 오름차순
+                    break;
+                case "high-price":    // 최고가
+                    sortField = "sellingBookPrice";
+                    sortDir = "desc"; // 강제로 내림차순
+                    break;
+                default:              // 기본값 (ID 정렬)
+                    sortField = "sellingBookId";
+            }
 
-        // 정렬 기준 매핑
-        List<String> validSortFields = List.of(
-                "sellingBookId", "sellingBookViewCount", "sellingBookPrice", "averageRating", "reviewCount"
-        );
-        if (!validSortFields.contains(sortBy)) {
-            sortBy = "sellingBookId"; // 기본값 설정
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortField));
+            return sellingBookService.getBooks(pageable, sortBy);
         }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-        return sellingBookService.getBooks(pageable);
     }
 
 

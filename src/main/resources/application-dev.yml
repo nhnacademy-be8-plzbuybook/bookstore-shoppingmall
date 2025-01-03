@@ -23,6 +23,13 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: none
 logging:
   level:
     org:
@@ -46,14 +53,6 @@ logging:
     username: ${app.skm.database.username}
     password: ${app.skm.database.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update  # 애플리케이션 실행 시 DB 스키마 자동 업데이트
-    show-sql: true  # 실행되는 SQL을 콘솔에 출력
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
 
 app:
   skm:

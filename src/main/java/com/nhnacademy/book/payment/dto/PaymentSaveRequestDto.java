@@ -2,6 +2,7 @@ package com.nhnacademy.book.payment.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.payment.entity.Payment;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,7 +46,8 @@ public class PaymentSaveRequestDto {
 
     @Builder
     public PaymentSaveRequestDto(String paymentKey, String orderId, String currency, String method,
-                                 BigDecimal totalAmount, OffsetDateTime approvedAt, EasyPay easyPay, String status, Receipt receipt) {
+                                 BigDecimal totalAmount, OffsetDateTime approvedAt, EasyPay easyPay, String status,
+                                 Receipt receipt) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.currency = currency;
@@ -57,15 +59,15 @@ public class PaymentSaveRequestDto {
         this.receipt = receipt;
     }
 
-    public Payment toEntity() {
+    public Payment toEntity(Orders order) {
         return Payment.builder()
                 .status(status)
                 .paymentKey(paymentKey)
-                .orderId(orderId)
                 .amount(totalAmount)
                 .method(method)
                 .paidAt(approvedAt.toLocalDateTime())
                 .easyPayProvider(easyPay.getProvider())
+                .orders(order)
                 .build();
     }
 

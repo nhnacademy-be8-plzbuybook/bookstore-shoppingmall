@@ -47,9 +47,9 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     @Override
     public OrderResponseDto processRequestedOrder(OrderRequestDto orderRequest) {
         // 주문 검증
-        ValidatedOrderDto validatedOrderRequest = orderValidationService.validateOrder(orderRequest);
+        orderValidationService.validateOrder(orderRequest);
         // 주문 저장
-        OrderResponseDto orderResponseDto = orderCrudService.createOrder(validatedOrderRequest);
+        OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
         // 주문정보 캐싱
         orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
         return orderResponseDto;

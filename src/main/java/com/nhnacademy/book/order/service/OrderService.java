@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface OrderService {
     Page<OrderDto> getOrders(OrderSearchRequestDto searchRequest, Pageable pageable);
+    OrderDetail getOrderDetail(String orderId);
 }

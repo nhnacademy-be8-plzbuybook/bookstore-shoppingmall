@@ -13,13 +13,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface OrderValidationService {
-    ValidatedOrderDto validateOrder(OrderRequestDto order);
-    ValidatedOrderProductDto validateOrderProduct(OrderProductRequestDto orderProduct);
-    BigDecimal validateDeliveryFee(OrderRequestDto order);
-    ValidatedOrderProductDto validateSellingBook(OrderProductRequestDto orderProduct);
-    ValidatedWrappingPaperDto validateWrappingPaper(OrderProductWrappingDto orderProductWrapping);
-    ValidateCouponDto validateCoupon(OrderProductAppliedCouponDto appliedCoupon);
-    LocalDate validateDeliveryWishDate(LocalDate deliveryWishDate);
-    int validatePoint(int usedPoint);
+    void validateOrder(OrderRequestDto order);
+    void validateOrderProduct(OrderProductRequestDto orderProduct);
+    void validateDeliveryFee(OrderRequestDto order);
+    void validateSellingBook(OrderProductRequestDto orderProduct);
+    void validateWrappingPaper(OrderProductWrappingDto orderProductWrapping);
+    void validateCoupon(OrderProductAppliedCouponDto appliedCoupon);
+    void validateDeliveryWishDate(LocalDate deliveryWishDate);
+    void validatePoint(int usedPoint);
 
 }

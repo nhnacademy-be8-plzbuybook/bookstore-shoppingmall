@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.math.BigDecimal;
 
-@Document(indexName = "selling_book")
+@Document(indexName = "selling_book_4")
 @Getter
 @Setter
 @RequiredArgsConstructor

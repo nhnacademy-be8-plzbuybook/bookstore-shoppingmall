@@ -14,7 +14,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "book_image")
+@Document(indexName = "book_image_4")
 
 public class BookImageDocument {
     @org.springframework.data.annotation.Id

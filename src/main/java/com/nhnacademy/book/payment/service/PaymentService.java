@@ -7,7 +7,7 @@ import com.nhnacademy.book.payment.entity.Payment;
 
 public interface PaymentService {
     String recordPayment(PaymentSaveRequestDto saveRequest);
-    Payment getByOrderId(String orderId);
+//    Payment getByOrderId(String orderId);
     void verifyPayment(PaymentConfirmRequestDto confirmRequest);
 //    void removePayment(long paymentId);
 }
