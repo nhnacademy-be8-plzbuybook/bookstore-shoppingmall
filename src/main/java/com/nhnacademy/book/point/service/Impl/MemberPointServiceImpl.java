@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Transactional
@@ -140,9 +142,6 @@ public class MemberPointServiceImpl implements MemberPointService {
 //
 //    }
 //
-
-
-
     @Override
     public MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
@@ -159,7 +158,7 @@ public class MemberPointServiceImpl implements MemberPointService {
         memberPoint.setPointCondition(pointCondition);
         memberPoint.setPoint(pointsToAdd);
         memberPoint.setAddDate(LocalDateTime.now());
-        memberPoint.setEndDate(LocalDateTime.now().plusYears(1)); // 유효기한 1년
+        memberPoint.setEndDate(LocalDateTime.now().plusYears(1));
         memberPointRepository.save(memberPoint);
 
         return new MemberPointAddResponseDto(
@@ -173,6 +172,22 @@ public class MemberPointServiceImpl implements MemberPointService {
 
 
     }
+
+    @Override
+    public List<MemberPointAddResponseDto> getMemberPointsByMemberId(Long memberId) {
+        List<MemberPoint> points = memberPointRepository.findAllByMember_MemberId(memberId);
+        return points.stream()
+                .map(point -> new MemberPointAddResponseDto(
+                        point.getMemberPointId(),
+                        point.getMember().getMemberId(),
+                        point.getPointCondition().getName().toString(),
+                        point.getPoint(),
+                        point.getAddDate(),
+                        point.getEndDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
 }
 
