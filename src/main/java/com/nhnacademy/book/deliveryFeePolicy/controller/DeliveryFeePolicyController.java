@@ -27,6 +27,11 @@ public class DeliveryFeePolicyController {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
+    @GetMapping("/general")
+    public ResponseEntity<DeliveryFeePolicy> getGeneralPolicy() {
+        DeliveryFeePolicy body = deliveryFeePolicyService.getDeliveryFeePolicy(1L);
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
 
     @GetMapping("/{policy-id}")
     public ResponseEntity<?> getPolicy(@PathVariable("policy-id") long id) {
