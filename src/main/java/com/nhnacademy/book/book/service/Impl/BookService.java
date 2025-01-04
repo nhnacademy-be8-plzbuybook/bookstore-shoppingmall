@@ -89,6 +89,34 @@ public class BookService {
         );
     }
 
+    public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
+        // Elasticsearch에서 BookDocument 조회
+        log.debug("Searching for book with ID: {}", bookId);
+
+        BookDocument bookDocument = bookSearchRepository.findByBookId(bookId);
+
+        if (bookDocument == null) {
+            log.error("Book not found with ID: {}", bookId);
+
+            throw new BookNotFoundException("Book with ID " + bookId + " not found.");
+        }
+
+
+        log.debug("Found book: {}", bookDocument);
+
+        // BookDetailResponseDto로 변환하여 반환
+        return new BookDetailResponseDto(
+                bookDocument.getBookId(),
+                bookDocument.getBookTitle(),
+                bookDocument.getBookIndex(),
+                bookDocument.getBookDescription(),
+                bookDocument.getBookPubDate(),
+                bookDocument.getBookPriceStandard(),
+                bookDocument.getBookIsbn13(),
+                bookDocument.getPublisherId(),
+                bookDocument.getImageUrl());
+    }
+
 
     // 도서 등록 기능 (관리자)
     public void registerBook(BookRegisterDto bookRegisterDto) {
