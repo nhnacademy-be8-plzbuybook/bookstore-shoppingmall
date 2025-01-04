@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
+
 public class BookResponseDto {
     private Long bookId;
     private String bookTitle;
@@ -20,4 +21,6 @@ public class BookResponseDto {
     public BookResponseDto() {
 
     }
+
+
 }

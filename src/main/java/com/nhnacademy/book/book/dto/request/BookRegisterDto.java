@@ -1,10 +1,7 @@
 package com.nhnacademy.book.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class BookRegisterDto {
     private String bookTitle;
     private String bookIndex;
@@ -23,4 +21,6 @@ public class BookRegisterDto {
     private String bookIsbn13;
     private Long publisherId;
     private String imageUrl;
+
+
 }
