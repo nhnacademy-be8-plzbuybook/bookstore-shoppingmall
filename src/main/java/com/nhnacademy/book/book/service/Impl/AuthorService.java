@@ -47,22 +47,6 @@ public class AuthorService {
         return toResponseDto(author);
     }
 
-    public AuthorResponseDto getAuthorByNameFromElastic(String name) {
-
-        AuthorDocument authorDocument = authorSearchRepository.findByAuthorName(name);
-
-        if (authorDocument == null) {
-            log.error("author not found");
-
-            throw new AuthorNameNotFoundException("Author name not found");
-        }
-
-        return new AuthorResponseDto(
-                authorDocument.getAuthorId(),
-                authorDocument.getAuthorName()
-        );
-
-    }
 
     public AuthorResponseDto createAuthor(AuthorRequestDto requestDto) {
         if (requestDto.getAuthorName() == null || requestDto.getAuthorName().isEmpty()) {

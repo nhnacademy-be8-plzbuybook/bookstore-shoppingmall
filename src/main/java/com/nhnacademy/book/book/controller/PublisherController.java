@@ -34,10 +34,6 @@ public class PublisherController {
         return ResponseEntity.ok(publisherService.findPublisherById(publisherId));
     }
 
-    @GetMapping("/search/{publisherId}")
-    public ResponseEntity<PublisherResponseDto> searchPublisher(@PathVariable Long publisherId) {
-        return ResponseEntity.ok(publisherService.getPublisherFromElastic(publisherId));
-    }
 
 
 }

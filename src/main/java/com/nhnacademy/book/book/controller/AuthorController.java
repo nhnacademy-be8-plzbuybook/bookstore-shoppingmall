@@ -41,12 +41,6 @@ public class AuthorController {
         return ResponseEntity.ok(authorService.getAllAuthors());
     }
 
-    @GetMapping("/search/{authorName}")
-    public ResponseEntity<AuthorResponseDto> searchAuthor(@PathVariable String authorName) {
-        String encodedAuthorName = URLEncoder.encode(authorName, StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok(authorService.getAuthorByNameFromElastic(encodedAuthorName));
-    }
 
 
     @DeleteMapping("/{authorId}")
