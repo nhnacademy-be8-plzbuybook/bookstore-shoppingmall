@@ -1,13 +1,14 @@
 package com.nhnacademy.book.book.controller;
 
+import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
+import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
+import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
+import jakarta.ws.rs.PUT;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,9 +22,24 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<List<CategorySimpleResponseDto>> searchCategories(@RequestParam String keyword) {
         List<CategorySimpleResponseDto> categories = categoryService.searchCategoriesByKeyword(keyword);
         return ResponseEntity.ok(categories);
     }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategoryById(categoryId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> saveCategory(@RequestBody CategoryRegisterDto categoryRegisterDto) {
+
+        categoryService.saveCategory(categoryRegisterDto);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

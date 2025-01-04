@@ -11,13 +11,7 @@ import com.nhnacademy.book.book.service.Impl.BookSearchService;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,8 +19,6 @@ import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -35,7 +27,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BookController.class) // @WebMvcTest는 Controller 테스트를 위한 어노테이션
+@WebMvcTest(BookController.class)
 public class BookControllerTest {
 
     @Autowired

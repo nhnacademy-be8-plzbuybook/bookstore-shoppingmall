@@ -1,5 +1,6 @@
 package com.nhnacademy.book.booktest.service;
 
+import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
@@ -42,6 +43,7 @@ public class CategoryServiceTest {
     private Category parentCategory;
     private Category childCategory;
     private ParentCategoryRequestDto parentCategoryRequestDto;
+    private CategoryRegisterDto categoryRegisterDto;
 
     @BeforeEach
     public void setUp() {
@@ -70,6 +72,13 @@ public class CategoryServiceTest {
         // ParentCategoryRequestDto 설정
         parentCategoryRequestDto = new ParentCategoryRequestDto();
         parentCategoryRequestDto.setCategoryId(1L);
+
+        categoryRegisterDto = new CategoryRegisterDto();
+        categoryRegisterDto.setParentCategoryId(1L);
+        categoryRegisterDto.setParentCategoryName("Parent Category");
+        categoryRegisterDto.setNewCategoryName("New Category");
+
+
 
     }
 
@@ -169,10 +178,11 @@ public class CategoryServiceTest {
 
     @Test
     void saveCategory_ShouldSaveNewCategory() {
-        when(categoryRepository.findByCategoryName("test1")).thenReturn(Optional.empty());
+        when(categoryRepository.findByCategoryName(categoryRegisterDto.getNewCategoryName())).thenReturn(Optional.empty());
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
+        when(categoryRepository.findByCategoryId(anyLong())).thenReturn(Optional.of(category));
 
-        CategoryResponseDto savedCategory = categoryService.saveCategory("test1", null);
+        CategoryResponseDto savedCategory = categoryService.saveCategory(categoryRegisterDto);
 
         assertNotNull(savedCategory);
         assertEquals("test1", savedCategory.getCategoryName());
@@ -183,7 +193,7 @@ public class CategoryServiceTest {
     void saveCategory_ShouldThrowCategoryAlreadyExistsException_WhenCategoryNameExists() {
         when(categoryRepository.findByCategoryName("New Category")).thenReturn(Optional.of(category));
 
-        assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.saveCategory("New Category", parentCategoryRequestDto));
+        assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.saveCategory(categoryRegisterDto));
     }
 
     @Test
@@ -198,11 +208,10 @@ public class CategoryServiceTest {
         Category newCategory = new Category(categoryName, parentCategory.getCategoryDepth() + 1, parentCategory);
 
         when(categoryRepository.findByCategoryName(anyString())).thenReturn(Optional.empty());
-        when(categoryRepository.existsById(anyLong())).thenReturn(true);
-        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(parentCategory));
+        when(categoryRepository.findByCategoryId(anyLong())).thenReturn(Optional.of(parentCategory));
         when(categoryRepository.save(any(Category.class))).thenReturn(newCategory);
 
-        CategoryResponseDto response = categoryService.saveCategory(categoryName, parentCategoryRequestDto);
+        CategoryResponseDto response = categoryService.saveCategory(categoryRegisterDto);
 
         // 부모 카테고리에서 자식 카테고리가 추가되었는지 확인
         verify(categoryRepository).save(any(Category.class));
