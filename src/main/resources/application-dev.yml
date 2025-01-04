@@ -101,4 +101,4 @@ eureka:
 
 aladin:
   api:
-    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&output=js&Version=20131101
+    url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101
