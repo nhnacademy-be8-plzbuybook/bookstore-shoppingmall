@@ -327,5 +327,6 @@ class MemberControllerTest {
         assertEquals("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.", responseEntity.getBody());
     }
 
+    //TODO 관리자 수정 controller 테스트 
 }
 
