@@ -1,5 +1,6 @@
 package com.nhnacademy.book.member.domain.controller;//package com.nhnacademy.book.member.domain.controller;
 
+import com.nhnacademy.book.cart.service.CartService;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
@@ -29,6 +30,9 @@ class MemberControllerTest {
 
     @Mock
     private MemberService memberService;
+
+    @Mock
+    private CartService cartService;
 
     @InjectMocks
     private MemberController memberController;

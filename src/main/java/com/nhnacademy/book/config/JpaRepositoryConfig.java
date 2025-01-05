@@ -5,7 +5,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -21,7 +20,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.nhnacademy.book.orderProduct.repository",
         "com.nhnacademy.book.payment.repository",
         "com.nhnacademy.book.review.repository",
-        "com.nhnacademy.book.skm.properties"
+        "com.nhnacademy.book.skm.properties",
+        "com.nhnacademy.book.cartbook.repository",
+        "com.nhnacademy.book.cart.repository"
+
 })
 public class JpaRepositoryConfig {
     @PersistenceContext
