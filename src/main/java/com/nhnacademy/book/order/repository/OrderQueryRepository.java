@@ -31,6 +31,8 @@ import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct
 import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 import static com.nhnacademy.book.book.entity.QBookImage.bookImage;
 import static com.nhnacademy.book.payment.entity.QPayment.payment;
+import static com.nhnacademy.book.wrappingPaper.entity.QWrappingPaper.wrappingPaper;
+
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Repository
@@ -115,15 +117,16 @@ public class OrderQueryRepository {
                                 orderProduct.quantity,
                                 orderProduct.price,
                                 orderProduct.status,
-                                orderProductWrapping.wrappingPaper.name.as("wrappingName"),
+                                wrappingPaper.name.as("wrappingName"),
                                 orderProductWrapping.quantity.as("wrappingQuantity"),
-                                orderProductWrapping.wrappingPaper.price.as("wrappingPrice") // orderProductWrapping에도 가격 저장필요
+                                wrappingPaper.price.as("wrappingPrice") // orderProductWrapping에도 가격 저장필요
                         )
                 )
                 .from(orderProduct)
                 .where(orderProduct.order.id.eq(orderId))
                 .innerJoin(bookImage).on(bookImage.book.eq(orderProduct.sellingBook.book))
                 .leftJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
+                .leftJoin(wrappingPaper).on(wrappingPaper.id.eq(orderProductWrapping.wrappingPaper.id))
                 .fetch();
 
         return orderProductDtos;
