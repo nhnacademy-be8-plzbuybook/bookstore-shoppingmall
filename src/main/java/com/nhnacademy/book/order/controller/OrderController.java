@@ -43,7 +43,7 @@ public class OrderController {
      */
     @GetMapping("/api/orders/my")
     public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
-                                                      @ModelAttribute OrderSearchRequestDto searchRequest,
+                                                      @RequestParam(required = false) OrderSearchRequestDto searchRequest,
                                                       Pageable pageable) {
         // 회원 검증
         if (memberEmail == null || memberEmail.isBlank()) {
@@ -52,11 +52,9 @@ public class OrderController {
         if (memberService.getMemberByEmail(memberEmail) == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
-        if (searchRequest.getMemberId() != null && !memberEmail.equals(searchRequest.getMemberId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (searchRequest == null) {
+            searchRequest = new OrderSearchRequestDto();
         }
-
         searchRequest.setMemberId(memberEmail);
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
