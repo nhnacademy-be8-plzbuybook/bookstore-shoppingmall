@@ -65,7 +65,7 @@ public class OrderController {
      * 주문 상세조회
      *
      * @param orderId 주문 아이디
-     * @return
+     * @return 주문상세 DTO
      */
     @GetMapping("/api/orders/{order-id}")
     public ResponseEntity<OrderDetail> getOrderDetail(@PathVariable("order-id") String orderId,
