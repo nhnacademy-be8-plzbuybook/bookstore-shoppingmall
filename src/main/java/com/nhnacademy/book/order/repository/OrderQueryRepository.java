@@ -105,6 +105,7 @@ public class OrderQueryRepository {
                         orders.number,
                         orders.status,
                         orders.deliveryFee,
+                        orders.orderPrice,
                         orders.deliveryWishDate,
                         orders.orderedAt,
                         orders.usedPoint,

@@ -21,6 +21,7 @@ public class OrderDetail {
     private OrderDeliveryAddressDto orderDeliveryAddress;
     private PaymentDto payment;
     private BigDecimal deliveryFee;
+    private BigDecimal orderPrice;
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
     private OrderStatus status;
@@ -52,6 +53,7 @@ public class OrderDetail {
     public OrderDetail(String orderNumber,
                        OrderStatus status,
                        BigDecimal deliveryFee,
+                       BigDecimal orderPrice,
                        LocalDate deliveryWishDate,
                        LocalDateTime orderedAt,
                        int usedPoint,
@@ -61,6 +63,7 @@ public class OrderDetail {
         this.orderNumber = orderNumber;
         this.status = status;
         this.deliveryFee = deliveryFee;
+        this.orderPrice = orderPrice;
         this.deliveryWishDate = deliveryWishDate;
         this.orderedAt = orderedAt;
         this.usedPoint = usedPoint;
