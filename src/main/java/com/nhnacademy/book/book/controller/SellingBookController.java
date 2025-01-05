@@ -1,10 +1,8 @@
 package com.nhnacademy.book.book.controller;
 
-import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -66,29 +64,29 @@ public class SellingBookController {
     }
 
 
-    /**
-     * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
-     * @param sellingBookId
-     * @return
-     */
-    @DeleteMapping("/{sellingBookId}")
-    public ResponseEntity<Void> deleteSellingBook(@PathVariable Long sellingBookId) {
-        sellingBookService.deleteSellingBook(sellingBookId);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * 판매책 수정 -> 판매책 정보( 가격, 재고, 상태 등 수정 각각 가능) 관리자
-     * @param sellingBookId
-     * @param updateDto
-     * @return
-     */
-    @PutMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookResponseDto> updateSellingBook(
-            @PathVariable Long sellingBookId,
-            @RequestBody SellingBookRegisterDto updateDto) {
-        return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
-    }
+//    /**
+//     * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
+//     * @param sellingBookId
+//     * @return
+//     */
+//    @DeleteMapping("/{sellingBookId}")
+//    public ResponseEntity<Void> deleteSellingBook(@PathVariable Long sellingBookId) {
+//        sellingBookService.deleteSellingBook(sellingBookId);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    /**
+//     * 판매책 수정 -> 판매책 정보( 가격, 재고, 상태 등 수정 각각 가능) 관리자
+//     * @param sellingBookId
+//     * @param updateDto
+//     * @return
+//     */
+//    @PutMapping("/{sellingBookId}")
+//    public ResponseEntity<SellingBookResponseDto> updateSellingBook(
+//            @PathVariable Long sellingBookId,
+//            @RequestBody SellingBookRegisterDto updateDto) {
+//        return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
+//    }
 
 
     /**
