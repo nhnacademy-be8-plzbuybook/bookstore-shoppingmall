@@ -1,10 +1,10 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderProductDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -27,6 +27,7 @@ import java.util.UUID;
 @Service
 public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
+    private final SellingBookService sellingBookService;
 
     @Transactional
     @Override
@@ -56,30 +57,23 @@ public class OrderCrudServiceImpl implements OrderCrudService {
      * @param order 주문 요청
      * @return 생성된 주문이름
      */
-//    private String generateOrderName(OrderRequestDto order) {
-//        List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
-//        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
-//        if (orderProducts.size() > 1) {
-//            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
-//        }
-//        return book.getBookTitle();
-//    }
-    //TODO: 임시
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
+        BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
+            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
         }
-        return "수학의 정석";
+        return book.getBookTitle();
     }
+//    //TODO: 임시
+//    private String generateOrderName(OrderRequestDto order) {
+//        List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
+//        if (orderProducts.size() > 1) {
+//            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
+//        }
+//        return "수학의 정석";
+//    }
 
-    private String generateOrderName(ValidatedOrderDto order) {
-        List<ValidatedOrderProductDto> orderProducts = order.getOrderProducts();
-        if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", "수학의 정석", orderProducts.size());
-        }
-        return "수학의 정석";
-    }
 
     /**
      * 주문번호 생성
