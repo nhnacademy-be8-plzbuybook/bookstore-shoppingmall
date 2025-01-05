@@ -41,7 +41,7 @@ public class OrderController {
      * @param pageable 페이징
      * @return 주문목록 페이지
      */
-    @GetMapping("/api/my/orders")
+    @GetMapping("/api/orders/my")
     public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
                                                       @ModelAttribute OrderSearchRequestDto searchRequest,
                                                       Pageable pageable) {
