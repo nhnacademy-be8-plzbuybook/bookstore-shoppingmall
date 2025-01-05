@@ -102,6 +102,7 @@ public class Orders {
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
     private Integer usedPoint;
+    private BigDecimal deliveryFee;
     @Setter
     private BigDecimal orderPrice;
     @Enumerated(EnumType.STRING)
@@ -112,10 +113,11 @@ public class Orders {
 
     @Builder
     public Orders(String id, String number, String name, LocalDate deliveryWishDate, Integer usedPoint,
-                  LocalDateTime orderedAt, OrderStatus status, BigDecimal orderPrice) {
+                  BigDecimal deliveryFee, LocalDateTime orderedAt, OrderStatus status, BigDecimal orderPrice) {
         this.id = id;
         this.number = number;
         this.name = name;
+        this.deliveryFee = deliveryFee;
         this.orderedAt = orderedAt;
         this.deliveryWishDate = deliveryWishDate;
         this.usedPoint = usedPoint;
