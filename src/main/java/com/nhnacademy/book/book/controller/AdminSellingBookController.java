@@ -49,7 +49,7 @@ public class AdminSellingBookController {
     }
 
 //    /**
-//     * 도서 등록: POST /api/admin/selling-books
+//     * 도서 등록: POST /api/admin/selling-books -> 하나하나 입력해서 등록하는거
 //     * @param registerDto
 //     * @return
 //     */
