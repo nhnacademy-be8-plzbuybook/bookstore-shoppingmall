@@ -4,11 +4,15 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
 import com.nhnacademy.book.point.dto.MemberPointAddResponseDto;
 
+import java.util.List;
+
 public interface MemberPointService {
     void addSignUpPoint(Member member);
 //    void addBookPurchasePoint(Member member, Long orderId, Integer orderStatus);
 //    void addReviewPoint(Review review);
     MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto);
+    List<MemberPointAddResponseDto> getMemberPointsByMemberId(Long memberId);
+
 
 
 

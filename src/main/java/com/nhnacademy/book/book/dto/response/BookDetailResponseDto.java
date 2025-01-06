@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class BookDetailResponseDto {
     private Long bookId;
     private Long sellingBookId;         // 판매책 ID
@@ -30,20 +31,14 @@ public class BookDetailResponseDto {
     private Long likeCount;              // 좋아요 수 (추가)
 
 
-//    public List<String> getCategories() {
-//        return categories;
-//    }
-//
-//    public void setCategories(List<String> categories) {
-//        this.categories = categories;
-//    }
-
     public BookDetailResponseDto() {
 
     }
 
 
-    public BookDetailResponseDto(long bookId,  String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId,String imageUrl) {
+    public BookDetailResponseDto(long bookId,  String bookTitle, String bookIndex,
+                                 String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                                 String bookIsbn13, Long publisherId, String imageUrl) {
 
         this.bookId = bookId;
         this.bookTitle = bookTitle;
@@ -57,14 +52,18 @@ public class BookDetailResponseDto {
 
     }
 
-    public BookDetailResponseDto(Long bookId, Long aLong, String bookTitle, String bookIndex, String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard, String bookIsbn13, Long publisherId, String imageUrl) {
+    public BookDetailResponseDto(Long bookId, Long aLong, String bookTitle, String bookIndex,
+                                 String bookDescription, LocalDate bookPubDate, BigDecimal
+                                         bookPriceStandard, String bookIsbn13, Long publisherId, String imageUrl) {
     }
 
-    public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex,
-                                 String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard,
-                                 BigDecimal sellingBookPrice, Integer sellingBookStock, String bookIsbn13,
-                                 Long publisherId, String publisherName, String imageUrl, List<String> categoryNames,
-                                 List<String> authorNames, String status, Long likeCount) {
+    public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex, String bookDescription,
+                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                                 BigDecimal sellingBookPrice, Integer sellingBookStock, String bookIsbn13, Long publisherId, String publisherName,
+                                 String imageUrl, List<String> categoryNames, List<String> authorNames,
+                                 String status, Long likeCount
+
+    ) {
         this.bookId = bookId;
         this.sellingBookId = sellingBookId;
         this.bookTitle = bookTitle;
@@ -83,5 +82,6 @@ public class BookDetailResponseDto {
         this.status = status;
         this.likeCount = likeCount;
     }
+
 }
 

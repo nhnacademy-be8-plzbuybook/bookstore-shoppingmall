@@ -5,9 +5,8 @@ import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
 
 public interface OrderCacheService {
     void saveOrderCache(String orderId, OrderRequestDto order);
-    void saveOrderCache(String orderId, ValidatedOrderDto order);
     OrderRequestDto fetchOrderCache(String orderId);
-    void preemptStockCache(Long productId, Integer quantity);
-    void addStockCache(Long productId, Integer quantity);
+    Long preemptStockCache(Long productId, Integer quantity);
+    void addStockCache(Long productId, Long quantity);
     int getStockCache(Long productId);
 }

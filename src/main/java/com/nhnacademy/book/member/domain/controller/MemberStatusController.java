@@ -4,10 +4,8 @@ import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,4 +21,15 @@ public class MemberStatusController {
 
         return memberStatus;
     }
+
+    @PostMapping("/members/{email}/active")
+    public ResponseEntity<String> activateMemberStatus(@PathVariable String email){
+        try{
+            memberStatusService.updateMemberStatusActiveByEmail(email);
+            return ResponseEntity.ok().body("회원 상태가 active로 변경!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("회원 상태 변경 실패 " + e.getMessage());
+        }
+    }
+
 }
