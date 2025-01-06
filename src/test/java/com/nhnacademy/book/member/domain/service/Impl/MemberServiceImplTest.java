@@ -806,4 +806,6 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any());
     }
 
+    //TODO 관리자 수정 service test
+
 }

@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,5 +105,17 @@ class MemberStatusServiceImplTest {
         assertEquals("ACTIVE", member.getMemberStatus().getMemberStateName());
         verify(memberRepository).save(any(Member.class));
 
+    }
+
+    @Test
+    @DisplayName("전체 상태 가져오니")
+    void getAllMemberStatuses_Success() {
+        MemberStatus dormantStatus = new MemberStatus(1L, "DORMANT");
+        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+
+        List<MemberStatus> memberStatuses = List.of(dormantStatus, activeStatus);
+        when(memberStatusRepository.findAll()).thenReturn(memberStatuses);
+        List<MemberStatus> actual = memberStatusService.getAllMemberStatuses();
+        assertEquals(memberStatuses, actual);
     }
 }

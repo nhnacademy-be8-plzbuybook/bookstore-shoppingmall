@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -89,5 +90,32 @@ class MemberStatusControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode()); // 상태 코드 검증
         assertTrue(response.getBody().contains("회원 상태 변경 실패")); // 응답 메시지 검증 (기본 메시지 포함)
         assertTrue(response.getBody().contains(errorMessage)); // 응답 메시지 검증 (예외 메시지 포함)
+    }
+
+    @Test
+    @DisplayName("회원 상태 전체 조회 controller test")
+    void getAllMemberStatus() {
+        // Given: 테스트 데이터 준비
+        MemberStatus status1 = new MemberStatus();
+        status1.setMemberStateId(1L);
+        status1.setMemberStateName("ACTIVE");
+
+        MemberStatus status2 = new MemberStatus();
+        status2.setMemberStateId(2L);
+        status2.setMemberStateName("INACTIVE");
+
+        List<MemberStatus> expectedStatuses = List.of(status1, status2);
+
+        // Mock 설정: 서비스에서 반환될 데이터 설정
+        when(memberStatusService.getAllMemberStatuses()).thenReturn(expectedStatuses);
+
+        // When: 컨트롤러 호출
+        List<MemberStatus> response = memberStatusController.getAllMemberStatus();
+
+        // Then: 결과 검증
+        assertNotNull(response); // 결과가 null이 아님을 검증
+        assertEquals(2, response.size()); // 리스트 크기 검증
+        assertEquals("ACTIVE", response.get(0).getMemberStateName()); // 첫 번째 상태 이름 검증
+        assertEquals("INACTIVE", response.get(1).getMemberStateName()); // 두 번째 상태 이름 검증
     }
 }

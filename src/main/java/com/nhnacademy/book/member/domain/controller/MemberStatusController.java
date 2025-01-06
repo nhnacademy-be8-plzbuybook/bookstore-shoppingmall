@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -30,6 +32,11 @@ public class MemberStatusController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("회원 상태 변경 실패 " + e.getMessage());
         }
+    }
+
+    @GetMapping("/members/status/all")
+    public List<MemberStatus> getAllMemberStatus(){
+        return memberStatusService.getAllMemberStatuses();
     }
 
 }

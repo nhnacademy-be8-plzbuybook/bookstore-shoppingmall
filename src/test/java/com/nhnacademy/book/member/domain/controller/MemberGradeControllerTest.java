@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -48,5 +50,22 @@ class MemberGradeControllerTest {
         assertEquals(memberGrade.getMemberGradeName(), responseMemberGrade.getMemberGradeName());
         assertEquals(memberGrade.getConditionPrice(), responseMemberGrade.getConditionPrice());
         assertEquals(memberGrade.getGradeChange(), responseMemberGrade.getGradeChange());
+    }
+
+    @Test
+    @DisplayName("회원 등급 전체 조회 controller test")
+    void getAllMemberGrades() {
+        MemberGrade memberGrade1 = new MemberGrade(1L, "test", new BigDecimal("1000.00"), LocalDateTime.now());
+        MemberGrade memberGrade2 = new MemberGrade(2L, "test2", new BigDecimal("1000.00"), LocalDateTime.now());
+
+        List<MemberGrade> memberGrades = Arrays.asList(memberGrade1, memberGrade2);
+
+        when(memberGradeService.getAllMemberGrades()).thenReturn(memberGrades);
+        List<MemberGrade> responseMemberGrades = memberGradeController.getAllMemberGrades();
+
+        assertNotNull(responseMemberGrades);
+        assertEquals(memberGrades.size(), responseMemberGrades.size());
+        assertEquals(memberGrades.get(0).getMemberGradeId(), responseMemberGrades.get(0).getMemberGradeId());
+        assertEquals(memberGrades.get(1).getMemberGradeName(), responseMemberGrades.get(1).getMemberGradeName());
     }
 }
