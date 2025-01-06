@@ -17,6 +17,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m FROM Member m WHERE FUNCTION('MONTH', m.birth) = :month")
     Page<Member> findByBirthMonth(@Param("month") int month, Pageable pageable); // 월별로 생일인 유저 조회 기능
+
+    @Query("SELECT m.memberId FROM Member m WHERE m.email = :email")
+    Long getMemberIdByEmail(String email);
 }
  
 
