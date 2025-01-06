@@ -36,10 +36,10 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderDetail getOrderDetail(String orderId) {
         List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(orderId);
-        PaymentDto payment = paymentRepository.findByOrders_Id(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 결제정보입니다."));
-        OrderDeliveryAddressDto orderDeliveryAddress = orderDeliveryAddressRepository.findByOrder_Id(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문배송정보입니다."));
+        OrderDetail orderDetail = orderQueryRepository.findOrderDetail(orderId);
+        orderDetail.setOrderProducts(orderProducts);
 
-        return new OrderDetail(orderProducts, orderDeliveryAddress, payment);
+        return orderDetail;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.nhnacademy.book.payment.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ public class PaymentDto {
     private String easyPayProvider;
     private LocalDateTime paidAt;
 
+    @QueryProjection
     public PaymentDto(BigDecimal amount, String method, String easyPayProvider, LocalDateTime paidAt) {
         this.amount = amount;
         this.method = method;
