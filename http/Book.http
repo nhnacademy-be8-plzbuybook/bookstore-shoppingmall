@@ -131,6 +131,24 @@ GET http://localhost:8080/api/books?searchKeyword=한강&searchAfter=321
 ###
 
 
+### 카테고리 저장 테스트
+POST localhost:8090/api/categories
+Content-Type: application/json
+
+{
+    "parentCategoryId": 584,
+    "parentCategoryName": "일본요리",
+    "newCategoryName": "New Category3 일본데스까"
+}
+
+### 카테고리 저장 테스트
+POST localhost:8090/api/categories
+Content-Type: application/json
+
+{
+
+  "newCategoryName": "New root Category"
+}
 
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.

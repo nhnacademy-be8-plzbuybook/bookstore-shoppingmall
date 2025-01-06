@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
+import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
@@ -78,32 +79,40 @@ public class CategoryService {
         return convertToDto(category);
     }
 
-    public CategoryResponseDto saveCategory(String categoryName, ParentCategoryRequestDto parentCategoryRequestDto) {
-        // 이미 존재하는 카테고리인지 확인
-        if (categoryRepository.findByCategoryName(categoryName).isPresent()) {
+    public CategoryResponseDto saveCategory(CategoryRegisterDto categoryRegisterDto) {
+        // 중복 카테고리 확인
+        String categoryName = categoryRegisterDto.getNewCategoryName();
+        if (categoryRepository.findByCategoryName(categoryRegisterDto.getNewCategoryName()).isPresent()) {
             throw new CategoryAlreadyExistsException("Category already exists with name: " + categoryName);
         }
 
         Category parentCategory = null;
         int categoryDepth;
 
-        if (parentCategoryRequestDto != null && categoryRepository.existsById(parentCategoryRequestDto.getCategoryId())) {
-            parentCategory = categoryRepository.findById(parentCategoryRequestDto.getCategoryId()).get();
+        // 부모 카테고리 확인 및 깊이 계산
+        if (categoryRegisterDto.getParentCategoryId() != null) {
+            parentCategory = categoryRepository.findByCategoryId(categoryRegisterDto.getParentCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found, id: " + categoryRegisterDto.getParentCategoryId()));
             categoryDepth = parentCategory.getCategoryDepth() + 1;
         } else {
-            categoryDepth = 0;
+            categoryDepth = 0; // 루트 카테고리
         }
 
+        // 새로운 카테고리 생성
         Category newCategory = new Category(categoryName, categoryDepth, parentCategory);
 
-        // 부모 카테고리가 있으면 자식 추가
+        // 부모 카테고리에 자식 추가
         if (parentCategory != null) {
             parentCategory.addChildCategory(newCategory);
         }
 
+        // 카테고리 저장
         Category savedCategory = categoryRepository.save(newCategory);
+
+        // DTO 변환 후 반환
         return convertToDto(savedCategory);
     }
+
 
 
     public void deleteCategoryById(Long categoryId) {
