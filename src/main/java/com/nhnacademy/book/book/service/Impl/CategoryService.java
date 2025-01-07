@@ -12,6 +12,8 @@ import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,23 +127,35 @@ public class CategoryService {
     }
 
 
-    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-        return categoryRepository.findByCategoryNameContaining(keyword)
-                .stream()
-                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-                .collect(Collectors.toList());
-    }
+//    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
+//        return categoryRepository.findByCategoryNameContaining(keyword)
+//                .stream()
+//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<CategorySimpleResponseDto> findAllCategories() {
+//        List<Category> categories = categoryRepository.findAll();
+//        if (categories.isEmpty()) {
+//            throw new CategoryNotFoundException("Category list is empty");
+//        }
+//
+//        return categories
+//                .stream()
+//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+//                .collect(Collectors.toList());
+//    }
+public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword, Pageable pageable) {
+    Page<Category> categories = categoryRepository.findByCategoryNameContaining(keyword, pageable);
+    return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
+}
 
-    public List<CategorySimpleResponseDto> findAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+    public Page<CategorySimpleResponseDto> findAllCategories(Pageable pageable) {
+        Page<Category> categories = categoryRepository.findAll(pageable);
         if (categories.isEmpty()) {
             throw new CategoryNotFoundException("Category list is empty");
         }
-
-        return categories
-                .stream()
-                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-                .collect(Collectors.toList());
+        return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
     }
 
     public void deleteCategory(Long categoryId) {
