@@ -9,7 +9,7 @@ import lombok.*;
 @Entity
 public class OrderDeliveryAddress {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_delivery_address_id ")
     private Long id;
     private String locationAddress;
