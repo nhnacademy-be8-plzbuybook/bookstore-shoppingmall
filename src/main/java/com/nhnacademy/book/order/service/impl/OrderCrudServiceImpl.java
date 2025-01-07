@@ -80,7 +80,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         String orderedAtString = orderedAt.format(formatter);
 
         int randomValue = new Random().nextInt(9999); // 0~9999 랜덤 값
-        return orderedAtString + "-" + String.format("%04d", randomValue);
+        return "ORD-" + orderedAtString + "-" + String.format("%04d", randomValue);
     }
 
 
