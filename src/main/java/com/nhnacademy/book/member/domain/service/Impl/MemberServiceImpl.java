@@ -220,7 +220,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
-        memberRepository.save(member);
+//        memberRepository.save(member);
 
     }
 
@@ -390,7 +390,7 @@ public class MemberServiceImpl implements MemberService {
         boolean isModified = false;
 
         // 기존 회원 정보 조회
-        Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getEmail())
+        Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getOriginalEmail())
                 .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다."));
 
         // 이름 수정
