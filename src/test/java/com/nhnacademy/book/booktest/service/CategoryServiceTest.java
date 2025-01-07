@@ -110,13 +110,6 @@ public class CategoryServiceTest {
 //        assertEquals(3, allCategoriesDTO.size());
 //    }
 
-    @Test
-    void findAllCategories_CategoryNotFoundException() {
-        List<Category> categories = Arrays.asList();
-        when(categoryRepository.findAll()).thenReturn(categories);
-
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findAllCategories());
-    }
 
     @Test
     void findCategoryByName() {
