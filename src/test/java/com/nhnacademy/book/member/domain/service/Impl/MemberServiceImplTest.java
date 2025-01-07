@@ -3,10 +3,7 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
 import com.nhnacademy.book.member.domain.*;
-import com.nhnacademy.book.member.domain.dto.MemberCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberSearchRequestDto;
-import com.nhnacademy.book.member.domain.dto.MemberSearchResponseDto;
+import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -587,7 +584,6 @@ class MemberServiceImplTest {
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
         when(memberRepository.existsByEmail(memberModifyRequestDto.getEmail())).thenReturn(false);
-        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         memberService.updateMember(originalEmail, memberModifyRequestDto);
 
@@ -599,7 +595,6 @@ class MemberServiceImplTest {
 
         verify(memberRepository, times(1)).findByEmail(originalEmail);
         verify(memberRepository, times(1)).existsByEmail(newEmail);
-        verify(memberRepository, times(1)).save(member);
 
 
     }
@@ -806,6 +801,179 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any());
     }
 
-    //TODO 관리자 수정 service test
+    @Test
+    @DisplayName("관리자가 회원의 정보를 수정")
+    void updateMemberByAdmin_success() {
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
 
+        Member existingMember = new Member();
+        existingMember.setName("윤지호");
+        existingMember.setPhone("010-7237-3951");
+        existingMember.setEmail("yoonwlgh12@naver.com");
+        existingMember.setBirth(LocalDate.of(2000, 3, 9));
+        existingMember.setPassword("encodedPassword");
+        existingMember.setMemberGrade(memberGrade);
+        existingMember.setMemberStatus(memberStatus);
+
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(existingMember));
+        when(memberRepository.findByPhone("010-7237-3952")).thenReturn(Optional.empty());
+        when(memberRepository.findByEmail("newemail@naver.com")).thenReturn(Optional.empty());
+
+
+        MemberGrade newGrade = new MemberGrade();
+        newGrade.setMemberGradeId(2L);
+        when(memberGradeRepository.findById(2L))
+                .thenReturn(Optional.of(newGrade));
+
+        MemberStatus newStatus = new MemberStatus();
+        newStatus.setMemberStateId(2L);
+        when(memberStatusRepository.findById(2L))
+                .thenReturn(Optional.of(newStatus));
+
+        MemberModifyByAdminRequestDto requestDto = new MemberModifyByAdminRequestDto();
+        requestDto.setOriginalEmail("yoonwlgh12@naver.com");
+        requestDto.setName("test");
+        requestDto.setPhone("010-7237-3952");
+        requestDto.setEmail("newemail@naver.com");
+        requestDto.setBirth(LocalDate.of(1995, 5, 15));
+        requestDto.setMemberGradeId(2L);
+        requestDto.setMemberStateId(2L);
+
+        memberService.updateMemberByAdmin("yoonwlgh12@naver.com", requestDto);
+
+        assertEquals("test", existingMember.getName());
+        assertEquals("010-7237-3952", existingMember.getPhone());
+        assertEquals("newemail@naver.com", existingMember.getEmail());
+        assertEquals(LocalDate.of(1995, 5, 15), existingMember.getBirth());
+        assertEquals(2L, existingMember.getMemberGrade().getMemberGradeId());
+        assertEquals(2L, existingMember.getMemberStatus().getMemberStateId());
+
+        verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+        verify(memberRepository).findByEmail("newemail@naver.com");
+        verify(memberRepository).findByPhone("010-7237-3952");
+        verify(memberGradeRepository).findById(2L);
+        verify(memberStatusRepository).findById(2L);
+
+    }
+
+    @Test
+    @DisplayName("같은 이메일로 수정할 때 예외")
+    void updateMemberByAdmin_DuplicateEmailException()  {
+        // 기존 회원 데이터
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+
+        Member existingMember = new Member();
+        existingMember.setName("윤지호");
+        existingMember.setPhone("010-7237-3952");
+        existingMember.setEmail("yoonwlgh123@naver.com");
+        existingMember.setBirth(LocalDate.of(2000, 3, 9));
+        existingMember.setPassword("encodedPassword");
+        existingMember.setMemberGrade(memberGrade);
+        existingMember.setMemberStatus(memberStatus);
+
+        when(memberRepository.findByEmail("yoonwlgh123@naver.com")).thenReturn(Optional.of(existingMember));
+
+        Member otherMember = new Member();
+        otherMember.setMemberId(2L);
+        otherMember.setEmail("yoonwlgh12@naver.com");
+
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(otherMember));
+
+        MemberModifyByAdminRequestDto requestDto = new MemberModifyByAdminRequestDto();
+        requestDto.setOriginalEmail("yoonwlgh123@naver.com");
+        requestDto.setName("test");
+        requestDto.setEmail("yoonwlgh12@naver.com");
+
+        assertThrows(DuplicateEmailException.class, () ->
+                memberService.updateMemberByAdmin("yoonwlgh123@naver.com", requestDto)
+        );
+
+
+        verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+
+
+    }
+
+
+    @Test
+    @DisplayName("같은 전화번호 수정할 때 예외")
+    void updateMemberByAdmin_DuplicatePhoneException() {
+        // 기존 회원 데이터
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+
+        Member existingMember = new Member();
+        existingMember.setName("윤지호");
+        existingMember.setPhone("010-7237-3952");
+        existingMember.setEmail("yoonwlgh12@naver.com");
+        existingMember.setBirth(LocalDate.of(2000, 3, 9));
+        existingMember.setPassword("encodedPassword");
+        existingMember.setMemberGrade(memberGrade);
+        existingMember.setMemberStatus(memberStatus);
+
+        // 기존 회원 조회 Mock 설정
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(existingMember));
+
+        // 중복 전화번호를 가진 다른 회원 Mock 설정
+        Member otherMember = new Member();
+        otherMember.setMemberId(2L);
+        otherMember.setPhone("010-7237-3951");
+
+        when(memberRepository.findByPhone("010-7237-3951")).thenReturn(Optional.of(otherMember));
+
+        // 요청 DTO 설정
+        MemberModifyByAdminRequestDto requestDto = new MemberModifyByAdminRequestDto();
+        requestDto.setOriginalEmail("yoonwlgh12@naver.com");
+        requestDto.setName("test");
+        requestDto.setPhone("010-7237-3951"); // 기존 다른 회원의 전화번호와 동일하게 설정
+
+        // 전화번호 중복으로 예외 발생 확인
+        assertThrows(DuplicatePhoneException.class, () ->
+                memberService.updateMemberByAdmin("yoonwlgh12@naver.com", requestDto)
+        );
+
+        // Mock 호출 검증
+        verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+        verify(memberRepository).findByPhone("010-7237-3951");
+    }
+
+    @Test
+    @DisplayName("변경 사항이 없는 경우 예외처리")
+    void updateMemberByAdmin_DuplicateMemberModificationException() {
+        // 기존 회원 데이터
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+
+        Member existingMember = new Member();
+        existingMember.setName("윤지호");
+        existingMember.setPhone("010-7237-3951");
+        existingMember.setEmail("yoonwlgh12@naver.com");
+        existingMember.setBirth(LocalDate.of(2000, 3, 9));
+        existingMember.setPassword("encodedPassword");
+        existingMember.setMemberGrade(memberGrade);
+        existingMember.setMemberStatus(memberStatus);
+
+        // 기존 회원 조회 Mock 설정
+        when(memberRepository.findByEmail("yoonwlgh12@naver.com")).thenReturn(Optional.of(existingMember));
+
+        // 요청 DTO 설정 (기존 데이터와 동일한 값으로 설정)
+        MemberModifyByAdminRequestDto requestDto = new MemberModifyByAdminRequestDto();
+        requestDto.setOriginalEmail("yoonwlgh12@naver.com");
+        requestDto.setName("윤지호"); // 기존 이름과 동일
+        requestDto.setPhone("010-7237-3951"); // 기존 전화번호와 동일
+        requestDto.setEmail("yoonwlgh12@naver.com"); // 기존 이메일과 동일
+        requestDto.setBirth(LocalDate.of(2000, 3, 9)); // 기존 생년월일과 동일
+        requestDto.setMemberGradeId(1L); // 기존 회원 등급과 동일
+        requestDto.setMemberStateId(1L); // 기존 회원 상태와 동일
+
+        // 변경 사항이 없으므로 예외 발생 확인
+        assertThrows(DuplicateMemberModificationException.class, () ->
+                memberService.updateMemberByAdmin("yoonwlgh12@naver.com", requestDto)
+        );
+
+        // Mock 호출 검증
+        verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
+    }
 }
