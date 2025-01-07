@@ -78,6 +78,12 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(member);
 
+        MemberCertification memberCertification = new MemberCertification();
+        memberCertification.setMember(savedMember);
+        memberCertification.setLastLogin(null);
+        memberCertification.setCertificationMethod("일반");
+        memberCertificationRepository.save(memberCertification);
+
         MemberAuth memberAuth = new MemberAuth();
         memberAuth.setMember(savedMember);
         memberAuth.setAuth(defaultAuth);
