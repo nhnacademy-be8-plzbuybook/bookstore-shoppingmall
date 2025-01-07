@@ -19,10 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Lock;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final CouponClient couponClient;
     private final AuthRepository authRepository;
     private final MemberCertificationRepository memberCertificationRepository;
+    private final Clock clock;
 
     //회원 생성
     @Override
@@ -366,24 +369,24 @@ public class MemberServiceImpl implements MemberService {
 
     // 3개월 이상 미로그인시 (active -> dormant) 로 변경
     public void updateDormantStatus() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+        LocalDateTime threeMonthsAgo = LocalDateTime.now(clock).minusMonths(3);
 
-        List<MemberCertification> inactiveMember = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
+        List<MemberCertification> inactiveMembers = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
 
-        if (inactiveMember.isEmpty()) {
+        if (inactiveMembers.isEmpty()) {
             // 3개월 이상 미로그인 회원이 없으면 작업 종료
             return;
         }
         MemberStatus dormantStatus = memberStatusRepository.findByMemberStateName("DORMANT")
                 .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
 
-        for (MemberCertification certification : inactiveMember) {
+        for (MemberCertification certification : inactiveMembers) {
             Member member = certification.getMember();
             member.setMemberStatus(dormantStatus); // 상태 변경
         }
 
         memberRepository.saveAll(
-                inactiveMember.stream()
+                inactiveMembers.stream()
                         .map(MemberCertification::getMember)
                         .toList()
         );

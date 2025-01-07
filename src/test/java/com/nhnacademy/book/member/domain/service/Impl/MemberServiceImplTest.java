@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.meta.When;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,11 +72,12 @@ class MemberServiceImplTest {
     @Mock
     private CouponClient couponClient;
 
+    @Mock
+    private Clock clock;
+
 
     @InjectMocks
     private MemberServiceImpl memberService;
-    @InjectMocks
-    private MemberPointServiceImpl memberPointService;
 
     @BeforeEach
     void setUp() {
@@ -815,34 +816,41 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any());
     }
 
-//    @Test
-//    @DisplayName("회원 상태를 DORMANT로 변경시키는지")
-//    void updateDormantStatus_success() {
-//        LocalDateTime fixedNow = LocalDateTime.of(2024, 10, 6, 9, 28, 52);
-//        LocalDateTime threeMonthsAgo = fixedNow.minusMonths(3);
-//        String email = "test@naver.com";
-//        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now());
-//        MemberStatus dormantStatus = new MemberStatus(2L,"DORMANT");
-//        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
-//
-//        Member member = new Member(1L, memberGrade,activeStatus, "test", "010-1234-5678", "test@naver.com", LocalDate.of(2002, 7, 23), "Password");
-//        Member member2 = new Member(2L, memberGrade,activeStatus, "test2", "010-1234-5679", "test2@naver.com", LocalDate.of(2002, 7, 23), "Password");
-//
-//        MemberCertification certification = new MemberCertification(
-//                1L, member, threeMonthsAgo.minusDays(1), "일반"
-//        );
-//
-//        doReturn(List.of(certification)).when(memberCertificationRepository).findInactiveMember(threeMonthsAgo);
-//        doReturn(Optional.of(dormantStatus)).when(memberStatusRepository).findByMemberStateName("DORMANT");
-//
-//        memberService.updateDormantStatus();
-//
-//        assertEquals("DORMANT", member.getMemberStatus().getMemberStateName());
-//        verify(memberRepository).saveAll(argThat(members ->
-//                members.contains(member) // 저장된 리스트에 해당 멤버가 포함되어 있는지 확인
-//        ));
-//
-//    }
+    @Test
+    @DisplayName("회원 상태를 DORMANT로 변경시키는지")
+    void updateDormantStatus_success() {
+        Clock fixedClock = Clock.fixed(
+                LocalDateTime.of(2024, 10, 6, 9, 28, 52).toInstant(ZoneOffset.UTC),
+                ZoneId.of("UTC")
+        );
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+
+        LocalDateTime fixedNow = LocalDateTime.now(fixedClock);
+        LocalDateTime threeMonthsAgo = fixedNow.minusMonths(3);
+
+        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+        MemberStatus dormantStatus = new MemberStatus(2L, "DORMANT");
+
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now(clock));
+        Member member1 = new Member(1L, memberGrade,activeStatus, "test", "010-1234-5678", "test@naver.com", LocalDate.of(2002, 7, 23), "Password");
+        MemberCertification certification1 = new MemberCertification(1L, member1, threeMonthsAgo.minusDays(1), "일반");
+
+        Member member2 = new Member(2L, memberGrade,activeStatus, "test2", "010-1234-5679", "test2@naver.com", LocalDate.of(2002, 7, 25), "Password2");
+        MemberCertification certification2 = new MemberCertification(2L, member2, threeMonthsAgo.minusDays(5), "일반");
+
+        doReturn(List.of(certification1, certification2)).when(memberCertificationRepository)
+                .findInactiveMember(threeMonthsAgo);
+
+        doReturn(Optional.of(dormantStatus)).when(memberStatusRepository).findByMemberStateName("DORMANT");
+        memberService.updateDormantStatus();
+
+        assertEquals("DORMANT", member1.getMemberStatus().getMemberStateName());
+        assertEquals("DORMANT", member2.getMemberStatus().getMemberStateName());
+
+        verify(memberRepository).saveAll(eq(List.of(member1, member2)));
+
+    }
 
     //TODO 관리자 수정 service test
 
