@@ -7,7 +7,6 @@ import lombok.Data;
 public class CategoryRegisterDto {
 
     private Long parentCategoryId;
-    private String parentCategoryName;
     private String newCategoryName;
 
 }

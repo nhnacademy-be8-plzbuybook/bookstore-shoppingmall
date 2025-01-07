@@ -147,14 +147,14 @@ public class CategoryService {
 
 
     public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-        return categorySearchRepository.findByCategoryNameContaining(keyword)
+        return categoryRepository.findByCategoryNameContaining(keyword)
                 .stream()
                 .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
                 .collect(Collectors.toList());
     }
 
     public List<CategorySimpleResponseDto> findAllCategories() {
-        List<CategoryDocument> categories = categorySearchRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
         if (categories.isEmpty()) {
             throw new CategoryNotFoundException("Category list is empty");
         }
