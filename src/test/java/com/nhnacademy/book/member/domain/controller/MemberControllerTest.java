@@ -331,6 +331,26 @@ class MemberControllerTest {
         assertEquals("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.", responseEntity.getBody());
     }
 
-    //TODO 관리자 수정 controller 테스트 
+    @Test
+    @DisplayName("관리자가 회원의 이메일을 수정")
+    void updateEmail_success() {
+        String email = "yoonwlgh12@naver.com";
+
+        MemberModifyByAdminRequestDto memberModifyByAdminRequestDto = new MemberModifyByAdminRequestDto();
+        memberModifyByAdminRequestDto.setOriginalEmail("yoonwlgh12@naver.com");
+        memberModifyByAdminRequestDto.setName("윤지호");
+        memberModifyByAdminRequestDto.setPhone("010-7237-3951");
+        memberModifyByAdminRequestDto.setEmail("newemail@naver.com");
+        memberModifyByAdminRequestDto.setBirth(LocalDate.of(2000, 3, 9));
+        memberModifyByAdminRequestDto.setMemberGradeId(1L);
+        memberModifyByAdminRequestDto.setMemberStateId(1L);
+
+        doNothing().when(memberService).updateMemberByAdmin(eq(email), eq(memberModifyByAdminRequestDto));
+
+        ResponseEntity<Void> responseEntity = memberController.updateEmail(email, memberModifyByAdminRequestDto);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        verify(memberService, times(1)).updateMemberByAdmin(eq(email), eq(memberModifyByAdminRequestDto));
+    }
 }
 
