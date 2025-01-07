@@ -1,7 +1,7 @@
 package com.nhnacademy.book.order.enums;
 
 public enum OrderType {
-    MEMBER_ORDER(1, "회원주문"),
+    MEMBER_ORDER(0, "회원주문"),
     NON_MEMBER_ORDER(1, "비회원주문");
 
     private int code;
