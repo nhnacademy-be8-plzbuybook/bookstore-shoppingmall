@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +25,7 @@ public class SellingBookResponseDto {
     private Boolean used;
     private Long sellingBookViewCount;
     private String imageUrl;
+    private String publisher;        // 출판사 정보
+    private List<String> categories; // 카테고리 정보
+    private List<String> authors;    // 작가 정보
 }

@@ -2,7 +2,6 @@ package com.nhnacademy.book.member.domain.service.Impl;
 
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
-import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
@@ -20,13 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Lock;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -44,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final CouponClient couponClient;
     private final AuthRepository authRepository;
     private final MemberCertificationRepository memberCertificationRepository;
+    private final Clock clock;
 
     //회원 생성
     @Override
@@ -79,6 +80,12 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        MemberCertification memberCertification = new MemberCertification();
+        memberCertification.setMember(savedMember);
+        memberCertification.setLastLogin(null);
+        memberCertification.setCertificationMethod("일반");
+        memberCertificationRepository.save(memberCertification);
 
         MemberAuth memberAuth = new MemberAuth();
         memberAuth.setMember(savedMember);
@@ -222,7 +229,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
-        memberRepository.save(member);
+//        memberRepository.save(member);
 
     }
 
@@ -362,26 +369,104 @@ public class MemberServiceImpl implements MemberService {
 
     // 3개월 이상 미로그인시 (active -> dormant) 로 변경
     public void updateDormantStatus() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+        LocalDateTime threeMonthsAgo = LocalDateTime.now(clock).minusMonths(3);
 
-        List<MemberCertification> inactiveMember = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
+        List<MemberCertification> inactiveMembers = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
 
-        if (inactiveMember.isEmpty()) {
+        if (inactiveMembers.isEmpty()) {
             // 3개월 이상 미로그인 회원이 없으면 작업 종료
             return;
         }
         MemberStatus dormantStatus = memberStatusRepository.findByMemberStateName("DORMANT")
                 .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
 
-        // 상태 변경
-        for (MemberCertification memberCertification : inactiveMember) {
-            Member member = memberCertification.getMember();
-            member.setMemberStatus(dormantStatus);
+        for (MemberCertification certification : inactiveMembers) {
+            Member member = certification.getMember();
+            member.setMemberStatus(dormantStatus); // 상태 변경
         }
 
-            memberRepository.saveAll(inactiveMember.stream()
-                    .map(MemberCertification::getMember)
-                    .toList());
+        memberRepository.saveAll(
+                inactiveMembers.stream()
+                        .map(MemberCertification::getMember)
+                        .toList()
+        );
+    }
+
+    //header 이메일을 통해 회원 정보 수정
+    //관리자가 회원의 정보를 수정
+    @Override
+    public void updateMemberByAdmin(String email, MemberModifyByAdminRequestDto memberModifyByAdminRequestDto) {
+        boolean isModified = false;
+
+        // 기존 회원 정보 조회
+        Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getOriginalEmail())
+                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다."));
+
+        // 이름 수정
+        if (memberModifyByAdminRequestDto.getName() != null &&
+                !memberModifyByAdminRequestDto.getName().equals(member.getName())) {
+            member.setName(memberModifyByAdminRequestDto.getName());
+            isModified = true;
+        }
+
+        // 전화번호 수정
+        if (memberModifyByAdminRequestDto.getPhone() != null &&
+                !memberModifyByAdminRequestDto.getPhone().equals(member.getPhone())) {
+            boolean phoneExists = memberRepository.findByPhone(memberModifyByAdminRequestDto.getPhone())
+                    .map(existingMember -> !existingMember.getMemberId().equals(member.getMemberId())) // 본인의 전화번호는 제외
+                    .orElse(false);
+
+            if (phoneExists) {
+                throw new DuplicatePhoneException("이미 사용 중인 전화번호입니다.");
+            }
+            member.setPhone(memberModifyByAdminRequestDto.getPhone());
+            isModified = true;
+        }
+
+        // 이메일 수정
+        if (memberModifyByAdminRequestDto.getEmail() != null &&
+                !memberModifyByAdminRequestDto.getEmail().equals(member.getEmail())) {
+            boolean emailExists = memberRepository.findByEmail(memberModifyByAdminRequestDto.getEmail())
+                    .map(existingMember -> !existingMember.getMemberId().equals(member.getMemberId())) // 본인의 이메일은 제외
+                    .orElse(false);
+
+            if (emailExists) {
+                throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            }
+            member.setEmail(memberModifyByAdminRequestDto.getEmail());
+            isModified = true;
+        }
+
+        // 생년월일 수정
+        if (memberModifyByAdminRequestDto.getBirth() != null &&
+                !memberModifyByAdminRequestDto.getBirth().equals(member.getBirth())) {
+            member.setBirth(memberModifyByAdminRequestDto.getBirth());
+            isModified = true;
+        }
+
+        // 회원 등급 수정
+        if (memberModifyByAdminRequestDto.getMemberGradeId() != null &&
+                !memberModifyByAdminRequestDto.getMemberGradeId().equals(member.getMemberGrade().getMemberGradeId())) {
+            MemberGrade newGrade = memberGradeRepository.findById(memberModifyByAdminRequestDto.getMemberGradeId())
+                    .orElseThrow(() -> new MemberGradeNotFoundException("회원 등급이 존재하지 않습니다."));
+            member.setMemberGrade(newGrade);
+            isModified = true;
+        }
+
+        // 회원 상태 수정
+        if (memberModifyByAdminRequestDto.getMemberStateId() != null &&
+                !memberModifyByAdminRequestDto.getMemberStateId().equals(member.getMemberStatus().getMemberStateId())) {
+            MemberStatus newStatus = memberStatusRepository.findById(memberModifyByAdminRequestDto.getMemberStateId())
+                    .orElseThrow(() -> new MemberStatusNotFoundException("회원 상태가 존재하지 않습니다."));
+            member.setMemberStatus(newStatus);
+            isModified = true;
+        }
+
+        // 변경 사항이 없는 경우 예외 처리
+        if (!isModified) {
+            throw new DuplicateMemberModificationException("기존 데이터와 동일하여 수정할 내용이 없습니다.");
+        }
 
     }
+
 }

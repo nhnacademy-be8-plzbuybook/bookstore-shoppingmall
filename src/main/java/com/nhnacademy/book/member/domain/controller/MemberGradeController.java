@@ -4,10 +4,9 @@ import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
 import com.nhnacademy.book.member.domain.service.MemberGradeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -22,5 +21,10 @@ public class MemberGradeController {
         MemberGrade memberGrade = memberGradeService.createMemberGrade(memberGradeCreateRequestDto);
 
         return memberGrade;
+    }
+
+    @GetMapping("/members/grade/all")
+    public List<MemberGrade> getAllMemberGrades() {
+        return memberGradeService.getAllMemberGrades();
     }
 }

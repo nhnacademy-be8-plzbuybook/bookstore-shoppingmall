@@ -1,6 +1,7 @@
 package com.nhnacademy.book.order.dto.orderRequests;
 
 import com.nhnacademy.book.order.entity.OrderDeliveryAddress;
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public class OrderDeliveryAddressDto {
     @NotBlank
     private String recipientPhone;
 
+    @QueryProjection
     public OrderDeliveryAddressDto(String locationAddress, String zipCode, String detailAddress, String recipient, String recipientPhone) {
         this.locationAddress = locationAddress;
         this.zipCode = zipCode;

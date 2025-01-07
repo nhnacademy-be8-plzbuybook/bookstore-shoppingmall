@@ -1,12 +1,10 @@
 package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberGrade;
-import com.nhnacademy.book.member.domain.MemberStatus;
+
+import com.nhnacademy.book.member.domain.dto.MemberModifyByAdminRequestDto;
+import com.nhnacademy.book.cart.service.CartService;
 import com.nhnacademy.book.member.domain.dto.*;
-import com.nhnacademy.book.member.domain.service.MemberGradeService;
 import com.nhnacademy.book.member.domain.service.MemberService;
-import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -96,5 +94,12 @@ public class MemberController {
     public ResponseEntity<String> updateDormantStatus() {
         memberService.updateDormantStatus();
         return ResponseEntity.ok("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.");
+    }
+
+
+    @PostMapping("/members/email")
+    public ResponseEntity<Void> updateEmail(@RequestHeader("X-USER-ID") String email, @RequestBody MemberModifyByAdminRequestDto memberModifyByAdminRequestDto) {
+        memberService.updateMemberByAdmin(memberModifyByAdminRequestDto.getOriginalEmail(), memberModifyByAdminRequestDto);
+        return ResponseEntity.ok().build();
     }
 }

@@ -32,7 +32,7 @@ Content-Type: application/json
 DELETE localhost:8090/api/selling-books/100
 
 ### 판매책 상세조회
-GET http://localhost:8090/api/selling-books/4
+GET http://localhost:8090/api/selling-books/249
 
 
 ### 조회수에 따른 조회
@@ -99,3 +99,8 @@ GET http://localhost:8080/index?page=0&size=16&sortBy=new&sortDir=desc
 
 ### 좋아요순
 GET http://localhost:8080/index?sortBy=likeCount&sortDir=desc&page=0&size=16
+
+
+###
+### 관리자 페이지에서 리스트 확인
+GET http://localhost:8080/api/admin/selling-books?page=0&size=10

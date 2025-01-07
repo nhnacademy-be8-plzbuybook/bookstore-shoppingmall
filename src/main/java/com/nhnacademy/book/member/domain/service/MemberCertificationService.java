@@ -26,4 +26,6 @@ public interface MemberCertificationService {
     // 모든 인증 정보 조회
     List<CertificationResponseDto> getAllCertifications();
 
+    LastLoginResponseDto updateLastLoginByEmail(LastLoginRequestDto lastLoginRequestDto);
+
 }

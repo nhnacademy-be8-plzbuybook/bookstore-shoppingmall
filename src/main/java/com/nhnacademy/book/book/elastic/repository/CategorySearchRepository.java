@@ -25,6 +25,7 @@ public interface CategorySearchRepository extends ElasticsearchRepository<Catego
 //    List<CategoryDocument> findByCategoryNameContaining(String keyword);
 
 
+    List<CategoryDocument> findAll();
 
     @Query("{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
     List<CategoryDocument> findByCategoryNameContaining(String keyword);

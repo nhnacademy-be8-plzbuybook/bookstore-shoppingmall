@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,5 +86,17 @@ class MemberGradeServiceImplTest {
         verify(memberGradeRepository, never()).save(any(MemberGrade.class));
         verify(memberGradeRepository, times(1)).findByMemberGradeName(gradeName);
 
+    }
+
+    @Test
+    @DisplayName("전체 등급을 가져오나")
+    void getAllMemberGrades_Success() {
+        MemberGrade memberGrade1 = new MemberGrade(1L, "test", new BigDecimal("1000.00"), LocalDateTime.now());
+        MemberGrade memberGrade2 = new MemberGrade(2L, "test2", new BigDecimal("1000.00"), LocalDateTime.now());
+
+        List<MemberGrade> memberGrades = List.of(memberGrade1, memberGrade2);
+        when(memberGradeRepository.findAll()).thenReturn(memberGrades);
+        List<MemberGrade> getAllMemberGrades = memberGradeService.getAllMemberGrades();
+        assertEquals(memberGrades, getAllMemberGrades);
     }
 }

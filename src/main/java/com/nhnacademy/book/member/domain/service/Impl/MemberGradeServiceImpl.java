@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -31,5 +33,10 @@ public class MemberGradeServiceImpl implements MemberGradeService {
         memberGrade.setGradeChange(memberGradeCreateRequestDto.getGradeChange());
 
         return memberGradeRepository.save(memberGrade);
+    }
+
+    @Override
+    public List<MemberGrade> getAllMemberGrades() {
+        return memberGradeRepository.findAll();
     }
 }

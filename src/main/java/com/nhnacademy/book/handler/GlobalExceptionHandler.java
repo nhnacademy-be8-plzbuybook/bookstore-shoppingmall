@@ -404,6 +404,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
 
+    //전화번호 중복
+    @ExceptionHandler(DuplicatePhoneException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicatePhoneException(DuplicatePhoneException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
 
 
 

@@ -29,6 +29,9 @@ GET http://localhost:8090/api/publishers/search/204
 ### 작가아이디로 작가가 쓴 책 조회
 GET http://localhost:8090/api/books/search/test/413
 
+### 카테고리
+GET localhost:8090/api/categories?keyword=판타지
+
 ### 출판사
 POST http://localhost:8090/api/publishers
 Content-Type: application/json
@@ -105,7 +108,7 @@ POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Fore
 
 
 ### 베스트 셀러 국내도서 - 50개 나옴
-POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=1&maxResults=50
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=1&maxResults=10
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
 POST http://localhost:8090/api/books/sync/isbn
@@ -131,6 +134,24 @@ GET http://localhost:8080/api/books?searchKeyword=한강&searchAfter=321
 ###
 
 
+### 카테고리 저장 테스트
+POST localhost:8090/api/categories
+Content-Type: application/json
+
+{
+    "parentCategoryId": 584,
+    "parentCategoryName": "일본요리",
+    "newCategoryName": "New Category3 일본데스까"
+}
+
+### 카테고리 저장 테스트
+POST localhost:8090/api/categories
+Content-Type: application/json
+
+{
+
+  "newCategoryName": "New root Category"
+}
 
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
@@ -139,12 +160,12 @@ Content-Type: application/json
 
 [
   "9791158682934",
-  "9791170403012"
+  "9788972558897"
 ]
 
 
 
 ### 9788936434267이라는 ISBN을 기반으로 알라딘 API를 호출하고, 도서 데이터를 저장합니다. (특정 isbn 으로 저장 가능) / 9788936434120 - 소년이 온다
-POST http://localhost:8090/api/books/sync/itemid/9791158682934
+POST http://localhost:8090/api/books/sync/itemid/9788972558897
 
 

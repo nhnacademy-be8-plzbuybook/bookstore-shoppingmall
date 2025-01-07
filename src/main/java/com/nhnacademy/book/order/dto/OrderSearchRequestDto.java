@@ -3,10 +3,12 @@ package com.nhnacademy.book.order.dto;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
+@NoArgsConstructor
 @Getter
 public class OrderSearchRequestDto {
 
