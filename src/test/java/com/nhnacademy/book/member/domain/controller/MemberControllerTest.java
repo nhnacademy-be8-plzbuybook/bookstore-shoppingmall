@@ -1,7 +1,5 @@
 package com.nhnacademy.book.member.domain.controller;//package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.cart.service.CartService;
-import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
@@ -16,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -30,9 +27,6 @@ class MemberControllerTest {
 
     @Mock
     private MemberService memberService;
-
-    @Mock
-    private CartService cartService;
 
     @InjectMocks
     private MemberController memberController;

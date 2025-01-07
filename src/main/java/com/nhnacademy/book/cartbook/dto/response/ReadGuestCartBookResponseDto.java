@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Builder
 public record ReadGuestCartBookResponseDto(
         Long cartBookId,          // 장바구니 항목 ID (SellingBook.sellingBookId)
-        Long bookId,              // 책 ID (Book.bookId)
+        Long sellingBookId,              // 책 ID (Book.bookId)
         String bookTitle,         // 책 제목 (Book.bookTitle)
         BigDecimal sellingBookPrice, // 책 가격 (SellingBook.sellingBookPrice)
         String imageUrl,          // 책 이미지 URL (BookImage.imageUrl)

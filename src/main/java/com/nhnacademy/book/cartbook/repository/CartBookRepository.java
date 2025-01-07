@@ -13,6 +13,13 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 
     void deleteByCart(Cart cart);
 
-    Optional<CartBook> findCartBookBySellingBook_SellingBookIdAndCart_CartId(Long sellingBookId, Long cartId);
+    Optional<CartBook> findBySellingBookAndCart(SellingBook sellingBook, Cart cart);
 
+    Optional<CartBook> findBySellingBook_SellingBookIdAndCart_CartId (Long sellingBookId, Long CartId);
+
+    boolean existsCartBookBySellingBook_SellingBookIdAndCart(Long sellingBookSellingBookId, Cart cart);
+
+    List<CartBook> findAllByCart_CartId(Long cartId);
+
+    List<CartBook> findByCart(Cart cart);
 }

@@ -3,9 +3,6 @@ package com.nhnacademy.book.member.domain.controller;
 
 import com.nhnacademy.book.member.domain.dto.MemberModifyByAdminRequestDto;
 import com.nhnacademy.book.cart.service.CartService;
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberGrade;
-import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final CartService cartService;
 
     //회원 생성
     @PostMapping("/members")
     public ResponseEntity<MemberCreateResponseDto> createMember(@RequestBody MemberCreateRequestDto memberCreateRequestDto) {
         MemberCreateResponseDto responseDto = memberService.createMember(memberCreateRequestDto);
-        // 회원 가입시 장바구니 생성
-        cartService.createCart(memberCreateRequestDto.getEmail());
         return ResponseEntity.ok(responseDto);
     }
 

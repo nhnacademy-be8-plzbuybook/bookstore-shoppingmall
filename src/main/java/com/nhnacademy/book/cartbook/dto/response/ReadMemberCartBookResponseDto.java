@@ -12,4 +12,5 @@ public record  ReadMemberCartBookResponseDto(
                 String url,
                 String title,
                 int quantity,
-                int sellingBookStock ) {}
+                int sellingBookStock,
+                boolean used) {}
