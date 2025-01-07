@@ -1,6 +1,7 @@
 package com.nhnacademy.book.orderProduct.entity;
 
 import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.converter.OrderProductStatusConverter;
 import com.nhnacademy.book.order.entity.Orders;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -37,7 +38,7 @@ public class OrderProduct {
 
     private BigDecimal couponDiscount = BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = OrderProductStatusConverter.class)
     private OrderProductStatus status;
 
     @Builder

@@ -6,7 +6,6 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
 import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import lombok.extern.slf4j.Slf4j;

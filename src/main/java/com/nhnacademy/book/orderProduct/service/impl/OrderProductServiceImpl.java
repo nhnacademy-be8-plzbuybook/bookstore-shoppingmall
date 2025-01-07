@@ -11,7 +11,6 @@ import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
-import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import java.math.BigDecimal;
 public class OrderProductServiceImpl implements OrderProductService {
     private final OrderProductRepository orderProductRepository;
     private final SellingBookRepository sellingBookRepository;
-    private final WrappingPaperService wrappingPaperService;
     private final OrderCacheService orderCacheService;
 
     @Transactional
