@@ -4,6 +4,7 @@ import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
+import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
@@ -38,16 +39,16 @@ public class CategoryService {
         return convertToDto(category);
     }
 
-    public List<CategoryResponseDto> findAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            throw new CategoryNotFoundException("Category list is empty");
-        }
-
-        return categories.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+//    public List<CategoryResponseDto> findAllCategories() {
+//        List<Category> categories = categoryRepository.findAll();
+//        if (categories.isEmpty()) {
+//            throw new CategoryNotFoundException("Category list is empty");
+//        }
+//
+//        return categories.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//    }
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
         if (parentCategoryDto == null || parentCategoryDto.getCategoryId() == null) {
@@ -146,7 +147,19 @@ public class CategoryService {
 
 
     public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-        return categoryRepository.findByCategoryNameContaining(keyword)
+        return categorySearchRepository.findByCategoryNameContaining(keyword)
+                .stream()
+                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<CategorySimpleResponseDto> findAllCategories() {
+        List<CategoryDocument> categories = categorySearchRepository.findAll();
+        if (categories.isEmpty()) {
+            throw new CategoryNotFoundException("Category list is empty");
+        }
+
+        return categories
                 .stream()
                 .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
                 .collect(Collectors.toList());

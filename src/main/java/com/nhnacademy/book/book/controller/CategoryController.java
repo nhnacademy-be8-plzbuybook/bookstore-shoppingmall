@@ -23,9 +23,13 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<List<CategorySimpleResponseDto>> searchCategories(@RequestParam String keyword) {
-        List<CategorySimpleResponseDto> categories = categoryService.searchCategoriesByKeyword(keyword);
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<List<CategorySimpleResponseDto>> getSimpleCategories(
+            @RequestParam(required = false) String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            List<CategorySimpleResponseDto> categories = categoryService.searchCategoriesByKeyword(keyword);
+            return ResponseEntity.ok(categories);
+        }
+        return ResponseEntity.ok(categoryService.findAllCategories());
     }
 
     @DeleteMapping("/{categoryId}")

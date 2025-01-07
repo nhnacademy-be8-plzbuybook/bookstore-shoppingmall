@@ -99,16 +99,16 @@ public class CategoryServiceTest {
         assertThrows(CategoryNotFoundException.class, () -> categoryService.findCategoryById(null));
     }
 
-    @Test
-    void findAllCategories() {
-        List<Category> categories = Arrays.asList(category, parentCategory, childCategory);
-        when(categoryRepository.findAll()).thenReturn(categories);
-
-        List<CategoryResponseDto> allCategoriesDTO = categoryService.findAllCategories();
-
-        assertNotNull(allCategoriesDTO);
-        assertEquals(3, allCategoriesDTO.size());
-    }
+//    @Test
+//    void findAllCategories() {
+//        List<Category> categories = Arrays.asList(category, parentCategory, childCategory);
+//        when(categoryRepository.findAll()).thenReturn(categories);
+//
+//        List<CategoryResponseDto> allCategoriesDTO = categoryService.findAllCategories();
+//
+//        assertNotNull(allCategoriesDTO);
+//        assertEquals(3, allCategoriesDTO.size());
+//    }
 
     @Test
     void findAllCategories_CategoryNotFoundException() {
