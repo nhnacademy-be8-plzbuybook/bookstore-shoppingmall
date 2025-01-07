@@ -7,8 +7,8 @@ create table orders
     ordered_at         datetime       not null default current_timestamp,
     delivery_wish_date date           null,
     used_point         int            null     default 0,
-    delivery_fee       decimal(10, 2) not null,
-    order_price        decimal(5, 2)  not null,
+    delivery_fee       decimal(5, 2)  not null,
+    order_price        decimal(10, 2) not null,
     status             tinyint        not null,
     primary key (order_id)
 );
