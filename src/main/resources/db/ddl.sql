@@ -7,7 +7,7 @@ create table orders
     ordered_at         datetime       not null default current_timestamp,
     delivery_wish_date date           null,
     used_point         int            null     default 0,
-    delivery_fee       decimal(5, 2)  not null,
+    delivery_fee       decimal(10, 2) not null,
     order_price        decimal(10, 2) not null,
     status             tinyint        not null,
     primary key (order_id)
@@ -50,12 +50,14 @@ create table order_delivery
 create table order_delivery_address
 (
     order_delivery_address_id bigint       not null auto_increment,
+    oda_order_id char(36) not null ,
     zip_code                  varchar(20)  not null,
     location_address          varchar(100) not null,
     detail_address            varchar(100) not null,
     recipient                 varchar(100) not null,
     recipient_phone           varchar(15)  not null,
-    primary key (order_delivery_address_id)
+    primary key (order_delivery_address_id),
+    foreign key (oda_order_id) references orders(order_id)
 );
 
 
@@ -90,11 +92,14 @@ create table order_product_wrapping
 create table payment
 (
     payment_id        bigint         not null auto_increment,
-    status            int            not null,
+    p_order_id        char(36)       not null,
+    status            varchar(100)   not null,
     payment_key       varchar(200)   not null,
     paid_at           datetime       not null default current_timestamp,
     amount            decimal(20, 2) not null check ( amount >= 0 ),
     method            varchar(50)    not null,
     easy_pay_provider varchar(100)   null,
-    primary key (payment_id)
+    primary key (payment_id),
+    foreign key (p_order_id) references orders (order_id)
 );
+
