@@ -19,7 +19,7 @@ public class Payment {
     @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String paymentKey;
 
     @Column(nullable = false)
@@ -28,10 +28,10 @@ public class Payment {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Column(length = 50, nullable = false)
     private String method;
 
-    @Column
+    @Column(length = 100)
     private String easyPayProvider;
 
     @Setter
