@@ -4,6 +4,7 @@ import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
+import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
@@ -11,6 +12,8 @@ import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,16 +41,16 @@ public class CategoryService {
         return convertToDto(category);
     }
 
-    public List<CategoryResponseDto> findAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            throw new CategoryNotFoundException("Category list is empty");
-        }
-
-        return categories.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+//    public List<CategoryResponseDto> findAllCategories() {
+//        List<Category> categories = categoryRepository.findAll();
+//        if (categories.isEmpty()) {
+//            throw new CategoryNotFoundException("Category list is empty");
+//        }
+//
+//        return categories.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//    }
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
         if (parentCategoryDto == null || parentCategoryDto.getCategoryId() == null) {
@@ -92,7 +95,7 @@ public class CategoryService {
         // 부모 카테고리 확인 및 깊이 계산
         if (categoryRegisterDto.getParentCategoryId() != null) {
             parentCategory = categoryRepository.findByCategoryId(categoryRegisterDto.getParentCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found, id: " + categoryRegisterDto.getParentCategoryId()));
+                    .orElseThrow(() -> new CategoryNotFoundException("Parent category not found, id: " + categoryRegisterDto.getParentCategoryId()));
             categoryDepth = parentCategory.getCategoryDepth() + 1;
         } else {
             categoryDepth = 0; // 루트 카테고리
@@ -123,6 +126,48 @@ public class CategoryService {
         categoryRepository.deleteById(categoryId);
     }
 
+
+//    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
+//        return categoryRepository.findByCategoryNameContaining(keyword)
+//                .stream()
+//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<CategorySimpleResponseDto> findAllCategories() {
+//        List<Category> categories = categoryRepository.findAll();
+//        if (categories.isEmpty()) {
+//            throw new CategoryNotFoundException("Category list is empty");
+//        }
+//
+//        return categories
+//                .stream()
+//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+//                .collect(Collectors.toList());
+//    }
+public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword, Pageable pageable) {
+    Page<Category> categories = categoryRepository.findByCategoryNameContaining(keyword, pageable);
+    return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
+}
+
+    public Page<CategorySimpleResponseDto> findAllCategories(Pageable pageable) {
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        if (categories.isEmpty()) {
+            throw new CategoryNotFoundException("Category list is empty");
+        }
+        return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
+    }
+
+    public void deleteCategory(Long categoryId) {
+        if(!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+        }
+
+        categoryRepository.deleteCategoryAndChildren(categoryId);
+    }
+
+
+
     // Category 엔티티를 CategoryResponseDto로 변환하는 메서드
     private CategoryResponseDto convertToDto(Category category) {
         List<CategoryResponseDto> childCategories = category.getChildrenCategory().stream()
@@ -144,11 +189,4 @@ public class CategoryService {
         );
     }
 
-
-    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-        return categoryRepository.findByCategoryNameContaining(keyword)
-                .stream()
-                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-                .collect(Collectors.toList());
-    }
 }
