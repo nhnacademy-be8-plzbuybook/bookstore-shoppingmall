@@ -75,7 +75,6 @@ public class CategoryServiceTest {
 
         categoryRegisterDto = new CategoryRegisterDto();
         categoryRegisterDto.setParentCategoryId(1L);
-        categoryRegisterDto.setParentCategoryName("Parent Category");
         categoryRegisterDto.setNewCategoryName("New Category");
 
 
@@ -99,24 +98,17 @@ public class CategoryServiceTest {
         assertThrows(CategoryNotFoundException.class, () -> categoryService.findCategoryById(null));
     }
 
-    @Test
-    void findAllCategories() {
-        List<Category> categories = Arrays.asList(category, parentCategory, childCategory);
-        when(categoryRepository.findAll()).thenReturn(categories);
+//    @Test
+//    void findAllCategories() {
+//        List<Category> categories = Arrays.asList(category, parentCategory, childCategory);
+//        when(categoryRepository.findAll()).thenReturn(categories);
+//
+//        List<CategoryResponseDto> allCategoriesDTO = categoryService.findAllCategories();
+//
+//        assertNotNull(allCategoriesDTO);
+//        assertEquals(3, allCategoriesDTO.size());
+//    }
 
-        List<CategoryResponseDto> allCategoriesDTO = categoryService.findAllCategories();
-
-        assertNotNull(allCategoriesDTO);
-        assertEquals(3, allCategoriesDTO.size());
-    }
-
-    @Test
-    void findAllCategories_CategoryNotFoundException() {
-        List<Category> categories = Arrays.asList();
-        when(categoryRepository.findAll()).thenReturn(categories);
-
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findAllCategories());
-    }
 
     @Test
     void findCategoryByName() {

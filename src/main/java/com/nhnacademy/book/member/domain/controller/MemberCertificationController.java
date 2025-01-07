@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.member.domain.MemberCertification;
 import com.nhnacademy.book.member.domain.dto.certification.*;
 import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
 import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
@@ -55,6 +54,13 @@ public class MemberCertificationController {
     @GetMapping("/members/certification")
     public ResponseEntity<List<CertificationResponseDto>> getAllCertification(){
         return ResponseEntity.ok(memberCertificationService.getAllCertifications());
+    }
+
+    // 마지막 로그인 일시
+    @PostMapping("/members/last-login")
+    public ResponseEntity<LastLoginResponseDto> updateLastLoginByEmail(@RequestBody LastLoginRequestDto lastLoginRequestDto) {
+        LastLoginResponseDto lastLoginResponseDto = memberCertificationService.updateLastLoginByEmail(lastLoginRequestDto);
+        return ResponseEntity.ok(lastLoginResponseDto);
     }
 
 }
