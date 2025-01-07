@@ -93,7 +93,7 @@ public class CategoryService {
         // 부모 카테고리 확인 및 깊이 계산
         if (categoryRegisterDto.getParentCategoryId() != null) {
             parentCategory = categoryRepository.findByCategoryId(categoryRegisterDto.getParentCategoryId())
-                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found, id: " + categoryRegisterDto.getParentCategoryId()));
+                    .orElseThrow(() -> new CategoryNotFoundException("Parent category not found, id: " + categoryRegisterDto.getParentCategoryId()));
             categoryDepth = parentCategory.getCategoryDepth() + 1;
         } else {
             categoryDepth = 0; // 루트 카테고리
@@ -124,6 +124,36 @@ public class CategoryService {
         categoryRepository.deleteById(categoryId);
     }
 
+
+    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
+        return categoryRepository.findByCategoryNameContaining(keyword)
+                .stream()
+                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<CategorySimpleResponseDto> findAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        if (categories.isEmpty()) {
+            throw new CategoryNotFoundException("Category list is empty");
+        }
+
+        return categories
+                .stream()
+                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
+                .collect(Collectors.toList());
+    }
+
+    public void deleteCategory(Long categoryId) {
+        if(!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+        }
+
+        categoryRepository.deleteCategoryAndChildren(categoryId);
+    }
+
+
+
     // Category 엔티티를 CategoryResponseDto로 변환하는 메서드
     private CategoryResponseDto convertToDto(Category category) {
         List<CategoryResponseDto> childCategories = category.getChildrenCategory().stream()
@@ -145,23 +175,4 @@ public class CategoryService {
         );
     }
 
-
-    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-        return categoryRepository.findByCategoryNameContaining(keyword)
-                .stream()
-                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-                .collect(Collectors.toList());
-    }
-
-    public List<CategorySimpleResponseDto> findAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            throw new CategoryNotFoundException("Category list is empty");
-        }
-
-        return categories
-                .stream()
-                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-                .collect(Collectors.toList());
-    }
 }
