@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -76,7 +77,10 @@ public class OrderCrudServiceImpl implements OrderCrudService {
      */
     private String generateOrderNumber(LocalDateTime orderedAt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmssSSSS");
-        return orderedAt.format(formatter);
+        String orderedAtString = orderedAt.format(formatter);
+
+        int randomValue = new Random().nextInt(9999); // 0~9999 랜덤 값
+        return orderedAtString + "-" + String.format("%04d", randomValue);
     }
 
 
