@@ -377,16 +377,16 @@ public class MemberServiceImpl implements MemberService {
         MemberStatus dormantStatus = memberStatusRepository.findByMemberStateName("DORMANT")
                 .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
 
-        // 상태 변경
-        for (MemberCertification memberCertification : inactiveMember) {
-            Member member = memberCertification.getMember();
-            member.setMemberStatus(dormantStatus);
+        for (MemberCertification certification : inactiveMember) {
+            Member member = certification.getMember();
+            member.setMemberStatus(dormantStatus); // 상태 변경
         }
 
-            memberRepository.saveAll(inactiveMember.stream()
-                    .map(MemberCertification::getMember)
-                    .toList());
-
+        memberRepository.saveAll(
+                inactiveMember.stream()
+                        .map(MemberCertification::getMember)
+                        .toList()
+        );
     }
 
     //header 이메일을 통해 회원 정보 수정

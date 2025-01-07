@@ -815,6 +815,35 @@ class MemberServiceImplTest {
         verify(memberRepository, never()).save(any());
     }
 
+//    @Test
+//    @DisplayName("회원 상태를 DORMANT로 변경시키는지")
+//    void updateDormantStatus_success() {
+//        LocalDateTime fixedNow = LocalDateTime.of(2024, 10, 6, 9, 28, 52);
+//        LocalDateTime threeMonthsAgo = fixedNow.minusMonths(3);
+//        String email = "test@naver.com";
+//        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("10000.0"), LocalDateTime.now());
+//        MemberStatus dormantStatus = new MemberStatus(2L,"DORMANT");
+//        MemberStatus activeStatus = new MemberStatus(1L, "ACTIVE");
+//
+//        Member member = new Member(1L, memberGrade,activeStatus, "test", "010-1234-5678", "test@naver.com", LocalDate.of(2002, 7, 23), "Password");
+//        Member member2 = new Member(2L, memberGrade,activeStatus, "test2", "010-1234-5679", "test2@naver.com", LocalDate.of(2002, 7, 23), "Password");
+//
+//        MemberCertification certification = new MemberCertification(
+//                1L, member, threeMonthsAgo.minusDays(1), "일반"
+//        );
+//
+//        doReturn(List.of(certification)).when(memberCertificationRepository).findInactiveMember(threeMonthsAgo);
+//        doReturn(Optional.of(dormantStatus)).when(memberStatusRepository).findByMemberStateName("DORMANT");
+//
+//        memberService.updateDormantStatus();
+//
+//        assertEquals("DORMANT", member.getMemberStatus().getMemberStateName());
+//        verify(memberRepository).saveAll(argThat(members ->
+//                members.contains(member) // 저장된 리스트에 해당 멤버가 포함되어 있는지 확인
+//        ));
+//
+//    }
+
     //TODO 관리자 수정 service test
 
 }
