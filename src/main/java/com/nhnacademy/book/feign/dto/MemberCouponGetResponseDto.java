@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberCouponGetResponseDto {
+    private Long id; // 쿠폰의 식별 ID
     private String code; // 쿠폰 코드
     private String status; // 쿠폰 상태(미사용, 사용완료, 기한만료, 취소)
     private LocalDateTime issuedAt; // 쿠폰 발급날짜
