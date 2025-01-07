@@ -31,7 +31,7 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
         assert resp != null;
         ReadGuestCartBookResponseDto updatedResp = ReadGuestCartBookResponseDto.builder()
                 .cartBookId(resp.cartBookId())
-                .bookId(resp.bookId())
+                .sellingBookId(resp.sellingBookId())
                 .bookTitle(resp.bookTitle())
                 .sellingBookPrice(resp.sellingBookPrice())
                 .imageUrl(resp.imageUrl())
