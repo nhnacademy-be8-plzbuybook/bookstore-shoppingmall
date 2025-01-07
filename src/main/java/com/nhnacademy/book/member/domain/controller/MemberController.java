@@ -105,7 +105,7 @@ public class MemberController {
 
     @PostMapping("/members/email")
     public ResponseEntity<Void> updateEmail(@RequestHeader("X-USER-ID") String email, @RequestBody MemberModifyByAdminRequestDto memberModifyByAdminRequestDto) {
-        memberService.updateMemberByAdmin(email, memberModifyByAdminRequestDto);
+        memberService.updateMemberByAdmin(memberModifyByAdminRequestDto.getOriginalEmail(), memberModifyByAdminRequestDto);
         return ResponseEntity.ok().build();
     }
 }
