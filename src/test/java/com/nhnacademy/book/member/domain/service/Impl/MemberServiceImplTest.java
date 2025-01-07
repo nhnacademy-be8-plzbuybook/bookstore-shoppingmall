@@ -8,11 +8,14 @@ import com.nhnacademy.book.member.domain.dto.MemberModifyRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberSearchRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberSearchResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.member.domain.repository.MemberCertificationRepository;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
+import com.nhnacademy.book.point.service.Impl.MemberPointServiceImpl;
+import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -58,6 +61,9 @@ class MemberServiceImplTest {
     private MemberAuthRepository memberAuthRepository;
 
     @Mock
+    private MemberCertificationRepository memberCertificationRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
@@ -69,6 +75,8 @@ class MemberServiceImplTest {
 
     @InjectMocks
     private MemberServiceImpl memberService;
+    @InjectMocks
+    private MemberPointServiceImpl memberPointService;
 
     @BeforeEach
     void setUp() {
@@ -93,6 +101,7 @@ class MemberServiceImplTest {
         Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(), "encodedPassword");
         Auth auth = new Auth(2L, "USER");
         MemberAuth memberAuth = new MemberAuth(1L, auth, member);
+
 
         //mocking
         when(memberRepository.existsByEmail(memberCreateRequestDto.getEmail())).thenReturn(false);

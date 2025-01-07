@@ -141,4 +141,18 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
                         memberCertification.getCertificationMethod()))
                 .toList();
     }
+
+    @Override
+    public LastLoginResponseDto updateLastLoginByEmail(LastLoginRequestDto lastLoginRequestDto) {
+        Member member = memberRepository.findByEmail(lastLoginRequestDto.getEmail())
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일의 회원을 찾을 수 없습니다."));
+        MemberCertification certification = memberCertificationRepository.findByMember_MemberId(member.getMemberId())
+                .orElseThrow(() -> new CertificationNotFoundException("회원 인증 정보를 찾을 수 없습니다."));
+
+        certification.setMember(member);
+        certification.setLastLogin(LocalDateTime.now());
+        memberCertificationRepository.save(certification);
+
+        return new LastLoginResponseDto(member.getEmail(), certification.getLastLogin());
+    }
 }
