@@ -75,7 +75,6 @@ public class CategoryServiceTest {
 
         categoryRegisterDto = new CategoryRegisterDto();
         categoryRegisterDto.setParentCategoryId(1L);
-        categoryRegisterDto.setParentCategoryName("Parent Category");
         categoryRegisterDto.setNewCategoryName("New Category");
 
 
