@@ -4,12 +4,10 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.OrderDeliveryAddressDto;
 import com.nhnacademy.book.order.repository.OrderDeliveryAddressRepository;
 import com.nhnacademy.book.order.repository.OrderQueryRepository;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductDto;
-import com.nhnacademy.book.payment.dto.PaymentDto;
 import com.nhnacademy.book.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderDetail getOrderDetail(String orderId) {
         List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(orderId);
-        OrderDetail orderDetail = orderQueryRepository.findOrderDetail(orderId);
+        OrderDetail orderDetail = orderQueryRepository.findOrderDetailById(orderId).orElseThrow(() -> new NotFoundException("주문 상세정보를 찾을 수 없습니다. 주문아이디: "+ orderId));
         orderDetail.setOrderProducts(orderProducts);
 
         return orderDetail;
