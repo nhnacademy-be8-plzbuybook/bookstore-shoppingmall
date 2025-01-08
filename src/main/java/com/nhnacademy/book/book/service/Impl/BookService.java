@@ -45,6 +45,15 @@ public class BookService {
         this.sellingBookRepository =  sellingBookRepository;
     }
 
+    public boolean existsBook(Long bookId){
+        if(bookRepository.existsById(bookId)){
+            return true;
+        } else {
+            throw new BookNotFoundException("Book not found");
+        }
+    }
+
+
     public List<BookDetailResponseDto> getAllBooks() {
         List<Book> books = bookRepository.findAll();
 

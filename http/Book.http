@@ -169,3 +169,18 @@ Content-Type: application/json
 POST http://localhost:8090/api/books/sync/itemid/9788972558897
 
 
+### 태그 생성
+POST localhost:8090/api/tags?bookId=1
+Content-Type: application/json
+
+{
+  "tagName": "버러지태그4"
+}
+
+
+
+### 태그랑 북 연결
+POST localhost:8090/api/book-tags?bookId=1&tagId=12
+
+###
+GET localhost:8090/api/book-tags?tagId=12
