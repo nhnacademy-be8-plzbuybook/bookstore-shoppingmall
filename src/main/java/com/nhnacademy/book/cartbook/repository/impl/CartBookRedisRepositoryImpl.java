@@ -1,6 +1,6 @@
 package com.nhnacademy.book.cartbook.repository.impl;
 
-import com.nhnacademy.book.cartbook.dto.response.ReadGuestCartBookResponseDto;
+import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,17 +19,17 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
     }
 
     @Override
-    public Long create(String hashName, Long id, ReadGuestCartBookResponseDto readGuestCartBookResponseDto) {
-        cartRedisTemplate.opsForHash().put(hashName + ":", id.toString(), readGuestCartBookResponseDto);
+    public Long create(String hashName, Long id, ReadCartBookResponseDto readCartBookResponseDto) {
+        cartRedisTemplate.opsForHash().put(hashName + ":", id.toString(), readCartBookResponseDto);
         cartRedisTemplate.expire(hashName+":", 1, TimeUnit.HOURS);
         return id;
     }
 
     @Override
     public Long update(String hashName, Long id, int quantity) {
-        ReadGuestCartBookResponseDto resp = (ReadGuestCartBookResponseDto) cartRedisTemplate.opsForHash().get(hashName + ":", id.toString());
+        ReadCartBookResponseDto resp = (ReadCartBookResponseDto) cartRedisTemplate.opsForHash().get(hashName + ":", id.toString());
         assert resp != null;
-        ReadGuestCartBookResponseDto updatedResp = ReadGuestCartBookResponseDto.builder()
+        ReadCartBookResponseDto updatedResp = ReadCartBookResponseDto.builder()
                 .cartBookId(resp.cartBookId())
                 .sellingBookId(resp.sellingBookId())
                 .bookTitle(resp.bookTitle())
@@ -37,8 +37,6 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
                 .imageUrl(resp.imageUrl())
                 .quantity(quantity) // 수량만 업데이트
                 .sellingBookStock(resp.sellingBookStock())
-                .sellingBookPackageable(resp.sellingBookPackageable())
-                .used(resp.used())
                 .build();
         cartRedisTemplate.opsForHash().put(hashName + ":", id.toString(), updatedResp);
         cartRedisTemplate.expire(hashName+":", 1, TimeUnit.HOURS);
@@ -57,12 +55,12 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
     }
 
     @Override
-    public List<ReadGuestCartBookResponseDto> readAllHashName(String hashName) {
+    public List<ReadCartBookResponseDto> readAllHashName(String hashName) {
         List<Object> bookCartList = cartRedisTemplate.opsForHash().values(hashName + ":");
 
         return bookCartList
                 .stream()
-                .map(ReadGuestCartBookResponseDto.class::cast)
+                .map(ReadCartBookResponseDto.class::cast)
                 .toList();
     }
 
@@ -77,8 +75,8 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
     }
 
     @Override
-    public void loadData(List<ReadGuestCartBookResponseDto> bookCartGuestResponses, String hashName) {
-        for (ReadGuestCartBookResponseDto bookCartGuestResponseDto : bookCartGuestResponses) {
+    public void loadData(List<ReadCartBookResponseDto> bookCartGuestResponses, String hashName) {
+        for (ReadCartBookResponseDto bookCartGuestResponseDto : bookCartGuestResponses) {
             if(Objects.nonNull(bookCartGuestResponseDto)) {
                 cartRedisTemplate.opsForHash().put(hashName + ":", bookCartGuestResponseDto.cartBookId().toString(), bookCartGuestResponseDto);
             }

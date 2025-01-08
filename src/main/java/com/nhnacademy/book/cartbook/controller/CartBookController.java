@@ -12,27 +12,27 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/bookstore/carts")
-public class CartBookMemberController {
+public class CartBookController {
     private final CartBookMemberService cartBookMemberService;
     private final CartBookGuestService cartBookGuestService;
 
-    public CartBookMemberController(CartBookMemberService cartBookMemberService, CartBookGuestService cartBookGuestService) {
+    public CartBookController(CartBookMemberService cartBookMemberService, CartBookGuestService cartBookGuestService) {
         this.cartBookMemberService = cartBookMemberService;
         this.cartBookGuestService = cartBookGuestService;
     }
 
 
     @GetMapping("/{cartBookId}")
-    public ResponseEntity<List<ReadGuestCartBookResponseDto>> getBookCart(
+    public ResponseEntity<List<ReadCartBookResponseDto>> getBookCart(
             @PathVariable Long cartBookId) {
             //@RequestHeader(value = "X-USER-ID", required = false) String email
 
-        List<ReadGuestCartBookResponseDto> responses = cartBookGuestService.readAllCartBook(cartBookId);
+        List<ReadCartBookResponseDto> responses = cartBookGuestService.readAllCartBook(cartBookId);
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping()
-    public ResponseEntity<List<ReadAllMemberCartBookResponseDto>> getAllCartBooks
+    public ResponseEntity<List<ReadCartBookResponseDto>> getAllCartBooks
             (@RequestHeader(value = "X-USER-ID", required = false) String email) {
 
         return ResponseEntity.ok(cartBookMemberService.readAllCartMember(email));

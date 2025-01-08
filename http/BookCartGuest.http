@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "cartBookId": 5,
-  "sellingBookId": 260,
+  "sellingBookId": 240,
   "quantity": 1
 }
 
@@ -21,7 +21,7 @@ POST http://localhost:8090/api/bookstore/carts
 Content-Type: application/json
 
 {
-  "sellingBookId": 260,
+  "sellingBookId": 1,
   "quantity": 1
 }
 
