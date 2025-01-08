@@ -102,6 +102,7 @@ public class OrderQueryRepository {
     public OrderDetail findOrderDetail(String orderId) {
         return queryFactory
                 .select(new QOrderDetail(
+                        orders.id,
                         orders.number,
                         orders.status,
                         orders.deliveryFee,
