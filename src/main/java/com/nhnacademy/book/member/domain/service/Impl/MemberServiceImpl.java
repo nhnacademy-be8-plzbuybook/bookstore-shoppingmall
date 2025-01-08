@@ -19,10 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Lock;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final CouponClient couponClient;
     private final AuthRepository authRepository;
     private final MemberCertificationRepository memberCertificationRepository;
+    private final Clock clock;
 
     //회원 생성
     @Override
@@ -226,7 +229,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
 
-        memberRepository.save(member);
+//        memberRepository.save(member);
 
     }
 
@@ -366,27 +369,27 @@ public class MemberServiceImpl implements MemberService {
 
     // 3개월 이상 미로그인시 (active -> dormant) 로 변경
     public void updateDormantStatus() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+        LocalDateTime threeMonthsAgo = LocalDateTime.now(clock).minusMonths(3);
 
-        List<MemberCertification> inactiveMember = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
+        List<MemberCertification> inactiveMembers = memberCertificationRepository.findInactiveMember(threeMonthsAgo);
 
-        if (inactiveMember.isEmpty()) {
+        if (inactiveMembers.isEmpty()) {
             // 3개월 이상 미로그인 회원이 없으면 작업 종료
             return;
         }
         MemberStatus dormantStatus = memberStatusRepository.findByMemberStateName("DORMANT")
                 .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
 
-        // 상태 변경
-        for (MemberCertification memberCertification : inactiveMember) {
-            Member member = memberCertification.getMember();
-            member.setMemberStatus(dormantStatus);
+        for (MemberCertification certification : inactiveMembers) {
+            Member member = certification.getMember();
+            member.setMemberStatus(dormantStatus); // 상태 변경
         }
 
-            memberRepository.saveAll(inactiveMember.stream()
-                    .map(MemberCertification::getMember)
-                    .toList());
-
+        memberRepository.saveAll(
+                inactiveMembers.stream()
+                        .map(MemberCertification::getMember)
+                        .toList()
+        );
     }
 
     //header 이메일을 통해 회원 정보 수정
@@ -396,7 +399,7 @@ public class MemberServiceImpl implements MemberService {
         boolean isModified = false;
 
         // 기존 회원 정보 조회
-        Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getEmail())
+        Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getOriginalEmail())
                 .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다."));
 
         // 이름 수정

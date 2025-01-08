@@ -23,10 +23,10 @@ public enum OrderStatus {
         this.status = status;
     }
 
-    public static String fromCode(int code) {
+    public static OrderStatus fromCode(int code) {
         for (OrderStatus status : OrderStatus.values()) {
             if (status.getCode() == code) {
-                return status.getStatus();
+                return status;
             }
         }
         throw new IllegalArgumentException("Invalid payment status code: " + code);

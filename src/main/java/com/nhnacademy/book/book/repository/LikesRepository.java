@@ -1,13 +1,17 @@
 package com.nhnacademy.book.book.repository;
 
+import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.Likes;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.member.domain.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +27,8 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     Optional<Likes> findByMemberAndSellingBook(Member member, SellingBook sellingBook);
 
     long countBySellingBook(SellingBook sellingBook);
+
+    //특정 회원이 좋아요 누른 책 리스트 조회
+    @Query("SELECT l.sellingBook FROM Likes l WHERE l.member.memberId = :memberId")
+    Page<SellingBook> findLikedBooksByMemberId(Long memberId, Pageable pageable);
 }

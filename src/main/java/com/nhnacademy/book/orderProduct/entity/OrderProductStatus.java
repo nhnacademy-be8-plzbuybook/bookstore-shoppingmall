@@ -18,10 +18,10 @@ public enum OrderProductStatus {
         this.status = status;
     }
 
-    public static String fromCode(int code) {
+    public static OrderProductStatus fromCode(int code) {
         for (OrderProductStatus status : OrderProductStatus.values()) {
             if (status.getCode() == code) {
-                return status.getStatus();
+                return status;
             }
         }
         throw new IllegalArgumentException("Invalid payment status code: " + code);

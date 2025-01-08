@@ -28,6 +28,14 @@ Content-Type: application/json
   "memberStateName": "ACTIVE"
 }
 
+### asd
+POST http://133.186.241.167:8200/login
+Content-Type: application/json
+
+{
+  "username": "nhnacademy",
+  "password": "nhnacademy12345*"
+}
 
 ### 회원 상태 추가2 (값 추가를 위함)
 POST http://localhost:8090/api/members/status

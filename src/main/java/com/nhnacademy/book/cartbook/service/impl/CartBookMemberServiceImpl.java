@@ -9,16 +9,15 @@ import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.cart.exception.CartNotFoundException;
 import com.nhnacademy.book.cart.repository.CartRepository;
 import com.nhnacademy.book.cartbook.dto.request.*;
-import com.nhnacademy.book.cartbook.dto.response.CreateMemberCartBookResponseDto;
-import com.nhnacademy.book.cartbook.dto.response.ReadAllMemberCartBookResponseDto;
-import com.nhnacademy.book.cartbook.dto.response.ReadMemberCartBookResponseDto;
-import com.nhnacademy.book.cartbook.dto.response.UpdateMemberCartBookResponseDto;
+import com.nhnacademy.book.cartbook.dto.response.*;
 import com.nhnacademy.book.cartbook.entity.CartBook;
-import com.nhnacademy.book.cartbook.exception.CartBookDoesNotExistException;
 import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartException;
+import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
 import com.nhnacademy.book.cartbook.repository.CartBookRepository;
 import com.nhnacademy.book.cartbook.service.CartBookMemberService;
 import com.nhnacademy.book.member.domain.Cart;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -38,156 +37,221 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
     private final MemberRepository memberRepository;
     private final BookImageRepository bookImageRepository;
     private final CartRepository cartRepository;
+    private final CartBookRedisRepository cartBookRedisRepository;
 
     public CartBookMemberServiceImpl(CartBookRepository cartBookRepository,
                                      SellingBookRepository sellingBookRepository,
                                      MemberRepository memberRepository,
                                      BookImageRepository bookImageRepository,
-                                     CartRepository cartRepository) {
+                                     CartRepository cartRepository,
+                                     CartBookRedisRepository cartBookRedisRepository) {
         this.cartBookRepository = cartBookRepository;
         this.sellingBookRepository = sellingBookRepository;
         this.memberRepository = memberRepository;
         this.bookImageRepository = bookImageRepository;
         this.cartRepository = cartRepository;
+        this.cartBookRedisRepository = cartBookRedisRepository;
     }
 
     @Override
     public List<ReadAllMemberCartBookResponseDto> readAllCartMember(String email) {
         List<ReadAllMemberCartBookResponseDto> responses = new ArrayList<>();
-        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
 
-        List<CartBook> cartBooks = cartBookRepository.findAllByCart(cart);
+        Long memberId = memberRepository.getMemberIdByEmail(email);
 
-        for (CartBook cartBook : cartBooks) {
-            String url = getBookImageUrl(cartBook.getSellingBook().getBook());
+        Optional<Cart> cartOptional = cartRepository.findByMember_MemberId(memberId);
 
-            ReadAllMemberCartBookResponseDto response = ReadAllMemberCartBookResponseDto.builder()
-                    .cartBookId(cartBook.getId())
-                    .sellingBookId(cartBook.getSellingBook().getSellingBookId())
-                    .bookTitle(cartBook.getSellingBook().getBookTitle())
-                    .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
-                    .imageUrl(url)
-                    .quantity(cartBook.getQuantity())
-                    .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                    .build();
+        Cart cart = cartOptional.orElseGet(() -> new Cart(memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("장바구니에서 해당 이메일로 가입된 회원을 찾을 수 없습니다."))));
 
-            responses.add(response);
+        cartRepository.save(cart);
+        List<ReadGuestCartBookResponseDto> redisResponselist = cartBookRedisRepository.readAllHashName("Member" + memberId);
+
+        if(redisResponselist.isEmpty()) {
+            List<CartBook> cartBookList = cartBookRepository.findAllByCart(cart);
+            for(CartBook cartBook : cartBookList) {
+                String url = getBookImageUrl(cartBook.getSellingBook().getBook());
+
+                cartBookRedisRepository.create("Member" + memberId,
+                        cartBook.getId(),
+                        ReadGuestCartBookResponseDto.builder()
+                                .cartBookId(cartBook.getId())
+                                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
+                                .bookTitle(cartBook.getSellingBook().getBookTitle())
+                                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
+                                .imageUrl(url)
+                                .quantity(cartBook.getQuantity())
+                                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
+                                .sellingBookPackageable(cartBook.getSellingBook().getSellingBookPackageable())
+                                .used(cartBook.getSellingBook().getUsed())
+                                .build()
+                );
+                responses.add(ReadAllMemberCartBookResponseDto.builder()
+                                .quantity(cartBook.getQuantity())
+                                .cartBookId(cartBook.getId())
+                                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
+                                .bookTitle(cartBook.getSellingBook().getBookTitle())
+                                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
+                                .imageUrl(url)
+                                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
+                                .build()
+                );
+            }
+            return responses;
+        } else {
+            for(ReadGuestCartBookResponseDto redisResponse : redisResponselist) {
+                responses.add(ReadAllMemberCartBookResponseDto.builder()
+                        .quantity(redisResponse.quantity())
+                        .cartBookId(redisResponse.cartBookId())
+                        .sellingBookId(redisResponse.sellingBookId())
+                        .bookTitle(redisResponse.bookTitle())
+                        .sellingBookPrice(redisResponse.sellingBookPrice())
+                        .imageUrl(redisResponse.imageUrl())
+                        .sellingBookStock(redisResponse.sellingBookStock())
+                        .build()
+                );
+            }
+            return responses;
+        }
+    }
+
+//    @Override
+//    public ReadMemberCartBookResponseDto readMemberCartBook(Long cartBookId, String email) {
+//        Long memberId = memberRepository.getMemberIdByEmail(email);
+//
+//        Optional<Cart> cartOptional = cartRepository.findByMember_MemberId(memberId);
+//
+//        Cart cart = cartOptional.orElseGet(() -> new Cart(memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new MemberNotFoundException("장바구니에서 해당 이메일로 가입된 회원을 찾을 수 없습니다."))));
+////
+////        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
+////                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
+//
+//        CartBook cartBook = cartBookRepository.findById(cartBookId)
+//                .orElseThrow(()-> new CartBookDoesNotExistException("해당 책 장바구니를 찾을 수 없습니다."));
+//
+//        return ReadMemberCartBookResponseDto.builder()
+//                .cartBookId(cartBook.getId())
+//                .quantity(cartBook.getQuantity())
+//                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
+//                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
+//                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
+//                .title(cartBook.getSellingBook().getBookTitle())
+//                .url(getBookImageUrl(cartBook.getSellingBook().getBook()))
+//                .build();
+//    }
+
+    @Override
+    public Long createBookCartMember(CreateCartBookRequestDto createCartBookRequestDto, String email) {
+        Long memberId = memberRepository.getMemberIdByEmail(email);
+
+        Optional<Cart> optionalCart = cartRepository.findByMember_MemberId(memberId);
+
+        Cart cart;
+
+        if(optionalCart.isEmpty()) {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new MemberNotFoundException("장바구니에서 찾는 해당하는 회원이 존재하지 않습니다."));
+            cart = new Cart(member);
+
+            cartRepository.save(cart);
+        } else {
+            cart = optionalCart.get();
         }
 
-        return responses;
-    }
-
-    @Override
-    public ReadMemberCartBookResponseDto readMemberCartBook(Long cartBookId, String email) {
-//        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-//                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
-
-        CartBook cartBook = cartBookRepository.findById(cartBookId)
-                .orElseThrow(()-> new CartBookDoesNotExistException("해당 책 장바구니를 찾을 수 없습니다."));
-
-        return ReadMemberCartBookResponseDto.builder()
-                .cartBookId(cartBook.getId())
-                .quantity(cartBook.getQuantity())
-                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
-                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
-                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                .title(cartBook.getSellingBook().getBookTitle())
-                .url(getBookImageUrl(cartBook.getSellingBook().getBook()))
-                .build();
-    }
-
-    @Override
-    public CreateMemberCartBookResponseDto createBookCartMember(CreateCartBookRequestDto createCartBookRequestDto, String email) {
-        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
-//
         SellingBook sellingBook = sellingBookRepository.findById(createCartBookRequestDto.sellingBookId())
                 .orElseThrow(() -> new SellingBookNotFoundException("책장바구니에서 판매책을 찾을 수 없습니다."));
 
-        Optional<CartBook> cartBookOptional = cartBookRepository
-                .findCartBookBySellingBook_SellingBookIdAndCart_CartId(createCartBookRequestDto.sellingBookId(), cart.getCartId());
+        Optional<CartBook> cartBookOptional = cartBookRepository.findBySellingBook_SellingBookIdAndCart_CartId(createCartBookRequestDto.sellingBookId(), cart.getCartId());
 
         CartBook cartBook;
 
-        if(cartBookOptional.isPresent()) { // 책 장바구니가 이미 존재하면 수량만 변경.
+        if(cartBookOptional.isPresent()) {
             cartBook = cartBookOptional.get();
             cartBook.setQuantity(cartBook.getQuantity() + createCartBookRequestDto.quantity());
         } else {
-            cartBook = new CartBook( // 책 장바구니가 없는경우 새로 생성.
+            cartBook = new CartBook(
                     createCartBookRequestDto.quantity(),
                     sellingBook,
                     cart
             );
+            cartBook = cartBookRepository.save(cartBook);
         }
 
-        cartBookRepository.save(cartBook);
-
-        String url = getBookImageUrl(cartBook.getSellingBook().getBook()); // 이미지 url 가져오기.
-
-        return CreateMemberCartBookResponseDto.builder()
-                .cartBookId(cartBook.getId())
-                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
-                .bookTitle(cartBook.getSellingBook().getBookTitle())
-                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
-                .imageUrl(url)
-                .quantity(cartBook.getQuantity())
-                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                .build();
+        cartBookRedisRepository.create("Member" + memberId,
+                cartBook.getId(),
+                ReadGuestCartBookResponseDto.builder()
+                        .cartBookId(cartBook.getId())
+                        .sellingBookId(cartBook.getSellingBook().getSellingBookId())
+                        .bookTitle(cartBook.getSellingBook().getBookTitle())
+                        .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
+                        .imageUrl(getBookImageUrl(cartBook.getSellingBook().getBook()))
+                        .quantity(cartBook.getQuantity())
+                        .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
+                        .sellingBookPackageable(cartBook.getSellingBook().getSellingBookPackageable())
+                        .used(cartBook.getSellingBook().getUsed())
+                        .build()
+        );
+        return cartBook.getId();
     }
 
 
 
 
     @Override
-    public UpdateMemberCartBookResponseDto updateBookCartMember(UpdateCartBookRequestDto updateCartBookRequestDto, String email) {
-        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
+    public Long updateBookCartMember(UpdateCartBookRequestDto updateCartBookRequestDto, String email) {
+        Long MemberId = memberRepository.getMemberIdByEmail(email);
+
+        Cart cart = cartRepository.findByMember_MemberId(MemberId)
                 .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
 
-        SellingBook sellingBook = sellingBookRepository.findById(updateCartBookRequestDto.sellingBookId())
-                .orElseThrow(()-> new SellingBookNotFoundInBookCartException("책장바구니에서 판매책을 찾을 수 없습니다."));
-
-        CartBook cartBook = cartBookRepository.findById(updateCartBookRequestDto.cartBookId())
-                .filter(book -> book.getCart().getCartId().equals(cart.getCartId()))
+        CartBook cartBook = cartBookRepository.findBySellingBook_SellingBookIdAndCart_CartId(updateCartBookRequestDto.sellingBookId(), cart.getCartId())
                 .orElseThrow(() -> new SellingBookNotFoundInBookCartException("장바구니에서 해당 책을 찾을 수 없습니다."));
 
-        cartBook.setQuantity(updateCartBookRequestDto.quantity());
-        cartBookRepository.save(cartBook);
+        cartBook.setQuantity(cartBook.getQuantity() + updateCartBookRequestDto.quantity());
 
-        String url = getBookImageUrl(cartBook.getSellingBook().getBook()); // 이미지 url 가져오기.
+        cartBook.setSellingBook(
+                sellingBookRepository.findById(updateCartBookRequestDto.sellingBookId())
+                        .orElseThrow(() -> new SellingBookNotFoundException("책장바구니에서 판매책을 찾을 수 없습니다."))
+        );
 
-        return UpdateMemberCartBookResponseDto.builder()
-                .bookCartId(cartBook.getId())
-                .sellingBookId(sellingBook.getSellingBookId())
-                .sellingBookPrice(sellingBook.getSellingBookPrice())
-                .url(url)
-                .title(sellingBook.getBookTitle())
-                .quantity(cartBook.getQuantity())
-                .sellingBookStock(sellingBook.getSellingBookStock())
-                .build();
+        cartBook.setCart(cart);
+
+        if(cartBook.getQuantity() <= 0) {
+            cartBookRepository.deleteByCart(cart);
+            cartBookRedisRepository.delete("Member" + MemberId, cartBook.getId());
+        } else {
+            cartBookRepository.save(cartBook);
+            cartBookRedisRepository.update("Member" + MemberId, cartBook.getId(), cartBook.getQuantity());
+        }
+
+        return cartBook.getId();
     }
 
     @Override
-    public ResponseEntity<Long> deleteBookCartMember(Long bookCartId, String email) {
-        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
+    public String deleteBookCartMember(Long bookCartId, String email) {
+        Long memberId = memberRepository.getMemberIdByEmail(email);
+        cartBookRepository.delete(
+                cartBookRepository.findById(bookCartId)
+                        //.filter(book -> book.getCart().getMember().getEmail().equals(email))
+                        .orElseThrow(() -> new IllegalArgumentException("장바구니에서 해당 상품을 찾을 수 없습니다."))
+        );
+        cartBookRedisRepository.delete("Member" + memberId, bookCartId);
 
-        CartBook cartBook = cartBookRepository.findById(bookCartId)
-                .filter(book -> book.getCart().getCartId().equals(cart.getCartId()))
-                .orElseThrow(() -> new IllegalArgumentException("장바구니에서 해당 상품을 찾을 수 없습니다."));
-
-        cartBookRepository.delete(cartBook);
-        return ResponseEntity.ok(cartBook.getId());
+        return email;
     }
 
 
     @Override
-    public ResponseEntity<String> deleteAllBookCartMember(String email) {
-        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
+    public String deleteAllBookCartMember(String email) {
+        Long memberId = memberRepository.getMemberIdByEmail(email);
+
+        Cart cart = cartRepository.findByMember_MemberId(memberId)
+                .orElseThrow(() -> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
 
         cartBookRepository.deleteByCart(cart);
-        return ResponseEntity.ok(email);
+        cartBookRedisRepository.deleteAll("Member" + memberId);
+        return email;
     }
 
 

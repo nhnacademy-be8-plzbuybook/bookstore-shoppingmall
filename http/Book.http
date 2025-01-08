@@ -29,6 +29,9 @@ GET http://localhost:8090/api/publishers/search/204
 ### 작가아이디로 작가가 쓴 책 조회
 GET http://localhost:8090/api/books/search/test/413
 
+### 카테고리
+GET localhost:8090/api/categories?keyword=판타지
+
 ### 출판사
 POST http://localhost:8090/api/publishers
 Content-Type: application/json

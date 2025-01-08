@@ -1,7 +1,5 @@
 package com.nhnacademy.book.member.domain.controller;//package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.cart.service.CartService;
-import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
@@ -16,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -30,9 +27,6 @@ class MemberControllerTest {
 
     @Mock
     private MemberService memberService;
-
-    @Mock
-    private CartService cartService;
 
     @InjectMocks
     private MemberController memberController;
@@ -331,6 +325,26 @@ class MemberControllerTest {
         assertEquals("3개월 이상 미로그인 회원이 DORMANT로 변경되었습니다.", responseEntity.getBody());
     }
 
-    //TODO 관리자 수정 controller 테스트 
+    @Test
+    @DisplayName("관리자가 회원의 이메일을 수정")
+    void updateEmail_success() {
+        String email = "yoonwlgh12@naver.com";
+
+        MemberModifyByAdminRequestDto memberModifyByAdminRequestDto = new MemberModifyByAdminRequestDto();
+        memberModifyByAdminRequestDto.setOriginalEmail("yoonwlgh12@naver.com");
+        memberModifyByAdminRequestDto.setName("윤지호");
+        memberModifyByAdminRequestDto.setPhone("010-7237-3951");
+        memberModifyByAdminRequestDto.setEmail("newemail@naver.com");
+        memberModifyByAdminRequestDto.setBirth(LocalDate.of(2000, 3, 9));
+        memberModifyByAdminRequestDto.setMemberGradeId(1L);
+        memberModifyByAdminRequestDto.setMemberStateId(1L);
+
+        doNothing().when(memberService).updateMemberByAdmin(eq(email), eq(memberModifyByAdminRequestDto));
+
+        ResponseEntity<Void> responseEntity = memberController.updateEmail(email, memberModifyByAdminRequestDto);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        verify(memberService, times(1)).updateMemberByAdmin(eq(email), eq(memberModifyByAdminRequestDto));
+    }
 }
 

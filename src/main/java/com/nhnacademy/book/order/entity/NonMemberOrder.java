@@ -16,13 +16,13 @@ public class NonMemberOrder {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "mo_order_id", referencedColumnName = "order_id")
+    @JoinColumn(name = "nmo_order_id", referencedColumnName = "order_id")
     private Orders order;
 
-    private String nonMemberOrderPassword;
+    private String password;
 
-    public NonMemberOrder(Orders order, String nonMemberOrderPassword) {
+    public NonMemberOrder(Orders order, String password) {
         this.order = order;
-        this.nonMemberOrderPassword = nonMemberOrderPassword;
+        this.password = password;
     }
 }
