@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderDeliveryRegisterRequestDto;
+import com.nhnacademy.book.order.entity.OrderDelivery;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.repository.OrderDeliveryRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -16,9 +17,10 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
     private final OrderRepository orderRepository;
 
     @Override
-    public String registerOrderDelivery(OrderDeliveryRegisterRequestDto registerRequest) {
+    public Long registerOrderDelivery(OrderDeliveryRegisterRequestDto registerRequest) {
         Orders order = orderRepository.findById(registerRequest.getOrderId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+        OrderDelivery savedOrderDelivery = orderDeliveryRepository.save(registerRequest.toEntity(order));
 
-        return "";
+        return savedOrderDelivery.getId();
     }
 }
