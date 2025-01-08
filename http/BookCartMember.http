@@ -3,10 +3,15 @@ GET http://localhost:8090/api/bookstore/carts
 Content-Type: application/json
 X-USER-ID: cart@naver.com
 
-### 회원 장바구니 단일 조회
-GET http://localhost:8090/api/bookstore/carts/3
+### 회원 장바구니 등록
+POST http://localhost:8090/api/bookstore/carts
 Content-Type: application/json
 X-USER-ID: cart@naver.com
+
+{
+  "sellingBookId": 3,
+  "quantity": 3
+}
 
 ### 회원 장바구니 수정
 PUT http://localhost:8090/api/bookstore/carts
@@ -14,19 +19,9 @@ Content-Type: application/json
 X-USER-ID: cart@naver.com
 
 {
-  "cartBookId": 2,
-  "sellingBookId": 259,
-  "quantity": 1
-}
-
-### 회원 장바구니 등록
-POST http://localhost:8090/api/bookstore/carts
-Content-Type: application/json
-X-USER-ID: cart@naver.com
-
-{
-  "sellingBookId": 265,
-  "quantity": 1
+  "cartBookId": 4,
+  "sellingBookId": 1,
+  "quantity": 2
 }
 
 ### 회원 장바구니 삭제
@@ -35,13 +30,20 @@ Content-Type: application/json
 X-USER-ID: cart@naver.com
 
 {
-  "cartId": 1,
-  "cartBookId": 2
+  "cartId": 18,
+  "cartBookId": 5
 }
 
 
 ### 회원 장바구니 전체 삭제
-DELETE http://localhost:8090/api/bookstore/carts/1
+DELETE http://localhost:8090/api/bookstore/carts/18
+Content-Type: application/json
+X-USER-ID: cart@naver.com
+
+
+
+### 회원 장바구니 단일 조회
+GET http://localhost:8090/api/bookstore/carts/18
 Content-Type: application/json
 X-USER-ID: cart@naver.com
 
