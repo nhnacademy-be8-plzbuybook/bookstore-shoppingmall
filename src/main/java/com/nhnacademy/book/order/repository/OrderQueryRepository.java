@@ -1,9 +1,6 @@
 package com.nhnacademy.book.order.repository;
 
-import com.nhnacademy.book.order.dto.OrderDetail;
-import com.nhnacademy.book.order.dto.OrderDto;
-import com.nhnacademy.book.order.dto.QOrderDetail;
-import com.nhnacademy.book.order.dto.QOrderDto;
+import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.dto.orderRequests.QOrderDeliveryAddressDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.orderProduct.dto.OrderProductDto;
@@ -30,6 +27,7 @@ import static com.nhnacademy.book.book.entity.QSellingBook.sellingBook;
 import static com.nhnacademy.book.member.domain.QMember.member;
 import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
+import static com.nhnacademy.book.order.entity.QOrderDelivery.orderDelivery;
 import static com.nhnacademy.book.order.entity.QOrderDeliveryAddress.orderDeliveryAddress;
 import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
@@ -117,6 +115,11 @@ public class OrderQueryRepository {
                                 orderDeliveryAddress.recipient,
                                 orderDeliveryAddress.recipientPhone
                         ),
+                        new QOrderDeliveryDto(
+                                orderDelivery.deliveryCompany,
+                                orderDelivery.trackingNumber,
+                                orderDelivery.registeredAt
+                        ),
                         new QPaymentDto(
                                 payment.amount,
                                 payment.method,
@@ -127,9 +130,11 @@ public class OrderQueryRepository {
                 .from(orders)
                 .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
                 .leftJoin(payment).on(payment.orders.eq(orders))
+                .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
                 .where(orders.id.eq(orderId))
                 .fetchOne();
     }
+
 
     /**
      * 주문상품 조회
@@ -163,23 +168,6 @@ public class OrderQueryRepository {
 
         return orderProductDtos;
     }
-
-
-//    public PaymentDto findOrderPayment(String orderId) {
-//        PaymentDto paymentDto = queryFactory
-//                .select(Projections.fields(PaymentDto.class,
-//                        payment.amount,
-//                        payment.method,
-//                        payment.easyPayProvider.as("provider"),
-//                        payment.paidAt
-//                        ))
-//                .from(payment)
-//                .where(payment.orderId.eq(orderId))
-//                .fetchOne();
-//
-//        return paymentDto;
-//    }
-
 
     private StringExpression getMemberEmail() {
         return member.email.coalesce("비회원"); // member.email이 null일 때 "비회원을 반환"
