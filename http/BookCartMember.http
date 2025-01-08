@@ -9,7 +9,7 @@ Content-Type: application/json
 X-USER-ID: cart@naver.com
 
 ### 회원 장바구니 수정
-PUT http://localhost:8090/api/bookstore/carts/3
+PUT http://localhost:8090/api/bookstore/carts
 Content-Type: application/json
 X-USER-ID: cart@naver.com
 
@@ -25,17 +25,23 @@ Content-Type: application/json
 X-USER-ID: cart@naver.com
 
 {
-  "sellingBookId": 261,
-  "quantity": 3
+  "sellingBookId": 265,
+  "quantity": 1
 }
 
 ### 회원 장바구니 삭제
-DELETE http://localhost:8090/api/bookstore/carts/3
+DELETE http://localhost:8090/api/bookstore/carts
 Content-Type: application/json
 X-USER-ID: cart@naver.com
 
+{
+  "cartId": 1,
+  "cartBookId": 2
+}
+
+
 ### 회원 장바구니 전체 삭제
-DELETE http://localhost:8090/api/bookstore/carts
+DELETE http://localhost:8090/api/bookstore/carts/1
 Content-Type: application/json
 X-USER-ID: cart@naver.com
 

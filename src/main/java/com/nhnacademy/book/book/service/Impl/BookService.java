@@ -168,6 +168,7 @@ public class BookService {
         sellingBook.setSellingBookViewCount(0L); // 기본값
 
         sellingBookRepository.save(sellingBook);
+
     }
 
 

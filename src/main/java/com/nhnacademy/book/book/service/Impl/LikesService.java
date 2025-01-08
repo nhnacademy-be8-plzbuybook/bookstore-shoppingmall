@@ -1,18 +1,21 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.entity.SellingBook;
-import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.book.entity.Likes;
-import com.nhnacademy.book.book.repository.LikesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,9 @@ public class LikesService {
     private final MemberRepository memberRepository;
     private final SellingBookRepository sellingBookRepository;
     private final LikesRepository likesRepository;
+    private final BookImageRepository bookImageRepository;
+    private final CategoryRepository categoryRepository;
+    private final BookAuthorRepository bookAuthorRepository;
 
     public Long toggleLikeBook( String email,Long sellingBookId) {
         log.info("좋아요 요청 처리 시작 - 판매책 ID: {}, 회원 이메일: {}", sellingBookId, email);
@@ -55,5 +61,55 @@ public class LikesService {
         Long likeCount = likesRepository.countBySellingBook(sellingBook);
         log.info("현재 좋아요 수: {}", likeCount);
         return likeCount;
+    }
+
+    //회원 Id를 통해 좋아요 누른 책의 list를 가져오는 api
+    public Page<SellingBookResponseDto> getLikeBooks(Long memberId, Pageable pageable) {
+        Page<SellingBook> likedBooks = likesRepository.findLikedBooksByMemberId(memberId, pageable);
+
+        return likedBooks.map(this::toResponseDto);
+    }
+
+
+
+
+    /**
+     * SellingBook -> SellingBookResponseDto 변환
+     */
+    private SellingBookResponseDto toResponseDto(SellingBook sellingBook) {
+        Book book = sellingBook.getBook();
+        BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+
+
+        // 카테고리 정보 매핑
+        List<String> categories = categoryRepository.findCategoriesByBookId(book.getBookId())
+                .stream()
+                .map(Category::getCategoryName)
+                .collect(Collectors.toList());
+
+        // 작가 정보 매핑
+        List<String> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId())
+                .stream()
+                .map(Author::getAuthorName) // Author의 authorName을 가져옴
+                .collect(Collectors.toList());
+
+        // 출판사 정보 가져오기
+        String publisher = book.getPublisher().getPublisherName();
+
+        return new SellingBookResponseDto(
+                sellingBook.getSellingBookId(),
+                book.getBookId(),
+                sellingBook.getBookTitle(),
+                sellingBook.getSellingBookPrice(),
+                sellingBook.getSellingBookPackageable(),
+                sellingBook.getSellingBookStock(),
+                sellingBook.getSellingBookStatus(),
+                sellingBook.getUsed(),
+                sellingBook.getSellingBookViewCount(),
+                bookImage != null ? bookImage.getImageUrl() : null,
+                publisher,
+                categories,
+                authors
+        );
     }
 }
