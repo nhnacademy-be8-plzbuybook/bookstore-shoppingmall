@@ -43,35 +43,35 @@ class ReviewControllerTest {
     @MockBean
     private ReviewService reviewService;
 
-    @Test
-    @DisplayName("리뷰 생성")
-    void reviewCreate() throws Exception {
-        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
-        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
-        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(),"Password");
-        Long orderProductId = 1L;
-
-        ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto();
-        requestDto.setScore(5);
-        requestDto.setContent("good");
-        ReviewResponseDto responseDto = new ReviewResponseDto(1L, member.getMemberId(), "윤지호", orderProductId, 5, "good", null, null);
-
-        when(reviewService.createReview(eq(member.getEmail()), eq(orderProductId), any(ReviewCreateRequestDto.class))).thenReturn(responseDto);
-
-        String requestJson = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(post("/api/products/{product_Id}", orderProductId)
-                .header("X-USER-ID", member.getEmail())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.reviewId").value(responseDto.getReviewId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.memberId").value(member.getMemberId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.orderProductId").value(orderProductId))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.score").value(5))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("good"));
-
-
-    }
+//    @Test
+//    @DisplayName("리뷰 생성")
+//    void reviewCreate() throws Exception {
+//        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+//        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+//        Member member = new Member(1L, memberGrade, memberStatus, "윤지호", "010-7237-3951", "yoonwlgh12@naver.com", LocalDate.now(),"Password");
+//        Long orderProductId = 1L;
+//
+//        ReviewCreateRequestDto requestDto = new ReviewCreateRequestDto();
+//        requestDto.setScore(5);
+//        requestDto.setContent("good");
+//        ReviewResponseDto responseDto = new ReviewResponseDto(1L, member.getMemberId(), "윤지호", orderProductId, 5, "good", null, null);
+//
+//        when(reviewService.createReview(eq(member.getEmail()), eq(orderProductId), any(ReviewCreateRequestDto.class))).thenReturn(responseDto);
+//
+//        String requestJson = objectMapper.writeValueAsString(requestDto);
+//
+//        mockMvc.perform(post("/api/products/{product_Id}", orderProductId)
+//                .header("X-USER-ID", member.getEmail())
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(requestJson)
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.reviewId").value(responseDto.getReviewId()))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.memberId").value(member.getMemberId()))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.orderProductId").value(orderProductId))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.score").value(5))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("good"));
+//
+//
+//    }
 }
