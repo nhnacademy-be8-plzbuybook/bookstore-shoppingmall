@@ -23,5 +23,10 @@ public class BookImage {
 
     @Column(name = "image_path")
     private String imageUrl;
+
+    public BookImage(Book book, String imageUrl) {
+        this.book = book;
+        this.imageUrl = imageUrl;
+    }
 }
 

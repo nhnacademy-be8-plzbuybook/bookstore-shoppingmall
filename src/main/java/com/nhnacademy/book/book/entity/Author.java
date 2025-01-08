@@ -35,7 +35,9 @@ public class Author {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;  // Soft Delete 필드
 
-
+    public Author(String authorName) {
+        this.authorName = authorName;
+    }
 
 
     @Override
