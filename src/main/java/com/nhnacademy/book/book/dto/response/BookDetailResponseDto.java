@@ -1,5 +1,7 @@
 package com.nhnacademy.book.book.dto.response;
 
+import com.nhnacademy.book.book.entity.Publisher;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -36,9 +38,12 @@ public class BookDetailResponseDto {
     }
 
 
-    public BookDetailResponseDto(long bookId,  String bookTitle, String bookIndex,
-                                 String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard,
-                                 String bookIsbn13, Long publisherId, String imageUrl) {
+    public BookDetailResponseDto(long bookId,  String bookTitle,
+                                 String bookIndex,
+                                 String bookDescription, LocalDate bookPubDate,
+                                 BigDecimal bookPriceStandard,
+                                 String bookIsbn13, Long publisherId,
+                                 String imageUrl) {
 
         this.bookId = bookId;
         this.bookTitle = bookTitle;
@@ -83,5 +88,20 @@ public class BookDetailResponseDto {
         this.likeCount = likeCount;
     }
 
+    public BookDetailResponseDto(Long bookId, String bookTitle,
+                                 String bookIndex, String bookDescription,
+                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                                 Integer sellingBookStock, Boolean sellingBookPackageable,
+                                 String bookIsbn13, Publisher publisher,
+                                 List<String> categories, String imageUrl) {
+    }
+
+    public BookDetailResponseDto(Long bookId, String bookTitle,
+                                 String bookIndex, String bookDescription,
+                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                                 Integer sellingBookStock, Boolean sellingBookPackageable,
+                                 String bookIsbn13, String publisherName, List<String> categories,
+                                 String imageUrl) {
+    }
 }
 

@@ -180,4 +180,6 @@ public class ObjectStorageService {
 
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, null);
     }
+
+    //TODO 조회 하는거 추가
 }

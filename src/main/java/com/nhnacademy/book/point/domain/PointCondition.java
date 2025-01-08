@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.elasticsearch.annotations.CountQuery;
 
 import java.math.BigDecimal;
 
@@ -21,7 +22,6 @@ public class PointCondition {
     @Column(nullable = false)
     private Long pointConditionId;
 
-
     @Convert(converter = PointConditionNameConverter.class)
     @Column(nullable = false)
     private PointConditionName name;
@@ -33,4 +33,7 @@ public class PointCondition {
     // 도서구매시 기본 포인트 비율 5%
     @Column
     private BigDecimal conditionPercentage;
+
+    @Column
+    private boolean status;
 }

@@ -24,10 +24,10 @@ public class AladinApiController {
      */
     @PostMapping("/sync")
     public ResponseEntity<Void> syncBooksFromListApi(
-            @RequestParam(defaultValue = "ItemNewAll") String queryType,
-            @RequestParam(defaultValue = "Book") String searchTarget,
-            @RequestParam(defaultValue = "3") int start,
-            @RequestParam(defaultValue = "50") int maxResults) {
+            @RequestParam String queryType,
+            @RequestParam String searchTarget,
+            @RequestParam int start, // 검색 결과 시작 페이지
+            @RequestParam int maxResults) { // 검색 결과 한 페이지당 최대 출력 개수
 
         aladinApiService.saveBooksFromListApi(queryType, searchTarget, start, maxResults);
         return ResponseEntity.ok().build();
@@ -36,7 +36,7 @@ public class AladinApiController {
 
     @PostMapping("/sync/isbn")
     public ResponseEntity<Map<String, Object>> syncBooksByIsbns(@RequestBody List<String> isbns) {
-        List<String> failedIsbns = aladinApiService.saveBooksByIsbnsDetailed(isbns); // 실패 ISBN 반환 메서드 사용
+        List<String> failedIsbns = aladinApiService.saveBooksByItemIds(isbns); // 실패 ISBN 반환 메서드 사용
         if (failedIsbns.isEmpty()) {
             return ResponseEntity.ok(Map.of("message", "All books have been saved.", "failed", List.of()));
         } else {
