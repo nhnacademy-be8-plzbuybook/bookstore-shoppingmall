@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -46,5 +47,11 @@ public class OrderProductServiceImpl implements OrderProductService {
         OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
         orderProductRepository.flush();
         return savedOrderProduct;
+    }
+
+    @Transactional
+    @Override
+    public Optional<OrderProduct> findOrderProductBySellingBookId(Long sellingBookId) {
+        return orderProductRepository.findBySellingBook_SellingBookId(sellingBookId);
     }
 }
