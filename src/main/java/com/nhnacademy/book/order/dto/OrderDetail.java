@@ -16,10 +16,9 @@ import java.util.List;
 
 @Getter
 public class OrderDetail {
+    private String orderId;
     @Setter
     private List<OrderProductDto> orderProducts;
-    private OrderDeliveryAddressDto orderDeliveryAddress;
-    private PaymentDto payment;
     private BigDecimal deliveryFee;
     private BigDecimal orderPrice;
     private LocalDateTime orderedAt;
@@ -28,6 +27,9 @@ public class OrderDetail {
     private int usedPoint;
     private BigDecimal couponDiscount;
     private String orderNumber;
+    private OrderDeliveryAddressDto orderDeliveryAddress;
+    private OrderDeliveryDto orderDelivery;
+    private PaymentDto payment;
 
 
     @QueryProjection
@@ -50,7 +52,8 @@ public class OrderDetail {
 
     @Builder
     @QueryProjection
-    public OrderDetail(String orderNumber,
+    public OrderDetail(String orderId,
+                       String orderNumber,
                        OrderStatus status,
                        BigDecimal deliveryFee,
                        BigDecimal orderPrice,
@@ -58,8 +61,10 @@ public class OrderDetail {
                        LocalDateTime orderedAt,
                        int usedPoint,
                        OrderDeliveryAddressDto orderDeliveryAddress,
+                       OrderDeliveryDto orderDelivery,
                        PaymentDto payment) {
 
+        this.orderId = orderId;
         this.orderNumber = orderNumber;
         this.status = status;
         this.deliveryFee = deliveryFee;
@@ -68,6 +73,7 @@ public class OrderDetail {
         this.orderedAt = orderedAt;
         this.usedPoint = usedPoint;
         this.orderDeliveryAddress = orderDeliveryAddress;
+        this.orderDelivery = orderDelivery;
         this.payment = payment;
     }
 }
