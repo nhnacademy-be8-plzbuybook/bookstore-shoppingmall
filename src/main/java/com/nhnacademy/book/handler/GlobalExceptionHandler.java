@@ -8,6 +8,9 @@ import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
+import com.nhnacademy.book.review.exception.DuplicateReviewException;
+import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
+import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
 import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.springframework.http.HttpStatus;
@@ -415,6 +418,38 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
     }
 
+    //중복리뷰 방지
+    @ExceptionHandler(DuplicateReviewException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateReviewException(DuplicateReviewException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
+    //상태가 구매 확정인것만 리뷰 작성 가능
+    @ExceptionHandler(InvalidOrderProductStatusException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidOrderProductStatusException(InvalidOrderProductStatusException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    //해당 주문이 회원의 주문이 아닐때
+    @ExceptionHandler(InvalidOrderAccessException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidOrderAccessException(InvalidOrderAccessException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponseDto);
+    }
 
 
 }

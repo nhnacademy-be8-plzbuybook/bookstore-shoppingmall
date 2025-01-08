@@ -1,8 +1,11 @@
 package com.nhnacademy.book.review.controller;
 
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.service.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +16,18 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final OrderProductService orderProductService;
 
-    //ID(이메일) : 이메일은 gateway에서 검증해준 x-user-Id를 통해 가져온다
-    //product_Id = order_productId
-    @PostMapping("/products/{product_Id}")
-    public ResponseEntity<ReviewResponseDto> createReview(@RequestHeader("X-USER-ID") String userId, @PathVariable Long product_Id, @RequestBody ReviewCreateRequestDto reviewRequestDto) {
-        ReviewResponseDto reviewResponseDto = reviewService.createReview(userId, product_Id, reviewRequestDto);
+    @PostMapping("/reviews")
+    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody ReviewCreateRequestDto reviewRequestDto) {
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewRequestDto);
         return ResponseEntity.ok(reviewResponseDto);
+    }
+
+    @GetMapping("/order-product/by-selling-book/{sellingBookId}")
+    public ResponseEntity<Long> getOrderProductBySellingBookId(@PathVariable("sellingBookId") Long sellingBookId) {
+        return orderProductService.findOrderProductBySellingBookId(sellingBookId)
+                .map(orderProduct -> ResponseEntity.ok(orderProduct.getOrderProductId()))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

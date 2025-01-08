@@ -6,8 +6,8 @@ import lombok.Getter;
 public enum OrderProductStatus {
     PAID(5, "결제완료"),
     PURCHASE_CONFIRMATION(6, "구매확정"),
-    RETURNED(6, "반품"),
-    CANCELLED(7, "주문취소");
+    RETURNED(7, "반품"),
+    CANCELLED(8, "주문취소");
 
     @Getter
     private final int code;

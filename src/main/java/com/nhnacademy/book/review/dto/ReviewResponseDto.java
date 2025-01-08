@@ -12,10 +12,7 @@ import java.time.LocalDateTime;
 public class ReviewResponseDto {
     private Long reviewId;
     private Long memberId;
-    private String memberName;
     private Long orderProductId;
-    private Integer score;
+    private int score;
     private String content;
-    private LocalDateTime writeDate;
-    private LocalDateTime modifiedDate;
 }
