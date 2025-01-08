@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,7 +100,8 @@ public class OrderQueryRepository {
 
     //TODO: 쿠폰할인액 계산?
     public Optional<OrderDetail> findOrderDetailById(String orderId) {
-        return Optional.ofNullable(queryFactory
+        return Optional.ofNullable(
+                queryFactory
                 .select(new QOrderDetail(
                         orders.id,
                         orders.number,
@@ -136,6 +138,46 @@ public class OrderQueryRepository {
                 .fetchOne());
     }
 
+    public Optional<NonMemberOrderDetail> findNonMemberOrderByNumber(String orderNumber) {
+        return Optional.ofNullable(
+                queryFactory
+                .select(new QNonMemberOrderDetail(
+                        orders.id,
+                        orders.number,
+                        orders.status,
+                        orders.deliveryFee,
+                        orders.orderPrice,
+                        orders.deliveryWishDate,
+                        orders.orderedAt,
+                        nonMemberOrder.password,
+                        new QOrderDeliveryAddressDto(
+                                orderDeliveryAddress.locationAddress,
+                                orderDeliveryAddress.zipCode,
+                                orderDeliveryAddress.detailAddress,
+                                orderDeliveryAddress.recipient,
+                                orderDeliveryAddress.recipientPhone
+                        ),
+                        new QOrderDeliveryDto(
+                                orderDelivery.deliveryCompany,
+                                orderDelivery.trackingNumber,
+                                orderDelivery.registeredAt
+                        ),
+                        new QPaymentDto(
+                                payment.amount,
+                                payment.method,
+                                payment.easyPayProvider,
+                                payment.paidAt
+                        )
+                ))
+                .from(orders)
+                .innerJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+                .leftJoin(payment).on(payment.orders.eq(orders))
+                .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
+                .where(orders.number.eq(orderNumber))
+                .fetchOne());
+    }
+
 
     /**
      * 주문상품 조회
@@ -169,8 +211,6 @@ public class OrderQueryRepository {
 
         return orderProductDtos;
     }
-
-
 
 
     private StringExpression getMemberEmail() {
