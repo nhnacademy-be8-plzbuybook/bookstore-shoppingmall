@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -29,6 +30,9 @@ public interface BookAuthorRepository extends JpaRepository<BookAuthor, Long> {
     List<BookAuthor> findByBook_BookId(Long bookId);
 
     List<BookAuthor> findByBook_BookIdIn(List<Long> longs);
+
+    @Query("SELECT ba FROM BookAuthor ba WHERE ba.author.authorName = :authorName")
+    Optional<BookAuthor> findByAuthorName(@Param("authorName") String authorName);
 
 
     // Book과 연결된 카테고리를 조회하는 메서드

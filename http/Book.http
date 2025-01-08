@@ -115,8 +115,8 @@ POST http://localhost:8090/api/books/sync/isbn
 Content-Type: application/json
 
 [
-  "9791158682934",
-  "9791170403012"
+  "9791191842791",
+  "9791161726700"
 ]
 
 

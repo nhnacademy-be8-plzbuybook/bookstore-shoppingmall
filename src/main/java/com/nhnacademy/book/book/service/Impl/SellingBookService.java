@@ -115,33 +115,33 @@ public class SellingBookService {
 
 
 
-    /**
-     * 판매책 등록 ( 관리자 )
-     * @param registerDto 판매책 등록 DTO
-     * @return 등록된 판매책의 정보
-     */
-    @Transactional(readOnly = true)
-    public SellingBookResponseDto registerSellingBook(SellingBookRegisterDto registerDto) {
-        // Book 테이블에서 도서 정보 조회
-        Book book = bookRepository.findById(registerDto.getBookId())
-                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + registerDto.getBookId()));
-
-        // SellingBook 생성, 기본값 설정
-        SellingBook sellingBook = new SellingBook();
-        sellingBook.setBook(book);
-        sellingBook.setSellingBookPrice(book.getBookPriceStandard()); // 기본값: 책의 정가
-        sellingBook.setSellingBookPackageable(false); // 기본값: 선물 포장 불가
-        sellingBook.setSellingBookStock(0); // 기본값: 재고 없음
-        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING); // 기본값: 등록 대기 상태
-        sellingBook.setUsed(false); // 기본값: 새 상품
-        sellingBook.setSellingBookViewCount(0L); // 초기 조회수
-
-        // 판매책 저장
-        SellingBook savedSellingBook = sellingBookRepository.save(sellingBook);
-
-        return toResponseDto(savedSellingBook);
-    }
-
+//    /**
+//     * 판매책 등록 ( 관리자 )
+//     * @param registerDto 판매책 등록 DTO
+//     * @return 등록된 판매책의 정보
+//     */
+//    @Transactional(readOnly = true)
+//    public SellingBookResponseDto registerSellingBook(SellingBookRegisterDto registerDto) {
+//        // Book 테이블에서 도서 정보 조회
+//        Book book = bookRepository.findById(registerDto.getBookId())
+//                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + registerDto.getBookId()));
+//
+//        // SellingBook 생성, 기본값 설정
+//        SellingBook sellingBook = new SellingBook();
+//        sellingBook.setBook(book);
+//        sellingBook.setSellingBookPrice(book.getBookPriceStandard()); // 기본값: 책의 정가
+//        sellingBook.setSellingBookPackageable(false); // 기본값: 선물 포장 불가
+//        sellingBook.setSellingBookStock(0); // 기본값: 재고 없음
+//        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING); // 기본값: 등록 대기 상태
+//        sellingBook.setUsed(false); // 기본값: 새 상품
+//        sellingBook.setSellingBookViewCount(0L); // 초기 조회수
+//
+//        // 판매책 저장
+//        SellingBook savedSellingBook = sellingBookRepository.save(sellingBook);
+//
+//        return toResponseDto(savedSellingBook);
+//    }
+//
 
     /**
      * 판매책 수정 update -  특정 필드값 수정 가능 로직 (관리자)

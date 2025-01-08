@@ -1,26 +1,36 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/selling-books")
 public class AdminSellingBookController {
 
     private final SellingBookService sellingBookService;
 
+    private final BookService bookService;
+
     @Autowired
-    public AdminSellingBookController(SellingBookService sellingBookService) {
+    public AdminSellingBookController(SellingBookService sellingBookService, BookService bookService) {
         this.sellingBookService = sellingBookService;
+        this.bookService = bookService;
     }
     /**
      * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
@@ -48,15 +58,22 @@ public class AdminSellingBookController {
         return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
     }
 
-//    /**
-//     * 도서 등록: POST /api/admin/selling-books -> 하나하나 입력해서 등록하는거
-//     * @param registerDto
-//     * @return
-//     */
-//    @PostMapping
-//    public ResponseEntity<SellingBookResponseDto> registerSellingBook(@RequestBody AdminSellingBookRegisterDto registerDto) {
-//        return ResponseEntity.ok(sellingBookService.registerSellingBook(registerDto));
-//    }
+
+
+    // 도서 등록 기능 (관리자)
+    @PostMapping("/register")
+    public ResponseEntity<AdminBookAndSellingBookRegisterDto> registerSellingBook(
+            @RequestBody @Valid AdminBookAndSellingBookRegisterDto registerDto) {
+
+        log.info("Received DTO: {}", registerDto); // DTO 데이터 확인
+
+        // 서비스 호출
+        bookService.registerBookAndSellingBook(registerDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerDto);
+    }
+
+
 
     /**
      *  관리자용 도서 목록 조회 (페이징 처리만)
@@ -73,4 +90,7 @@ public class AdminSellingBookController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(sellingBookService.getBooks(pageable));
     }
+
+
+
 }

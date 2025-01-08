@@ -71,6 +71,25 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookTag> bookTags = new ArrayList<>();
+    private List<BookImage> bookImages = new ArrayList<>();
+
+    // 이미지 추가 메서드
+    public void addImage(String imageUrl) {
+        BookImage bookImage = new BookImage(this, imageUrl);
+        this.bookImages.add(bookImage);
+    }
+    public Book(String bookTitle, String bookIndex,
+                String bookDescription, LocalDate bookPubDate,
+                BigDecimal sellingBookPrice, String bookIsbn13,
+                Publisher publisher, String imageUrl) {
+    }
+
+    public Book(String bookTitle, String bookIsbn13,
+                Object o, Object o1,
+                LocalDate bookPubDate,
+                BigDecimal sellingBookPrice,
+                String bookIsbn131, String publisher, String imageUrl) {
+    }
 
 
     @Override
