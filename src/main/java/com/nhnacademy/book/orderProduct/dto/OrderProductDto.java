@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 public class OrderProductDto {
+    private Long orderProductId;
     private String imageUrl;
     private Long bookId;
     private String bookTitle;
@@ -19,8 +20,9 @@ public class OrderProductDto {
     private OrderProductWrapping orderProductWrapping;
 
     @QueryProjection
-    public OrderProductDto(String imageUrl, Long bookId, String bookTitle, int quantity, BigDecimal price,
+    public OrderProductDto(Long orderProductId, String imageUrl, Long bookId, String bookTitle, int quantity, BigDecimal price,
                            OrderProductStatus status, OrderProductWrapping orderProductWrapping) {
+        this.orderProductId = orderProductId;
         this.imageUrl = imageUrl;
         this.bookId = bookId;
         this.bookTitle = bookTitle;

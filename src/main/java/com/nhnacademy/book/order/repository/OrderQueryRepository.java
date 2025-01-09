@@ -205,6 +205,7 @@ public class OrderQueryRepository {
         List<OrderProductDto> orderProductDtos = queryFactory
                 .select(
                         new QOrderProductDto(
+                                orderProduct.orderProductId,
                                 bookImage.imageUrl.as("imageUrl"),
                                 orderProduct.sellingBook.sellingBookId.as("bookId"),
                                 orderProduct.sellingBook.book.bookTitle,
