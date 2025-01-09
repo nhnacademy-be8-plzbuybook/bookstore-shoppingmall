@@ -76,6 +76,12 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/book-tags/{bookId}")
+    public ResponseEntity<List<BookTagResponseDto>> getBookTagsByBookId(@PathVariable Long bookId) {
+        List<BookTagResponseDto> bookTags = bookTagService.getBookTagListByBookId(bookId);
+        return ResponseEntity.ok(bookTags);
+    }
+
 
 
 

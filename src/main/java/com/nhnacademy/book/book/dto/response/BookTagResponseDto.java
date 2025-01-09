@@ -24,4 +24,11 @@ public class BookTagResponseDto {
         this.bookId = bookId;
         this.bookName = bookName;
     }
+
+    public BookTagResponseDto(Long tagId, String tagName, Long bookId, String bookTitle) {
+        this.tagId = tagId;
+        this.tagName = tagName;
+        this.bookId = bookId;
+        this.bookName = bookTitle;
+    }
 }

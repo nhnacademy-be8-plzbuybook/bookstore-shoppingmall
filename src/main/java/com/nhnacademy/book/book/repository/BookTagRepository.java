@@ -26,6 +26,8 @@ public interface BookTagRepository extends JpaRepository<BookTag, Long> {
             "WHERE bt.tag.tagId = :tagId")
     List<BookTagResponseDto> findBookTagResponseDtosByTagId(@Param("tagId") Long tagId);
 
+    List<BookTag> findBookTagByBook_BookId(Long bookId);
+
 
     void deleteByBook_BookIdAndTag_TagId(Long bookId, Long tagId);
 
