@@ -2,12 +2,16 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.*;
+import com.nhnacademy.book.order.entity.Orders;
+import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
-import com.nhnacademy.book.order.repository.OrderDeliveryAddressRepository;
 import com.nhnacademy.book.order.repository.OrderQueryRepository;
+import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductDto;
-import com.nhnacademy.book.payment.repository.PaymentRepository;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +25,9 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
     private final OrderQueryRepository orderQueryRepository;
-    private final OrderDeliveryAddressRepository orderDeliveryAddressRepository;
-    private final PaymentRepository paymentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
 
     /**
      * 전체 주문목록 조회
@@ -64,6 +68,21 @@ public class OrderServiceImpl implements OrderService {
         validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderAccessResponseDto.getPassword());
 
         return nonMemberOrderAccessResponseDto.getOrderId();
+    }
+
+    @Transactional
+    @Override
+    public void patchStatus(String orderId, StatusDto patchRequest) {
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+        order.updateOrderStatus(patchRequest.getStatus());
+    }
+
+    @Transactional
+    @Override
+    public void orderDelivered(String orderId) {
+        patchStatus(orderId, new StatusDto(OrderStatus.DELIVERED));
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
+        orderProducts.forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.DELIVERED));
     }
 
 

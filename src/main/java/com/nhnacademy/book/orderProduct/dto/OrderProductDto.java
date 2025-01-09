@@ -16,7 +16,7 @@ public class OrderProductDto {
     private String bookTitle;
     private int quantity;
     private BigDecimal price;
-    private OrderProductStatus status;
+    private String status;
     private OrderProductWrapping orderProductWrapping;
 
     @QueryProjection
@@ -28,7 +28,7 @@ public class OrderProductDto {
         this.bookTitle = bookTitle;
         this.quantity = quantity;
         this.price = price;
-        this.status = status;
+        this.status = status.getStatus();
         this.orderProductWrapping = orderProductWrapping;
     }
 }

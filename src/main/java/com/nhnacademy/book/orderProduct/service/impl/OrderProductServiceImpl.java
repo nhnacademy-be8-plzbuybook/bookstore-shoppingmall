@@ -65,7 +65,7 @@ public class OrderProductServiceImpl implements OrderProductService {
 
     @Transactional
     @Override
-    public void purchaseConfirm(Long orderProductId) {
+    public void purchaseConfirmOrderProduct(Long orderProductId) {
         patchStatus(orderProductId, new OrderProductStatusPatchRequestDto(OrderProductStatus.PURCHASE_CONFIRMED));
     }
 }

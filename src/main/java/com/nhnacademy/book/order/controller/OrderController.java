@@ -102,7 +102,7 @@ public class OrderController {
      */
     @PutMapping("/api/orders/order-products/{order-product-id}/purchase-confirm")
     public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {
-        orderProductService.purchaseConfirm(orderProductId);
+        orderProductService.purchaseConfirmOrderProduct(orderProductId);
         return ResponseEntity.ok().build();
     }
 

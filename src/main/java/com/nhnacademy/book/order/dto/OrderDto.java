@@ -15,7 +15,7 @@ public class OrderDto {
     // 주문일
     private LocalDateTime orderedAt;
     // 주문상태
-    private OrderStatus orderStatus;
+    private String orderStatus;
     // 주문 상품 썸네일
 //    private String thumbNail;
     // 주문명
@@ -28,7 +28,7 @@ public class OrderDto {
     public OrderDto(String id, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount, String orderer) {
         this.id = id;
         this.orderedAt = orderedAt;
-        this.orderStatus = orderStatus;
+        this.orderStatus = orderStatus.getStatus();
         this.orderName = orderName;
         this.paymentAmount = paymentAmount;
         this.orderer = orderer;
