@@ -1,10 +1,7 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
-import com.nhnacademy.book.order.dto.NonMemberOrderDetail;
-import com.nhnacademy.book.order.dto.OrderDetail;
-import com.nhnacademy.book.order.dto.OrderDto;
-import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
+import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -75,11 +72,11 @@ public class OrderController {
         return ResponseEntity.ok(orderDetail);
     }
 
-    @GetMapping("/api/orders/non-member")
-    public ResponseEntity<NonMemberOrderDetail> getNonMemberOrderDetail(@RequestParam("order-number") String orderNumber,
-                                                                        @RequestParam("password") String password) {
-        NonMemberOrderDetail nonMemberOrderDetail = orderService.getNonMemberOrderDetail(orderNumber, password);
-        return ResponseEntity.ok(nonMemberOrderDetail);
+
+    @PostMapping("/api/orders/non-member/access")
+    public ResponseEntity<String> getNonMemberOrderDetail(@RequestBody NonMemberOrderDetailAccessRequestDto accessRequest) {
+        String orderId = orderService.getNonMemberOrder(accessRequest);
+        return ResponseEntity.ok(orderId);
     }
 
 }

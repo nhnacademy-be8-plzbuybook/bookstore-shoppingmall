@@ -102,80 +102,96 @@ public class OrderQueryRepository {
     public Optional<OrderDetail> findOrderDetailById(String orderId) {
         return Optional.ofNullable(
                 queryFactory
-                .select(new QOrderDetail(
-                        orders.id,
-                        orders.number,
-                        orders.status,
-                        orders.deliveryFee,
-                        orders.orderPrice,
-                        orders.deliveryWishDate,
-                        orders.orderedAt,
-                        orders.usedPoint,
-                        new QOrderDeliveryAddressDto(
-                                orderDeliveryAddress.locationAddress,
-                                orderDeliveryAddress.zipCode,
-                                orderDeliveryAddress.detailAddress,
-                                orderDeliveryAddress.recipient,
-                                orderDeliveryAddress.recipientPhone
-                        ),
-                        new QOrderDeliveryDto(
-                                orderDelivery.deliveryCompany,
-                                orderDelivery.trackingNumber,
-                                orderDelivery.registeredAt
-                        ),
-                        new QPaymentDto(
-                                payment.amount,
-                                payment.method,
-                                payment.easyPayProvider,
-                                payment.paidAt
-                        )
-                ))
-                .from(orders)
-                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
-                .leftJoin(payment).on(payment.orders.eq(orders))
-                .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
-                .where(orders.id.eq(orderId))
-                .fetchOne());
+                        .select(new QOrderDetail(
+                                orders.id,
+                                orders.number,
+                                orders.status,
+                                orders.deliveryFee,
+                                orders.orderPrice,
+                                orders.deliveryWishDate,
+                                orders.orderedAt,
+                                orders.usedPoint,
+                                new QOrderDeliveryAddressDto(
+                                        orderDeliveryAddress.locationAddress,
+                                        orderDeliveryAddress.zipCode,
+                                        orderDeliveryAddress.detailAddress,
+                                        orderDeliveryAddress.recipient,
+                                        orderDeliveryAddress.recipientPhone
+                                ),
+                                new QOrderDeliveryDto(
+                                        orderDelivery.deliveryCompany,
+                                        orderDelivery.trackingNumber,
+                                        orderDelivery.registeredAt
+                                ),
+                                new QPaymentDto(
+                                        payment.amount,
+                                        payment.method,
+                                        payment.easyPayProvider,
+                                        payment.paidAt
+                                )
+                        ))
+                        .from(orders)
+                        .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+                        .leftJoin(payment).on(payment.orders.eq(orders))
+                        .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
+                        .where(orders.id.eq(orderId))
+                        .fetchOne());
     }
 
     public Optional<NonMemberOrderDetail> findNonMemberOrderByNumber(String orderNumber) {
         return Optional.ofNullable(
                 queryFactory
-                .select(new QNonMemberOrderDetail(
-                        orders.id,
-                        orders.number,
-                        orders.status,
-                        orders.deliveryFee,
-                        orders.orderPrice,
-                        orders.deliveryWishDate,
-                        orders.orderedAt,
-                        nonMemberOrder.password,
-                        new QOrderDeliveryAddressDto(
-                                orderDeliveryAddress.locationAddress,
-                                orderDeliveryAddress.zipCode,
-                                orderDeliveryAddress.detailAddress,
-                                orderDeliveryAddress.recipient,
-                                orderDeliveryAddress.recipientPhone
-                        ),
-                        new QOrderDeliveryDto(
-                                orderDelivery.deliveryCompany,
-                                orderDelivery.trackingNumber,
-                                orderDelivery.registeredAt
-                        ),
-                        new QPaymentDto(
-                                payment.amount,
-                                payment.method,
-                                payment.easyPayProvider,
-                                payment.paidAt
+                        .select(new QNonMemberOrderDetail(
+                                orders.id,
+                                orders.number,
+                                orders.status,
+                                orders.deliveryFee,
+                                orders.orderPrice,
+                                orders.deliveryWishDate,
+                                orders.orderedAt,
+                                nonMemberOrder.password,
+                                new QOrderDeliveryAddressDto(
+                                        orderDeliveryAddress.locationAddress,
+                                        orderDeliveryAddress.zipCode,
+                                        orderDeliveryAddress.detailAddress,
+                                        orderDeliveryAddress.recipient,
+                                        orderDeliveryAddress.recipientPhone
+                                ),
+                                new QOrderDeliveryDto(
+                                        orderDelivery.deliveryCompany,
+                                        orderDelivery.trackingNumber,
+                                        orderDelivery.registeredAt
+                                ),
+                                new QPaymentDto(
+                                        payment.amount,
+                                        payment.method,
+                                        payment.easyPayProvider,
+                                        payment.paidAt
+                                )
+                        ))
+                        .from(orders)
+                        .innerJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                        .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+                        .leftJoin(payment).on(payment.orders.eq(orders))
+                        .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
+                        .where(orders.number.eq(orderNumber))
+                        .fetchOne());
+    }
+
+    public Optional<NonMemberOrderAccessResponseDto> findNonMemberOrderByOrderNumber(String orderNumber) {
+        NonMemberOrderAccessResponseDto result = queryFactory
+                .select(
+                        new QNonMemberOrderAccessResponseDto(
+                                orders.id,
+                                nonMemberOrder.password
                         )
-                ))
+                )
                 .from(orders)
                 .innerJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
-                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
-                .leftJoin(payment).on(payment.orders.eq(orders))
-                .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
                 .where(orders.number.eq(orderNumber))
-                .fetchOne());
+                .fetchFirst();
+
+        return Optional.ofNullable(result);
     }
 
 

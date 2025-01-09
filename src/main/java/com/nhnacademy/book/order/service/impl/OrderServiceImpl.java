@@ -1,10 +1,7 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.order.dto.NonMemberOrderDetail;
-import com.nhnacademy.book.order.dto.OrderDetail;
-import com.nhnacademy.book.order.dto.OrderDto;
-import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
+import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
 import com.nhnacademy.book.order.repository.OrderDeliveryAddressRepository;
 import com.nhnacademy.book.order.repository.OrderQueryRepository;
@@ -60,18 +57,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+
+    public String getNonMemberOrder(NonMemberOrderDetailAccessRequestDto accessRequest) {
+        NonMemberOrderAccessResponseDto nonMemberOrderAccessResponseDto = orderQueryRepository.findNonMemberOrderByOrderNumber(accessRequest.getOrderNumber())
+                .orElseThrow(() -> new NotFoundException("비회원주문 정보를 찾을 수 없습니다."));
+        validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderAccessResponseDto.getPassword());
+
+        return nonMemberOrderAccessResponseDto.getOrderId();
+    }
+
+
     /**
      * 비회원주문 상세 조회
      *
-     * @param orderNumber 주문번호
-     * @param password    비회원주문 조회용 비밀번호
+     * @param accessRequest 주문번호
      * @return 비회원주문상세 DTO
      */
     @Transactional(readOnly = true)
     @Override
-    public NonMemberOrderDetail getNonMemberOrderDetail(String orderNumber, String password) {
-        NonMemberOrderDetail nonMemberOrderDetail = orderQueryRepository.findNonMemberOrderByNumber(orderNumber).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다. 주문번호: " + orderNumber));
-        validateNonMemberOrderPassword(password, nonMemberOrderDetail.getPassword());
+    public NonMemberOrderDetail getNonMemberOrderDetail(NonMemberOrderDetailAccessRequestDto accessRequest) {
+        String orderNumber = accessRequest.getOrderNumber();
+        NonMemberOrderDetail nonMemberOrderDetail = orderQueryRepository.findNonMemberOrderByNumber(orderNumber)
+                .orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다. 주문번호: " + orderNumber));
+        validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderDetail.getPassword());
 
         List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(nonMemberOrderDetail.getOrderId());
         nonMemberOrderDetail.setOrderProducts(orderProducts);
