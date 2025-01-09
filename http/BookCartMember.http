@@ -9,8 +9,8 @@ Content-Type: application/json
 X-USER-ID: cart@naver.com
 
 {
-  "sellingBookId": 3,
-  "quantity": 3
+  "sellingBookId": 2,
+  "quantity": 1
 }
 
 ### 회원 장바구니 수정
@@ -31,7 +31,7 @@ X-USER-ID: cart@naver.com
 
 {
   "cartId": 18,
-  "cartBookId": 5
+  "cartBookId": 25
 }
 
 
@@ -39,12 +39,4 @@ X-USER-ID: cart@naver.com
 DELETE http://localhost:8090/api/bookstore/carts/18
 Content-Type: application/json
 X-USER-ID: cart@naver.com
-
-
-
-### 회원 장바구니 단일 조회
-GET http://localhost:8090/api/bookstore/carts/18
-Content-Type: application/json
-X-USER-ID: cart@naver.com
-
 
