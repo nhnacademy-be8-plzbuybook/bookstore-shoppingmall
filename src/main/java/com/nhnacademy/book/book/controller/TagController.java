@@ -8,6 +8,9 @@ import com.nhnacademy.book.book.service.Impl.BookTagService;
 import com.nhnacademy.book.book.service.Impl.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -33,15 +36,22 @@ public class TagController {
 
 
 
-    @GetMapping("/tags")
-    public ResponseEntity<List<TagResponseDto>> getAllTags(@RequestParam(required = false) String keyword) {
 
-        List<TagResponseDto> tags;
+    @GetMapping("/tags")
+    public ResponseEntity<Page<TagResponseDto>> getAllTags(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TagResponseDto> tags;
+
         if (keyword != null && !keyword.isEmpty()) {
-            tags = tagService.searchTagsByKeyword(keyword);
+            tags = tagService.searchTagsByKeyword(keyword, pageable);
         } else {
-            tags = tagService.findAll();
+            tags = tagService.findAll(pageable);
         }
+
         return ResponseEntity.ok(tags);
     }
 

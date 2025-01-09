@@ -55,18 +55,29 @@ public class TagService {
         } else throw new TagNotFoundException("tag not found");
     }
 
-    public List<TagResponseDto> searchTagsByKeyword(String keyword) {
-        List<Tag> tags = tagRepository.findByTagNameContaining(keyword);
-        return tags.stream()
-                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-                .collect(Collectors.toList());
+//    public List<TagResponseDto> searchTagsByKeyword(String keyword) {
+//        List<Tag> tags = tagRepository.findByTagNameContaining(keyword);
+//        return tags.stream()
+//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<TagResponseDto> findAll() {
+//        List<Tag> tags = tagRepository.findAll();
+//        return tags.stream()
+//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
+//                .collect(Collectors.toList());
+//    }
+
+
+    public Page<TagResponseDto> searchTagsByKeyword(String keyword, Pageable pageable) {
+        Page<Tag> tagsPage = tagRepository.findByTagNameContaining(keyword, pageable);
+        return tagsPage.map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()));
     }
 
-    public List<TagResponseDto> findAll() {
-        List<Tag> tags = tagRepository.findAll();
-        return tags.stream()
-                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-                .collect(Collectors.toList());
+    public Page<TagResponseDto> findAll(Pageable pageable) {
+        Page<Tag> tagsPage = tagRepository.findAll(pageable);
+        return tagsPage.map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()));
     }
 
     public void deleteTagById(Long tagId) {
