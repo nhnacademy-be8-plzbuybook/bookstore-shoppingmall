@@ -1,7 +1,11 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
-import com.nhnacademy.book.order.dto.*;
+import com.nhnacademy.book.order.dto.NonMemberOrderDetailAccessRequestDto;
+import com.nhnacademy.book.order.dto.OrderDetail;
+import com.nhnacademy.book.order.dto.OrderDto;
+import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
+import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -86,6 +93,7 @@ public class OrderController {
         return ResponseEntity.ok(orderId);
     }
 
+
     /**
      * 주문상품 구매확정
      *
@@ -96,6 +104,17 @@ public class OrderController {
     public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {
         orderProductService.purchaseConfirm(orderProductId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 주문상태 리스트
+     *
+     * @return
+     */
+    @GetMapping("/api/orders/order-status")
+    public ResponseEntity<List<String>> getOrderStatuses() {
+        List<String> orderStatuses = Arrays.stream(OrderStatus.values()).map(OrderStatus::getStatus).toList();
+        return ResponseEntity.ok(orderStatuses);
     }
 
 }
