@@ -8,9 +8,13 @@ import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderDeliveryRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderDeliveryService;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -25,6 +29,8 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
         OrderDelivery savedOrderDelivery = orderDeliveryRepository.save(registerRequest.toEntity(order));
         // 주문상태: 배송 중
         order.updateOrderStatus(OrderStatus.DELIVERING);
+        // 주문상품 상태: 배송 중
+        order.getOrderProducts().forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.DELIVERING));
 
         return savedOrderDelivery.getId();
     }
