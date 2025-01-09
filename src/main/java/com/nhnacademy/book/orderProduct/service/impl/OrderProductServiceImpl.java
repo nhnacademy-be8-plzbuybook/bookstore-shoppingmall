@@ -56,9 +56,16 @@ public class OrderProductServiceImpl implements OrderProductService {
         return orderProductRepository.findBySellingBook_SellingBookId(sellingBookId);
     }
 
+    @Transactional
     @Override
     public void patchStatus(Long orderProductId, OrderProductStatusPatchRequestDto patchRequest) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품을 찾을 수 없습니다. 주문상품 아이디: " + orderProductId));
         orderProduct.updateStatus(patchRequest.getStatus());
+    }
+
+    @Transactional
+    @Override
+    public void purchaseConfirm(Long orderProductId) {
+        patchStatus(orderProductId, new OrderProductStatusPatchRequestDto(OrderProductStatus.PURCHASE_CONFIRMED));
     }
 }

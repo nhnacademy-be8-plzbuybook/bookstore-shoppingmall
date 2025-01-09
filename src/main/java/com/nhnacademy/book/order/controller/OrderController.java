@@ -3,6 +3,7 @@ package com.nhnacademy.book.order.controller;
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.service.OrderService;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
-
+    private final OrderProductService orderProductService;
     /**
      * 주문 목록조회(관리자)
      *
@@ -73,10 +74,28 @@ public class OrderController {
     }
 
 
+    /**
+     * 비회원 주문조회 접근
+     *
+     * @param accessRequest 주문번호, 비회원주문 조회용 비밀번호 DTO
+     * @return 주문 ID
+     */
     @PostMapping("/api/orders/non-member/access")
     public ResponseEntity<String> getNonMemberOrderDetail(@RequestBody NonMemberOrderDetailAccessRequestDto accessRequest) {
         String orderId = orderService.getNonMemberOrder(accessRequest);
         return ResponseEntity.ok(orderId);
+    }
+
+    /**
+     * 주문상품 구매확정
+     *
+     * @param orderProductId 주문상품 ID
+     * @return void
+     */
+    @PutMapping("/api/orders/order-products/{order-product-id}/purchase-confirm")
+    public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {
+        orderProductService.purchaseConfirm(orderProductId);
+        return ResponseEntity.ok().build();
     }
 
 }

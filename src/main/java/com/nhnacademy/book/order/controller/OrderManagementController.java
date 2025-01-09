@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderManagementController {
     private final OrderProductService orderProductService;
 
-    @PatchMapping("/api/order-products/{order-product-id}/status")
+    @PatchMapping("/api/orders/order-products/{order-product-id}/status")
     public ResponseEntity<Void> patchOrderProductsStatus(@PathVariable("order-product-id") Long orderProductId,
                                                          @RequestBody OrderProductStatusPatchRequestDto patchRequest) {
         orderProductService.patchStatus(orderProductId, patchRequest);
