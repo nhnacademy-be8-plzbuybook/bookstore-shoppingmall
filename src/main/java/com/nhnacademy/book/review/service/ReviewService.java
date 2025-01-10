@@ -9,7 +9,7 @@ import java.util.List;
 public interface ReviewService {
 
     //특정 회원이 리뷰 작성(productId = order_product_id)
-    ReviewResponseDto createReview(ReviewCreateRequestDto createRequestDto);
+    ReviewResponseDto createReview(ReviewCreateRequestDto createRequestDto, List<String> imageUrls);
 
     //특정 상품에 대한 모든 리뷰 조회
     List<ReviewResponseDto> getReviewsByProductId(Long productId);

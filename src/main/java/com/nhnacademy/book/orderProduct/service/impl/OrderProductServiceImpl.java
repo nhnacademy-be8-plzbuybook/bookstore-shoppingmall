@@ -40,7 +40,7 @@ public class OrderProductServiceImpl implements OrderProductService {
                 .sellingBook(sellingBook)
                 .quantity(orderProductRequest.getQuantity())
                 .price(orderProductRequest.getPrice())
-                .status(OrderProductStatus.PAID)
+                .status(OrderProductStatus.PAYMENT_COMPLETED)
                 .couponDiscount(couponDiscount)
                 .order(order)
                 .build();
