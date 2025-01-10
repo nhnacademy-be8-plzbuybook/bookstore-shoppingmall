@@ -12,6 +12,9 @@ public interface OrderProductService {
     Optional<OrderProduct> findOrderProductBySellingBookId(Long sellingBookId);
     void patchStatus(Long orderProductId, OrderProductStatusPatchRequestDto patchRequest);
     void purchaseConfirmOrderProduct(Long orderProductId);
+
+    void cancelOrderProduct(String orderId, Long orderProductId, Integer quantity);
+
     //TODO: 주문상품 상태변경
     //TODO: 주문상품 취소
     //TODO: 주문상품 반품요청

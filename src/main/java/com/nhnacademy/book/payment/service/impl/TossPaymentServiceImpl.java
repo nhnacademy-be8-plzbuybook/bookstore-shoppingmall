@@ -9,7 +9,9 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +30,16 @@ public class TossPaymentServiceImpl implements TossPaymentService {
     public JSONObject confirmPayment(PaymentConfirmRequestDto confirmRequest) {
         String basicToken = getBasicToken();
         return tossPaymentClient.confirmPayment(basicToken, confirmRequest);
+    }
+
+    @Override
+    public LinkedHashMap<String, Object> extractLatestCancel(JSONObject jsonObject) {
+        try {
+            ArrayList<LinkedHashMap<String, Object>> cancels = (ArrayList<LinkedHashMap<String, Object>>) jsonObject.get("cancels");
+            return cancels.getLast();
+        } catch (Exception e) {
+            throw new RuntimeException("결제취소정보를 가져오는 중 오류가 발생했습니다.");
+        }
     }
 
     private String getBasicToken() {
