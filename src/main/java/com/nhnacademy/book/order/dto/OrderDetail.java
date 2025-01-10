@@ -23,7 +23,7 @@ public class OrderDetail {
     private BigDecimal orderPrice;
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
-    private OrderStatus status;
+    private String status;
     private int usedPoint;
     private BigDecimal couponDiscount;
     private String orderNumber;
@@ -32,22 +32,22 @@ public class OrderDetail {
     private PaymentDto payment;
 
 
-    @QueryProjection
-    @Builder
-    public OrderDetail(List<OrderProductDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddress, PaymentDto payment,
-                       BigDecimal deliveryFee, LocalDateTime orderedAt, LocalDate deliveryWishDate, OrderStatus status,
-                       int usedPoint, BigDecimal couponDiscount, String orderNumber) {
-        this.orderProducts = orderProducts;
-        this.orderDeliveryAddress = orderDeliveryAddress;
-        this.payment = payment;
-        this.deliveryFee = deliveryFee;
-        this.orderedAt = orderedAt;
-        this.deliveryWishDate = deliveryWishDate;
-        this.status = status;
-        this.usedPoint = usedPoint;
-        this.couponDiscount = couponDiscount;
-        this.orderNumber = orderNumber;
-    }
+//    @QueryProjection
+//    @Builder
+//    public OrderDetail(List<OrderProductDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddress, PaymentDto payment,
+//                       BigDecimal deliveryFee, LocalDateTime orderedAt, LocalDate deliveryWishDate, OrderStatus status,
+//                       int usedPoint, BigDecimal couponDiscount, String orderNumber) {
+//        this.orderProducts = orderProducts;
+//        this.orderDeliveryAddress = orderDeliveryAddress;
+//        this.payment = payment;
+//        this.deliveryFee = deliveryFee;
+//        this.orderedAt = orderedAt;
+//        this.deliveryWishDate = deliveryWishDate;
+//        this.status = status;
+//        this.usedPoint = usedPoint;
+//        this.couponDiscount = couponDiscount;
+//        this.orderNumber = orderNumber;
+//    }
 
 
     @Builder
@@ -66,7 +66,7 @@ public class OrderDetail {
 
         this.orderId = orderId;
         this.orderNumber = orderNumber;
-        this.status = status;
+        this.status = status.getStatus();
         this.deliveryFee = deliveryFee;
         this.orderPrice = orderPrice;
         this.deliveryWishDate = deliveryWishDate;

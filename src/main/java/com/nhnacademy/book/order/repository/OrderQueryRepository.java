@@ -14,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.nhnacademy.book.book.entity.QBook.book;
 import static com.nhnacademy.book.book.entity.QBookImage.bookImage;
@@ -97,42 +99,99 @@ public class OrderQueryRepository {
     }
 
     //TODO: 쿠폰할인액 계산?
-    public OrderDetail findOrderDetail(String orderId) {
-        return queryFactory
-                .select(new QOrderDetail(
-                        orders.id,
-                        orders.number,
-                        orders.status,
-                        orders.deliveryFee,
-                        orders.orderPrice,
-                        orders.deliveryWishDate,
-                        orders.orderedAt,
-                        orders.usedPoint,
-                        new QOrderDeliveryAddressDto(
-                                orderDeliveryAddress.locationAddress,
-                                orderDeliveryAddress.zipCode,
-                                orderDeliveryAddress.detailAddress,
-                                orderDeliveryAddress.recipient,
-                                orderDeliveryAddress.recipientPhone
-                        ),
-                        new QOrderDeliveryDto(
-                                orderDelivery.deliveryCompany,
-                                orderDelivery.trackingNumber,
-                                orderDelivery.registeredAt
-                        ),
-                        new QPaymentDto(
-                                payment.amount,
-                                payment.method,
-                                payment.easyPayProvider,
-                                payment.paidAt
+    public Optional<OrderDetail> findOrderDetailById(String orderId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(new QOrderDetail(
+                                orders.id,
+                                orders.number,
+                                orders.status,
+                                orders.deliveryFee,
+                                orders.orderPrice,
+                                orders.deliveryWishDate,
+                                orders.orderedAt,
+                                orders.usedPoint,
+                                new QOrderDeliveryAddressDto(
+                                        orderDeliveryAddress.locationAddress,
+                                        orderDeliveryAddress.zipCode,
+                                        orderDeliveryAddress.detailAddress,
+                                        orderDeliveryAddress.recipient,
+                                        orderDeliveryAddress.recipientPhone
+                                ),
+                                new QOrderDeliveryDto(
+                                        orderDelivery.deliveryCompany,
+                                        orderDelivery.trackingNumber,
+                                        orderDelivery.registeredAt
+                                ),
+                                new QPaymentDto(
+                                        payment.amount,
+                                        payment.method,
+                                        payment.easyPayProvider,
+                                        payment.paidAt
+                                )
+                        ))
+                        .from(orders)
+                        .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+                        .leftJoin(payment).on(payment.orders.eq(orders))
+                        .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
+                        .where(orders.id.eq(orderId))
+                        .fetchOne());
+    }
+
+    public Optional<NonMemberOrderDetail> findNonMemberOrderByNumber(String orderNumber) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(new QNonMemberOrderDetail(
+                                orders.id,
+                                orders.number,
+                                orders.status,
+                                orders.deliveryFee,
+                                orders.orderPrice,
+                                orders.deliveryWishDate,
+                                orders.orderedAt,
+                                nonMemberOrder.password,
+                                new QOrderDeliveryAddressDto(
+                                        orderDeliveryAddress.locationAddress,
+                                        orderDeliveryAddress.zipCode,
+                                        orderDeliveryAddress.detailAddress,
+                                        orderDeliveryAddress.recipient,
+                                        orderDeliveryAddress.recipientPhone
+                                ),
+                                new QOrderDeliveryDto(
+                                        orderDelivery.deliveryCompany,
+                                        orderDelivery.trackingNumber,
+                                        orderDelivery.registeredAt
+                                ),
+                                new QPaymentDto(
+                                        payment.amount,
+                                        payment.method,
+                                        payment.easyPayProvider,
+                                        payment.paidAt
+                                )
+                        ))
+                        .from(orders)
+                        .innerJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                        .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
+                        .leftJoin(payment).on(payment.orders.eq(orders))
+                        .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
+                        .where(orders.number.eq(orderNumber))
+                        .fetchOne());
+    }
+
+    public Optional<NonMemberOrderAccessResponseDto> findNonMemberOrderByOrderNumber(String orderNumber) {
+        NonMemberOrderAccessResponseDto result = queryFactory
+                .select(
+                        new QNonMemberOrderAccessResponseDto(
+                                orders.id,
+                                nonMemberOrder.password
                         )
-                ))
+                )
                 .from(orders)
-                .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
-                .leftJoin(payment).on(payment.orders.eq(orders))
-                .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
-                .where(orders.id.eq(orderId))
-                .fetchOne();
+                .innerJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
+                .where(orders.number.eq(orderNumber))
+                .fetchFirst();
+
+        return Optional.ofNullable(result);
     }
 
 
@@ -146,6 +205,7 @@ public class OrderQueryRepository {
         List<OrderProductDto> orderProductDtos = queryFactory
                 .select(
                         new QOrderProductDto(
+                                orderProduct.orderProductId,
                                 bookImage.imageUrl.as("imageUrl"),
                                 orderProduct.sellingBook.sellingBookId.as("bookId"),
                                 orderProduct.sellingBook.book.bookTitle,
@@ -169,9 +229,11 @@ public class OrderQueryRepository {
         return orderProductDtos;
     }
 
+
     private StringExpression getMemberEmail() {
         return member.email.coalesce("비회원"); // member.email이 null일 때 "비회원을 반환"
     }
+
 
     private BooleanExpression eqMemberId(String memberEmail) {
         if (memberEmail == null) {
@@ -180,12 +242,14 @@ public class OrderQueryRepository {
         return member.email.eq(memberEmail);
     }
 
+
     private BooleanExpression eqProductName(String bookTitle) {
         if (bookTitle == null) {
             return null;
         }
         return book.bookTitle.contains(bookTitle);
     }
+
 
     private BooleanExpression eqOrderDate(LocalDate orderDate) {
         if (orderDate == null) {
@@ -196,6 +260,7 @@ public class OrderQueryRepository {
 
         return orders.orderedAt.between(startOfDay, endOfDay);
     }
+
 
     private BooleanExpression eqOrderStatus(OrderStatus status) {
         if (status == null) {

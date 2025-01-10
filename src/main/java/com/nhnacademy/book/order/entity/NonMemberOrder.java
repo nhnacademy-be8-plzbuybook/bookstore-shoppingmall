@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.entity;
 
+import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class NonMemberOrder {
     @JoinColumn(name = "nmo_order_id", referencedColumnName = "order_id")
     private Orders order;
 
+    @Convert(converter = PasswordConverter.class)
     private String password;
 
     public NonMemberOrder(Orders order, String password) {

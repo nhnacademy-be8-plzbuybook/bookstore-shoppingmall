@@ -48,7 +48,7 @@ public class ReviewServiceImpl implements ReviewService {
         //Order_Product에서 상태가 구매 확정인 것만 리뷰를 작성할 수 있다
         OrderProduct orderProduct = orderProductRepository.findById(requestDto.getOrderProductId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 상품!"));
-        if(!orderProduct.getStatus().equals(OrderProductStatus.PURCHASE_CONFIRMATION)){
+        if(!orderProduct.getStatus().equals(OrderProductStatus.PURCHASE_CONFIRMED)){
             throw new InvalidOrderProductStatusException("구매 확정된 상품만 리뷰를 작성할 수 있다!");
         }
 
