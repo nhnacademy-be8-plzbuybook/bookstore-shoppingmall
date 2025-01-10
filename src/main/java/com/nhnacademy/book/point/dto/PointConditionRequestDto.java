@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointConditionRequestDto {
-    private String name;
+    private String pointConditionName;
     private Integer conditionPoint;
     private BigDecimal conditionPercentage;
     private boolean status;

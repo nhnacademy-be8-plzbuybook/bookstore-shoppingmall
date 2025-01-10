@@ -3,6 +3,7 @@ package com.nhnacademy.book.point.service.Impl;
 
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
 import com.nhnacademy.book.point.domain.PointCondition;
+import com.nhnacademy.book.point.domain.PointConditionName;
 import com.nhnacademy.book.point.dto.PointConditionRequestDto;
 import com.nhnacademy.book.point.dto.PointConditionResponseDto;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
@@ -33,7 +34,7 @@ public class PointConditionServiceImpl implements PointConditionService {
         }
 
         PointCondition pointCondition = new PointCondition();
-        pointCondition.setName(pointConditionRequestDto.getName());
+        pointCondition.setName(PointConditionName.valueOf(pointConditionRequestDto.getPointConditionName()));
         pointCondition.setConditionPoint(pointConditionRequestDto.getConditionPoint());
         pointCondition.setConditionPercentage(pointConditionRequestDto.getConditionPercentage());
         pointCondition.setStatus(true);
@@ -42,7 +43,7 @@ public class PointConditionServiceImpl implements PointConditionService {
 
         return new PointConditionResponseDto(
                 savedPointCondition.getPointConditionId(),
-                savedPointCondition.getName(),
+                savedPointCondition.getName().name(),
                 savedPointCondition.getConditionPoint(),
                 savedPointCondition.getConditionPercentage(),
                 savedPointCondition.isStatus()
@@ -55,7 +56,7 @@ public class PointConditionServiceImpl implements PointConditionService {
         return pointConditionRepository.findAll().stream()
                 .map(pointCondition -> new PointConditionResponseDto(
                         pointCondition.getPointConditionId(),
-                        pointCondition.getName(),
+                        pointCondition.getName().name(),
                         pointCondition.getConditionPoint(),
                         pointCondition.getConditionPercentage(),
                         pointCondition.isStatus()
@@ -68,7 +69,7 @@ public class PointConditionServiceImpl implements PointConditionService {
     public PointConditionResponseDto updatePointCondition(Long id, PointConditionRequestDto pointConditionRequestDto) {
         PointCondition existingPointCondition = pointConditionRepository.findById(id).orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
 
-        existingPointCondition.setName(pointConditionRequestDto.getName());
+        existingPointCondition.setName(PointConditionName.valueOf(pointConditionRequestDto.getPointConditionName()));
         existingPointCondition.setConditionPoint(pointConditionRequestDto.getConditionPoint());
         existingPointCondition.setConditionPercentage(pointConditionRequestDto.getConditionPercentage());
         existingPointCondition.setStatus(pointConditionRequestDto.isStatus());
@@ -77,7 +78,7 @@ public class PointConditionServiceImpl implements PointConditionService {
 
         return new PointConditionResponseDto(
                 updatedPointCondition.getPointConditionId(),
-                updatedPointCondition.getName(),
+                updatedPointCondition.getName().name(),
                 updatedPointCondition.getConditionPoint(),
                 updatedPointCondition.getConditionPercentage(),
                 updatedPointCondition.isStatus()
