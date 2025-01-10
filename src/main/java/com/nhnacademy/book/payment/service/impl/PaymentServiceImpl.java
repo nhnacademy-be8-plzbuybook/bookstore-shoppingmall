@@ -65,14 +65,15 @@ public class PaymentServiceImpl implements PaymentService {
         JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, cancelRequest);
         //cancels의 마지막 cancel를 저장
         LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
-        ZonedDateTime canceledAt = (ZonedDateTime) latestCancel.get("canceledAt");
+        LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
+        ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
         Payment payment = Payment.builder()
                 .paymentKey((String) jsonObject.get("paymentKey"))
                 .status((String) jsonObject.get("status"))
                 .method((String) jsonObject.get("method"))
                 .recordedAt(canceledAt.toLocalDateTime())
-                .amount((BigDecimal) latestCancel.get("cancelAmount"))
-                .easyPayProvider((String) jsonObject.get("easyPay"))
+                .amount(BigDecimal.valueOf((Integer)latestCancel.get("cancelAmount")))
+                .easyPayProvider((String) easyPay.get("provider"))
                 .orders(order)
                 .build();
         paymentRepository.save(payment);
