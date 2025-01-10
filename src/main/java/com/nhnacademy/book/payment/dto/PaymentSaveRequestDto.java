@@ -65,7 +65,7 @@ public class PaymentSaveRequestDto {
                 .paymentKey(paymentKey)
                 .amount(totalAmount)
                 .method(method)
-                .paidAt(approvedAt.toLocalDateTime())
+                .recordedAt(approvedAt.toLocalDateTime())
                 .easyPayProvider(easyPay.getProvider())
                 .orders(order)
                 .build();
