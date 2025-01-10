@@ -57,9 +57,19 @@ public class BookDetailResponseDto {
 
     }
 
-    public BookDetailResponseDto(Long bookId, Long aLong, String bookTitle, String bookIndex,
+    public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex,
                                  String bookDescription, LocalDate bookPubDate, BigDecimal
                                          bookPriceStandard, String bookIsbn13, Long publisherId, String imageUrl) {
+        this.bookId = bookId;
+        this.sellingBookId = sellingBookId;
+        this.bookTitle = bookTitle;
+        this.bookIndex = bookIndex;
+        this.bookDescription = bookDescription;
+        this.bookPubDate = bookPubDate;
+        this.bookPriceStandard = bookPriceStandard;
+        this.bookIsbn13 = bookIsbn13;
+        this.publisherId = publisherId;
+        this.imageUrl = imageUrl;
     }
 
     public BookDetailResponseDto(Long bookId, Long sellingBookId, String bookTitle, String bookIndex, String bookDescription,
