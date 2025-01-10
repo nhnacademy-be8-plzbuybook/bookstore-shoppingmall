@@ -23,7 +23,7 @@ public class Payment {
     private String paymentKey;
 
     @Column(nullable = false)
-    private LocalDateTime paidAt;
+    private LocalDateTime recordedAt;
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -40,12 +40,24 @@ public class Payment {
     private Orders orders;
 
     @Builder
-    public Payment(Long id, String status, String paymentKey, LocalDateTime paidAt, BigDecimal amount,
+    public Payment(Long id, String status, String paymentKey, LocalDateTime recordedAt, BigDecimal amount,
                    String method, String easyPayProvider, Orders orders) {
         this.id = id;
         this.status = status;
         this.paymentKey = paymentKey;
-        this.paidAt = paidAt;
+        this.recordedAt = recordedAt;
+        this.amount = amount;
+        this.method = method;
+        this.easyPayProvider = easyPayProvider;
+        this.orders = orders;
+    }
+
+    @Builder
+    public Payment(String status, String paymentKey, LocalDateTime recordedAt, BigDecimal amount,
+                   String method, String easyPayProvider, Orders orders) {
+        this.status = status;
+        this.paymentKey = paymentKey;
+        this.recordedAt = recordedAt;
         this.amount = amount;
         this.method = method;
         this.easyPayProvider = easyPayProvider;
