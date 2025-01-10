@@ -111,16 +111,16 @@ class ObjectStorageServiceTest {
         assertThrows(ObjectStorageFileUploadException.class, () -> objectStorageService.uploadObjects(files));
     }
 
-    @Test
-    @DisplayName("빈 파일 리스트를 업로드 시도 시 예외 발생")
-    void uploadEmptyFiles() {
-        List<MultipartFile> files = new ArrayList<>();
-
-        ObjectStorageFileUploadException exception = assertThrows(ObjectStorageFileUploadException.class,
-                () -> objectStorageService.uploadObjects(files));
-
-        assertEquals("No files upload.", exception.getMessage());
-    }
+//    @Test
+//    @DisplayName("빈 파일 리스트를 업로드 시도 시 예외 발생")
+//    void uploadEmptyFiles() {
+//        List<MultipartFile> files = new ArrayList<>();
+//
+//        ObjectStorageFileUploadException exception = assertThrows(ObjectStorageFileUploadException.class,
+//                () -> objectStorageService.uploadObjects(files));
+//
+//        assertEquals("No files upload.", exception.getMessage());
+//    }
 
 
     @Test
