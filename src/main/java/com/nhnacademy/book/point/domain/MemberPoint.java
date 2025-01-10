@@ -44,4 +44,5 @@ public class MemberPoint {
 
     @Column(nullable = false)
     private String type;
+
 }
