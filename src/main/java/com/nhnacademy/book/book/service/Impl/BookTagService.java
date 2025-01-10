@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.response.BookTagResponseDto;
+import com.nhnacademy.book.book.dto.response.TagResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookTag;
 import com.nhnacademy.book.book.entity.Tag;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +64,14 @@ public class BookTagService {
 
     public void deleteBookTagList(Long bookId,Long tagId) {
         bookTagRepository.deleteByBook_BookIdAndTag_TagId(bookId,tagId);
+    }
+
+    public List<BookTagResponseDto> getBookTagListByBookId(Long bookId) {
+        List<BookTag> bookTags = bookTagRepository.findBookTagByBook_BookId(bookId);
+        return bookTags.stream()
+                .map(bookTag -> new BookTagResponseDto(bookTag.getBookTagId() ,bookTag.getTag().getTagId(), bookTag.getTag().getTagName(), bookTag.getBook().getBookId(),bookTag.getBook().getBookTitle()))
+                .collect(Collectors.toList());
+
     }
 
 

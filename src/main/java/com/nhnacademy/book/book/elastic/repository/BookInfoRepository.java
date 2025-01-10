@@ -18,9 +18,9 @@ public interface BookInfoRepository extends ElasticsearchRepository<BookInfoDocu
 //            "\"minimum_should_match\": 1}}")
 //    List<BookInfoDocument> searchBooksByKeyword(String keyword);
 @Query("{\"bool\": {\"should\": [" +
-        "{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 3.0}}}, " +  // 책 제목에 가중치 3.0
-        "{\"match\": {\"author_names\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 1.5}}}, " +  // 작가 이름에 가중치 1.5
-        "{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"or\"}}} ], " +  // 카테고리 이름에 기본 점수
+        "{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 3.0}}}, " +
+        "{\"match\": {\"author_names\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 1.5}}}, " +
+        "{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"or\"}}} ], " +
         "\"minimum_should_match\": 1}}")
 List<BookInfoDocument> searchBooksByKeyword(String keyword);
 
