@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
@@ -114,63 +115,134 @@ public class SellingBookService {
 
 
 
+    /**
+     * 책 값 불러오기
+     * @param sellingBookId
+     * @return
+     */
+        public AdminBookAndSellingBookRegisterDto getSellingBookDtoById(Long sellingBookId) {
+            SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
+                    .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+            return toAdminBookRegisterDto(sellingBook);
+        }
 
-//    /**
-//     * 판매책 등록 ( 관리자 )
-//     * @param registerDto 판매책 등록 DTO
-//     * @return 등록된 판매책의 정보
-//     */
-//    @Transactional(readOnly = true)
-//    public SellingBookResponseDto registerSellingBook(SellingBookRegisterDto registerDto) {
-//        // Book 테이블에서 도서 정보 조회
-//        Book book = bookRepository.findById(registerDto.getBookId())
-//                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + registerDto.getBookId()));
-//
-//        // SellingBook 생성, 기본값 설정
-//        SellingBook sellingBook = new SellingBook();
-//        sellingBook.setBook(book);
-//        sellingBook.setSellingBookPrice(book.getBookPriceStandard()); // 기본값: 책의 정가
-//        sellingBook.setSellingBookPackageable(false); // 기본값: 선물 포장 불가
-//        sellingBook.setSellingBookStock(0); // 기본값: 재고 없음
-//        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING); // 기본값: 등록 대기 상태
-//        sellingBook.setUsed(false); // 기본값: 새 상품
-//        sellingBook.setSellingBookViewCount(0L); // 초기 조회수
-//
-//        // 판매책 저장
-//        SellingBook savedSellingBook = sellingBookRepository.save(sellingBook);
-//
-//        return toResponseDto(savedSellingBook);
-//    }
-//
+        private AdminBookAndSellingBookRegisterDto toAdminBookRegisterDto(SellingBook sellingBook) {
+
+            Book book = sellingBook.getBook();
+
+            // BookImage를 Book 기준으로 검색
+            BookImage bookImage = bookImageRepository.findByBook(book) // book으로 이미지 조회
+                    .orElseThrow(() -> new RuntimeException("BookImage not found for Book ID: " + book.getBookId()));
+
+            // 카테고리 이름 가져오기
+            List<String> categoryNames = categoryRepository.findCategoriesByBookId(book.getBookId())
+                    .stream()
+                    .map(Category::getCategoryName)
+                    .collect(Collectors.toList());
+
+            // 작가 이름 가져오기
+            List<String> authorNames = bookAuthorRepository.findByBook_BookId(book.getBookId())
+                    .stream()
+                    .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
+                    .collect(Collectors.toList());
+
+            // 필요한 필드를 설정하여 DTO로 변환
+            return new AdminBookAndSellingBookRegisterDto(
+                    sellingBook.getSellingBookId(),
+                    sellingBook.getBookTitle(),
+                    book.getBookIsbn13(),
+                    book.getBookPubDate(),
+                    book.getBookIndex(),
+                    book.getBookDescription(),
+                    book.getBookPriceStandard(),
+                    sellingBook.getSellingBookPrice(),
+                    sellingBook.getSellingBookPackageable(),
+                    book.getPublisher().toString(),
+                    sellingBook.getSellingBookStock(),
+                    bookImage.getImageUrl(),
+                    sellingBook.getSellingBookStatus(),
+                    categoryNames,
+                    authorNames
+            );
+        }
+
+
+    /**
+     * 관리자 판매 도서 필드 불러오는 서비스
+     * @param pageable
+     * @return
+     */
+    public Page<SellingBookRegisterDto> getSellingBooks(Pageable pageable) {
+        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
+
+
+        return sellingBooks.map(sellingBook -> {
+            SellingBookRegisterDto dto = new SellingBookRegisterDto();
+            dto.setBookId(
+                    sellingBook.getBook() != null ? sellingBook.getBook().getBookId() : null
+            );
+            dto.setBookId(sellingBook.getBook().getBookId());
+            dto.setSellingBookId(sellingBook.getSellingBookId());  // 판매책 ID 추가
+            dto.setSellingBookPrice(sellingBook.getSellingBookPrice());
+            dto.setSellingBookPackageable(sellingBook.getSellingBookPackageable());
+            dto.setSellingBookStock(sellingBook.getSellingBookStock());
+            dto.setSellingBookStatus(sellingBook.getSellingBookStatus());
+            dto.setSellingBookViewCount(sellingBook.getSellingBookViewCount());
+            dto.setUsed(sellingBook.getUsed());
+            return dto;
+        });
+    }
 
     /**
      * 판매책 수정 update -  특정 필드값 수정 가능 로직 (관리자)
      */
-    @Transactional(readOnly = true)
-    public SellingBookResponseDto updateSellingBook(Long sellingBookId, SellingBookRegisterDto updateDto) {
+    @Transactional
+    public SellingBookRegisterDto updateSellingBook(Long sellingBookId, SellingBookRegisterDto updateDto) {
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
                 .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
 
         // 특정 필드만 수정
-        if (updateDto.getPrice() != null) {
-            sellingBook.setSellingBookPrice(updateDto.getPrice());
+        // 판매가 수정
+        if (updateDto.getSellingBookPrice() != null) {
+            sellingBook.setSellingBookPrice(updateDto.getSellingBookPrice());
         }
-        if (updateDto.getPackageable() != null) {
-            sellingBook.setSellingBookPackageable(updateDto.getPackageable());
+        // 선물 포장 가능 여부
+        if (updateDto.getSellingBookPackageable() != null) {
+            sellingBook.setSellingBookPackageable(updateDto.getSellingBookPackageable());
         }
-        if (updateDto.getStock() != null) {
-            sellingBook.setSellingBookStock(updateDto.getStock());
+        // 재고 수정
+
+        if (updateDto.getSellingBookStock() != null) {
+            sellingBook.setSellingBookStock(updateDto.getSellingBookStock());
         }
+        // 도서 상태 수정
+        if (updateDto.getSellingBookStatus() != null) {
+            sellingBook.setSellingBookStatus(updateDto.getSellingBookStatus());
+        }
+        // 중고 여부 수정
         if (updateDto.getUsed() != null) {
             sellingBook.setUsed(updateDto.getUsed());
         }
-        if (updateDto.getStatus() != null) {
-            sellingBook.setSellingBookStatus(updateDto.getStatus());
+        // 조회수 수정
+        if (updateDto.getSellingBookViewCount() != null) {
+            sellingBook.setSellingBookViewCount(updateDto.getSellingBookViewCount());
         }
 
+        sellingBook = sellingBookRepository.save(sellingBook);
 
-        SellingBook updatedSellingBook = sellingBookRepository.save(sellingBook);
-        return toResponseDto(updatedSellingBook);
+        // SellingBookRegisterDto로 변환 후 반환
+        SellingBookRegisterDto responseDto = new SellingBookRegisterDto();
+        responseDto.setSellingBookId(sellingBook.getSellingBookId());
+        responseDto.setBookId(sellingBook.getBook().getBookId());
+        responseDto.setSellingBookPrice(sellingBook.getSellingBookPrice());
+        responseDto.setSellingBookPackageable(sellingBook.getSellingBookPackageable());
+        responseDto.setSellingBookStock(sellingBook.getSellingBookStock());
+        responseDto.setSellingBookStatus(sellingBook.getSellingBookStatus());
+        responseDto.setSellingBookViewCount(sellingBook.getSellingBookViewCount());
+        responseDto.setUsed(sellingBook.getUsed());
+
+
+        return responseDto;
     }
 
 

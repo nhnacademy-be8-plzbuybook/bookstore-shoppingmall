@@ -104,3 +104,7 @@ GET http://localhost:8080/index?sortBy=likeCount&sortDir=desc&page=0&size=16
 ###
 ### 관리자 페이지에서 리스트 확인
 GET http://localhost:8080/api/admin/selling-books?page=0&size=10
+
+###
+# curl -X GET http://localhost:8080/api/admin/selling-books/304
+GET http://localhost:8080/api/admin/selling-books/304

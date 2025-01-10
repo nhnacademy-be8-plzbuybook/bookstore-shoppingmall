@@ -14,9 +14,11 @@ import java.time.LocalDate;
 @Setter
 public class SellingBookRegisterDto {
     private Long bookId; // 책 ID
-    private BigDecimal price; // 판매가
-    private Boolean packageable; // 선물 포장 가능 여부
-    private Integer stock; // 재고
-    private SellingBookStatus status;
+    private Long sellingBookId; // 추가 필요
+    private BigDecimal sellingBookPrice; // 판매가
+    private Boolean sellingBookPackageable; // 선물 포장 가능 여부
+    private Integer sellingBookStock; // 재고
+    private SellingBookStatus sellingBookStatus;
+    private Long sellingBookViewCount;//조회수
     private Boolean used; // 중고 여부
 }
