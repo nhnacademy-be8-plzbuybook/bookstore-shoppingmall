@@ -27,11 +27,11 @@ public class MemberPoint {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mp_condition_id")
+    @JoinColumn(name = "mp_condition_id", nullable = false)
     private PointCondition pointCondition;
 
     @Column(nullable = false)
-    private Integer point; // 적립된 포인트 추가
+    private BigDecimal point; // 적립된 포인트 추가
 
     @Column
     private LocalDateTime addDate;
@@ -44,5 +44,6 @@ public class MemberPoint {
 
     @Column(nullable = false)
     private String type;
+
 
 }

@@ -1,6 +1,7 @@
 package com.nhnacademy.book.point.dto;
 
 
+import com.nhnacademy.book.point.domain.PointConditionName;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,9 @@ public class MemberPointAddResponseDto {
     private Long memberPointId;
     @NotNull
     private Long memberId;
-    private String name;
-    private Integer point;
+    private String pointConditionName;
+    private BigDecimal point;
     private LocalDateTime addDate;
     private LocalDateTime endDate;
-    private String type;
 
 }
