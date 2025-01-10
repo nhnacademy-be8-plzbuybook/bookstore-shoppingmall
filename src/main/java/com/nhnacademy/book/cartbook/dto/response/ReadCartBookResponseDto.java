@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 @Builder
 public record ReadCartBookResponseDto(
+        Long cartId,             // 장바구니 ID (Cart.cartId)
         Long cartBookId,          // 장바구니 항목 ID (SellingBook.sellingBookId)
         Long sellingBookId,              // 책 ID (Book.bookId)
         String bookTitle,         // 책 제목 (Book.bookTitle)

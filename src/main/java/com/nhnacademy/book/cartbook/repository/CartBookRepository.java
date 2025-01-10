@@ -21,5 +21,4 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 
     List<CartBook> findAllByCart_CartId(Long cartId);
 
-    List<CartBook> findByCart(Cart cart);
 }

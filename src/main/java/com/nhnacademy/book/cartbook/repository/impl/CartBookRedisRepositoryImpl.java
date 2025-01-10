@@ -30,6 +30,7 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
         ReadCartBookResponseDto resp = (ReadCartBookResponseDto) cartRedisTemplate.opsForHash().get(hashName + ":", id.toString());
         assert resp != null;
         ReadCartBookResponseDto updatedResp = ReadCartBookResponseDto.builder()
+                .cartId(resp.cartId())
                 .cartBookId(resp.cartBookId())
                 .sellingBookId(resp.sellingBookId())
                 .bookTitle(resp.bookTitle())
