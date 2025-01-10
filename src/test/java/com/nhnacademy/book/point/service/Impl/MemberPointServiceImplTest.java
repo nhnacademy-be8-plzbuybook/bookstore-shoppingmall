@@ -3,7 +3,6 @@ package com.nhnacademy.book.point.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.point.domain.PointCondition;
-import com.nhnacademy.book.point.domain.PointConditionName;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
@@ -49,11 +48,11 @@ class MemberPointServiceImplTest {
     @DisplayName("회원가입 시 포인트 적립 성공")
     void addSignUpPoint() {
         PointCondition pointCondition = new PointCondition();
-        pointCondition.setName(PointConditionName.SIGN_UP);
+        pointCondition.setName("SIGN_UP");
         pointCondition.setConditionPoint(5000);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(pointConditionRepository.findByName(PointConditionName.SIGN_UP))
+        when(pointConditionRepository.findByName("SIGN_UP"))
                 .thenReturn(Optional.of(pointCondition));
 
         memberPointService.addSignUpPoint(member);

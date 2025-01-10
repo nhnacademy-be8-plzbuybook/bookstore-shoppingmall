@@ -1,20 +1,18 @@
 package com.nhnacademy.book.point.dto;
 
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberPointAddResponseDto {
+public class MemberPointListResponseDto {
     @NotNull
     private Long memberPointId;
     @NotNull
@@ -23,6 +21,9 @@ public class MemberPointAddResponseDto {
     private Integer point;
     private LocalDateTime addDate;
     private LocalDateTime endDate;
+    private LocalDateTime usingDate;
     private String type;
 
 }
+
+
