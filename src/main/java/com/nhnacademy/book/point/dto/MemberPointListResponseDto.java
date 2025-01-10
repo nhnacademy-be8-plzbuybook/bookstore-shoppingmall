@@ -6,19 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberPointAddRequestDto {
+public class MemberPointListResponseDto {
+    @NotNull
+    private Long memberPointId;
     @NotNull
     private Long memberId;
-    private Long reviewId;
     private String name;
-    private Integer conditionPoint;
-    private BigDecimal conditionPercentage;
-
+    private Integer point;
+    private LocalDateTime addDate;
+    private LocalDateTime endDate;
+    private LocalDateTime usingDate;
+    private String type;
 
 }
