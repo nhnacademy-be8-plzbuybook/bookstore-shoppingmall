@@ -5,6 +5,9 @@ import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import jakarta.validation.Valid;
@@ -25,11 +28,13 @@ public class AdminSellingBookController {
 
     private final SellingBookService sellingBookService;
 
+    private final SellingBookRepository sellingBookRepository;
     private final BookService bookService;
 
     @Autowired
-    public AdminSellingBookController(SellingBookService sellingBookService, BookService bookService) {
+    public AdminSellingBookController(SellingBookService sellingBookService, SellingBookRepository sellingBookRepository, BookService bookService) {
         this.sellingBookService = sellingBookService;
+        this.sellingBookRepository = sellingBookRepository;
         this.bookService = bookService;
     }
     /**
@@ -45,20 +50,46 @@ public class AdminSellingBookController {
     }
 
     /**
+     * 도서 책 수정 폼 데이터 가져오기
+     * @param sellingBookId
+     * @return
+     */
+    @GetMapping("/{sellingBookId}")
+    public ResponseEntity<AdminBookAndSellingBookRegisterDto> getSellingBookById(@PathVariable Long sellingBookId) {
+        AdminBookAndSellingBookRegisterDto dto = sellingBookService.getSellingBookDtoById(sellingBookId);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * 판매도서 등록 기능 (관리자)
+     * @param sellingBookRegisterDto
+     * @return
+     */
+    @PostMapping("/selling-register")
+    public ResponseEntity<SellingBookRegisterDto> registerSellingBooks(
+            @RequestBody @Valid SellingBookRegisterDto sellingBookRegisterDto) {
+
+        log.info("Received DTO: {}", sellingBookRegisterDto); // DTO 데이터 확인
+
+        // 서비스 호출
+        bookService.registerBookAndSellingBooks(sellingBookRegisterDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(sellingBookRegisterDto);
+    }
+
+    /**
      * 판매책 수정 -> 판매책 정보( 가격, 재고, 상태 등 수정 각각 가능) 관리자
      * 도서 수정: PUT /api/admin/selling-books/{sellingBookId}
      * @param sellingBookId
      * @param updateDto
      * @return
      */
-    @PutMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookResponseDto> updateSellingBook(
+    @PostMapping("/{sellingBookId}")
+    public ResponseEntity<SellingBookRegisterDto> updateSellingBook(
             @PathVariable Long sellingBookId,
             @RequestBody SellingBookRegisterDto updateDto) {
         return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
     }
-
-
 
     // 도서 등록 기능 (관리자)
     @PostMapping("/register")
@@ -72,7 +103,6 @@ public class AdminSellingBookController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerDto);
     }
-
 
 
     /**
@@ -91,6 +121,15 @@ public class AdminSellingBookController {
         return ResponseEntity.ok(sellingBookService.getBooks(pageable));
     }
 
+
+    @GetMapping("/selling-list")
+    public ResponseEntity<Page<SellingBookRegisterDto>> getSellingBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(sellingBookService.getSellingBooks(pageable));
+    }
 
 
 }

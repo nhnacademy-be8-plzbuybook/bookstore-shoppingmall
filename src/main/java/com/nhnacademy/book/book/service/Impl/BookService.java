@@ -172,12 +172,37 @@ public class BookService {
     }
 
 
+    //TODO
+    @Transactional
+    public void registerBookAndSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
+        // 1. 책 ID로 책 정보 조회
+        Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책 ID입니다."));
+
+        // 2. 판매책 정보 생성
+        SellingBook sellingBook = new SellingBook();
+        sellingBook.setBook(book); // 책과 매핑
+        sellingBook.setSellingBookPrice(sellingBookRegisterDto.getSellingBookPrice()); // 판매가
+        sellingBook.setSellingBookPackageable(sellingBookRegisterDto.getSellingBookPackageable()); // 선물포장 가능 여부
+        sellingBook.setSellingBookStock(sellingBookRegisterDto.getSellingBookStock()); // 재고
+        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.safeValueOf(String.valueOf(sellingBookRegisterDto.getSellingBookStatus()))); // 도서 상태
+        sellingBook.setSellingBookViewCount(sellingBookRegisterDto.getSellingBookViewCount() != null
+                ? sellingBookRegisterDto.getSellingBookViewCount() : 0L); // 조회수 (기본값 0)
+        sellingBook.setUsed(sellingBookRegisterDto.getUsed() != null ? sellingBookRegisterDto.getUsed() : false); // 중고 여부 (기본값 false)
+
+        // 3. 판매책 저장
+        sellingBookRepository.save(sellingBook);
+
+        // 로그 출력 (디버깅 용도)
+        log.info("판매책 등록 완료: {}", sellingBook);
+
+    }
 
 
 
 
 
-    // 도서 삭제 기능 (관리자)
+        // 도서 삭제 기능 (관리자)
     public void deleteBook(Long bookId) {
         if (!bookRepository.existsById(bookId)) {
             throw new BookNotFoundException("존재하지 않는 도서 ID입니다.");

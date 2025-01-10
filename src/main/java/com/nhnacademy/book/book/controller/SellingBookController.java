@@ -28,6 +28,14 @@ public class SellingBookController {
         this.sellingBookService = sellingBookService;
     }
 
+    /**
+     * index 화면 페이징 한후 로드
+     * @param page
+     * @param size
+     * @param sortBy
+     * @param sortDir
+     * @return
+     */
     @GetMapping
     public Page<SellingBookResponseDto> getBooks(
             @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
@@ -76,18 +84,18 @@ public class SellingBookController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * 판매책 수정 -> 판매책 정보( 가격, 재고, 상태 등 수정 각각 가능) 관리자
-     * @param sellingBookId
-     * @param updateDto
-     * @return
-     */
-    @PutMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookResponseDto> updateSellingBook(
-            @PathVariable Long sellingBookId,
-            @RequestBody SellingBookRegisterDto updateDto) {
-        return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
-    }
+//    /**
+//     * 판매책 수정 -> 판매책 정보( 가격, 재고, 상태 등 수정 각각 가능) 관리자
+//     * @param sellingBookId
+//     * @param updateDto
+//     * @return
+//     */
+//    @PutMapping("/{sellingBookId}")
+//    public ResponseEntity<SellingBookResponseDto> updateSellingBook(
+//            @PathVariable Long sellingBookId,
+//            @RequestBody SellingBookRegisterDto updateDto) {
+//        return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
+//    }
 
 
     /**
