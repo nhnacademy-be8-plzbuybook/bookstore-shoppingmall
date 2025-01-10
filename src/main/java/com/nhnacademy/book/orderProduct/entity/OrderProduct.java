@@ -21,7 +21,7 @@ public class OrderProduct {
     @Column(name = "order_product_id")
     private Long orderProductId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "op_selling_book_id", referencedColumnName = "sellingBookId") //TODO: 컬럼명 명시적으로 지정필요
     private SellingBook sellingBook;
 
