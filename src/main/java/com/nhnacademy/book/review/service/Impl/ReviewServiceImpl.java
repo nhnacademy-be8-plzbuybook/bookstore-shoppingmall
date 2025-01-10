@@ -42,20 +42,13 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto, List<String> imageUrls) {
-        //회원-주문 테이블에서 관계 검증 (회원은 여러개 주문을 할 수 있어서 리스트로 받고 거기에 대한 검증을 진행)
-        List<MemberOrder> memberOrder = memberOrderRepository.findByOrder_IdAndMember_memberId(
+        //회원-주문 테이블에서 관계 검증
+        MemberOrder memberOrder = memberOrderRepository.findByOrder_IdAndMember_memberId(
               orderProductRepository.findById(requestDto.getOrderProductId())
                       .orElseThrow(() -> new OrderProductNotFoundException("존재하지 않는 주문 상품!"))
                       .getOrder().getId(),
                 requestDto.getMemberId()
-        );
-
-        if(memberOrder.isEmpty()){
-            throw new InvalidOrderAccessException("해당 주문은 회원의 주문이 아니다!");
-        }
-
-        // 어짜피 member는 다 같으니까 첫번째를 가져온다
-        Member member = memberOrder.get(0).getMember();
+        ).orElseThrow(() -> new InvalidOrderAccessException("해당 주문은 회원의 주문이 아니다!"));
 
         //Order_Product에서 상태가 구매 확정인 것만 리뷰를 작성할 수 있다
         OrderProduct orderProduct = orderProductRepository.findById(requestDto.getOrderProductId())
@@ -70,7 +63,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         Review review = new Review(
-                member,
+                memberOrder.getMember(),
                 orderProduct,
                 requestDto.getScore(),
                 requestDto.getContent()
