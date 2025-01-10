@@ -42,10 +42,13 @@ public class ReviewController {
         }
 
         List<String> imageUrls = new ArrayList<>();
-        if (images != null) {
+        // 이미지가 첨부된 경우만 처리
+        if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
-                String imageUrl = saveImage(image);  // 이미지를 저장하고 URL 반환
-                imageUrls.add(imageUrl);
+                if (!image.isEmpty()) {  // 비어 있는 파일은 건너뛰기
+                    String imageUrl = saveImage(image);  // 이미지를 저장하고 URL 반환
+                    imageUrls.add(imageUrl);
+                }
             }
         }
 

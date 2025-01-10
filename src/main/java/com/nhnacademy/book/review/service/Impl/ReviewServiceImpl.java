@@ -42,36 +42,45 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto, List<String> imageUrls) {
-        //회원-주문 테이블에서 관계 검증
-        MemberOrder memberOrder = memberOrderRepository.findByOrder_IdAndMember_memberId(
-              orderProductRepository.findById(requestDto.getOrderProductId())
-                      .orElseThrow(() -> new OrderProductNotFoundException("존재하지 않는 주문 상품!"))
-                      .getOrder().getId(),
+        //sellingBookId와 회원 ID로 구매 확정된 상품 조회
+        List<OrderProduct> orderProducts = orderProductRepository.findBySellingBookIdANdMemberId(
+                requestDto.getSellingBookId(),
                 requestDto.getMemberId()
-        ).orElseThrow(() -> new InvalidOrderAccessException("해당 주문은 회원의 주문이 아니다!"));
+        );
 
-        //Order_Product에서 상태가 구매 확정인 것만 리뷰를 작성할 수 있다
-        OrderProduct orderProduct = orderProductRepository.findById(requestDto.getOrderProductId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 상품!"));
-        if(!orderProduct.getStatus().equals(OrderProductStatus.PURCHASE_CONFIRMED)){
+        if(orderProducts.isEmpty()){
+            throw new InvalidOrderAccessException("구매 확정된 상품만 리뷰를 작성할 수 있다!");
+        }
+
+        OrderProduct confirmedOrderProduct = null;
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct.getStatus().equals(OrderProductStatus.PURCHASE_CONFIRMED)) {
+                confirmedOrderProduct = orderProduct;
+                break;
+            }
+        }
+
+        if (confirmedOrderProduct == null) {
             throw new InvalidOrderProductStatusException("구매 확정된 상품만 리뷰를 작성할 수 있다!");
         }
 
-        //중복 리뷰 방지
-        if(reviewRepository.existsByOrderProduct(orderProduct)){
+        //Order_Product에서 상태가 구매 확정인 것만 리뷰를 작성할 수 있다
+        if(reviewRepository.existsByOrderProduct(confirmedOrderProduct)){
             throw new DuplicateReviewException("이미 리뷰가 작성됨!");
         }
 
+        Member member = memberRepository.findById(requestDto.getMemberId()).get();
+
         Review review = new Review(
-                memberOrder.getMember(),
-                orderProduct,
+                member,
+                confirmedOrderProduct,
                 requestDto.getScore(),
                 requestDto.getContent()
         );
 
         Review savedReview = reviewRepository.save(review);
 
-        if(imageUrls != null){
+        if(imageUrls != null && !imageUrls.isEmpty()){
             for(String imageUrl : imageUrls){
                 ReviewImage reviewImage = new ReviewImage();
                 reviewImage.setReview(savedReview);
