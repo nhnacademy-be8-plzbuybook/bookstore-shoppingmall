@@ -1,11 +1,8 @@
-#http://localhost:8090/api/points/conditions
-
-
 POST http://localhost:8090/api/points/conditions
 Content-Type: application/json
 
 {
-  "pointConditionName": "SILVER",
+  "name": "SILVER",
   "conditionPoint": 100,
   "conditionPercentage": null,
   "status": true

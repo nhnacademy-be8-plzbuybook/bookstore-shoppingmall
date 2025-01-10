@@ -5,17 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PointConditionRequestDto {
-    private String name;
-    private Integer conditionPoint;
-    private BigDecimal conditionPercentage;
-    private boolean status;
-
-
+public class MemberPointUseRequestDto {
+    private String email;
+    private Integer usedPoint;
 }
