@@ -20,7 +20,6 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +53,8 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
     }
 
     @Override
-    public List<ReadAllMemberCartBookResponseDto> readAllCartMember(String email) {
-        List<ReadAllMemberCartBookResponseDto> responses = new ArrayList<>();
+    public List<ReadCartBookResponseDto> readAllCartMember(String email) {
+        List<ReadCartBookResponseDto> responses = new ArrayList<>();
 
         Long memberId = memberRepository.getMemberIdByEmail(email);
 
@@ -65,7 +64,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                 .orElseThrow(() -> new MemberNotFoundException("장바구니에서 해당 이메일로 가입된 회원을 찾을 수 없습니다."))));
 
         cartRepository.save(cart);
-        List<ReadGuestCartBookResponseDto> redisResponselist = cartBookRedisRepository.readAllHashName("Member" + memberId);
+        List<ReadCartBookResponseDto> redisResponselist = cartBookRedisRepository.readAllHashName("Member" + memberId);
 
         if(redisResponselist.isEmpty()) {
             List<CartBook> cartBookList = cartBookRepository.findAllByCart(cart);
@@ -74,7 +73,8 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
 
                 cartBookRedisRepository.create("Member" + memberId,
                         cartBook.getId(),
-                        ReadGuestCartBookResponseDto.builder()
+                        ReadCartBookResponseDto.builder()
+                                .cartId(cart.getCartId())
                                 .cartBookId(cartBook.getId())
                                 .sellingBookId(cartBook.getSellingBook().getSellingBookId())
                                 .bookTitle(cartBook.getSellingBook().getBookTitle())
@@ -82,11 +82,10 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                                 .imageUrl(url)
                                 .quantity(cartBook.getQuantity())
                                 .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                                .sellingBookPackageable(cartBook.getSellingBook().getSellingBookPackageable())
-                                .used(cartBook.getSellingBook().getUsed())
                                 .build()
                 );
-                responses.add(ReadAllMemberCartBookResponseDto.builder()
+                responses.add(ReadCartBookResponseDto.builder()
+                                .cartId(cart.getCartId())
                                 .quantity(cartBook.getQuantity())
                                 .cartBookId(cartBook.getId())
                                 .sellingBookId(cartBook.getSellingBook().getSellingBookId())
@@ -99,8 +98,9 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
             }
             return responses;
         } else {
-            for(ReadGuestCartBookResponseDto redisResponse : redisResponselist) {
-                responses.add(ReadAllMemberCartBookResponseDto.builder()
+            for(ReadCartBookResponseDto redisResponse : redisResponselist) {
+                responses.add(ReadCartBookResponseDto.builder()
+                        .cartId(redisResponse.cartId())
                         .quantity(redisResponse.quantity())
                         .cartBookId(redisResponse.cartBookId())
                         .sellingBookId(redisResponse.sellingBookId())
@@ -114,32 +114,6 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
             return responses;
         }
     }
-
-//    @Override
-//    public ReadMemberCartBookResponseDto readMemberCartBook(Long cartBookId, String email) {
-//        Long memberId = memberRepository.getMemberIdByEmail(email);
-//
-//        Optional<Cart> cartOptional = cartRepository.findByMember_MemberId(memberId);
-//
-//        Cart cart = cartOptional.orElseGet(() -> new Cart(memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new MemberNotFoundException("장바구니에서 해당 이메일로 가입된 회원을 찾을 수 없습니다."))));
-////
-////        Cart cart = cartRepository.findByMember_MemberId(memberRepository.getMemberIdByEmail(email))
-////                .orElseThrow(()-> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
-//
-//        CartBook cartBook = cartBookRepository.findById(cartBookId)
-//                .orElseThrow(()-> new CartBookDoesNotExistException("해당 책 장바구니를 찾을 수 없습니다."));
-//
-//        return ReadMemberCartBookResponseDto.builder()
-//                .cartBookId(cartBook.getId())
-//                .quantity(cartBook.getQuantity())
-//                .sellingBookId(cartBook.getSellingBook().getSellingBookId())
-//                .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
-//                .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-//                .title(cartBook.getSellingBook().getBookTitle())
-//                .url(getBookImageUrl(cartBook.getSellingBook().getBook()))
-//                .build();
-//    }
 
     @Override
     public Long createBookCartMember(CreateCartBookRequestDto createCartBookRequestDto, String email) {
@@ -180,7 +154,8 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
 
         cartBookRedisRepository.create("Member" + memberId,
                 cartBook.getId(),
-                ReadGuestCartBookResponseDto.builder()
+                ReadCartBookResponseDto.builder()
+                        .cartId(cart.getCartId())
                         .cartBookId(cartBook.getId())
                         .sellingBookId(cartBook.getSellingBook().getSellingBookId())
                         .bookTitle(cartBook.getSellingBook().getBookTitle())
@@ -188,8 +163,6 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                         .imageUrl(getBookImageUrl(cartBook.getSellingBook().getBook()))
                         .quantity(cartBook.getQuantity())
                         .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                        .sellingBookPackageable(cartBook.getSellingBook().getSellingBookPackageable())
-                        .used(cartBook.getSellingBook().getUsed())
                         .build()
         );
         return cartBook.getId();
@@ -234,7 +207,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
         cartBookRepository.delete(
                 cartBookRepository.findById(bookCartId)
                         //.filter(book -> book.getCart().getMember().getEmail().equals(email))
-                        .orElseThrow(() -> new IllegalArgumentException("장바구니에서 해당 상품을 찾을 수 없습니다."))
+                        .orElseThrow(() -> new SellingBookNotFoundInBookCartException("장바구니에서 해당 상품을 찾을 수 없습니다."))
         );
         cartBookRedisRepository.delete("Member" + memberId, bookCartId);
 

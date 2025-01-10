@@ -16,41 +16,44 @@ import java.util.List;
 
 @Getter
 public class OrderDetail {
+    private String orderId;
     @Setter
     private List<OrderProductDto> orderProducts;
-    private OrderDeliveryAddressDto orderDeliveryAddress;
-    private PaymentDto payment;
     private BigDecimal deliveryFee;
     private BigDecimal orderPrice;
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
-    private OrderStatus status;
+    private String status;
     private int usedPoint;
     private BigDecimal couponDiscount;
     private String orderNumber;
+    private OrderDeliveryAddressDto orderDeliveryAddress;
+    private OrderDeliveryDto orderDelivery;
+    private PaymentDto payment;
 
 
-    @QueryProjection
+//    @QueryProjection
+//    @Builder
+//    public OrderDetail(List<OrderProductDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddress, PaymentDto payment,
+//                       BigDecimal deliveryFee, LocalDateTime orderedAt, LocalDate deliveryWishDate, OrderStatus status,
+//                       int usedPoint, BigDecimal couponDiscount, String orderNumber) {
+//        this.orderProducts = orderProducts;
+//        this.orderDeliveryAddress = orderDeliveryAddress;
+//        this.payment = payment;
+//        this.deliveryFee = deliveryFee;
+//        this.orderedAt = orderedAt;
+//        this.deliveryWishDate = deliveryWishDate;
+//        this.status = status;
+//        this.usedPoint = usedPoint;
+//        this.couponDiscount = couponDiscount;
+//        this.orderNumber = orderNumber;
+//    }
+
+
     @Builder
-    public OrderDetail(List<OrderProductDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddress, PaymentDto payment,
-                       BigDecimal deliveryFee, LocalDateTime orderedAt, LocalDate deliveryWishDate, OrderStatus status,
-                       int usedPoint, BigDecimal couponDiscount, String orderNumber) {
-        this.orderProducts = orderProducts;
-        this.orderDeliveryAddress = orderDeliveryAddress;
-        this.payment = payment;
-        this.deliveryFee = deliveryFee;
-        this.orderedAt = orderedAt;
-        this.deliveryWishDate = deliveryWishDate;
-        this.status = status;
-        this.usedPoint = usedPoint;
-        this.couponDiscount = couponDiscount;
-        this.orderNumber = orderNumber;
-    }
-
-
-    @Builder
     @QueryProjection
-    public OrderDetail(String orderNumber,
+    public OrderDetail(String orderId,
+                       String orderNumber,
                        OrderStatus status,
                        BigDecimal deliveryFee,
                        BigDecimal orderPrice,
@@ -58,16 +61,19 @@ public class OrderDetail {
                        LocalDateTime orderedAt,
                        int usedPoint,
                        OrderDeliveryAddressDto orderDeliveryAddress,
+                       OrderDeliveryDto orderDelivery,
                        PaymentDto payment) {
 
+        this.orderId = orderId;
         this.orderNumber = orderNumber;
-        this.status = status;
+        this.status = status.getStatus();
         this.deliveryFee = deliveryFee;
         this.orderPrice = orderPrice;
         this.deliveryWishDate = deliveryWishDate;
         this.orderedAt = orderedAt;
         this.usedPoint = usedPoint;
         this.orderDeliveryAddress = orderDeliveryAddress;
+        this.orderDelivery = orderDelivery;
         this.payment = payment;
     }
 }

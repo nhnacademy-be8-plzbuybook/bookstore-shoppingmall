@@ -115,13 +115,12 @@ POST http://localhost:8090/api/books/sync/isbn
 Content-Type: application/json
 
 [
-  "9791191842791",
-  "9791161726700"
+  "9791193852279"
 ]
 
 
 ### 9788936434267이라는 ISBN을 기반으로 알라딘 API를 호출하고, 도서 데이터를 저장합니다. (특정 isbn 으로 저장 가능) / 9788936434120 - 소년이 온다
-POST http://localhost:8090/api/books/sync/itemid/9791158682934
+POST http://localhost:8090/api/books/sync/itemid/9791193852279
 s/sync
 
 ### ㅁㄴㅇㄴ
@@ -169,3 +168,40 @@ Content-Type: application/json
 POST http://localhost:8090/api/books/sync/itemid/9788972558897
 
 
+### 태그 생성
+POST localhost:8090/api/tags?bookId=1
+Content-Type: application/json
+
+{
+  "tagName": "버러지태그4"
+}
+
+
+
+### 태그랑 북 연결
+POST localhost:8090/api/book-tags?bookId=1&tagId=12
+
+###
+GET localhost:8090/api/book-tags?tagId=12
+
+### 결아햄 이거야 이거
+
+POST http://localhost:8090//api/admin/selling-books/register
+Content-Type: application/json
+
+{
+  "bookTitle": "Test Book Title",
+  "bookIndex": "12345",
+  "bookDescription": "A description of the test book.",
+  "bookPubDate": "2025-01-01",
+  "bookPriceStandard": 25.99,
+  "bookIsbn13": "1234567890123",
+  "publisher": "창비",
+  "imageUrl": "http://example.com/image.jpg",
+  "categories": [
+    { "categoryName": "국내도서",
+      "categoryId": 1
+    }
+  ],
+  "authors": ["John Doe", "Jane Smith"]
+}

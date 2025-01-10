@@ -7,7 +7,7 @@ import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.cartbook.dto.response.ReadGuestCartBookResponseDto;
+import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 import com.nhnacademy.book.cartbook.entity.CartBook;
 import com.nhnacademy.book.cartbook.exception.CartBookDoesNotExistException;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
@@ -84,7 +84,7 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
             cartBookRedisRepository.create(
                     Long.toString(cartId),
                     cartBook.getId(),
-                    ReadGuestCartBookResponseDto.builder()
+                    ReadCartBookResponseDto.builder()
                             .cartBookId(cartBook.getId())
                             .sellingBookId(sellingBookId)
                             .bookTitle(sellingBook.getBookTitle())
@@ -92,8 +92,6 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
                             .imageUrl(url)
                             .quantity(cartBook.getQuantity())
                             .sellingBookStock(sellingBook.getSellingBookStock())
-                            .sellingBookPackageable(sellingBook.getSellingBookPackageable())
-                            .used(sellingBook.getUsed())
                             .build()
             );
         }
@@ -155,8 +153,8 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
     }
 
     @Override
-    public List<ReadGuestCartBookResponseDto> readAllCartBook(Long cartId) {
-        List<ReadGuestCartBookResponseDto> cartBookGuestResponseDtoList = cartBookRedisRepository.readAllHashName(cartId.toString());
+    public List<ReadCartBookResponseDto> readAllCartBook(Long cartId) {
+        List<ReadCartBookResponseDto> cartBookGuestResponseDtoList = cartBookRedisRepository.readAllHashName(cartId.toString());
         if(!cartBookGuestResponseDtoList.isEmpty()) {
             return cartBookGuestResponseDtoList;
         }
@@ -166,17 +164,17 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
 
 
-    private List<ReadGuestCartBookResponseDto> hasDataToLoad(Long cartId) {
-        List<ReadGuestCartBookResponseDto> readBookCartGuestResponses = readAllFromDb(cartId);
+    private List<ReadCartBookResponseDto> hasDataToLoad(Long cartId) {
+        List<ReadCartBookResponseDto> readBookCartGuestResponses = readAllFromDb(cartId);
         if (cartBookRedisRepository.isMiss(cartId.toString()) && !readBookCartGuestResponses.isEmpty()) {
             cartBookRedisRepository.loadData(readBookCartGuestResponses, cartId.toString());
         }
         return readBookCartGuestResponses;
     }
 
-    private List<ReadGuestCartBookResponseDto> readAllFromDb(Long cartId) {
+    private List<ReadCartBookResponseDto> readAllFromDb(Long cartId) {
         List<CartBook> list = cartBookRepository.findAllByCart_CartId(cartId);
-        List<ReadGuestCartBookResponseDto> listDto = new ArrayList<>();
+        List<ReadCartBookResponseDto> listDto = new ArrayList<>();
         log.info("{}", list);
         for (CartBook cartBook : list) {
             Book book =  cartBook.getSellingBook().getBook(); // 판매책으로 책정보를 가져옴
@@ -186,7 +184,7 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
             if(url != null && !url.isEmpty()) {
                 log.info("책에 대한 이미지 url이 존재하지 않습니다.");
             }
-            listDto.add(ReadGuestCartBookResponseDto.builder()
+            listDto.add(ReadCartBookResponseDto.builder()
                     .cartBookId(cartBook.getId())
                     .sellingBookId(cartBook.getSellingBook().getSellingBookId())
                     .sellingBookPrice(cartBook.getSellingBook().getSellingBookPrice())
@@ -194,8 +192,6 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
                     .bookTitle(cartBook.getSellingBook().getBookTitle())
                     .quantity(cartBook.getQuantity())
                     .sellingBookStock(cartBook.getSellingBook().getSellingBookStock())
-                    .sellingBookPackageable(cartBook.getSellingBook().getSellingBookPackageable())
-                    .used(cartBook.getSellingBook().getUsed())
                     .build());
         }
 

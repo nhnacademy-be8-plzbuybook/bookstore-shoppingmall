@@ -70,6 +70,9 @@ public class Book {
     private List<BookAuthor> bookAuthors = new ArrayList<>();
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookTag> bookTags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookImage> bookImages = new ArrayList<>();
 
     // 이미지 추가 메서드

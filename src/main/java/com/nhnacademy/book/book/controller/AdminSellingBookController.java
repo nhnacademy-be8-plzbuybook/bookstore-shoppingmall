@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.controller;
 
+import com.nhnacademy.book.book.dto.request.BookRegisterDto;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
@@ -93,15 +94,15 @@ public class AdminSellingBookController {
 
     // 도서 등록 기능 (관리자)
     @PostMapping("/register")
-    public ResponseEntity<AdminBookAndSellingBookRegisterDto> registerSellingBook(
-            @RequestBody @Valid AdminBookAndSellingBookRegisterDto registerDto) {
+    public ResponseEntity<Void> registerSellingBook(
+            @RequestBody @Valid BookRegisterDto registerDto) {
 
         log.info("Received DTO: {}", registerDto); // DTO 데이터 확인
 
         // 서비스 호출
-        bookService.registerBookAndSellingBook(registerDto);
+        bookService.registerBook(registerDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(registerDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 

@@ -31,4 +31,13 @@ public enum OrderStatus {
         }
         throw new IllegalArgumentException("Invalid payment status code: " + code);
     }
+
+    public static OrderStatus fromStatus(String status) {
+        for (OrderStatus orderStatus : OrderStatus.values()) {
+            if (orderStatus.getStatus().equals(status)) {
+                return orderStatus;
+            }
+        }
+        throw new IllegalArgumentException("Invalid payment status code: " + status);
+    }
 }

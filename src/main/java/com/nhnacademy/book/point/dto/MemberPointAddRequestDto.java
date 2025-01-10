@@ -1,6 +1,5 @@
 package com.nhnacademy.book.point.dto;
 
-import com.nhnacademy.book.point.domain.PointConditionName;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +16,9 @@ public class MemberPointAddRequestDto {
     @NotNull
     private Long memberId;
     private Long reviewId;
-    private PointConditionName name;
+    private String name;
     private Integer conditionPoint;
     private BigDecimal conditionPercentage;
+
 
 }

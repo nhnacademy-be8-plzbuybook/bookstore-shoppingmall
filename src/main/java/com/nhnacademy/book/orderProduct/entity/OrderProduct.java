@@ -52,4 +52,8 @@ public class OrderProduct {
         this.couponDiscount = couponDiscount;
         this.status = status;
     }
+
+    public void updateStatus(OrderProductStatus status) {
+        this.status = status;
+    }
 }
