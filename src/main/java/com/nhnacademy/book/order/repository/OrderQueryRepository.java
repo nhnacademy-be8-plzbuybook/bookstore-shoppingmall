@@ -127,7 +127,7 @@ public class OrderQueryRepository {
                                         payment.amount,
                                         payment.method,
                                         payment.easyPayProvider,
-                                        payment.paidAt
+                                        payment.recordedAt
                                 )
                         ))
                         .from(orders)
@@ -166,7 +166,7 @@ public class OrderQueryRepository {
                                         payment.amount,
                                         payment.method,
                                         payment.easyPayProvider,
-                                        payment.paidAt
+                                        payment.recordedAt
                                 )
                         ))
                         .from(orders)
