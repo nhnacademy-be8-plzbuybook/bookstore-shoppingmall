@@ -41,4 +41,9 @@ public class MemberPoint {
 
     @Column
     private LocalDateTime endDate;
+
+    @Column(nullable = false)
+    private String type;
+
+
 }
