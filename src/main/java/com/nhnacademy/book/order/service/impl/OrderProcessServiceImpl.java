@@ -16,8 +16,6 @@ import com.nhnacademy.book.order.service.*;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
-import com.nhnacademy.book.point.repository.MemberPointRepository;
-import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderRepository orderRepository;
     private final OrderProductService orderProductService;
     private final OrderProductWrappingService orderProductWrappingService;
-    private final MemberPointService memberPointService;
 
 
     /**
@@ -80,19 +77,12 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // 주문상품-포장 저장
             savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
             // TODO: 쿠폰 사용처리
-
-            // TODO: 포인트 사용처리
-            if (orderCache instanceof MemberOrderRequestDto memberOrderRequestDto) {
-                Integer usedPoint = memberOrderRequestDto.getUsedPoint();
-                if (usedPoint != null && usedPoint > 0) {
-                    memberPointService.usedPoint(memberOrderRequestDto.getMemberEmail(), usedPoint);
-                }
-            }
         }
         // 배송지저장
         orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
         addOrderByMemberType(orderId, orderCache);
+        // TODO: 포인트 사용처리
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);

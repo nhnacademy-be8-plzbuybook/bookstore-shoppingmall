@@ -1,5 +1,6 @@
 package com.nhnacademy.book.point.domain;
 
+import com.nhnacademy.book.converter.PointConditionNameConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +22,9 @@ public class PointCondition {
     @Column(nullable = false)
     private Long pointConditionId;
 
+    @Convert(converter = PointConditionNameConverter.class)
     @Column(nullable = false)
-    private String name;
+    private PointConditionName name;
 
     // 회원가입시 5000p, 리뷰: 200p, 리뷰와 사진: 500
     @Column

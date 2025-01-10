@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface MemberPointRepository extends JpaRepository<MemberPoint, Long> {
     List<MemberPoint> findAllByMember_MemberId(Long memberId);
-    List<MemberPoint> findByMember_email(String email);
 
 
 }

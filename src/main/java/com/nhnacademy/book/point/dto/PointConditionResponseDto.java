@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PointConditionResponseDto {
     private Long id;
-    private String name;
+    private String pointConditionName;
     private Integer conditionPoint;
     private BigDecimal conditionPercentage;
     private boolean status;
