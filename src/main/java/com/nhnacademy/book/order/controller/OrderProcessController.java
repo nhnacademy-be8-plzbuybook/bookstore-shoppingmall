@@ -1,11 +1,14 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.service.OrderProcessService;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderProcessController {
     private final OrderProcessService orderProcessService;
     private final MemberService memberService;
+    private final OrderProductService orderProductService;
 
 
     /**
@@ -70,4 +74,34 @@ public class OrderProcessController {
 
         return ResponseEntity.ok(orderId);
     }
+
+    /**
+     * 전체 주문취소
+     *
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/{order-id}/cancel")
+    public ResponseEntity<?> cancelOrder(@PathVariable("order-id") String orderId,
+                                         @RequestBody OrderCancelRequestDto cancelRequest) {
+        orderProcessService.cancelOrder(orderId, cancelRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 주문상품 취소
+     *
+     * @param orderId 주문 아이디
+     * @param orderProductId 주문상품 아이디
+     * @param quantity 취소할 수량
+     * @return
+     */
+    @PostMapping("/{order-id}/order-products/{order-product-id}/cancel")
+    public ResponseEntity<?> cancelOrderProduct(@PathVariable("order-id") String orderId,
+                                                @PathVariable("order-product-id") Long orderProductId,
+                                                @RequestParam(value = "quantity", required = false, defaultValue = "1") Integer quantity) {
+        orderProductService.cancelOrderProduct(orderId, orderProductId, quantity);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }

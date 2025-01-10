@@ -1,27 +1,40 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.dto.NonMemberOrderSaveRequestDto;
+import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
+import com.nhnacademy.book.order.entity.OrderCancel;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.order.repository.OrderCancelRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
+import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
+import com.nhnacademy.book.payment.dto.PaymentDto;
+import com.nhnacademy.book.payment.entity.Payment;
+import com.nhnacademy.book.payment.repository.PaymentRepository;
+import com.nhnacademy.book.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +48,10 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderRepository orderRepository;
     private final OrderProductService orderProductService;
     private final OrderProductWrappingService orderProductWrappingService;
+    private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final OrderCancelRepository orderCancelRepository;
 
 
     /**
@@ -90,6 +107,34 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         return orderId;
     }
 
+    @Transactional
+    @Override
+    public void cancelOrder(String orderId, OrderCancelRequestDto orderCancelRequest) {
+        // 주문확인
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+        // 주문상태확인 - 배송이전만 가능
+        validateOrderForCanceling(order);
+
+        // 결제취소 요청
+        Payment payment = paymentRepository.findByOrdersId(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 결제정보입니다."));
+        PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(orderCancelRequest.getCancelReason(), null, orderId);
+        paymentService.cancelPayment(payment.getPaymentKey(), paymentCancelRequest);
+
+        //TODO: 포인트 복구
+        //TODO: 쿠폰 복구
+        //TODO: 재고 복구
+
+        // 주문, 주문상품 상태 변경
+        order.updateOrderStatus(OrderStatus.ORDER_CANCELLED);
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
+        for (OrderProduct orderProduct: orderProducts) {
+            orderProduct.updateStatus(OrderProductStatus.ORDER_CANCELLED);
+        }
+
+        // 주문취소 저장
+        orderCancelRepository.save(new OrderCancel(LocalDateTime.now(), orderCancelRequest.getCancelReason(), order));
+    }
+
 
     /**
      * 주문상품-포장 저장
@@ -102,11 +147,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(),
                     orderProductWrapping.getWrappingPaperId(), orderProduct.getQuantity());
         }
-    }
-
-    @Override
-    public BigDecimal getOrderTotalPrice(OrderRequestDto orderRequest) {
-        return null;
     }
 
 
@@ -123,6 +163,12 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             nonMemberOrderService.addNonMemberOrder(new NonMemberOrderSaveRequestDto(orderId, nonMemberOrderRequestDto.getNonMemberPassword()));
         } else {
             throw new IllegalArgumentException("Invalid order request type");
+        }
+    }
+
+    private void validateOrderForCanceling(Orders order) {
+        if (order.getStatus().getCode() > 1) { // 상태가 배송 이후일때
+            throw new ConflictException("주문상태가 " + order.getStatus().getStatus() + "일때는 주문취소가 불가능합니다.");
         }
     }
 
