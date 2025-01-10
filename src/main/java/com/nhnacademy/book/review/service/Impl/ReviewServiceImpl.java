@@ -3,12 +3,14 @@ package com.nhnacademy.book.review.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.review.domain.Review;
+import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.dto.ReviewUpdateRequestDto;
@@ -16,6 +18,7 @@ import com.nhnacademy.book.review.exception.DuplicateReviewException;
 import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
 import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
 import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
+import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import com.nhnacademy.book.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +37,11 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderProductRepository orderProductRepository;
     private final ReviewRepository reviewRepository;
     private final MemberOrderRepository memberOrderRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final ObjectStorageService objectStorageService;
 
     @Override
-    public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto) {
+    public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto, List<String> imageUrls) {
         //회원-주문 테이블에서 관계 검증
         MemberOrder memberOrder = memberOrderRepository.findByOrder_IdAndMember_memberId(
               orderProductRepository.findById(requestDto.getOrderProductId())
@@ -65,6 +70,16 @@ public class ReviewServiceImpl implements ReviewService {
         );
 
         Review savedReview = reviewRepository.save(review);
+
+        if(imageUrls != null){
+            for(String imageUrl : imageUrls){
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReview(savedReview);
+                String id = objectStorageService.getUrl(imageUrl);
+                reviewImage.setReviewImageUrl(id);
+                reviewImageRepository.save(reviewImage);
+            }
+        }
 
         return new ReviewResponseDto(
                 savedReview.getReviewId(),
