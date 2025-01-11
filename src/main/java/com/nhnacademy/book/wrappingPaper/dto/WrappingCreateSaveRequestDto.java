@@ -6,13 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-public class WrappingPaperSaveRequestDto{
+public class WrappingCreateSaveRequestDto {
     @NotBlank
     private String name;
 
@@ -21,6 +22,9 @@ public class WrappingPaperSaveRequestDto{
 
     @NotNull @Min(0)
     private Long stock;
+
+    @NotNull
+    private MultipartFile imageFile;
 
     public WrappingPaper toEntity(String imagePath) {
         return new WrappingPaper(name, price, stock, LocalDateTime.now(), imagePath);
