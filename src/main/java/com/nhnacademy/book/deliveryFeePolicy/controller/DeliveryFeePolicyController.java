@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -28,17 +29,43 @@ public class DeliveryFeePolicyController {
     }
 
     @GetMapping("/general")
-    public ResponseEntity<DeliveryFeePolicy> getGeneralPolicy() {
-        DeliveryFeePolicy body = deliveryFeePolicyService.getDeliveryFeePolicy(1L);
-        return ResponseEntity.status(HttpStatus.OK).body(body);
+    public ResponseEntity<DeliveryFeePolicyDto> getGeneralPolicy() {
+        DeliveryFeePolicyDto policy = deliveryFeePolicyService.getDeliveryFeePolicy(1L);
+        return ResponseEntity.status(HttpStatus.OK).body(policy);
     }
 
+
+    /**
+     * 베송비정책 목록조회
+     *
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<List<DeliveryFeePolicyDto>> getPolicies() {
+        List<DeliveryFeePolicyDto> policies = deliveryFeePolicyService.getDeliveryPolicies();
+        return ResponseEntity.status(HttpStatus.OK).body(policies);
+    }
+
+
+    /**
+     * 배송비정채 단건조회
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/{policy-id}")
-    public ResponseEntity<?> getPolicy(@PathVariable("policy-id") long id) {
-        DeliveryFeePolicy body = deliveryFeePolicyService.getDeliveryFeePolicy(id);
-        return ResponseEntity.status(HttpStatus.OK).body(body);
+    public ResponseEntity<DeliveryFeePolicyDto> getPolicy(@PathVariable("policy-id") long id) {
+        DeliveryFeePolicyDto policy = deliveryFeePolicyService.getDeliveryFeePolicy(id);
+        return ResponseEntity.status(HttpStatus.OK).body(policy);
     }
 
+
+    /**
+     * 배송비정책 생성
+     *
+     * @param saveRequest
+     * @return
+     */
     @PostMapping
     public ResponseEntity<?> createPolicy(@Valid @RequestBody DeliveryFeePolicySaveRequestDto saveRequest) {
         long id = deliveryFeePolicyService.createDeliveryFeePolicy(saveRequest);
@@ -46,6 +73,14 @@ public class DeliveryFeePolicyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
+
+    /**
+     * 배송비정책 수정
+     *
+     * @param id
+     * @param updateRequest
+     * @return
+     */
     @PutMapping("/{policy-id}")
     public ResponseEntity<DeliveryFeePolicyUpdateResponseDto> modifyPolicy(@PathVariable("policy-id") long id,
                                           @Valid @RequestBody DeliveryFeePolicyUpdateRequestDto updateRequest) {
@@ -53,6 +88,13 @@ public class DeliveryFeePolicyController {
         return ResponseEntity.status(HttpStatus.OK).body(new DeliveryFeePolicyUpdateResponseDto(id));
     }
 
+
+    /**
+     * 배송비정책 삭제
+     *
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{policy-id}")
     public ResponseEntity<Void> removePolicy(@PathVariable("policy-id") long id) {
         deliveryFeePolicyService.removeDeliveryFeePolicy(id);
