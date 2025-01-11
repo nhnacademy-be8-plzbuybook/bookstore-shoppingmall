@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum OrderStatus {
     PAYMENT_PENDING(0, "결제대기"),
     PAYMENT_COMPLETED(1, "결제완료"),
-    PREPARING_FOR_DELIVERY(2, "배송준비중"),
+    SHIPPED(2, "발송완료"),
     DELIVERING(3, "배송중"),
     DELIVERED(4, "배송완료"),
     PURCHASE_CONFIRMED(5, "구매확정"),
