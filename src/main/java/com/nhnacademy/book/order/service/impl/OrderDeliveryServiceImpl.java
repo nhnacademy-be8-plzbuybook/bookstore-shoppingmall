@@ -27,10 +27,10 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
     public Long registerOrderDelivery(OrderDeliveryRegisterRequestDto registerRequest) {
         Orders order = orderRepository.findById(registerRequest.getOrderId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
         OrderDelivery savedOrderDelivery = orderDeliveryRepository.save(registerRequest.toEntity(order));
-        // 주문상태: 배송 중
-        order.updateOrderStatus(OrderStatus.DELIVERING);
+        // 주문상태: 발송완료
+        order.updateOrderStatus(OrderStatus.SHIPPED);
         // 주문상품 상태: 배송 중
-        order.getOrderProducts().forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.DELIVERING));
+        order.getOrderProducts().forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.SHIPPED));
 
         return savedOrderDelivery.getId();
     }
