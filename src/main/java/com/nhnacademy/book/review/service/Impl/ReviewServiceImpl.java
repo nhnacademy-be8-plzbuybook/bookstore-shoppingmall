@@ -14,6 +14,7 @@ import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.dto.ReviewUpdateRequestDto;
+import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
 import com.nhnacademy.book.review.exception.DuplicateReviewException;
 import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
 import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -99,33 +101,45 @@ public class ReviewServiceImpl implements ReviewService {
         );
     }
 
+
     @Override
-    public List<ReviewResponseDto> getReviewsByProductId(Long productId) {
-        return List.of();
+    public List<ReviewWithReviewImageDto> getReviewsWithReviewImagesByBookId(Long BookId) {
+        List<Review> reviewList = reviewRepository.findReviewByBookId(BookId);
+        return reviewList.stream()
+                .map(review -> {
+                    List<ReviewImage> reviewImageList = reviewImageRepository.findReviewImageByBookId(BookId).stream()
+                            .filter(image -> image.getReview().getReviewId().equals(review.getReviewId()))
+                            .collect(Collectors.toList());
+
+                    List<String> imageUrls = reviewImageList.stream()
+                            .map(ReviewImage::getReviewImageUrl)
+                            .toList();
+
+                    return new ReviewWithReviewImageDto(
+                            review.getReviewId(),
+                            review.getMember().getEmail(),
+                            review.getOrderProduct().getOrderProductId(),
+                            review.getWriteDate(),
+                            review.getScore(),
+                            review.getContent(),
+                            imageUrls
+                    );
+                })
+                .toList();
     }
 
     @Override
-    public List<ReviewResponseDto> getReviewsByMemberId(Long memberId) {
-        return List.of();
-    }
+    public Double averageRatingByBookId(Long BookId) {
+        List<Review> reviewList = reviewRepository.findReviewByBookId(BookId);
 
-    @Override
-    public ReviewResponseDto getReviewById(Long reviewId) {
-        return null;
-    }
+        if(reviewList.isEmpty()){
+            return 0.0;
+        }
 
-    @Override
-    public ReviewResponseDto updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) {
-        return null;
-    }
+        double totalRating = reviewList.stream()
+                .mapToDouble(Review::getScore)
+                .sum();
 
-    @Override
-    public Double calculateAverageScoreByProductId(Long productId) {
-        return 0.0;
-    }
-
-    @Override
-    public List<ReviewResponseDto> getAllReviews() {
-        return List.of();
+        return totalRating/reviewList.size();
     }
 }
