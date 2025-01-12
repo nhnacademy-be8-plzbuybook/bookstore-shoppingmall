@@ -7,6 +7,7 @@ import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
+import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
 import com.nhnacademy.book.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -70,5 +71,14 @@ public class ReviewController {
     }
 
 
+    @GetMapping("/books/{sellingBookId}/reviews")
+    public ResponseEntity<List<ReviewWithReviewImageDto>> getReviewsByBookId(@PathVariable("sellingBookId") Long sellingBookId) {
+        List<ReviewWithReviewImageDto> review = reviewService.getReviewsWithReviewImagesByBookId(sellingBookId);
+        return ResponseEntity.ok(review);
+    }
 
+    @GetMapping("/books/{sellingBookId}/reviews/avg")
+    public Double getAverageReview(@PathVariable("sellingBookId") Long sellingBookId) {
+        return reviewService.averageRatingByBookId(sellingBookId);
+    }
 }
