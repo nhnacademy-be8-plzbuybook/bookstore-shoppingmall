@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
@@ -9,10 +10,10 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @NoArgsConstructor
+@Setter
 @Getter
 public class OrderSearchRequestDto {
 
-    @Setter
     @Nullable
     private String memberId;
     @Nullable
@@ -21,12 +22,19 @@ public class OrderSearchRequestDto {
     private LocalDate orderDate;
     @Nullable
     private OrderStatus orderStatus;
+    @Nullable
+    private String orderNumber;
 
-    public OrderSearchRequestDto(@Nullable String memberId, @Nullable String productName,
-                                 @Nullable LocalDate orderDate, @Nullable OrderStatus orderStatus) {
+    @JsonCreator
+    public OrderSearchRequestDto(@Nullable String memberId,
+                                 @Nullable String productName,
+                                 @Nullable LocalDate orderDate,
+                                 @Nullable OrderStatus orderStatus,
+                                 @Nullable String orderNumber) {
         this.memberId = memberId;
         this.productName = productName;
         this.orderDate = orderDate;
         this.orderStatus = orderStatus;
+        this.orderNumber = orderNumber;
     }
 }

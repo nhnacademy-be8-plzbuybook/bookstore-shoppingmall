@@ -73,7 +73,7 @@ public class OrderProductServiceImpl implements OrderProductService {
     }
 
     @Override
-    public void cancelOrderProduct(String orderId, Long orderProductId, Integer quantity) {
+    public void cancelOrderProduct(Long orderProductId, Integer quantity) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
         // 주문상품 상태확인
         if (orderProduct.getStatus().getCode() > 1) {

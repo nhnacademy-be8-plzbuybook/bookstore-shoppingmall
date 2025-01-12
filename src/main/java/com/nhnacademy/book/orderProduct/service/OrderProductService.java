@@ -13,7 +13,7 @@ public interface OrderProductService {
     void patchStatus(Long orderProductId, OrderProductStatusPatchRequestDto patchRequest);
     void purchaseConfirmOrderProduct(Long orderProductId);
 
-    void cancelOrderProduct(String orderId, Long orderProductId, Integer quantity);
+    void cancelOrderProduct(Long orderProductId, Integer quantity);
 
     //TODO: 주문상품 상태변경
     //TODO: 주문상품 취소

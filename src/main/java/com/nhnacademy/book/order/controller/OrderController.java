@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,6 +23,8 @@ public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final OrderProductService orderProductService;
+
+
     /**
      * 주문 목록조회(관리자)
      *
@@ -31,8 +32,7 @@ public class OrderController {
      * @param pageable      페이지 정보
      * @return 주문목록 DTO
      */
-    @GetMapping("/api/orders")
-    public ResponseEntity<Page<OrderDto>> getAllOrders(@ModelAttribute OrderSearchRequestDto searchRequest,
+    @GetMapping("/api/orders") public ResponseEntity<Page<OrderDto>> getAllOrders(OrderSearchRequestDto searchRequest,
                                                        Pageable pageable) {
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
@@ -112,8 +112,8 @@ public class OrderController {
      * @return
      */
     @GetMapping("/api/orders/order-status")
-    public ResponseEntity<List<String>> getOrderStatuses() {
-        List<String> orderStatuses = Arrays.stream(OrderStatus.values()).map(OrderStatus::getStatus).toList();
+    public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
+        List<OrderStatus> orderStatuses = List.of(OrderStatus.values());
         return ResponseEntity.ok(orderStatuses);
     }
 
