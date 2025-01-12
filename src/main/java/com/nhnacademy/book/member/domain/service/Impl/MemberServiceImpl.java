@@ -469,4 +469,14 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Override
+    public Long getMemberIdByEmail(String email) {
+        Long memberId = memberRepository.getMemberIdByEmail(email);
+
+        if (memberId == null) {
+            throw new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다.");
+        }
+
+        return memberId;
+    }
 }

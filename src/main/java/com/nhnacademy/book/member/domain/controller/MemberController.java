@@ -102,4 +102,9 @@ public class MemberController {
         memberService.updateMemberByAdmin(memberModifyByAdminRequestDto.getOriginalEmail(), memberModifyByAdminRequestDto);
         return ResponseEntity.ok().build();
     }
+
+    // 이메일로 회원식별키 조회
+    public ResponseEntity<Long> getMemberIdByEmail(@RequestHeader("X-USER-ID") String email) {
+        return ResponseEntity.ok(memberService.getMemberIdByEmail(email));
+    }
 }
