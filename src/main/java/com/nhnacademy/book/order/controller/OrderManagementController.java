@@ -2,8 +2,6 @@ package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
 import com.nhnacademy.book.order.dto.OrderStatusModifyRequestDto;
-import com.nhnacademy.book.order.dto.StatusDto;
-import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +20,10 @@ public class OrderManagementController {
     @PutMapping("/api/orders/{order-id}/status")
     public ResponseEntity<Void> patchOrderStatus(@PathVariable("order-id") String orderId,
                                                  @RequestBody OrderStatusModifyRequestDto modifyRequest) {
-        OrderStatus orderStatus = OrderStatus.fromStatus(modifyRequest.getStatus());
-        switch (orderStatus) {
-            case DELIVERED -> orderService.orderDelivered(orderId);
+        if (modifyRequest.getStatus() == DELIVERED) {
+            orderService.orderDelivered(orderId);
         }
-//        orderService.patchStatus(orderId, patchRequest);
+       orderService.modifyStatus(orderId, modifyRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
