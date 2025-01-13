@@ -23,11 +23,14 @@ import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import com.nhnacademy.book.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -103,29 +106,33 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public List<ReviewWithReviewImageDto> getReviewsWithReviewImagesByBookId(Long BookId) {
-        List<Review> reviewList = reviewRepository.findReviewByBookId(BookId);
-        return reviewList.stream()
-                .map(review -> {
-                    List<ReviewImage> reviewImageList = reviewImageRepository.findReviewImageByBookId(BookId).stream()
-                            .filter(image -> image.getReview().getReviewId().equals(review.getReviewId()))
-                            .collect(Collectors.toList());
+    public Page<ReviewWithReviewImageDto> getReviewsWithReviewImagesByBookId(Long bookId, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findPagingReviewByBookId(bookId, pageable);
 
-                    List<String> imageUrls = reviewImageList.stream()
-                            .map(ReviewImage::getReviewImageUrl)
-                            .toList();
-
-                    return new ReviewWithReviewImageDto(
-                            review.getReviewId(),
-                            review.getMember().getEmail(),
-                            review.getOrderProduct().getOrderProductId(),
-                            review.getWriteDate(),
-                            review.getScore(),
-                            review.getContent(),
-                            imageUrls
-                    );
-                })
+        List<Long> reviewIds = reviewPage.getContent().stream()
+                .map(Review::getReviewId)
                 .toList();
+
+        List<ReviewImage> reviewImages = reviewImageRepository.findImagesByBookIdAndReviewIds(bookId, reviewIds);
+
+        Map<Long, List<String>> reviewImageMap = reviewImages.stream()
+                .collect(Collectors.groupingBy(
+                        image -> image.getReview().getReviewId(),
+                        Collectors.mapping(ReviewImage::getReviewImageUrl, Collectors.toList())
+                ));
+
+        return reviewPage.map(review -> {
+            List<String> imageUrls = reviewImageMap.getOrDefault(review.getReviewId(), List.of());
+            return new ReviewWithReviewImageDto(
+                    review.getReviewId(),
+                    review.getMember().getEmail(),
+                    review.getOrderProduct().getOrderProductId(),
+                    review.getWriteDate(),
+                    review.getScore(),
+                    review.getContent(),
+                    imageUrls
+            );
+        });
     }
 
     @Override
