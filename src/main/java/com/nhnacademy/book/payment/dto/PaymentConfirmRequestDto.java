@@ -11,4 +11,5 @@ public class PaymentConfirmRequestDto {
     private String paymentKey;
     private String orderId;
     private BigDecimal amount;
+    private Integer usedPoint;
 }
