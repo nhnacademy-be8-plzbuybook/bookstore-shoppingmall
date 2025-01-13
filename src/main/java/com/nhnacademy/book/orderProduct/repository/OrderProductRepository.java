@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
     Optional<OrderProduct> findBySellingBook_SellingBookId(Long sellingBookId);
-    Optional<List<OrderProduct>> findByOrderId(String orderId);
+    List<OrderProduct> findByOrderId(String orderId);
     @Query("SELECT op FROM OrderProduct op " +
             "JOIN op.order o " +
             "JOIN MemberOrder mo ON mo.order = o " +

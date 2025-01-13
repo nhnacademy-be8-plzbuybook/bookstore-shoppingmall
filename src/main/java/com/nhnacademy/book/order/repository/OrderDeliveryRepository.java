@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface OrderDeliveryRepository extends JpaRepository<OrderDelivery, String> {
     Optional<OrderDelivery> findByOrder(Orders order);
+    Optional<OrderDelivery> findByOrderId(String orderId);
+
 }

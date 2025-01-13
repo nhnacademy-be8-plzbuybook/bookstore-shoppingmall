@@ -2,7 +2,6 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
@@ -22,6 +21,7 @@ import com.nhnacademy.book.order.repository.OrderCancelRepository;
 import com.nhnacademy.book.order.repository.OrderReturnRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
+import com.nhnacademy.book.order.service.command.OrderDeliveryService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
