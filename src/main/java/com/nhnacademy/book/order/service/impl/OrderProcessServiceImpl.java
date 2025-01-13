@@ -28,10 +28,12 @@ import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
 import com.nhnacademy.book.payment.entity.Payment;
 import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.payment.service.PaymentService;
+import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,6 +55,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderCancelRepository orderCancelRepository;
     private final OrderDeliveryService orderDeliveryService;
     private final OrderReturnRepository orderReturnRepository;
+    private final MemberPointService memberPointService;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -95,11 +98,26 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
             // TODO: 쿠폰 사용처리
         }
+
+            // TODO: 포인트 사용처리
+            Integer usedPoint = orderCache.getUsedPoint();
+            if (usedPoint != null && usedPoint > 0) {
+                memberPointService.usedPoint(orderCache instanceof MemberOrderRequestDto
+                                ? ((MemberOrderRequestDto) orderCache).getMemberEmail()
+                                : null,
+                        usedPoint);
+
+                order.setUsedPoint(usedPoint);
+
+                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
+                order.setOrderPrice(finalPrice);
+            }
+
+
         // 배송지저장
         orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
         addOrderByMemberType(orderId, orderCache);
-        // TODO: 포인트 사용처리
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);

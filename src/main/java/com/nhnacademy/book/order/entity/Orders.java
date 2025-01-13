@@ -32,6 +32,7 @@ public class Orders {
 
     private LocalDate deliveryWishDate;
 
+    @Setter
     private Integer usedPoint;
 
     private BigDecimal deliveryFee;
