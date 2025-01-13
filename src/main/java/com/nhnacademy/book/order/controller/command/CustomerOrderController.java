@@ -4,7 +4,7 @@ import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
-import com.nhnacademy.book.order.service.OrderProcessService;
+import com.nhnacademy.book.order.service.command.OrderProcessService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

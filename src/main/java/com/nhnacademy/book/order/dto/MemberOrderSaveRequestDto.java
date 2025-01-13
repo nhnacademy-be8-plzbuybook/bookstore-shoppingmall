@@ -4,7 +4,7 @@ import lombok.Getter;
 
 
 @Getter
-public class MemberOrderSaveRequestDto extends CustomerOrderRequestDto{
+public class MemberOrderSaveRequestDto {
     private Long memberId; //TODO: 둘중에 하나만 해야됨
     private String memberEmail;
     private String orderId;

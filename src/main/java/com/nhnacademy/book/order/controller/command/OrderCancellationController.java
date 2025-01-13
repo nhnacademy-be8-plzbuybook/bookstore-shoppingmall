@@ -1,8 +1,7 @@
 package com.nhnacademy.book.order.controller.command;
 
 import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
-import com.nhnacademy.book.order.service.OrderProcessService;
-import com.nhnacademy.book.orderProduct.service.OrderProductService;
+import com.nhnacademy.book.order.service.command.OrderCancellationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class OrderCancellationController {
-    private final OrderProcessService orderProcessService;
-    private final OrderProductService orderProductService;
+    private final OrderCancellationService orderCancellationService;
 
 
     /**
@@ -25,7 +23,7 @@ public class OrderCancellationController {
     @PostMapping("/{order-id}/cancel")
     public ResponseEntity<?> cancelOrder(@PathVariable("order-id") String orderId,
                                          @RequestBody OrderCancelRequestDto cancelRequest) {
-        orderProcessService.cancelOrder(orderId, cancelRequest);
+        orderCancellationService.cancelOrder(orderId, cancelRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -40,7 +38,7 @@ public class OrderCancellationController {
     @PostMapping("/order-products/{order-product-id}/cancel")
     public ResponseEntity<?> cancelOrderProduct(@PathVariable("order-product-id") Long orderProductId,
                                                 @RequestParam(value = "quantity", required = false, defaultValue = "1") Integer quantity) {
-        orderProductService.cancelOrderProduct(orderProductId, quantity);
+        orderCancellationService.cancelOrderProduct(orderProductId, quantity);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -1,7 +1,7 @@
 package com.nhnacademy.book.order.controller.command;
 
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
-import com.nhnacademy.book.order.service.OrderProcessService;
+import com.nhnacademy.book.order.service.command.OrderReturningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class OrderReturningController {
-    private final OrderProcessService orderProcessService;
+    private final OrderReturningService orderReturningService;
+
 
 
     /**
@@ -25,7 +26,7 @@ public class OrderReturningController {
     @PostMapping("/{order-id}/return")
     public ResponseEntity<?> requestReturnOrder(@PathVariable("order-id") String orderId,
                                                 @Valid @RequestBody OrderReturnRequestDto refundRequest) {
-        orderProcessService.requestOrderReturn(orderId, refundRequest);
+        orderReturningService.requestOrderReturn(orderId, refundRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -38,7 +39,7 @@ public class OrderReturningController {
      */
     @PostMapping("/{order-id}/return/complete")
     public ResponseEntity<?> completeReturnOrder(@PathVariable("order-id") String orderId) {
-        orderProcessService.completeOrderReturn(orderId);
+        orderReturningService.completeOrderReturn(orderId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
