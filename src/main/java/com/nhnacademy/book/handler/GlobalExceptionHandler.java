@@ -9,10 +9,7 @@ import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
-import com.nhnacademy.book.review.exception.DuplicateReviewException;
-import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
-import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
-import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
+import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -463,5 +460,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponseDto);
     }
 
-
+    // 리뷰id에 해당한느 리뷰가 없을 떄
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleReviewNotFoundException(ReviewNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
 }

@@ -47,7 +47,8 @@ public class OrderQueryRepository {
     public Page<OrderDto> findOrders(OrderSearchRequestDto searchRequest, Pageable pageable) {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
-                .select(new QOrderDto(
+                .select(
+        new QOrderDto(
                         orders.id,
                         orders.number,
                         orders.orderedAt,

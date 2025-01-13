@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewWithReviewImageDto {
+    private Long memberId;
     private Long reviewId;
     private String email;
     private Long orderProductId;
