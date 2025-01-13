@@ -54,7 +54,8 @@ public class ObjectStorageService {
 
     public List<String> uploadObjects(List<MultipartFile> multipartFiles) {
         if (multipartFiles == null || multipartFiles.isEmpty()) {
-            throw new ObjectStorageFileUploadException("No files upload.");
+//            throw new ObjectStorageFileUploadException("No files upload.");
+            return new ArrayList<>();
         }
 
         String requestToken = objectStorageAuthService.requestToken();
@@ -180,4 +181,6 @@ public class ObjectStorageService {
 
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, null);
     }
+
+    //TODO 조회 하는거 추가
 }

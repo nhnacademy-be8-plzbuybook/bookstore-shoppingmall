@@ -1,8 +1,10 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.*;
+import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.AdminBookRegisterDto;
+import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
@@ -10,11 +12,9 @@ import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class BookService {
 
     //TODO 수정
@@ -33,17 +34,21 @@ public class BookService {
     private final BookSearchRepository bookSearchRepository;
     private final BookImageRepository bookImageRepository;
     private final SellingBookRepository sellingBookRepository;
+    private final CategoryRepository categoryRepository;
+    private final AuthorRepository authorRepository;
+    private final BookCategoryService bookCategoryService;
+    private final BookAuthorService bookAuthorService;
+    private final AuthorService authorService;
 
-    @Autowired
-    public BookService(BookRepository bookRepository,
-                       PublisherRepository publisherRepository, BookSearchRepository bookSearchRepository
-         , BookImageRepository bookImageRepository, SellingBookRepository sellingBookRepository) {
-        this.bookRepository = bookRepository;
-        this.publisherRepository = publisherRepository;
-        this.bookSearchRepository = bookSearchRepository;
-        this.bookImageRepository = bookImageRepository;
-        this.sellingBookRepository =  sellingBookRepository;
+
+    public boolean existsBook(Long bookId){
+        if(bookRepository.existsById(bookId)){
+            return true;
+        } else {
+            throw new BookNotFoundException("Book not found");
+        }
     }
+
 
     public List<BookDetailResponseDto> getAllBooks() {
         List<Book> books = bookRepository.findAll();
@@ -118,19 +123,19 @@ public class BookService {
     }
 
 
+
+
     // 도서 등록 기능 (관리자)
+    @Transactional
     public void registerBook(BookRegisterDto bookRegisterDto) {
         if(Objects.isNull(bookRegisterDto)){
             throw new BookNotFoundException("등록 할 책 정보 못 찾음");
         }
-        if(!publisherRepository.existsById(bookRegisterDto.getPublisherId())){
-            throw new PublisherNotFoundException("출판사 못 찾음");
-        }
+        Publisher publisher = publisherRepository.findByPublisherName(bookRegisterDto.getPublisher())
+                .orElseThrow(() -> new PublisherNotFoundException("존재하지 않는 출판사입니다."));
 
-        Publisher publisher = publisherRepository.findById(bookRegisterDto.getPublisherId()).get();
-        if(publisher.getPublisherName().isEmpty() || publisher.getPublisherId() == null){
-            throw new PublisherNotFoundException("출판사 못 찾음");
-        }
+
+
 
         Book book = new Book(
                 publisher,
@@ -144,11 +149,75 @@ public class BookService {
         Book book2 = bookRepository.save(book);
 
 
+        // 3. 이미지 등록
+        if (bookRegisterDto.getImageUrl() != null) {
+            BookImage bookImage = new BookImage(book, bookRegisterDto.getImageUrl());
+            bookImageRepository.save(bookImage); // 명시적으로 저장
+        }
+        Category ca = categoryRepository.findByCategoryId(bookRegisterDto.getCategories().getFirst().getCategoryId()).get();
+        // 4. 카테고리 등록
+        List<Category> categories = bookRegisterDto.getCategories().stream()
+                .map(category -> categoryRepository.findByCategoryId(category.getCategoryId()).get()
+                ).toList();
+
+//        categories.forEach(book::addCategory);
+
+        for(Category category : categories) {
+            BookCategoryRequestDto requestDto = new BookCategoryRequestDto();
+            requestDto.setCategoryId(category.getCategoryId());
+            requestDto.setBookId(book.getBookId());
+            bookCategoryService.createBookCategory(requestDto);
+        }
+
+
+
+        // 5. 작가 등록
+        List<Author> authors = bookRegisterDto.getAuthors().stream()
+                .map(authorName -> authorRepository.findByAuthorName(authorName)
+                        .orElseGet(() -> authorRepository.save(new Author(authorName))))
+                .toList();
+        for(Author author : authors) {
+            BookAuthorRequestDto requestDto = new BookAuthorRequestDto();
+            requestDto.setAuthorId(author.getAuthorId());
+            requestDto.setBookId(book.getBookId());
+            bookAuthorService.createBookAuthor(requestDto);
+        }
+
+
+    }
+
+
+    //TODO
+    @Transactional
+    public void registerBookAndSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
+        // 1. 책 ID로 책 정보 조회
+        Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책 ID입니다."));
+
+        // 2. 판매책 정보 생성
+        SellingBook sellingBook = new SellingBook();
+        sellingBook.setBook(book); // 책과 매핑
+        sellingBook.setSellingBookPrice(sellingBookRegisterDto.getSellingBookPrice()); // 판매가
+        sellingBook.setSellingBookPackageable(sellingBookRegisterDto.getSellingBookPackageable()); // 선물포장 가능 여부
+        sellingBook.setSellingBookStock(sellingBookRegisterDto.getSellingBookStock()); // 재고
+        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.safeValueOf(String.valueOf(sellingBookRegisterDto.getSellingBookStatus()))); // 도서 상태
+        sellingBook.setSellingBookViewCount(sellingBookRegisterDto.getSellingBookViewCount() != null
+                ? sellingBookRegisterDto.getSellingBookViewCount() : 0L); // 조회수 (기본값 0)
+        sellingBook.setUsed(sellingBookRegisterDto.getUsed() != null ? sellingBookRegisterDto.getUsed() : false); // 중고 여부 (기본값 false)
+
+        // 3. 판매책 저장
+        sellingBookRepository.save(sellingBook);
+
+        // 로그 출력 (디버깅 용도)
+        log.info("판매책 등록 완료: {}", sellingBook);
+
     }
 
 
 
-    // 도서 삭제 기능 (관리자)
+
+
+        // 도서 삭제 기능 (관리자)
     public void deleteBook(Long bookId) {
         if (!bookRepository.existsById(bookId)) {
             throw new BookNotFoundException("존재하지 않는 도서 ID입니다.");

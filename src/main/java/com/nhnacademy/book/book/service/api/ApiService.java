@@ -115,17 +115,19 @@ public class ApiService {
      * ItemId를 기반으로 도서 정보를 저장합니다.
      *
      * @param itemIds ItemId 리스트
+     * @return 저장 실패한 ItemId 리스트
      */
     @Transactional
-    public void saveBooksByItemIds(List<String> itemIds) {
-        String itemIdUrlTemplate = aladinApiUrl + "&itemIdType=ItemId&ItemId=%s";
+    public List<String> saveBooksByItemIds(List<String> itemIds) {
+        List<String> failedItemIds = new ArrayList<>();
+        String itemIdUrlTemplate = aladinApiUrl + "&SearchTarget=Book&QueryType=ItemNewAll&itemIdType=ItemId&ItemId=%s";
 
         for (String itemId : itemIds) {
             try {
                 String url = String.format(itemIdUrlTemplate, itemId);
                 AladinBookListResponse response = callAladinApi(url);
 
-                if (response != null && response.getBooks() != null) {
+                if (response != null && response.getBooks() != null && !response.getBooks().isEmpty()) {
                     for (AladinResponse book : response.getBooks()) {
                         boolean isSaved = mappingService.processBookData(book);
                         if (isSaved) {
@@ -136,12 +138,16 @@ public class ApiService {
                     }
                 } else {
                     log.warn("ItemId로 검색된 데이터가 없습니다: {}", itemId);
+                    failedItemIds.add(itemId); // 검색 실패한 ItemId 추가
                 }
             } catch (Exception e) {
-                log.error("ItemId API 호출 실패: {}", e.getMessage(), e);
+                log.error("ItemId API 호출 실패: {}", itemId, e);
+                failedItemIds.add(itemId); // API 호출 실패한 ItemId 추가
             }
         }
+        return failedItemIds; // 실패한 ItemId 리스트 반환
     }
+
 
     /**
      * API를 호출하고 응답을 반환합니다.

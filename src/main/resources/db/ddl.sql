@@ -50,14 +50,14 @@ create table order_delivery
 create table order_delivery_address
 (
     order_delivery_address_id bigint       not null auto_increment,
-    oda_order_id char(36) not null ,
+    oda_order_id              char(36)     not null,
     zip_code                  varchar(20)  not null,
     location_address          varchar(100) not null,
     detail_address            varchar(100) not null,
     recipient                 varchar(100) not null,
     recipient_phone           varchar(15)  not null,
     primary key (order_delivery_address_id),
-    foreign key (oda_order_id) references orders(order_id)
+    foreign key (oda_order_id) references orders (order_id)
 );
 
 
@@ -101,5 +101,15 @@ create table payment
     easy_pay_provider varchar(100)   null,
     primary key (payment_id),
     foreign key (p_order_id) references orders (order_id)
+);
+
+create table order_cancel
+(
+    order_cancel_id bigint       not null auto_increment,
+    cancel_reason   varchar(500) not null,
+    canceled_at     datetime     not null default current_timestamp,
+    oc_order_id     char(36)     not null,
+    primary key (order_cancel_id),
+    foreign key (oc_order_id) references orders (order_id)
 );
 

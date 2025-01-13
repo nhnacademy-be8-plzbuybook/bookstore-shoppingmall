@@ -44,6 +44,10 @@ public class Category {
         this.parentCategory = parentCategory;
     }
 
+    public Category(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     // 자식 카테고리 추가
     public void addChildCategory(Category childCategory) {
         childCategory.setParentCategory(this);

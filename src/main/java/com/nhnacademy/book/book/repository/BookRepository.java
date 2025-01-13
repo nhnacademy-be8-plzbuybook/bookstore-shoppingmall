@@ -23,6 +23,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     // 제목으로 책 조회
     List<Book> findByBookTitle(String bookTitle);
 
+    Book findByBookId(Long bookId);
+
 //    @Query("SELECT b FROM Book b " +
 //            "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
 //            "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +

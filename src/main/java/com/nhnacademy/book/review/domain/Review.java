@@ -44,4 +44,20 @@ public class Review {
     @Column(name = "modify_date")
     private LocalDateTime modifiedDate;
 
+//    //리뷰 작성용
+    public Review(Member member, OrderProduct orderProduct, Integer score, String content) {
+        this.member = member;
+        this.orderProduct = orderProduct;
+        this.score = score;
+        this.content = content;
+        this.writeDate = LocalDateTime.now();
+    }
+//
+//    //리뷰 수정용
+//    public void update(String content, int score) {
+//        this.content = content;
+//        this.score = score;
+//        this.modifiedDate = LocalDateTime.now();
+//    }
+
 }

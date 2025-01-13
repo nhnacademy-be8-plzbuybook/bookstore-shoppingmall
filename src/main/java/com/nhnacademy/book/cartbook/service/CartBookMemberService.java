@@ -1,13 +1,13 @@
 package com.nhnacademy.book.cartbook.service;
 
 import com.nhnacademy.book.cartbook.dto.request.*;
-import com.nhnacademy.book.cartbook.dto.response.ReadAllMemberCartBookResponseDto;
+import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 
 
 import java.util.List;
 
 public interface CartBookMemberService {
-    List<ReadAllMemberCartBookResponseDto> readAllCartMember(String email);
+    List<ReadCartBookResponseDto> readAllCartMember(String email);
 
     Long createBookCartMember(CreateCartBookRequestDto createCartBookRequestDto, String email);
 

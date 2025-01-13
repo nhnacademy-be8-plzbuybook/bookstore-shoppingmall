@@ -2,9 +2,11 @@ package com.nhnacademy.book.order.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
 @Getter
 @Entity
 public class OrderDelivery {

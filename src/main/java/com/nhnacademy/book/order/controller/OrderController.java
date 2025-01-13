@@ -1,10 +1,13 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.order.dto.NonMemberOrderDetailAccessRequestDto;
 import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
+import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.service.OrderService;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,12 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
-
+    private final OrderProductService orderProductService;
     /**
      * 주문 목록조회(관리자)
      *
@@ -32,6 +38,7 @@ public class OrderController {
 
         return ResponseEntity.ok(orders);
     }
+
 
     /**
      * 내 주문내역 조회
@@ -68,10 +75,46 @@ public class OrderController {
      * @return 주문상세 DTO
      */
     @GetMapping("/api/orders/{order-id}")
-    public ResponseEntity<OrderDetail> getOrderDetail(@PathVariable("order-id") String orderId,
-                                            @RequestParam(value = "nonMemberOrderPassword", required = false) String password) {
+    public ResponseEntity<OrderDetail> getOrderDetail(@PathVariable("order-id") String orderId) {
         OrderDetail orderDetail = orderService.getOrderDetail(orderId);
         return ResponseEntity.ok(orderDetail);
+    }
+
+
+    /**
+     * 비회원 주문조회 접근
+     *
+     * @param accessRequest 주문번호, 비회원주문 조회용 비밀번호 DTO
+     * @return 주문 ID
+     */
+    @PostMapping("/api/orders/non-member/access")
+    public ResponseEntity<String> getNonMemberOrderDetail(@RequestBody NonMemberOrderDetailAccessRequestDto accessRequest) {
+        String orderId = orderService.getNonMemberOrder(accessRequest);
+        return ResponseEntity.ok(orderId);
+    }
+
+
+    /**
+     * 주문상품 구매확정
+     *
+     * @param orderProductId 주문상품 ID
+     * @return void
+     */
+    @PutMapping("/api/orders/order-products/{order-product-id}/purchase-confirm")
+    public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {
+        orderProductService.purchaseConfirmOrderProduct(orderProductId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 주문상태 리스트
+     *
+     * @return
+     */
+    @GetMapping("/api/orders/order-status")
+    public ResponseEntity<List<String>> getOrderStatuses() {
+        List<String> orderStatuses = Arrays.stream(OrderStatus.values()).map(OrderStatus::getStatus).toList();
+        return ResponseEntity.ok(orderStatuses);
     }
 
 }

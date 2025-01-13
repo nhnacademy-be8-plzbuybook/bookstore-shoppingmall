@@ -2,6 +2,7 @@ package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.elastic.document.AuthorDocument;
 import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
@@ -131,4 +132,34 @@ public class AuthorServiceTest {
         Mockito.when(authorRepository.findById(5L)).thenReturn(Optional.empty());
         assertThrows(AuthorsNotFoundException.class, () -> authorService.deleteAuthorById(5L));
     }
+
+    @Test
+    void getAuthorByNameFromElastic() {
+        // Given
+        String authorName = "test_author";
+        AuthorDocument authorDocument = new AuthorDocument();
+        authorDocument.setAuthorId(1L);
+        authorDocument.setAuthorName(authorName);
+
+        Mockito.when(authorSearchRepository.findByAuthorName(authorName)).thenReturn(authorDocument);
+
+        // When
+        AuthorResponseDto responseDto = authorService.getAuthorByNameFromElastic(authorName);
+
+        // Then
+        assertThat(responseDto.getAuthorId()).isEqualTo(1L);
+        assertThat(responseDto.getAuthorName()).isEqualTo(authorName);
+    }
+
+    @Test
+    void getAuthorByNameFromElastic_AuthorNameNotFoundException() {
+        // Given
+        String authorName = "non_existing_author";
+
+        Mockito.when(authorSearchRepository.findByAuthorName(authorName)).thenReturn(null);
+
+        // Then
+        assertThrows(AuthorNameNotFoundException.class, () -> authorService.getAuthorByNameFromElastic(authorName));
+    }
+
 }

@@ -6,17 +6,19 @@ import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
-import com.nhnacademy.book.point.domain.PointConditionName;
 import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
 import com.nhnacademy.book.point.dto.MemberPointAddResponseDto;
+import com.nhnacademy.book.point.dto.MemberPointListResponseDto;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -36,28 +39,29 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final MemberGradeRepository memberGradeRepository;
-//    private final PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+    private final PointConditionServiceImpl pointConditionServiceImpl;
 
     // 회원 가입시
     @Override
     public void addSignUpPoint(Member member) {
-        PointCondition pointCondition = pointConditionRepository.findByName(PointConditionName.SIGN_UP)
+        PointCondition pointCondition = pointConditionRepository.findByName("SIGN_UP")
                 .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
 
-        BigDecimal pointsToAdd = new BigDecimal(pointCondition.getConditionPoint());
+        int pointsToAdd = pointCondition.getConditionPoint();
 
         MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
                 member.getMemberId(),
                 null,
-                PointConditionName.SIGN_UP,
-                pointsToAdd.intValue(),
+                "SIGN_UP",
+                pointsToAdd,
                 null
         );
 
         addMemberPoint(requestDto);
     }
 
-//    // 도서 구매시
+    //    // 도서 구매시
 //    @Override
 //    public void addBookPurchasePoint(Member member, Long orderId, Integer orderStatus) {
 //        if (orderStatus != 5) { // 5는 구매확정 상태
@@ -150,7 +154,7 @@ public class MemberPointServiceImpl implements MemberPointService {
         PointCondition pointCondition = pointConditionRepository.findByName(requestDto.getName())
                 .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
 
-        BigDecimal pointsToAdd = new BigDecimal(requestDto.getConditionPoint());
+        int pointsToAdd = requestDto.getConditionPoint();
 
 
         MemberPoint memberPoint = new MemberPoint();
@@ -159,48 +163,91 @@ public class MemberPointServiceImpl implements MemberPointService {
         memberPoint.setPoint(pointsToAdd);
         memberPoint.setAddDate(LocalDateTime.now());
         memberPoint.setEndDate(LocalDateTime.now().plusYears(1));
+        memberPoint.setType("SAVE");
         memberPointRepository.save(memberPoint);
 
         return new MemberPointAddResponseDto(
                 memberPoint.getMemberPointId(),
                 member.getMemberId(),
-                pointCondition.getName().toString(),
+                pointCondition.getName(),
                 pointsToAdd,
                 memberPoint.getAddDate(),
-                memberPoint.getEndDate()
+                memberPoint.getEndDate(),
+                memberPoint.getType()
         );
 
 
     }
 
     @Override
-    public List<MemberPointAddResponseDto> getMemberPointsByMemberId(Long memberId) {
+    public List<MemberPointListResponseDto> getMemberPointsByMemberId(Long memberId) {
         List<MemberPoint> points = memberPointRepository.findAllByMember_MemberId(memberId);
         return points.stream()
-                .map(point -> new MemberPointAddResponseDto(
+                .map(point -> new MemberPointListResponseDto(
                         point.getMemberPointId(),
                         point.getMember().getMemberId(),
-                        point.getPointCondition().getName().toString(),
+                        point.getPointCondition().getName(),
                         point.getPoint(),
                         point.getAddDate(),
-                        point.getEndDate()
+                        point.getEndDate(),
+                        point.getUsingDate(),
+                        point.getType()
                 ))
                 .collect(Collectors.toList());
     }
 
+    // 사용 가능 포인트 조회
+    @Override
+    public int getAvailablePoints(String email) {
+        List<MemberPoint> points = memberPointRepository.findByMember_email(email);
+
+        return points.stream()
+                .filter(point -> point.getEndDate() != null && point.getEndDate().isAfter(LocalDateTime.now()))
+                .mapToInt(MemberPoint::getPoint)
+                .sum();
+    }
+
+
+    // 포인트 사용
+    @Override
+    public void usedPoint(String email, Integer usedPoint) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
+
+        int availablePoints = getAvailablePoints(email);
+
+        if (availablePoints < usedPoint) {
+            throw new IllegalArgumentException("사용 가능한 포인트가 부족합니다.");
+        }
+
+        List<MemberPoint> points = memberPointRepository.findByMember_email(email);
+
+        for (MemberPoint point : points) {
+            // 유효기간 체크
+            if ((point.getEndDate() == null || point.getEndDate().isAfter(LocalDateTime.now())) && usedPoint > 0) {
+                int deductable = Math.min(point.getPoint(), usedPoint);
+
+                // 기존 포인트 차감
+                point.setPoint(point.getPoint() - deductable); // 기존 포인트 업데이트
+                usedPoint -= deductable; // 남은 포인트 계산
+                memberPointRepository.save(point); // 기존 포인트 업데이트
+
+                MemberPoint usedPointRecord = new MemberPoint();
+                usedPointRecord.setMember(member);
+                usedPointRecord.setPoint(-deductable);
+                usedPointRecord.setUsingDate(LocalDateTime.now());
+                usedPointRecord.setType("USE");
+                usedPointRecord.setPointCondition(point.getPointCondition());
+
+                memberPointRepository.save(usedPointRecord);
+            }
+        }
+
+        if (usedPoint > 0) {
+            throw new IllegalStateException("포인트 차감 중 문제가 발생했습니다. 남은 포인트: ");
+        }
+    }
+
+
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
