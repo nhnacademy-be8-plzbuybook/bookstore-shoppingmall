@@ -3,6 +3,7 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
+import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
@@ -12,6 +13,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -22,7 +24,9 @@ import java.util.Optional;
 @Service
 public class WrappingPaperServiceImpl implements WrappingPaperService {
     private final WrappingPaperRepository wrappingPaperRepository;
+    private final ObjectStorageService objectStorageService;
 
+    @Transactional(readOnly = true)
     @Override
     public WrappingPaperDto getWrappingPaper(long id) {
         Optional<WrappingPaper> wrappingPaper = wrappingPaperRepository.findById(id);
@@ -33,6 +37,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         return new WrappingPaperDto(wrappingPaper.get());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<WrappingPaperDto> getWrappingPapers() {
         List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
@@ -44,73 +49,50 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     }
 
     @Override
-    public WrappingPaperSaveResponseDto createWrappingPaper(WrappingPaperSaveRequestDto saveRequest, @NotNull MultipartFile imageFile) {
-        if (wrappingPaperRepository.existsByName(saveRequest.getName())) {
-            throw new ConflictException("wrapping paper: [" + saveRequest.getName() + "] is already exists!");
+    public Long createWrappingPaper(WrappingCreateSaveRequestDto saveRequest) {
+        if (isWrappingPaperExists(saveRequest.getName())) {
+            throw new ConflictException("saveRequest.getName()" + "는 이미 존재하는 포장지입니다.");
         }
-        // TODO: 이미지 저장 메서드 호출 / imageFile 업로드
-        String image = "image/path";
-        WrappingPaper wrappingPaper = saveRequest.toEntity(image);
+        String imagePath = uploadWrappingPaperImage(saveRequest.getImageFile());
+        WrappingPaper wrappingPaper = saveRequest.toEntity(imagePath);
         WrappingPaper savedWrappingPaper = wrappingPaperRepository.save(wrappingPaper);
 
-        return new WrappingPaperSaveResponseDto(savedWrappingPaper.getId());
+        return savedWrappingPaper.getId();
     }
 
+    @Transactional
     @Override
-    public WrappingPaperUpdateResponseDto modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest, @Nullable MultipartFile imageFile) {
-        Optional<WrappingPaper> wrappingPaper = wrappingPaperRepository.findById(id);
+    public Long modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest) {
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(()
+                -> new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + id));
+        // 이미지 파일이 없으면 파일 제외하고 수정
+        if (updateRequest.imageFile() == null) {
+            wrappingPaper.update(updateRequest.name(), updateRequest.price(), updateRequest.stock());
 
-        if (wrappingPaper.isEmpty()) {
-            throw new NotFoundException(id + "wrapping paper not found!");
         }
-        WrappingPaper target = wrappingPaper.get();
-
-        if (imageFile == null) {
-            target.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), updateRequest.imagePath());
-
-        } else {
-            // TODO: 이미지 저장 메서드 호출 / imageFile 업로드
-            String image = "/update/path";
-            target.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), image);
+        // 이미지 파일이 있으면 파일 업로드하고 포함해서 수정
+        else {
+            String imagePath = uploadWrappingPaperImage(updateRequest.imageFile());
+            wrappingPaper.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), imagePath);
         }
-        return new WrappingPaperUpdateResponseDto(id);
+        return id;
     }
 
     @Override
     public void removeWrappingPaper(long id) {
-        if (wrappingPaperRepository.existsById(id)) {
+        if (!wrappingPaperRepository.existsById(id)) {
             throw new NotFoundException(id + "wrapping paper not found!");
         }
         wrappingPaperRepository.deleteById(id);
     }
 
-//    @Override
-//    public BigDecimal calculateFeeIfValidated(long id, Integer requiredQuantity) {
-//        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(() -> new NotFoundException("존재하지 않는 포장지입니다."));
-//
-//        if (wrappingPaper.getStock() < requiredQuantity) {
-//            throw new StockNotEnoughException("포장지의 재고가 부족합니다.");
-//        }
-//
-//        return wrappingPaper.getPrice().multiply(new BigDecimal(requiredQuantity));
-//    }
+    private boolean isWrappingPaperExists(String name) {
+        return wrappingPaperRepository.existsByName(name);
+    }
 
-    @Override
-    public BigDecimal calculateFeeIfValidated(OrderProductWrappingDto orderProductWrapping) {
-
-        if (orderProductWrapping == null) {
-            return BigDecimal.ZERO;
-        }
-
-        long id = orderProductWrapping.getWrappingPaperId();
-        int requiredQuantity = orderProductWrapping.getQuantity();
-        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(() -> new NotFoundException("존재하지 않는 포장지입니다."));
-
-        if (wrappingPaper.getStock() < requiredQuantity) {
-            throw new StockNotEnoughException("포장지의 재고가 부족합니다.");
-        }
-
-        return wrappingPaper.getPrice().multiply(new BigDecimal(requiredQuantity));
+    private String uploadWrappingPaperImage(MultipartFile imageFile) {
+        String uploadedFileName = objectStorageService.uploadObjects(List.of(imageFile)).getFirst();
+        return objectStorageService.getUrl(uploadedFileName);
     }
 
 }

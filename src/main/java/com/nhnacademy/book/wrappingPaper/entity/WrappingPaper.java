@@ -48,4 +48,10 @@ public class WrappingPaper {
         this.stock = stock;
         this.imagePath = imagePath;
     }
+
+    public void update(String name, BigDecimal price, Long stock) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+    }
 }

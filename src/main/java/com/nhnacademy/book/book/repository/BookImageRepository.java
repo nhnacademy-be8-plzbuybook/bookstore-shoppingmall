@@ -14,5 +14,5 @@ import java.util.Optional;
 public interface BookImageRepository extends JpaRepository<BookImage, Long> {
     Optional<BookImage> findByBook(Book book); // Book으로 이미지 조회
 
-    List<BookImage> findByBook_BookIdIn(List<Long> longs);
+    List<BookImage> findByBook_BookId(Long bookId);
 }

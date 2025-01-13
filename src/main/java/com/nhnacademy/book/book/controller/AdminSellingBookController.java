@@ -3,11 +3,7 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.BookRegisterDto;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
-import com.nhnacademy.book.book.entity.SellingBook;
-import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
+import com.nhnacademy.book.book.dto.response.AdminBookRegisterDto;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
@@ -114,7 +110,7 @@ public class AdminSellingBookController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<Page<AdminSellingBookRegisterDto>> adminGetBooks(
+    public ResponseEntity<Page<AdminBookRegisterDto>> adminGetBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +44,13 @@ public class OrderQueryRepository {
 
     // 기본 날짜/내림차순 정렬
     // 전체 주문목록 조회
-    public Page<OrderDto> findOrders(String memberEmail, String productName, LocalDate orderDate, OrderStatus orderStatus, Pageable pageable) {
+    public Page<OrderDto> findOrders(OrderSearchRequestDto searchRequest, Pageable pageable) {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
-                .select(new QOrderDto(
+                .select(
+        new QOrderDto(
                         orders.id,
+                        orders.number,
                         orders.orderedAt,
                         orders.status,
                         orders.name,
@@ -64,10 +65,11 @@ public class OrderQueryRepository {
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberEmail),
-                        eqProductName(productName),
-                        eqOrderDate(orderDate),
-                        eqOrderStatus(orderStatus)
+                        eqOrderNumber(searchRequest.getOrderNumber()),
+                        eqMemberId(searchRequest.getMemberId()),
+                        eqProductName(searchRequest.getProductName()),
+                        eqOrderDate(searchRequest.getOrderDate()),
+                        eqOrderStatus(searchRequest.getOrderStatus())
                 )
                 .orderBy(orders.orderedAt.desc())
                 .offset(pageable.getOffset())
@@ -85,10 +87,11 @@ public class OrderQueryRepository {
                 .innerJoin(orderProduct.sellingBook, sellingBook)
                 .innerJoin(sellingBook.book, book)
                 .where(
-                        eqMemberId(memberEmail),
-                        eqProductName(productName),
-                        eqOrderDate(orderDate),
-                        eqOrderStatus(orderStatus)
+                        eqOrderNumber(searchRequest.getOrderNumber()),
+                        eqMemberId(searchRequest.getMemberId()),
+                        eqProductName(searchRequest.getProductName()),
+                        eqOrderDate(searchRequest.getOrderDate()),
+                        eqOrderStatus(searchRequest.getOrderStatus())
                 )
                 .fetchOne();
 
@@ -134,8 +137,11 @@ public class OrderQueryRepository {
                         .innerJoin(orderDeliveryAddress).on(orderDeliveryAddress.order.eq(orders))
                         .leftJoin(payment).on(payment.orders.eq(orders))
                         .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
-                        .where(orders.id.eq(orderId))
-                        .fetchOne());
+                        .orderBy(payment.recordedAt.desc())
+                        .where(
+                                orders.id.eq(orderId)
+                        )
+                        .fetchFirst());
     }
 
     public Optional<NonMemberOrderDetail> findNonMemberOrderByNumber(String orderNumber) {
@@ -175,7 +181,8 @@ public class OrderQueryRepository {
                         .leftJoin(payment).on(payment.orders.eq(orders))
                         .leftJoin(orderDelivery).on(orderDelivery.order.eq(orders))
                         .where(orders.number.eq(orderNumber))
-                        .fetchOne());
+                        .orderBy(orders.orderedAt.desc())
+                        .fetchFirst());
     }
 
     public Optional<NonMemberOrderAccessResponseDto> findNonMemberOrderByOrderNumber(String orderNumber) {
@@ -220,10 +227,10 @@ public class OrderQueryRepository {
                         )
                 )
                 .from(orderProduct)
-                .where(orderProduct.order.id.eq(orderId))
                 .innerJoin(bookImage).on(bookImage.book.eq(orderProduct.sellingBook.book))
                 .leftJoin(orderProductWrapping).on(orderProductWrapping.orderProduct.eq(orderProduct))
                 .leftJoin(wrappingPaper).on(wrappingPaper.id.eq(orderProductWrapping.wrappingPaper.id))
+                .where(orderProduct.order.id.eq(orderId))
                 .fetch();
 
         return orderProductDtos;
@@ -232,6 +239,13 @@ public class OrderQueryRepository {
 
     private StringExpression getMemberEmail() {
         return member.email.coalesce("비회원"); // member.email이 null일 때 "비회원을 반환"
+    }
+
+    private BooleanExpression eqOrderNumber(String orderNumber) {
+        if (orderNumber == null) {
+            return null;
+        }
+        return orders.number.eq(orderNumber);
     }
 
 

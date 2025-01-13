@@ -14,19 +14,21 @@ import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.dto.ReviewUpdateRequestDto;
-import com.nhnacademy.book.review.exception.DuplicateReviewException;
-import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
-import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
-import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
+import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
+import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import com.nhnacademy.book.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -99,33 +101,75 @@ public class ReviewServiceImpl implements ReviewService {
         );
     }
 
+
     @Override
-    public List<ReviewResponseDto> getReviewsByProductId(Long productId) {
-        return List.of();
+    public Page<ReviewWithReviewImageDto> getReviewsWithReviewImagesByBookId(Long bookId, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findPagingReviewByBookId(bookId, pageable);
+
+        List<Long> reviewIds = reviewPage.getContent().stream()
+                .map(Review::getReviewId)
+                .toList();
+
+        List<ReviewImage> reviewImages = reviewImageRepository.findImagesByBookIdAndReviewIds(bookId, reviewIds);
+
+        Map<Long, List<String>> reviewImageMap = reviewImages.stream()
+                .collect(Collectors.groupingBy(
+                        image -> image.getReview().getReviewId(),
+                        Collectors.mapping(ReviewImage::getReviewImageUrl, Collectors.toList())
+                ));
+
+        return reviewPage.map(review -> {
+            List<String> imageUrls = reviewImageMap.getOrDefault(review.getReviewId(), List.of());
+            return new ReviewWithReviewImageDto(
+                    review.getMember().getMemberId(),
+                    review.getReviewId(),
+                    review.getMember().getEmail(),
+                    review.getOrderProduct().getOrderProductId(),
+                    review.getWriteDate(),
+                    review.getScore(),
+                    review.getContent(),
+                    imageUrls
+            );
+        });
     }
 
     @Override
-    public List<ReviewResponseDto> getReviewsByMemberId(Long memberId) {
-        return List.of();
+    public Double averageRatingByBookId(Long BookId) {
+        List<Review> reviewList = reviewRepository.findReviewByBookId(BookId);
+
+        if(reviewList.isEmpty()){
+            return 0.0;
+        }
+
+        double totalRating = reviewList.stream()
+                .mapToDouble(Review::getScore)
+                .sum();
+
+        return totalRating/reviewList.size();
     }
 
     @Override
-    public ReviewResponseDto getReviewById(Long reviewId) {
-        return null;
-    }
+    public void updateReview(Long reviewId, ReviewUpdateRequestDto updateRequestDto, List<String> imageUrls) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("리뷰를 찾을 수 없다!"));
 
-    @Override
-    public ReviewResponseDto updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) {
-        return null;
-    }
+        review.setScore(updateRequestDto.getScore());
+        review.setContent(updateRequestDto.getContent());
+        review.setWriteDate(LocalDateTime.now());
 
-    @Override
-    public Double calculateAverageScoreByProductId(Long productId) {
-        return 0.0;
-    }
+        //기존 이미지 삭제
+        reviewImageRepository.deleteByReview(review);
 
-    @Override
-    public List<ReviewResponseDto> getAllReviews() {
-        return List.of();
+        if(imageUrls != null && !imageUrls.isEmpty()){
+            for (String imageUrl : imageUrls) {
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReview(review);
+                String id = objectStorageService.getUrl(imageUrl);
+                reviewImage.setReviewImageUrl(id);
+                reviewImageRepository.save(reviewImage);
+            }
+        }
+
+        reviewRepository.save(review);
     }
 }

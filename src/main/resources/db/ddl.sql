@@ -1,4 +1,5 @@
-# 주문
+#
+주문
 create table orders
 (
     order_id           char(36)       not null,
@@ -13,7 +14,8 @@ create table orders
     primary key (order_id)
 );
 
-# 비회원 주문
+#
+비회원 주문
 create table non_member_order
 (
     non_member_order_id bigint       not null auto_increment,
@@ -23,7 +25,8 @@ create table non_member_order
     foreign key (nmo_order_id) references orders (order_id) on delete restrict
 );
 
-# 회원 주문
+#
+회원 주문
 create table member_order
 (
     member_order_id bigint   not null auto_increment,
@@ -33,8 +36,7 @@ create table member_order
     foreign key (mo_order_id) references orders (order_id),
     foreign key (mo_member_id) references member (member_id) on delete restrict
 );
-
-# 주문 배송지
+# 주문 배송
 create table order_delivery
 (
     order_delivery_id bigint      not null auto_increment,
@@ -42,11 +44,12 @@ create table order_delivery
     delivery_company  varchar(50) not null,
     tracking_number   varchar(30) not null unique,
     registered_at     datetime    not null default current_timestamp,
+    completed_at      datetime    null,
     primary key (order_delivery_id),
     foreign key (od_order_id) references orders (order_id) on delete cascade
 );
 
-# 주문배송
+# 주문 배송지
 create table order_delivery_address
 (
     order_delivery_address_id bigint       not null auto_increment,
@@ -61,7 +64,8 @@ create table order_delivery_address
 );
 
 
-# 주문상품
+#
+주문상품
 create table order_product
 (
     order_product_id   bigint         not null auto_increment,
@@ -113,3 +117,32 @@ create table order_cancel
     foreign key (oc_order_id) references orders (order_id)
 );
 
+create table delivery_fee_policy
+(
+    delivery_fee_policy_id  bigint         not null auto_increment,
+    name                    varchar(100)   not null,
+    default_delivery_fee    decimal(10, 2) not null,
+    free_delivery_threshold decimal(10, 2) not null,
+    primary key (delivery_fee_policy_id)
+);
+
+create table wrapping_paper
+(
+    wrapping_paper_id bigint         not null auto_increment,
+    name              varchar(100)   not null,
+    price             decimal(10, 2) not null,
+    stock             bigint         not null check ( stock >= 0 ),
+    createdAt         datetime       not null default current_timestamp,
+    primary key (wrapping_paper_id)
+);
+
+create table order_return
+(
+    order_return_id bigint       not null auto_increment,
+    or_order_id     char(36)     not null,
+    reason          varchar(500) not null,
+    requested_at    datetime     not null default current_timestamp,
+    completed_at    datetime     null,
+    primary key (order_return_id),
+    foreign key (or_order_id) references orders (order_id) on delete restrict
+)

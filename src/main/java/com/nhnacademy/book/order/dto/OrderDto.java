@@ -15,9 +15,8 @@ public class OrderDto {
     // 주문일
     private LocalDateTime orderedAt;
     // 주문상태
-    private String orderStatus;
-    // 주문 상품 썸네일
-//    private String thumbNail;
+    private OrderStatus orderStatus;
+    private String orderNumber;
     // 주문명
     private String orderName;
     // 결제금액
@@ -25,10 +24,11 @@ public class OrderDto {
     private String orderer;
 
     @QueryProjection
-    public OrderDto(String id, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount, String orderer) {
+    public OrderDto(String id, String orderNumber, LocalDateTime orderedAt, OrderStatus orderStatus, String orderName, BigDecimal paymentAmount, String orderer) {
         this.id = id;
+        this.orderNumber = orderNumber;
         this.orderedAt = orderedAt;
-        this.orderStatus = orderStatus.getStatus();
+        this.orderStatus = orderStatus;
         this.orderName = orderName;
         this.paymentAmount = paymentAmount;
         this.orderer = orderer;

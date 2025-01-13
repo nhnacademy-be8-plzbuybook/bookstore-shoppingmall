@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,11 +54,12 @@ public class PaymentServiceImpl implements PaymentService {
             throw new NotFoundException("주문 캐시를 찾을 수 없습니다.");
         }
 
-        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee());
+        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee().subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0)));
         if (confirmRequest.getAmount().compareTo(paymentPrice) != 0) {
             throw new IllegalArgumentException("주문결제 정보가 일치하지 않습니다."); //400
         }
     }
+
 
     @Override
     public void cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest) {

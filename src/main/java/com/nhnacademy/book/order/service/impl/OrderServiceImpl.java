@@ -39,8 +39,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     @Override
     public Page<OrderDto> getOrders(OrderSearchRequestDto searchRequest, Pageable pageable) {
-        return orderQueryRepository.findOrders(searchRequest.getMemberId(), searchRequest.getProductName(),
-                searchRequest.getOrderDate(), searchRequest.getOrderStatus(), pageable);
+        return orderQueryRepository.findOrders(searchRequest, pageable);
     }
 
 
@@ -72,16 +71,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public void patchStatus(String orderId, StatusDto patchRequest) {
+    public void modifyStatus(String orderId, OrderStatusModifyRequestDto modifyRequest) {
+
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
-        order.updateOrderStatus(patchRequest.getStatus());
+        // 주문상태변경
+        order.updateOrderStatus(modifyRequest.getStatus());
+        // 주문상품 상태변경
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        if (orderProducts != null) {
+            for (OrderProduct orderProduct: orderProducts) {
+                orderProduct.updateStatus(OrderProductStatus.fromStatus(modifyRequest.getStatus().getStatus()));
+            }
+        }
     }
 
     @Transactional
     @Override
     public void orderDelivered(String orderId) {
-        patchStatus(orderId, new StatusDto(OrderStatus.DELIVERED));
-        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
+        modifyStatus(orderId, new OrderStatusModifyRequestDto(OrderStatus.DELIVERED));
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        if (orderProducts == null) {
+            throw new NotFoundException("찾을 수 없는 주문상품입니다.");
+        }
         orderProducts.forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.DELIVERED));
     }
 

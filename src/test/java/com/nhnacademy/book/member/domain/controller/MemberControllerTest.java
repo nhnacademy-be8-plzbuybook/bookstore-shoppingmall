@@ -1,5 +1,6 @@
 package com.nhnacademy.book.member.domain.controller;//package com.nhnacademy.book.member.domain.controller;
 
+import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;
@@ -345,6 +346,23 @@ class MemberControllerTest {
 
         assertEquals(200, responseEntity.getStatusCodeValue());
         verify(memberService, times(1)).updateMemberByAdmin(eq(email), eq(memberModifyByAdminRequestDto));
+    }
+
+    @Test
+    @DisplayName("이메일로 회원식별키 조회")
+    void getMemberIdByEmail() {
+        String email = "test@naver.com";
+        Long memberId = 1L;
+
+        when(memberService.getMemberIdByEmail(email)).thenReturn(memberId);
+
+        ResponseEntity<Long> responseEntity = memberController.getMemberIdByEmail(email);
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(memberId, responseEntity.getBody());
+
+        verify(memberService, times(1)).getMemberIdByEmail(email);
     }
 }
 

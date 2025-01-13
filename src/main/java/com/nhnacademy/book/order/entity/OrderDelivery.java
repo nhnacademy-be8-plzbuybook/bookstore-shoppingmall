@@ -23,12 +23,20 @@ public class OrderDelivery {
 
     private String trackingNumber;
 
+    @Column(nullable = false)
     private LocalDateTime registeredAt;
+
+    @Column(nullable = true)
+    private LocalDateTime completedAt;
 
     public OrderDelivery(Orders order, String deliveryCompany, String trackingNumber, LocalDateTime registeredAt) {
         this.order = order;
         this.deliveryCompany = deliveryCompany;
         this.trackingNumber = trackingNumber;
         this.registeredAt = registeredAt;
+    }
+
+    public void completeDelivery() {
+        this.completedAt = LocalDateTime.now();
     }
 }

@@ -10,10 +10,8 @@ import java.util.List;
 public interface WrappingPaperService {
     WrappingPaperDto getWrappingPaper(long id);
     List<WrappingPaperDto> getWrappingPapers();
-    WrappingPaperSaveResponseDto createWrappingPaper(WrappingPaperSaveRequestDto saveRequest, MultipartFile imageFile);
-    WrappingPaperUpdateResponseDto modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest, MultipartFile imageFile);
+    Long createWrappingPaper(WrappingCreateSaveRequestDto saveRequest);
+    Long modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest);
     void removeWrappingPaper(long id);
-//    BigDecimal calculateFeeIfValidated(long id, Integer quantity);
-    BigDecimal calculateFeeIfValidated(OrderProductWrappingDto orderProductWrapping);
 }
 

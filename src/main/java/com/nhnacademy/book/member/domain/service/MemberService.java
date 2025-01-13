@@ -18,4 +18,5 @@ public interface MemberService {
     void updateActiveStatus(String email);
     void updateDormantStatus();
     void updateMemberByAdmin(String email, MemberModifyByAdminRequestDto memberModifyByAdminRequestDto);
+    Long getMemberIdByEmail(String email);
 }

@@ -1,6 +1,5 @@
 package com.nhnacademy.book.point.service.Impl;
 
-import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
@@ -40,7 +39,6 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final ReviewImageRepository reviewImageRepository;
     private final MemberGradeRepository memberGradeRepository;
     private final PaymentRepository paymentRepository;
-    private final PointConditionServiceImpl pointConditionServiceImpl;
 
     // 회원 가입시
     @Override
@@ -237,7 +235,9 @@ public class MemberPointServiceImpl implements MemberPointService {
                 usedPointRecord.setPoint(-deductable);
                 usedPointRecord.setUsingDate(LocalDateTime.now());
                 usedPointRecord.setType("USE");
-                usedPointRecord.setPointCondition(point.getPointCondition());
+
+                PointCondition condition = pointConditionRepository.findById(5L).orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                usedPointRecord.setPointCondition(condition);
 
                 memberPointRepository.save(usedPointRecord);
             }

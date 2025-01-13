@@ -23,7 +23,7 @@ public class OrderDetail {
     private BigDecimal orderPrice;
     private LocalDateTime orderedAt;
     private LocalDate deliveryWishDate;
-    private String status;
+    private OrderStatus status;
     private int usedPoint;
     private BigDecimal couponDiscount;
     private String orderNumber;
@@ -66,7 +66,7 @@ public class OrderDetail {
 
         this.orderId = orderId;
         this.orderNumber = orderNumber;
-        this.status = status.getStatus();
+        this.status = status;
         this.deliveryFee = deliveryFee;
         this.orderPrice = orderPrice;
         this.deliveryWishDate = deliveryWishDate;

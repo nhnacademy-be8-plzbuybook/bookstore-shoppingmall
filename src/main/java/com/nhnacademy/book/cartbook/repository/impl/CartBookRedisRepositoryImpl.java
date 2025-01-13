@@ -2,6 +2,7 @@ package com.nhnacademy.book.cartbook.repository.impl;
 
 import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Repository
 public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
     private final RedisTemplate<String, Object> cartRedisTemplate;
@@ -28,7 +30,8 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
     @Override
     public Long update(String hashName, Long id, int quantity) {
         ReadCartBookResponseDto resp = (ReadCartBookResponseDto) cartRedisTemplate.opsForHash().get(hashName + ":", id.toString());
-        assert resp != null;
+
+         assert resp != null;
         ReadCartBookResponseDto updatedResp = ReadCartBookResponseDto.builder()
                 .cartId(resp.cartId())
                 .cartBookId(resp.cartBookId())

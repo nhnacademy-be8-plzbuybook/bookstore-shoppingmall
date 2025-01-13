@@ -1,32 +1,27 @@
-package com.nhnacademy.book.order.controller;
+package com.nhnacademy.book.order.controller.command;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
-import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.service.OrderProcessService;
-import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 @RestController
-public class OrderProcessController {
-    private final OrderProcessService orderProcessService;
+public class CustomerOrderController {
     private final MemberService memberService;
-    private final OrderProductService orderProductService;
-
+    private final OrderProcessService orderProcessService;
 
     /**
      * 회원 주문요청
      *
-     * @param memberEmail            액세스토큰에서 추출된 X-USER-ID
+     * @param memberEmail        액세스토큰에서 추출된 X-USER-ID
      * @param memberOrderRequest 주문요청 DTO
      * @return 결제정보가 포함된 주문응답 DTO
      */
@@ -60,48 +55,4 @@ public class OrderProcessController {
 
         return ResponseEntity.ok(orderResponse);
     }
-
-
-    /**
-     * 주문 완료
-     *
-     * @param orderId 주문 ID
-     * @return 주문 ID
-     */
-    @PostMapping("/{order-id}/complete")
-    public ResponseEntity<String> completeOrder(@PathVariable("order-id") String orderId) {
-        orderProcessService.completeOrder(orderId);
-
-        return ResponseEntity.ok(orderId);
-    }
-
-    /**
-     * 전체 주문취소
-     *
-     * @param orderId
-     * @return
-     */
-    @PostMapping("/{order-id}/cancel")
-    public ResponseEntity<?> cancelOrder(@PathVariable("order-id") String orderId,
-                                         @RequestBody OrderCancelRequestDto cancelRequest) {
-        orderProcessService.cancelOrder(orderId, cancelRequest);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    /**
-     * 주문상품 취소
-     *
-     * @param orderId 주문 아이디
-     * @param orderProductId 주문상품 아이디
-     * @param quantity 취소할 수량
-     * @return
-     */
-    @PostMapping("/{order-id}/order-products/{order-product-id}/cancel")
-    public ResponseEntity<?> cancelOrderProduct(@PathVariable("order-id") String orderId,
-                                                @PathVariable("order-product-id") Long orderProductId,
-                                                @RequestParam(value = "quantity", required = false, defaultValue = "1") Integer quantity) {
-        orderProductService.cancelOrderProduct(orderId, orderProductId, quantity);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
 }

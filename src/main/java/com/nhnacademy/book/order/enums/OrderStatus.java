@@ -6,12 +6,13 @@ import lombok.Getter;
 public enum OrderStatus {
     PAYMENT_PENDING(0, "결제대기"),
     PAYMENT_COMPLETED(1, "결제완료"),
-    PREPARING_FOR_DELIVERY(2, "배송준비중"),
+    SHIPPED(2, "발송완료"),
     DELIVERING(3, "배송중"),
     DELIVERED(4, "배송완료"),
     PURCHASE_CONFIRMED(5, "구매확정"),
-    RETURNED(6, "반품"),
-    ORDER_CANCELLED(7, "주문취소");
+    RETURN_REQUESTED(6, "반품요청"),
+    ORDER_CANCELLED(7, "주문취소"),
+    RETURN_COMPLETED(8, "반품완료");
 
     @Getter
     private final int code;

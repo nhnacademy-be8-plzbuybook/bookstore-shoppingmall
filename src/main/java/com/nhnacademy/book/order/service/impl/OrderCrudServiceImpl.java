@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
@@ -48,7 +49,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
 
         // 주문 저장
         Orders savedOrder = orderRepository.save(order);
-        BigDecimal paymentPrice = orderRequest.getOrderPrice().add(orderRequest.getDeliveryFee());
+        BigDecimal paymentPrice = calculatePaymentPrice(orderRequest);
         return new OrderResponseDto(savedOrder.getId(), paymentPrice, savedOrder.getName());
     }
 
@@ -91,5 +92,28 @@ public class OrderCrudServiceImpl implements OrderCrudService {
      */
     private String generateOrderId() {
         return UUID.randomUUID().toString();
+    }
+
+    private BigDecimal calculatePaymentPrice(OrderRequestDto orderRequest) {
+        BigDecimal point = orderRequest.getUsedPoint() != null ? BigDecimal.valueOf(orderRequest.getUsedPoint()) : BigDecimal.ZERO;
+        BigDecimal couponDiscount = calculateCouponDiscounts(orderRequest);
+
+        return orderRequest.getOrderPrice()
+                .add(orderRequest.getDeliveryFee())
+                .subtract(point)
+                .subtract(couponDiscount);
+    }
+
+    private BigDecimal calculateCouponDiscounts(OrderRequestDto orderRequest) {
+        BigDecimal couponDiscounts = BigDecimal.ZERO;
+        List<OrderProductRequestDto> orderProducts = orderRequest.getOrderProducts();
+        for(OrderProductRequestDto orderProduct: orderProducts) {
+            if (orderProduct.getAppliedCoupons() != null) {
+                for (OrderProductAppliedCouponDto appliedCoupon: orderProduct.getAppliedCoupons()) {
+                    couponDiscounts = couponDiscounts.add(appliedCoupon.getDiscount());
+                }
+            }
+        }
+        return couponDiscounts;
     }
 }

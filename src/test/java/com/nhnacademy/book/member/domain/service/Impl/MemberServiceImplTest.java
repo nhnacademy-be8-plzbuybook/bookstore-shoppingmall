@@ -1022,4 +1022,51 @@ class MemberServiceImplTest {
         // Mock 호출 검증
         verify(memberRepository).findByEmail("yoonwlgh12@naver.com");
     }
+
+    @Test
+    @DisplayName("이메일로 회원식별키를 가져오는지")
+    void getMemberIdByEmail() {
+        // 테스트 용 이메일
+        String email = "test@naver.com";
+
+        // 기존의 회원 데이터
+        Member existingMember = new Member();
+        existingMember.setMemberId(1L);
+        existingMember.setEmail(email);
+
+        // 기존 회원 조회 Mock 설정
+        when(memberRepository.getMemberIdByEmail(email)).thenReturn(existingMember.getMemberId());
+
+        // 메서드 호출
+        Long memberId = memberService.getMemberIdByEmail(email);
+
+        // 일치하는지 검증
+        assertEquals(1L, memberId);
+
+        // Mock 호출 검증
+        verify(memberRepository).getMemberIdByEmail(email);
+    }
+
+    @Test
+    @DisplayName("이메일로 회원식별키를 못찾는 경우")
+    void getMemberIdByEmail_MemberNotFoundException() {
+        // 테스트 용 이메일
+        String email = "test@naver.com";
+
+        // 기존의 회원 데이터
+        Member existingMember = new Member();
+        existingMember.setMemberId(1L);
+        existingMember.setEmail(email);
+
+        // 기존 회원 조회 Mock 설정
+        when(memberRepository.getMemberIdByEmail(email)).thenReturn(null);
+
+        // 이메일로 회원 식별키를 못찾을 경우 예외 발생 확인
+        assertThrows(MemberEmailNotFoundException.class, () ->
+                memberService.getMemberIdByEmail(email)
+        );
+
+        // Mock 호출 검증
+        verify(memberRepository).getMemberIdByEmail(email);
+    }
 }
