@@ -36,9 +36,7 @@ create table member_order
     foreign key (mo_order_id) references orders (order_id),
     foreign key (mo_member_id) references member (member_id) on delete restrict
 );
-
-#
-주문 배송지
+# 주문 배송
 create table order_delivery
 (
     order_delivery_id bigint      not null auto_increment,
@@ -46,12 +44,12 @@ create table order_delivery
     delivery_company  varchar(50) not null,
     tracking_number   varchar(30) not null unique,
     registered_at     datetime    not null default current_timestamp,
+    completed_at      datetime    null,
     primary key (order_delivery_id),
     foreign key (od_order_id) references orders (order_id) on delete cascade
 );
 
-#
-주문배송
+# 주문 배송지
 create table order_delivery_address
 (
     order_delivery_address_id bigint       not null auto_increment,
@@ -82,8 +80,7 @@ create table order_product
     foreign key (op_order_id) references orders (order_id) on delete cascade
 );
 
-#
-주문상품 포장
+# 주문상품 포장
 create table order_product_wrapping
 (
     order_product_wrapping_id bigint not null auto_increment,
@@ -95,8 +92,7 @@ create table order_product_wrapping
     foreign key (opw_wrapping_paper_id) references wrapping_paper (wrapping_paper_id) on delete restrict
 );
 
-#
-결제
+# 결제
 create table payment
 (
     payment_id        bigint         not null auto_increment,
@@ -123,28 +119,30 @@ create table order_cancel
 
 create table delivery_fee_policy
 (
-    delivery_fee_policy_id  bigint       not null auto_increment,
-    name                    varchar(100) not null,
-    default_delivery_fee    decimal(10,2)      not null,
-    free_delivery_threshold decimal(10,2)      not null,
+    delivery_fee_policy_id  bigint         not null auto_increment,
+    name                    varchar(100)   not null,
+    default_delivery_fee    decimal(10, 2) not null,
+    free_delivery_threshold decimal(10, 2) not null,
     primary key (delivery_fee_policy_id)
 );
 
-create table wrapping_paper (
-    wrapping_paper_id bigint not null auto_increment,
-    name varchar(100) not null ,
-    price decimal(10,2) not null ,
-    stock bigint not null check ( stock >= 0 ),
-    createdAt datetime not null default current_timestamp,
+create table wrapping_paper
+(
+    wrapping_paper_id bigint         not null auto_increment,
+    name              varchar(100)   not null,
+    price             decimal(10, 2) not null,
+    stock             bigint         not null check ( stock >= 0 ),
+    createdAt         datetime       not null default current_timestamp,
     primary key (wrapping_paper_id)
 );
 
-create table order_return (
-    order_return_id bigint not null auto_increment,
-    or_order_id char(36) not null ,
-    reason varchar(500) not null ,
-    requested_at datetime not null default current_timestamp,
-    completed_at datetime null,
+create table order_return
+(
+    order_return_id bigint       not null auto_increment,
+    or_order_id     char(36)     not null,
+    reason          varchar(500) not null,
+    requested_at    datetime     not null default current_timestamp,
+    completed_at    datetime     null,
     primary key (order_return_id),
-    foreign key (or_order_id) references orders(order_id) on delete restrict
+    foreign key (or_order_id) references orders (order_id) on delete restrict
 )

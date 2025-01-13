@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class OrderDeliveryRegisterRequestDto {
-    @Setter
-    private String orderId;
     @NotBlank
     private String deliveryCompany;
     @NotBlank

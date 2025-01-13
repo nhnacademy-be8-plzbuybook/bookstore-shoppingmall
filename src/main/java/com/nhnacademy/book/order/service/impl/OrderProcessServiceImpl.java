@@ -1,5 +1,7 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
@@ -19,6 +21,7 @@ import com.nhnacademy.book.order.repository.OrderCancelRepository;
 import com.nhnacademy.book.order.repository.OrderReturnRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
+import com.nhnacademy.book.order.service.command.OrderDeliveryService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
@@ -55,6 +58,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderCancelRepository orderCancelRepository;
     private final OrderDeliveryService orderDeliveryService;
     private final OrderReturnRepository orderReturnRepository;
+    private final SellingBookRepository sellingBookRepository;
     private final MemberPointService memberPointService;
 
     /**
@@ -141,10 +145,12 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         //TODO: 포인트 복구
         //TODO: 쿠폰 복구
         //TODO: 재고 복구 (캐시, db 둘 다 ?)
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        restoreOrderProductsStock(orderProducts);
+
 
         // 주문, 주문상품 상태 변경
         order.updateOrderStatus(OrderStatus.ORDER_CANCELLED);
-        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
         for (OrderProduct orderProduct : orderProducts) {
             orderProduct.updateStatus(OrderProductStatus.ORDER_CANCELLED);
         }
@@ -194,6 +200,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         OrderReturn orderReturn = orderReturnRepository.findByOrderId(orderId).orElseThrow(() -> new NotFoundException("반품정보를 찾을 수 없습니다."));
         validateOrderForReturnCompletion(order);
         //TODO: 반품 포인트적립 (결제금액 - 반품 택배비)
+        //TODO: 재고 복구
 
         // 주문상태 변경
         order.updateOrderStatus(OrderStatus.RETURN_COMPLETED);
@@ -203,6 +210,15 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         return orderId;
     }
 
+
+    private void restoreOrderProductsStock(List<OrderProduct> orderProducts) {
+        for (OrderProduct orderProduct : orderProducts) {
+            Long sellingBookId = orderProduct.getSellingBook().getSellingBookId();
+            SellingBook sellingBook = sellingBookRepository.findById(sellingBookId).orElseThrow(() -> new NotFoundException("판매책을 찾을 수 없습니다."));
+            sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + orderProduct.getQuantity());
+            orderCacheService.addStockCache(orderProduct.getOrderProductId(), Long.valueOf(orderProduct.getQuantity()));
+        }
+    }
 
     /**
      * 주문상품-포장 저장

@@ -1,11 +1,10 @@
-package com.nhnacademy.book.order.controller;
+package com.nhnacademy.book.order.controller.query;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.order.dto.NonMemberOrderDetailAccessRequestDto;
 import com.nhnacademy.book.order.dto.OrderDetail;
 import com.nhnacademy.book.order.dto.OrderDto;
 import com.nhnacademy.book.order.dto.OrderSearchRequestDto;
-import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @RestController
-public class OrderController {
+public class OrderQueryController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final OrderProductService orderProductService;
@@ -32,7 +30,8 @@ public class OrderController {
      * @param pageable      페이지 정보
      * @return 주문목록 DTO
      */
-    @GetMapping("/api/orders") public ResponseEntity<Page<OrderDto>> getAllOrders(OrderSearchRequestDto searchRequest,
+    @GetMapping
+    public ResponseEntity<Page<OrderDto>> getAllOrders(OrderSearchRequestDto searchRequest,
                                                        Pageable pageable) {
         Page<OrderDto> orders = orderService.getOrders(searchRequest, pageable);
 
@@ -43,12 +42,12 @@ public class OrderController {
     /**
      * 내 주문내역 조회
      *
-     * @param memberEmail 회원 이메일
+     * @param memberEmail   회원 이메일
      * @param searchRequest 검색 파라미터
-     * @param pageable 페이징
+     * @param pageable      페이징
      * @return 주문목록 페이지
      */
-    @GetMapping("/api/orders/my")
+    @GetMapping("/my")
     public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
                                                       @RequestParam(required = false) OrderSearchRequestDto searchRequest,
                                                       Pageable pageable) {
@@ -74,7 +73,7 @@ public class OrderController {
      * @param orderId 주문 아이디
      * @return 주문상세 DTO
      */
-    @GetMapping("/api/orders/{order-id}")
+    @GetMapping("/{order-id}")
     public ResponseEntity<OrderDetail> getOrderDetail(@PathVariable("order-id") String orderId) {
         OrderDetail orderDetail = orderService.getOrderDetail(orderId);
         return ResponseEntity.ok(orderDetail);
@@ -87,7 +86,7 @@ public class OrderController {
      * @param accessRequest 주문번호, 비회원주문 조회용 비밀번호 DTO
      * @return 주문 ID
      */
-    @PostMapping("/api/orders/non-member/access")
+    @PostMapping("/non-member/access")
     public ResponseEntity<String> getNonMemberOrderDetail(@RequestBody NonMemberOrderDetailAccessRequestDto accessRequest) {
         String orderId = orderService.getNonMemberOrder(accessRequest);
         return ResponseEntity.ok(orderId);
@@ -100,21 +99,9 @@ public class OrderController {
      * @param orderProductId 주문상품 ID
      * @return void
      */
-    @PutMapping("/api/orders/order-products/{order-product-id}/purchase-confirm")
+    @PutMapping("/order-products/{order-product-id}/purchase-confirm")
     public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {
         orderProductService.purchaseConfirmOrderProduct(orderProductId);
         return ResponseEntity.ok().build();
     }
-
-    /**
-     * 주문상태 리스트
-     *
-     * @return
-     */
-    @GetMapping("/api/orders/order-status")
-    public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
-        List<OrderStatus> orderStatuses = List.of(OrderStatus.values());
-        return ResponseEntity.ok(orderStatuses);
-    }
-
 }
