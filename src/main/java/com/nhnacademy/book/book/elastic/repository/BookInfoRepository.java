@@ -20,7 +20,8 @@ public interface BookInfoRepository extends ElasticsearchRepository<BookInfoDocu
 @Query("{\"bool\": {\"should\": [" +
         "{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 3.0}}}, " +
         "{\"match\": {\"author_names\": {\"query\": \"?0\", \"operator\": \"or\", \"boost\": 1.5}}}, " +
-        "{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"or\"}}} ], " +
+        "{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"or\"}}}, " +
+        "{\"match\": {\"tag_name\": {\"query\": \"?0\", \"operator\": \"or\"}}} ], " +
         "\"minimum_should_match\": 1}}")
 List<BookInfoDocument> searchBooksByKeyword(String keyword);
 

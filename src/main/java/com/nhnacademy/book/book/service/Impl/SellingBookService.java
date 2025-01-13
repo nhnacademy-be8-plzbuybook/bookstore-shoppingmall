@@ -1,13 +1,9 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.*;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
-import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -73,42 +69,54 @@ public class SellingBookService {
      * @param pageable
      * @return
      */
-    public Page<AdminSellingBookRegisterDto> getBooks(Pageable pageable) {
+    public Page<AdminBookRegisterDto> getBooks(Pageable pageable) {
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
 
         return sellingBooks.map(sellingBook -> {
             Book book = sellingBook.getBook();
-            BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
+            List<String> bookImage = bookImageRepository.findByBook_BookId(book.getBookId())
+                    .stream()
+                    .map(BookImage::getImageUrl)
+                    .collect(Collectors.toList());;
 
             // 카테고리 정보 매핑
-            List<String> categories = categoryRepository.findCategoriesByBookId(book.getBookId())
-                    .stream()
-                    .map(Category::getCategoryName)
-                    .collect(Collectors.toList());
+            List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
+
+
+
+
+
 
             // 작가 정보 매핑
-            List<String> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId())
-                    .stream()
-                    .map(Author::getAuthorName) // Author의 authorName을 가져옴
-                    .collect(Collectors.toList());
+            List<Author> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId());
+
+
+
+
 
             // 출판사 정보 가져오기
             String publisher = book.getPublisher().getPublisherName();
 
-            return new AdminSellingBookRegisterDto(
-                    sellingBook.getSellingBookId(), // 판매도서 ID
+            return new AdminBookRegisterDto(
+                    book.getBookId(),
                     sellingBook.getBookTitle(),    // 제목
                     book.getBookPubDate(),         // 출판일
                     publisher,                     // 출판사
                     book.getBookIsbn13(),          // ISBN
-                    sellingBook.getSellingBookPrice(), // 판매가
-                    sellingBook.getSellingBookPackageable(), // 포장 가능 여부
-                    sellingBook.getSellingBookStock(), // 재고
-                    sellingBook.getSellingBookStatus(), // 판매 상태
-                    sellingBook.getSellingBookViewCount(), // 조회수
-                    bookImage != null ? bookImage.getImageUrl() : null, // 이미지 URL
-                    categories, // 카테고리 정보
-                    authors     // 작가 정보
+                    book.getBookPriceStandard(),
+                    bookImage, // 이미지 URL
+                    authors.stream()
+                            .map(author -> new AuthorResponseDto(
+                                    author.getAuthorId(),
+                                    author.getAuthorName()
+                            ))
+                            .toList(),
+                    categories.stream()
+                            .map(category -> new CategorySimpleResponseDto(
+                                    category.getCategoryId(),
+                                    category.getCategoryName()
+                            ))
+                            .toList()
             );
         });
     }

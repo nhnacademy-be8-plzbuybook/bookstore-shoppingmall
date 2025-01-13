@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.AdminBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminSellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
