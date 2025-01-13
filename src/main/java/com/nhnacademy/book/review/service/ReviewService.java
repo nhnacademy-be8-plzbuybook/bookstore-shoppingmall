@@ -20,5 +20,8 @@ public interface ReviewService {
     //별점 평균
     Double averageRatingByBookId(Long BookId);
 
+    //리뷰 수정
+    void updateReview(Long reviewId, ReviewUpdateRequestDto updateRequestDto, List<String> imageUrls);
+
 
 }

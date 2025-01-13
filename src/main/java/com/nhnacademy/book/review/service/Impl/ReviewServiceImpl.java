@@ -15,10 +15,7 @@ import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
 import com.nhnacademy.book.review.dto.ReviewUpdateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
-import com.nhnacademy.book.review.exception.DuplicateReviewException;
-import com.nhnacademy.book.review.exception.InvalidOrderAccessException;
-import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
-import com.nhnacademy.book.review.exception.OrderProductNotFoundException;
+import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import com.nhnacademy.book.review.service.ReviewService;
@@ -124,6 +121,7 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewPage.map(review -> {
             List<String> imageUrls = reviewImageMap.getOrDefault(review.getReviewId(), List.of());
             return new ReviewWithReviewImageDto(
+                    review.getMember().getMemberId(),
                     review.getReviewId(),
                     review.getMember().getEmail(),
                     review.getOrderProduct().getOrderProductId(),
@@ -148,5 +146,30 @@ public class ReviewServiceImpl implements ReviewService {
                 .sum();
 
         return totalRating/reviewList.size();
+    }
+
+    @Override
+    public void updateReview(Long reviewId, ReviewUpdateRequestDto updateRequestDto, List<String> imageUrls) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("리뷰를 찾을 수 없다!"));
+
+        review.setScore(updateRequestDto.getScore());
+        review.setContent(updateRequestDto.getContent());
+        review.setWriteDate(LocalDateTime.now());
+
+        //기존 이미지 삭제
+        reviewImageRepository.deleteByReview(review);
+
+        if(imageUrls != null && !imageUrls.isEmpty()){
+            for (String imageUrl : imageUrls) {
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReview(review);
+                String id = objectStorageService.getUrl(imageUrl);
+                reviewImage.setReviewImageUrl(id);
+                reviewImageRepository.save(reviewImage);
+            }
+        }
+
+        reviewRepository.save(review);
     }
 }
