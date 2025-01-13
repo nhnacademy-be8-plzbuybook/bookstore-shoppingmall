@@ -1,7 +1,6 @@
 package com.nhnacademy.book.wrappingPaper.controller;
 
 import com.nhnacademy.book.wrappingPaper.dto.*;
-import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
@@ -20,33 +19,61 @@ import java.util.List;
 public class WrappingPaperController {
     private final WrappingPaperService wrappingPaperService;
 
+    /**
+     * 포장지 단건조회
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/{wrapping-paper-id}")
     public ResponseEntity<WrappingPaperDto> getWrappingPaper(@PathVariable("wrapping-paper-id") Long id) {
         WrappingPaperDto wrappingPaper = wrappingPaperService.getWrappingPaper(id);
         return ResponseEntity.status(HttpStatus.OK).body(wrappingPaper);
     }
 
+    /**
+     * 포장지 목록조회
+     *
+     * @return
+     */
     @GetMapping
     public ResponseEntity<List<WrappingPaperDto>> getWrappingPapers() {
         List<WrappingPaperDto> wrappingPapers = wrappingPaperService.getWrappingPapers();
         return ResponseEntity.status(HttpStatus.OK).body(wrappingPapers);
     }
 
+    /**
+     * 포장지 생성
+     *
+     * @param createRequest
+     * @return
+     */
     @PostMapping
-    public ResponseEntity<WrappingPaperSaveResponseDto> createWrappingPaper(@Valid @RequestPart WrappingPaperSaveRequestDto saveRequest,
-                                                                            @NotNull @RequestPart MultipartFile imageFile) {
-        WrappingPaperSaveResponseDto saveResponse = wrappingPaperService.createWrappingPaper(saveRequest, imageFile);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saveResponse);
+    public ResponseEntity<Long> createWrappingPaper(@Valid @ModelAttribute WrappingCreateSaveRequestDto createRequest) {
+        Long createdWrappingPaperId = wrappingPaperService.createWrappingPaper(createRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdWrappingPaperId);
     }
 
+    /**
+     * 포장지 수정
+     *
+     * @param id
+     * @param updateRequest
+     * @return
+     */
     @PutMapping("/{wrapping-paper-id}")
-    public ResponseEntity<WrappingPaperUpdateResponseDto> modifyWrappingPaper(@PathVariable("wrapping-paper-id") Long id,
-                                                                              @Valid @RequestPart WrappingPaperUpdateRequestDto updateRequest,
-                                                                              @Nullable @RequestPart MultipartFile imageFile) {
-        WrappingPaperUpdateResponseDto updateResponse = wrappingPaperService.modifyWrappingPaper(id, updateRequest, imageFile);
-        return ResponseEntity.status(HttpStatus.OK).body(updateResponse);
+    public ResponseEntity<Long> modifyWrappingPaper(@PathVariable("wrapping-paper-id") Long id,
+                                                                              @Valid @ModelAttribute WrappingPaperUpdateRequestDto updateRequest) {
+        Long modifiedWrappingPaperId = wrappingPaperService.modifyWrappingPaper(id, updateRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(modifiedWrappingPaperId);
     }
 
+    /**
+     * 포장지 삭제
+     *
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{wrapping-paper-id}")
     public ResponseEntity<Void> removeWrappingPaper(@PathVariable("wrapping-paper-id") Long id) {
         wrappingPaperService.removeWrappingPaper(id);
