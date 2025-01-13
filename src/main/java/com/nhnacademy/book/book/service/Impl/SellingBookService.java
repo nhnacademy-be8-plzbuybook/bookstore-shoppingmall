@@ -1,10 +1,7 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminBookAndSellingBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.AdminBookRegisterDto;
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.*;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
@@ -83,16 +80,19 @@ public class SellingBookService {
                     .collect(Collectors.toList());;
 
             // 카테고리 정보 매핑
-            List<String> categories = categoryRepository.findCategoriesByBookId(book.getBookId())
-                    .stream()
-                    .map(Category::getCategoryName)
-                    .collect(Collectors.toList());
+            List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
+
+
+
+
+
 
             // 작가 정보 매핑
-            List<String> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId())
-                    .stream()
-                    .map(Author::getAuthorName) // Author의 authorName을 가져옴
-                    .collect(Collectors.toList());
+            List<Author> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId());
+
+
+
+
 
             // 출판사 정보 가져오기
             String publisher = book.getPublisher().getPublisherName();
@@ -105,8 +105,18 @@ public class SellingBookService {
                     book.getBookIsbn13(),          // ISBN
                     book.getBookPriceStandard(),
                     bookImage, // 이미지 URL
-                    categories, // 카테고리 정보
-                    authors     // 작가 정보
+                    authors.stream()
+                            .map(author -> new AuthorResponseDto(
+                                    author.getAuthorId(),
+                                    author.getAuthorName()
+                            ))
+                            .toList(),
+                    categories.stream()
+                            .map(category -> new CategorySimpleResponseDto(
+                                    category.getCategoryId(),
+                                    category.getCategoryName()
+                            ))
+                            .toList()
             );
         });
     }
