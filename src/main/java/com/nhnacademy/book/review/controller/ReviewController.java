@@ -11,6 +11,9 @@ import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
 import com.nhnacademy.book.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,8 +75,11 @@ public class ReviewController {
 
 
     @GetMapping("/books/{sellingBookId}/reviews")
-    public ResponseEntity<List<ReviewWithReviewImageDto>> getReviewsByBookId(@PathVariable("sellingBookId") Long sellingBookId) {
-        List<ReviewWithReviewImageDto> review = reviewService.getReviewsWithReviewImagesByBookId(sellingBookId);
+    public ResponseEntity<Page<ReviewWithReviewImageDto>> getReviewsByBookId(@PathVariable("sellingBookId") Long sellingBookId,
+                                                                             @RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "2") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewWithReviewImageDto> review = reviewService.getReviewsWithReviewImagesByBookId(sellingBookId, pageable);
         return ResponseEntity.ok(review);
     }
 
