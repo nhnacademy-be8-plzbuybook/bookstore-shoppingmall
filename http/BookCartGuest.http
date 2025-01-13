@@ -1,42 +1,27 @@
 ### 비회원 장바구니 조회
-GET http://localhost:8090/api/bookstore/carts
-Content-Type: application/json
-
-### 비회원 장바구니 단일 조회
-GET http://localhost:8090/api/bookstore/carts/2
+GET http://localhost:8090/api/bookstore/guests/carts
 Content-Type: application/json
 
 ### 비회원 장바구니 수정
-PUT http://localhost:8090/api/bookstore/carts
+PUT http://localhost:8090/api/bookstore/guests/carts/5728520439127886568?quantity=3
 Content-Type: application/json
-
-{
-  "cartBookId": 5,
-  "sellingBookId": 240,
-  "quantity": 1
-}
 
 ### 비회원 장바구니 등록
-POST http://localhost:8090/api/bookstore/carts
+POST http://localhost:8090/api/bookstore/guests/carts
 Content-Type: application/json
 
 {
-  "sellingBookId": 1,
+  "sellingBookId": 20,
   "quantity": 1
 }
 
 ### 비회원 장바구니 삭제
-DELETE http://localhost:8090/api/bookstore/carts
+DELETE http://localhost:8090/api/bookstore/guests/carts/5728520439127886568
 Content-Type: application/json
-
-{
-  "cartId": 1,
-  "cartBookId": 2
-}
 
 
 ### 비회원 장바구니 전체 삭제
-DELETE http://localhost:8090/api/bookstore/carts/5
+DELETE http://localhost:8090/api/bookstore/guests/carts
 Content-Type: application/json
 
 
