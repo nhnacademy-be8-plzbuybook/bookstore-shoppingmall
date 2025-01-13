@@ -3,14 +3,16 @@ package com.nhnacademy.book.review.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
-import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
+import com.nhnacademy.book.review.dto.ReviewUpdateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewWithReviewImageDto;
 import com.nhnacademy.book.review.service.ReviewService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,13 +74,39 @@ public class ReviewController {
 
 
     @GetMapping("/books/{sellingBookId}/reviews")
-    public ResponseEntity<List<ReviewWithReviewImageDto>> getReviewsByBookId(@PathVariable("sellingBookId") Long sellingBookId) {
-        List<ReviewWithReviewImageDto> review = reviewService.getReviewsWithReviewImagesByBookId(sellingBookId);
+    public ResponseEntity<Page<ReviewWithReviewImageDto>> getReviewsByBookId(@PathVariable("sellingBookId") Long sellingBookId,
+                                                                             @RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "2") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewWithReviewImageDto> review = reviewService.getReviewsWithReviewImagesByBookId(sellingBookId, pageable);
         return ResponseEntity.ok(review);
     }
 
     @GetMapping("/books/{sellingBookId}/reviews/avg")
     public Double getAverageReview(@PathVariable("sellingBookId") Long sellingBookId) {
         return reviewService.averageRatingByBookId(sellingBookId);
+    }
+
+    @PostMapping(value = "/reviews/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> updateReview(@PathVariable("reviewId") Long reviewId,
+                                               @RequestParam("score") Integer score,
+                                               @RequestPart("content") String content,
+                                               @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+
+        ReviewUpdateRequestDto requestDto = new ReviewUpdateRequestDto(score, content);
+
+        List<String> imageUrls = new ArrayList<>();
+        // 이미지가 첨부된 경우만 처리
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile image : images) {
+                if (!image.isEmpty()) {  // 비어 있는 파일은 건너뛰기
+                    String imageUrl = saveImage(image);  // 이미지를 저장하고 URL 반환
+                    imageUrls.add(imageUrl);
+                }
+            }
+        }
+
+        reviewService.updateReview(reviewId, requestDto, imageUrls);
+        return null;
     }
 }
