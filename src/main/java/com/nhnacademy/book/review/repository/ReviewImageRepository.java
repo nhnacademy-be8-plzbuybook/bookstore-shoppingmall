@@ -1,5 +1,6 @@
 package com.nhnacademy.book.review.repository;
 
+import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.domain.ReviewImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +14,7 @@ public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> 
 
     @Query("SELECT ri FROM ReviewImage ri WHERE ri.review.orderProduct.sellingBook.sellingBookId = :bookId AND ri.review.reviewId IN :reviewIds")
     List<ReviewImage> findImagesByBookIdAndReviewIds(Long bookId, List<Long> reviewIds);
+
+    //리뷰 이미지에서 리뷰 삭제
+    void deleteByReview(Review review);
 }
