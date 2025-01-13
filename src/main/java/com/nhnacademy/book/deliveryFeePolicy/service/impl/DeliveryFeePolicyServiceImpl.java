@@ -1,6 +1,7 @@
 package com.nhnacademy.book.deliveryFeePolicy.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
+import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyDto;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicySaveRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyUpdateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.entity.DeliveryFeePolicy;
@@ -10,8 +11,10 @@ import com.nhnacademy.book.deliveryFeePolicy.repository.DeliveryFeePolicyReposit
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,47 +24,43 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
 
     @Override
     public long createDeliveryFeePolicy(DeliveryFeePolicySaveRequestDto saveRequest) {
-        DeliveryFeePolicy deliveryFeePolicy = saveRequest.toEntity();
-
-        boolean isDuplicated = deliveryFeePolicyRepository.existsByDefaultDeliveryFeeAndFreeDeliveryThreshold(
-                deliveryFeePolicy.getDefaultDeliveryFee(), deliveryFeePolicy.getFreeDeliveryThreshold());
-        if (isDuplicated) {
-            throw new ConflictException("duplicated delivery fee policy");
+        if (isPolicyExists(saveRequest.getName())) {
+            throw new ConflictException("이미 존재하는 배송비정책입니다.");
         }
-
-        DeliveryFeePolicy savedPolicy = deliveryFeePolicyRepository.save(deliveryFeePolicy);
+        DeliveryFeePolicy savedPolicy = deliveryFeePolicyRepository.save(saveRequest.toEntity());
         return savedPolicy.getId();
     }
 
     @Override
-    public DeliveryFeePolicy getDeliveryFeePolicy(long id) {
-        Optional<DeliveryFeePolicy> optionalPolicy = deliveryFeePolicyRepository.findById(id);
-        return optionalPolicy.orElseThrow(() -> new NotFoundException(id + " policy not found!"));
+    public List<DeliveryFeePolicyDto> getDeliveryPolicies() {
+        List<DeliveryFeePolicy> policies = deliveryFeePolicyRepository.findAll();
+        return policies.stream().map(p ->
+                new DeliveryFeePolicyDto(p.getId(), p.getName(), p.getDefaultDeliveryFee(), p.getFreeDeliveryThreshold())).toList();
     }
 
     @Override
+    public DeliveryFeePolicyDto getDeliveryFeePolicy(long id) {
+        DeliveryFeePolicy policy = deliveryFeePolicyRepository.findById(id).orElseThrow(()
+                -> new NotFoundException(id + " policy not found!"));
+        return new DeliveryFeePolicyDto(policy.getId(), policy.getName(), policy.getDefaultDeliveryFee(), policy.getFreeDeliveryThreshold());
+    }
+
+    @Transactional
+    @Override
     public long modifyDeliveryFeePolicy(long id, DeliveryFeePolicyUpdateRequestDto updateRequest) {
-        Optional<DeliveryFeePolicy> optionalPolicy = deliveryFeePolicyRepository.findById(id);
+        DeliveryFeePolicy policy = deliveryFeePolicyRepository.findById(id).orElseThrow(()
+                -> new NotFoundException(id + " policy not found!"));
 
-        if (optionalPolicy.isEmpty()) {
-            throw new NotFoundException(id + " policy not found!");
-        }
-        DeliveryFeePolicy deliveryFeePolicy = optionalPolicy.get();
-
-        deliveryFeePolicy.update(updateRequest.defaultDeliveryFee(), updateRequest.freeDeliveryThreshold());
-        return deliveryFeePolicy.getId();
+        policy.update(updateRequest.name(), updateRequest.defaultDeliveryFee(), updateRequest.freeDeliveryThreshold());
+        return policy.getId();
     }
 
     @Override
     public void removeDeliveryFeePolicy(long id) {
-        Optional<DeliveryFeePolicy> optionalPolicy = deliveryFeePolicyRepository.findById(id);
-
-        if (optionalPolicy.isEmpty()) {
+        if (isPolicyExists(id)) {
             throw new NotFoundException(id + " policy not found!");
         }
-        DeliveryFeePolicy deliveryFeePolicy = optionalPolicy.get();
-
-        deliveryFeePolicyRepository.delete(deliveryFeePolicy);
+        deliveryFeePolicyRepository.deleteById(id);
     }
 
     @Override
@@ -80,5 +79,13 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
             return BigDecimal.ZERO;
         }
         return deliveryFeePolicy.getDefaultDeliveryFee();
+    }
+
+    private boolean isPolicyExists(Long id) {
+        return deliveryFeePolicyRepository.existsById(id);
+    }
+
+    private boolean isPolicyExists(String name) {
+        return deliveryFeePolicyRepository.existsByName(name);
     }
 }
