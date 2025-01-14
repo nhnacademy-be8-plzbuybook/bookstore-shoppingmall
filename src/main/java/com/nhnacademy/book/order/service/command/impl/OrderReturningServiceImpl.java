@@ -12,6 +12,8 @@ import com.nhnacademy.book.order.repository.OrderReturnRepository;
 import com.nhnacademy.book.order.service.command.OrderDeliveryService;
 import com.nhnacademy.book.order.service.command.OrderReturningService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,10 +76,19 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
     @Transactional(readOnly = true)
     @Override
-    public OrderReturnDto getByTrackingNumber(String trackingNumber) {
+    public OrderReturnDto getOrderReturnByTrackingNumber(String trackingNumber) {
         return orderReturnRepository.findByTrackingNumber(trackingNumber)
                 .orElseThrow(() -> new NotFoundException("주문반품정보를 찾을 수 없습니다."));
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<OrderReturnDto> getAllOrderReturns(Pageable pageable) {
+        Page<OrderReturn> orderReturnPage = orderReturnRepository.findAll(pageable);
+        return orderReturnPage.map(OrderReturnDto::new);
+    }
+
+
 
     private void validateOrderOrderForReturning(Orders order) {
         int statusCode = order.getStatus().getCode();
