@@ -111,10 +111,10 @@ public class OrderProcessServiceImpl implements OrderProcessService {
                                 : null,
                         usedPoint);
 
-                order.setUsedPoint(usedPoint);
-
-                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
-                order.setOrderPrice(finalPrice);
+//                order.setUsedPoint(usedPoint);
+//
+//                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
+//                order.setOrderPrice(finalPrice);
             }
 
 
