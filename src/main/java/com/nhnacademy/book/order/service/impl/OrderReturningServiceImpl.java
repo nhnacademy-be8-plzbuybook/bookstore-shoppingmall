@@ -1,4 +1,4 @@
-package com.nhnacademy.book.order.service.command.impl;
+package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
@@ -9,8 +9,8 @@ import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.repository.OrderReturnRepository;
-import com.nhnacademy.book.order.service.command.OrderDeliveryService;
-import com.nhnacademy.book.order.service.command.OrderReturningService;
+import com.nhnacademy.book.order.service.OrderDeliveryService;
+import com.nhnacademy.book.order.service.OrderReturningService;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -73,6 +73,7 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
         // 주문상태 변경
         order.updateOrderStatus(OrderStatus.RETURN_COMPLETED);
+        order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.RETURN_COMPLETED));
 
         // 주문반품 테이블 업데이트
         orderReturn.setCompletedAt(LocalDateTime.now());
