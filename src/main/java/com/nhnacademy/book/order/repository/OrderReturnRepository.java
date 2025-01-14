@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface OrderReturnRepository extends JpaRepository<OrderReturn, Long> {
     Optional<OrderReturn> findByOrderId(String orderId);
 
-    @Query("SELECT or.id, or.reason, or.trackingNumber, or.requestedAt, or.order.id  FROM OrderReturn or WHERE or.trackingNumber = :trackingNumber")
+    @Query("SELECT new com.nhnacademy.book.order.dto.OrderReturnDto(o.id, o.reason, o.trackingNumber, o.requestedAt, o.completedAt, o.order.id) " +
+            "FROM OrderReturn o WHERE o.trackingNumber = :trackingNumber")
     Optional<OrderReturnDto> findByTrackingNumber(@Param("trackingNumber") String trackingNumber);
+
 }

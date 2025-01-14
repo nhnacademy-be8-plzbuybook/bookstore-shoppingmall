@@ -4,10 +4,12 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
+import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
 import com.nhnacademy.book.order.entity.OrderReturn;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
+import com.nhnacademy.book.order.repository.OrderReturnQueryRepository;
 import com.nhnacademy.book.order.repository.OrderReturnRepository;
 import com.nhnacademy.book.order.service.OrderDeliveryService;
 import com.nhnacademy.book.order.service.OrderReturningService;
@@ -27,6 +29,7 @@ import java.util.List;
 public class OrderReturningServiceImpl implements OrderReturningService {
     private final OrderRepository orderRepository;
     private final OrderReturnRepository orderReturnRepository;
+    private final OrderReturnQueryRepository orderReturnQueryRepository;
     private final OrderDeliveryService orderDeliveryService;
 
 
@@ -89,15 +92,17 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<OrderReturnDto> getAllOrderReturns(String trackingNumber, Pageable pageable) {
-
-        if (trackingNumber != null && !trackingNumber.isBlank()) {
-            OrderReturnDto orderReturn = orderReturnRepository.findByTrackingNumber(trackingNumber)
-                    .orElseThrow(() -> new NotFoundException("주문반품요청이 없습니다."));
-            return new PageImpl<>(List.of(orderReturn), pageable, 1);
-        }
-        Page<OrderReturn> orderReturnPage = orderReturnRepository.findAll(pageable);
-        return orderReturnPage.map(OrderReturnDto::new);
+    public Page<OrderReturnDto> getAllOrderReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
+        Page<OrderReturnDto> orderReturnDtoPage = orderReturnQueryRepository.findOrderReturnPage(searchRequest, pageable);
+        return orderReturnDtoPage;
+//
+//        if (trackingNumber != null && !trackingNumber.isBlank()) {
+//            OrderReturnDto orderReturn = orderReturnRepository.findByTrackingNumber(trackingNumber)
+//                    .orElseThrow(() -> new NotFoundException("주문반품요청이 없습니다."));
+//            return new PageImpl<>(List.of(orderReturn), pageable, 1);
+//        }
+//        Page<OrderReturn> orderReturnPage = orderReturnRepository.findAll(pageable);
+//        return orderReturnPage.map(OrderReturnDto::new);
     }
 
 

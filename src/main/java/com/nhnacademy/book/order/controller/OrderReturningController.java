@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
+import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
 import com.nhnacademy.book.order.service.OrderReturningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class OrderReturningController {
     private final OrderReturningService orderReturningService;
 
     @GetMapping("/order-returns")
-    public ResponseEntity<Page<OrderReturnDto>> getOrderReturns(@RequestParam(value = "tracking-number", required = false) String trackingNumber,
+    public ResponseEntity<Page<OrderReturnDto>> getOrderReturns(@ModelAttribute OrderReturnSearchRequestDto searchRequest,
                                                                 Pageable pageable) {
-        Page<OrderReturnDto> orderReturnDtoPage = orderReturningService.getAllOrderReturns(trackingNumber, pageable);
+        Page<OrderReturnDto> orderReturnDtoPage = orderReturningService.getAllOrderReturns(searchRequest, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(orderReturnDtoPage);
     }
 
