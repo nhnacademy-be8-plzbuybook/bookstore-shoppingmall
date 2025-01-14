@@ -141,6 +141,7 @@ create table order_return
     order_return_id bigint       not null auto_increment,
     or_order_id     char(36)     not null,
     reason          varchar(500) not null,
+    tracking_number varchar(30) not null unique ,
     requested_at    datetime     not null default current_timestamp,
     completed_at    datetime     null,
     primary key (order_return_id),

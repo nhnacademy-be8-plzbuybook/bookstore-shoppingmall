@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.command.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
 import com.nhnacademy.book.order.entity.OrderReturn;
 import com.nhnacademy.book.order.entity.Orders;
@@ -35,16 +36,11 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     @Override
     public String requestOrderReturn(String orderId, OrderReturnRequestDto returnRequest) {
         // 반품요청 조건 확인
-        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
         validateOrderOrderForReturning(order);
 
         //주문반품 저장
-        OrderReturn orderReturn = OrderReturn.builder()
-                .reason(returnRequest.getReason())
-                .requestedAt(LocalDateTime.now())
-                .order(order)
-                .build();
-        orderReturnRepository.save(orderReturn);
+        orderReturnRepository.save(returnRequest.toEntity(order));
 
         // 주문상태변경
         order.updateOrderStatus(OrderStatus.RETURN_REQUESTED);
@@ -74,6 +70,13 @@ public class OrderReturningServiceImpl implements OrderReturningService {
         // 주문반품 테이블 업데이트
         orderReturn.setCompletedAt(LocalDateTime.now());
         return orderId;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public OrderReturnDto getByTrackingNumber(String trackingNumber) {
+        return orderReturnRepository.findByTrackingNumber(trackingNumber)
+                .orElseThrow(() -> new NotFoundException("주문반품정보를 찾을 수 없습니다."));
     }
 
     private void validateOrderOrderForReturning(Orders order) {

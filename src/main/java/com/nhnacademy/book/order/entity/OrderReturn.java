@@ -21,6 +21,9 @@ public class OrderReturn {
     @Column(length = 500, nullable = false)
     private String reason;
 
+    @Column(length = 30, unique = true, nullable = false)
+    private String trackingNumber;
+
     @Column(nullable = false)
     private LocalDateTime requestedAt;
 
@@ -32,9 +35,10 @@ public class OrderReturn {
     private Orders order;
 
     @Builder
-    public OrderReturn(Long id, String reason, LocalDateTime requestedAt, LocalDateTime completedAt, Orders order) {
+    public OrderReturn(Long id, String reason, String trackingNumber, LocalDateTime requestedAt, LocalDateTime completedAt, Orders order) {
         this.id = id;
         this.reason = reason;
+        this.trackingNumber = trackingNumber;
         this.requestedAt = requestedAt;
         this.completedAt = completedAt;
         this.order = order;
