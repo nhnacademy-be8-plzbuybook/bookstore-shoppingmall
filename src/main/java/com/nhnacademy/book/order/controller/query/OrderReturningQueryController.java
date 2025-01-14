@@ -25,6 +25,6 @@ public class OrderReturningQueryController {
     @GetMapping("/api/orders/order-returns/{tracking-number}")
     public ResponseEntity<OrderReturnDto> getOrderReturn(@PathVariable("tracking-number") String trackingNumber) {
         OrderReturnDto orderReturnDto = orderReturningService.getOrderReturnByTrackingNumber(trackingNumber);
-        return ResponseEntity.status(HttpStatus.FOUND).body(orderReturnDto);
+        return ResponseEntity.status(HttpStatus.OK).body(orderReturnDto);
     }
 }
