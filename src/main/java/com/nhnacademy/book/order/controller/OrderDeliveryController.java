@@ -1,7 +1,7 @@
 package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderDeliveryRegisterRequestDto;
-import com.nhnacademy.book.order.service.command.OrderDeliveryService;
+import com.nhnacademy.book.order.service.OrderDeliveryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

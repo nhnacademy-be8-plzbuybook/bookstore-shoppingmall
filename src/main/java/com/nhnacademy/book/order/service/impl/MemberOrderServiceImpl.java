@@ -1,15 +1,13 @@
-package com.nhnacademy.book.order.service.command.impl;
+package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.order.dto.CustomerOrderRequestDto;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
-import com.nhnacademy.book.order.service.command.CustomerOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

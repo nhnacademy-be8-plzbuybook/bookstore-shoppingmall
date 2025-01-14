@@ -1,12 +1,11 @@
-package com.nhnacademy.book.order.service.command.impl;
+package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
 import com.nhnacademy.book.order.dto.OrderStatusModifyRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
-import com.nhnacademy.book.order.service.command.OrderStatusService;
+import com.nhnacademy.book.order.service.OrderStatusService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;

@@ -2,7 +2,7 @@ package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
-import com.nhnacademy.book.order.service.command.OrderReturningService;
+import com.nhnacademy.book.order.service.OrderReturningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
