@@ -1,4 +1,4 @@
-package com.nhnacademy.book.order.service.impl;
+package com.nhnacademy.book.order.service.command.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
@@ -10,7 +10,7 @@ import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.order.service.OrderCacheService;
-import com.nhnacademy.book.order.service.OrderValidationService;
+import com.nhnacademy.book.order.service.command.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;

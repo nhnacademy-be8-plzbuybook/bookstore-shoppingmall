@@ -1,17 +1,19 @@
-package com.nhnacademy.book.order.service.impl;
+package com.nhnacademy.book.order.service.command.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.CustomerOrderRequestDto;
 import com.nhnacademy.book.order.dto.NonMemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.entity.NonMemberOrder;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.repository.NonMemberOrderRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
+import com.nhnacademy.book.order.service.command.CustomerOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class NonMemberOrderService {
+public class NonMemberOrderServiceImpl{
     private final NonMemberOrderRepository nonMemberOrderRepository;
     private final OrderRepository orderRepository;
 
@@ -21,7 +23,7 @@ public class NonMemberOrderService {
      * @param saveRequest 주문ID, 비회원주문 비밀번호가 포함된 DTo
      * @return 저장된 비회원주문 ID
      */
-    public Long addNonMemberOrder(NonMemberOrderSaveRequestDto saveRequest) {
+    public Long placeOrder(NonMemberOrderSaveRequestDto saveRequest) {
         if (saveRequest.getNonMemberOrderPassword().isBlank()) {
             throw new IllegalArgumentException("비회원 주문 비밀번호가 제대로 설정되지 않았습니다.");
         }

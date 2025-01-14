@@ -1,15 +1,10 @@
-package com.nhnacademy.book.order.service;
+package com.nhnacademy.book.order.service.command;
 
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidateCouponDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedOrderProductDto;
-import com.nhnacademy.book.order.dto.validatedDtos.ValidatedWrappingPaperDto;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface OrderValidationService {

@@ -1,6 +1,6 @@
 package com.nhnacademy.book.order.controller.command;
 
-import com.nhnacademy.book.order.service.OrderProcessService;
+import com.nhnacademy.book.order.service.command.OrderProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

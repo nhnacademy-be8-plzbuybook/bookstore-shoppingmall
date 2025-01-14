@@ -1,4 +1,4 @@
-package com.nhnacademy.book.order.service.impl;
+package com.nhnacademy.book.order.service.command.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderDeliveryRegisterRequestDto;
