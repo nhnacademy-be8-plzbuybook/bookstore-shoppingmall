@@ -26,7 +26,7 @@ public class OrderStatusController {
      *
      * @return
      */
-    @GetMapping("/api/orders/order-status")
+    @GetMapping("/order-status")
     public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
         List<OrderStatus> orderStatuses = List.of(OrderStatus.values());
         return ResponseEntity.ok(orderStatuses);
