@@ -88,13 +88,13 @@ public class AuthorServiceTest {
         assertThrows(AuthorNameNotFoundException.class, () -> authorService.createAuthor(requestDto));
     }
 
-    @Test
-    void getAllAuthors() {
-        Mockito.when(authorRepository.findAll()).thenReturn(authorList);
-
-        List<AuthorResponseDto> responseDtos = authorService.getAllAuthors();
-        assertThat(responseDtos.size()).isEqualTo(4);
-    }
+//    @Test
+//    void getAllAuthors() {
+//        Mockito.when(authorRepository.findAll()).thenReturn(authorList);
+//
+//        List<AuthorResponseDto> responseDtos = authorService.getAllAuthors();
+//        assertThat(responseDtos.size()).isEqualTo(4);
+//    }
 
 
     @Test

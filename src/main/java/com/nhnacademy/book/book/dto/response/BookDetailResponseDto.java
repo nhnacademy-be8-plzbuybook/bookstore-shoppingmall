@@ -98,20 +98,20 @@ public class BookDetailResponseDto {
         this.likeCount = likeCount;
     }
 
-    public BookDetailResponseDto(Long bookId, String bookTitle,
-                                 String bookIndex, String bookDescription,
-                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
-                                 Integer sellingBookStock, Boolean sellingBookPackageable,
-                                 String bookIsbn13, Publisher publisher,
-                                 List<String> categories, String imageUrl) {
-    }
-
-    public BookDetailResponseDto(Long bookId, String bookTitle,
-                                 String bookIndex, String bookDescription,
-                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
-                                 Integer sellingBookStock, Boolean sellingBookPackageable,
-                                 String bookIsbn13, String publisherName, List<String> categories,
-                                 String imageUrl) {
-    }
+//    public BookDetailResponseDto(Long bookId, String bookTitle,
+//                                 String bookIndex, String bookDescription,
+//                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
+//                                 Integer sellingBookStock, Boolean sellingBookPackageable,
+//                                 String bookIsbn13, Publisher publisher,
+//                                 List<String> categories, String imageUrl) {
+//    }
+//
+//    public BookDetailResponseDto(Long bookId, String bookTitle,
+//                                 String bookIndex, String bookDescription,
+//                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
+//                                 Integer sellingBookStock, Boolean sellingBookPackageable,
+//                                 String bookIsbn13, String publisherName, List<String> categories,
+//                                 String imageUrl) {
+//    }
 }
 
