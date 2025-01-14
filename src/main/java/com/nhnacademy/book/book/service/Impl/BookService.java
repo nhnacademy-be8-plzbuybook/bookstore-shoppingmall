@@ -131,9 +131,12 @@ public class BookService {
         if(Objects.isNull(bookRegisterDto)){
             throw new BookNotFoundException("등록 할 책 정보 못 찾음");
         }
+        // 출판사 조회 및 필요시 등록
         Publisher publisher = publisherRepository.findByPublisherName(bookRegisterDto.getPublisher())
-                .orElseThrow(() -> new PublisherNotFoundException("존재하지 않는 출판사입니다."));
-
+                .orElseGet(() -> {
+                    Publisher newPublisher = new Publisher(bookRegisterDto.getPublisher());
+                    return publisherRepository.save(newPublisher); // 새 출판사 저장
+                });
 
 
 

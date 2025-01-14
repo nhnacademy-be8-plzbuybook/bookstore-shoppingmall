@@ -18,6 +18,9 @@ public class ApiService {
     @Value("${aladin.api.url}")
     private String aladinApiUrl;
 
+    @Value("${aladin.api.url2}")
+    private String aladinApiUrl2;
+
     private final RestTemplate restTemplate;
     private final MappingService mappingService;
 
@@ -116,12 +119,14 @@ public class ApiService {
      *
      * @param itemIds ItemId 리스트
      * @return 저장 실패한 ItemId 리스트
+     * 이거 고쳐야해
      */
     @Transactional
     public List<String> saveBooksByItemIds(List<String> itemIds) {
         List<String> failedItemIds = new ArrayList<>();
-        String itemIdUrlTemplate = aladinApiUrl + "&SearchTarget=Book&QueryType=ItemNewAll&itemIdType=ItemId&ItemId=%s";
-
+        String itemIdUrlTemplate = aladinApiUrl2 + "&itemIdType=ISBN&ItemId=%s";
+                //"&itemIdType=ISBN&QueryType=ItemNewAll&itemIdType=ItemId&ItemId=%s";
+//"https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList";
         for (String itemId : itemIds) {
             try {
                 String url = String.format(itemIdUrlTemplate, itemId);
@@ -168,7 +173,10 @@ public class ApiService {
         List<String> failedIsbns = new ArrayList<>();
 
         // API 기본 URL (검색용)
-        String searchUrlTemplate = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbfkqlaus1419001&Query=%s&QueryType=ISBN&MaxResults=1&SearchTarget=Book&output=js&Version=20131101";
+        String searchUrlTemplate = "https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList";
+                //"http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Query=%s&QueryType=ISBN&MaxResults=1&SearchTarget=Book&output=js&Version=20131101";
+//https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=9788994492032&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
+        //https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
 
         try {
             for (String isbn : isbns) {

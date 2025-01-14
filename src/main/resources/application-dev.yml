@@ -102,3 +102,5 @@ eureka:
 aladin:
   api:
     url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101
+    url2: https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101&OptResult=ebookList,usedList,reviewLis
+
