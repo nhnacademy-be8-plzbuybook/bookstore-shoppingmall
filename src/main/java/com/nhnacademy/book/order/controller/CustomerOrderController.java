@@ -1,4 +1,4 @@
-package com.nhnacademy.book.order.controller.command;
+package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
