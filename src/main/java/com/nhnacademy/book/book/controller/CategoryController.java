@@ -26,16 +26,6 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-//
-//    @GetMapping
-//    public ResponseEntity<List<CategorySimpleResponseDto>> getSimpleCategories(
-//            @RequestParam(required = false) String keyword) {
-//        if (keyword != null && !keyword.isEmpty()) {
-//            List<CategorySimpleResponseDto> categories = categoryService.searchCategoriesByKeyword(keyword);
-//            return ResponseEntity.ok(categories);
-//        }
-//        return ResponseEntity.ok(categoryService.findAllCategories());
-//    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CategorySimpleResponseDto>> getSimpleCategories(
