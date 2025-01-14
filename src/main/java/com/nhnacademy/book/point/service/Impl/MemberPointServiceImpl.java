@@ -1,10 +1,17 @@
 package com.nhnacademy.book.point.service.Impl;
 
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.payment.entity.Payment;
 import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
@@ -14,6 +21,8 @@ import com.nhnacademy.book.point.dto.MemberPointListResponseDto;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
+import com.nhnacademy.book.review.domain.Review;
+import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +46,8 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final PointConditionRepository pointConditionRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
-    private final MemberGradeRepository memberGradeRepository;
     private final PaymentRepository paymentRepository;
+    private final OrderProductRepository orderProductRepository;
 
     // 회원 가입시
     @Override
@@ -59,91 +68,122 @@ public class MemberPointServiceImpl implements MemberPointService {
         addMemberPoint(requestDto);
     }
 
-    //    // 도서 구매시
+    // 도서구매시
+    public void addPurchasePoint(Member member, OrderRequestDto orderRequest, BigDecimal paymentPrice) {
+        PointCondition pointCondition = pointConditionRepository.findByName("BOOK_PURCHASE")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        BigDecimal basePercentage = pointCondition.getConditionPercentage();
+
+        BigDecimal gradePercentage = switch (member.getMemberGrade().getMemberGradeName()) {
+            case "NORMAL" -> new BigDecimal("0.01");
+            case "ROYAL" -> new BigDecimal("0.02");
+            case "GOLD" -> new BigDecimal("0.03");
+            case "PLATINUM" -> new BigDecimal("0.03");
+            default -> throw new MemberGradeNotFoundException("회원 등급이 존재하지 않습니다.");
+        };
+        BigDecimal totalPercentage = basePercentage.add(gradePercentage);
+
+        BigDecimal packagingFee = orderRequest.getOrderProducts().stream()
+                .map(product -> product.getWrapping() != null ? product.getWrapping().getPrice() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal accumulatedAmount = paymentPrice.subtract(packagingFee);
+
+        BigDecimal totalPoints = accumulatedAmount.multiply(totalPercentage);
+
+        // 포인트 적립 기록 추가
+        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
+                member.getMemberId(),
+                null,
+                "BOOK_PURCHASE",
+                totalPoints.intValue(),
+                totalPercentage
+        );
+        addMemberPoint(requestDto);
+    }
+
+
+
+    @Override
+    public void addReviewPoint(Review review) {
+        PointCondition reviewCondition = pointConditionRepository.findByName("REVIEW")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        PointCondition photoReviewCondition = pointConditionRepository.findByName("PHOTO_REVIEW")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        String pointConditionName;
+        int pointsToAdd;
+
+        // 사진 여부에 따라 포인트 조건 설정
+        if (reviewImageRepository.existsByReview_ReviewId(review.getReviewId())) {
+            pointConditionName = "PHOTO_REVIEW";
+            pointsToAdd = photoReviewCondition.getConditionPoint();
+        } else {
+            pointConditionName = "REVIEW";
+            pointsToAdd = reviewCondition.getConditionPoint();
+        }
+
+        // 포인트 기록 추가
+        addMemberPoint(new MemberPointAddRequestDto(
+                review.getMember().getMemberId(),
+                review.getReviewId(),
+                pointConditionName,
+                pointsToAdd,
+                null
+        ));
+    }
+
+
 //    @Override
-//    public void addBookPurchasePoint(Member member, Long orderId, Integer orderStatus) {
-//        if (orderStatus != 5) { // 5는 구매확정 상태
-//            throw new IllegalStateException("구매확정 이후에만 포인트가 적립됩니다.");
-//        }
-//
-//        // 결제 정보를 Payment 테이블에서 가져오는 부분 (결제 금액을 기준으로 포인트 계산)
-//        Payment payment = paymentRepository.findByOrderId(orderId)
-//                .orElseThrow(() -> new NotFoundException("결제 정보가 존재하지 않습니다"));
-//
-//        // 결제 금액을 가져옴 (실제 결제 금액을 기준으로 포인트 계산)
-//        BigDecimal paymentPrice = payment.getPrice();
-//
-//        PointCondition pointCondition = pointConditionRepository.findByName(PointConditionName.BOOK_PURCHASE)
+//    public void updateReviewPoint(Review review) {
+//        PointCondition reviewCondition = pointConditionRepository.findByName("REVIEW")
+//                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+//        PointCondition photoReviewCondition = pointConditionRepository.findByName("PHOTO_REVIEW")
 //                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
 //
-//        // 기본 포인트 5%
-//        BigDecimal conditionPercentage = pointCondition.getConditionPercentage();
-//        BigDecimal pointsToAdd = paymentPrice.multiply(conditionPercentage);
-//
-//        BigDecimal gradePercentage = BigDecimal.ZERO;
-//
-//        switch (member.getMemberGrade().getMemberGradeName()) {
-//            case "NORMAL":
-//                gradePercentage = new BigDecimal("0.01");  // 일반 등급 1%
-//                break;
-//            case "ROYAL":
-//                gradePercentage = new BigDecimal("0.02");  // 로얄 등급 2%
-//                break;
-//            case "GOLD":
-//                gradePercentage = new BigDecimal("0.03");  // 골드 등급 3%
-//                break;
-//            case "PLATINUM":
-//                gradePercentage = new BigDecimal("0.03");  // 플래티넘 등급 3%
-//                break;
-//            default:
-//                throw new IllegalStateException("알 수 없는 등급입니다.");
-//        }
+//        boolean hadImages = reviewImageRepository.existsByReview_ReviewId(review.getReviewId());
 //
 //
-//        // 등급에 따른 포인트 추가
-//        pointsToAdd = pointsToAdd.add(paymentPrice.multiply(gradePercentage));
-//
-//        // 포인트 적립을 위한 MemberPointAddRequestDto 생성
-//        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
-//                member.getMemberId(),
-//                null,
-//                PointConditionName.BOOK_PURCHASE,
-//                pointsToAdd.intValue(),
-//                conditionPercentage
-//        );
-//        addMemberPoint(requestDto);
-//
-//    }
-//
-//
-//    // 리뷰 작성시
-//    @Override
-//    public void addReviewPoint(Review review) {
-//        PointCondition pointCondition = pointConditionRepository.findByName(PointConditionName.REVIEW)
-//                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
-//
-//        BigDecimal pointsToAdd = new BigDecimal(pointCondition.getConditionPoint()); // 기본 200
-//
-//        // 이미지 여부 확인
-//        if (reviewImageRepository.existsByReview_ReviewId(review.getReviewId())) {
-//            PointCondition photoReviewCondition = pointConditionRepository.findByName(PointConditionName.PHOTO_REVIEW)
-//                    .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
-//
-//            pointsToAdd = pointsToAdd.add(new BigDecimal(photoReviewCondition.getConditionPoint())); // 추가 300
+//        if (hadImages) {
+//            addMemberPoint(new MemberPointAddRequestDto(
+//                    review.getMember().getMemberId(),
+//                    review.getReviewId(),
+//                    "PHOTO_ADD",
+//                    -reviewCondition.getConditionPoint(),
+//                    null
+//            ));
+//            addMemberPoint(new MemberPointAddRequestDto(
+//                    review.getMember().getMemberId(),
+//                    review.getReviewId(),
+//                    "PHOTO_REVIEW",
+//                    photoReviewCondition.getConditionPoint(),
+//                    null
+//            ));
 //
 //        }
 //
-//        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
-//                review.getMember().getMemberId(),
-//                review.getReviewId(),
-//                PointConditionName.REVIEW,
-//                pointsToAdd.intValue(),
-//                null
-//        );
-//        addMemberPoint(requestDto);
-//
+//        if (!hadImages) {
+//            addMemberPoint(new MemberPointAddRequestDto(
+//                    review.getMember().getMemberId(),
+//                    review.getReviewId(),
+//                    "PHOTO_REMOVE",
+//                    -photoReviewCondition.getConditionPoint(),
+//                    null
+//            ));
+//            addMemberPoint(new MemberPointAddRequestDto(
+//                    review.getMember().getMemberId(),
+//                    review.getReviewId(),
+//                    "REVIEW",
+//                    reviewCondition.getConditionPoint(),
+//                    null
+//            ));
+//        }
 //    }
-//
+
+
+
+
+
     @Override
     public MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())

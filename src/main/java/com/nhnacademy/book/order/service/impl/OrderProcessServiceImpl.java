@@ -4,6 +4,9 @@ import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.dto.NonMemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
@@ -60,6 +63,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderReturnRepository orderReturnRepository;
     private final SellingBookRepository sellingBookRepository;
     private final MemberPointService memberPointService;
+    private final MemberRepository memberRepository;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -111,10 +115,10 @@ public class OrderProcessServiceImpl implements OrderProcessService {
                                 : null,
                         usedPoint);
 
-//                order.setUsedPoint(usedPoint);
-//
-//                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
-//                order.setOrderPrice(finalPrice);
+                order.setUsedPoint(usedPoint);
+
+                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
+                order.setOrderPrice(finalPrice);
             }
 
 
@@ -122,6 +126,14 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
         addOrderByMemberType(orderId, orderCache);
+
+        if (orderCache instanceof MemberOrderRequestDto memberOrderCache) {
+            Member member = memberRepository.findByEmail(memberOrderCache.getMemberEmail())
+                    .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
+
+            BigDecimal orderTotalPrice = order.getOrderPrice();
+            memberPointService.addPurchasePoint(member, orderCache, orderTotalPrice);
+        }
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);

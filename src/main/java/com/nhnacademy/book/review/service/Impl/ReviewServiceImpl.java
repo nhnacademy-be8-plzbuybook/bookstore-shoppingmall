@@ -6,9 +6,11 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
+import com.nhnacademy.book.order.service.impl.MemberOrderService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
@@ -41,6 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final MemberOrderRepository memberOrderRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final ObjectStorageService objectStorageService;
+    private final MemberPointService memberPointService;
 
     @Override
     public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto, List<String> imageUrls) {
@@ -91,6 +94,8 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewImageRepository.save(reviewImage);
             }
         }
+
+        memberPointService.addReviewPoint(savedReview);
 
         return new ReviewResponseDto(
                 savedReview.getReviewId(),
@@ -171,5 +176,9 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         reviewRepository.save(review);
+
+//        memberPointService.updateReviewPoint(review);
+
+
     }
 }
