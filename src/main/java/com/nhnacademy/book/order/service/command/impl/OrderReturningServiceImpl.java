@@ -11,13 +11,16 @@ import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.repository.OrderReturnRepository;
 import com.nhnacademy.book.order.service.command.OrderDeliveryService;
 import com.nhnacademy.book.order.service.command.OrderReturningService;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -46,6 +49,8 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
         // 주문상태변경
         order.updateOrderStatus(OrderStatus.RETURN_REQUESTED);
+        // 주문상태변경
+        order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.RETURN_REQUESTED));
         return order.getId();
     }
 
@@ -83,11 +88,16 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<OrderReturnDto> getAllOrderReturns(Pageable pageable) {
+    public Page<OrderReturnDto> getAllOrderReturns(String trackingNumber, Pageable pageable) {
+
+        if (trackingNumber != null && !trackingNumber.isBlank()) {
+            OrderReturnDto orderReturn = orderReturnRepository.findByTrackingNumber(trackingNumber)
+                    .orElseThrow(() -> new NotFoundException("주문반품요청이 없습니다."));
+            return new PageImpl<>(List.of(orderReturn), pageable, 1);
+        }
         Page<OrderReturn> orderReturnPage = orderReturnRepository.findAll(pageable);
         return orderReturnPage.map(OrderReturnDto::new);
     }
-
 
 
     private void validateOrderOrderForReturning(Orders order) {

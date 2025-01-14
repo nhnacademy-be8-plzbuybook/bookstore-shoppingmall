@@ -17,17 +17,18 @@ import org.springframework.web.bind.annotation.*;
 public class OrderReturningController {
     private final OrderReturningService orderReturningService;
 
-    @GetMapping("/api/orders/order-returns")
-    public ResponseEntity<Page<OrderReturnDto>> getOrderReturns(Pageable pageable) {
-        Page<OrderReturnDto> orderReturnDtoPage = orderReturningService.getAllOrderReturns(pageable);
+    @GetMapping("/order-returns")
+    public ResponseEntity<Page<OrderReturnDto>> getOrderReturns(@RequestParam(value = "tracking-number", required = false) String trackingNumber,
+                                                                Pageable pageable) {
+        Page<OrderReturnDto> orderReturnDtoPage = orderReturningService.getAllOrderReturns(trackingNumber, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(orderReturnDtoPage);
     }
 
-    @GetMapping("/api/orders/order-returns/{tracking-number}")
-    public ResponseEntity<OrderReturnDto> getOrderReturn(@PathVariable("tracking-number") String trackingNumber) {
-        OrderReturnDto orderReturnDto = orderReturningService.getOrderReturnByTrackingNumber(trackingNumber);
-        return ResponseEntity.status(HttpStatus.OK).body(orderReturnDto);
-    }
+//    @GetMapping("/order-returns/{tracking-number}")
+//    public ResponseEntity<OrderReturnDto> getOrderReturn(@PathVariable("tracking-number") String trackingNumber) {
+//        OrderReturnDto orderReturnDto = orderReturningService.getOrderReturnByTrackingNumber(trackingNumber);
+//        return ResponseEntity.status(HttpStatus.OK).body(orderReturnDto);
+//    }
 
 
 
