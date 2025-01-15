@@ -21,6 +21,6 @@ public class MemberOrderRequestDto extends OrderRequestDto {
     public MemberOrderRequestDto(@Nullable LocalDate deliveryWishDate, Integer usedPoint,
                                  OrderDeliveryAddressDto orderDeliveryAddressDto, List<OrderProductRequestDto> orderProducts,
                                  BigDecimal deliveryFee, BigDecimal orderPrice) {
-        super(OrderType.MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddressDto, deliveryFee, orderPrice);
+        super(OrderType.MEMBER_ORDER, deliveryWishDate, usedPoint, orderProducts, orderDeliveryAddressDto, deliveryFee, orderPrice, null, null);
     }
 }

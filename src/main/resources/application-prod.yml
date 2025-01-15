@@ -44,6 +44,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect  # MySQL용 Hibernate Dialect
+    open-in-view: false # osiv 비활성화
 
 app:
   skm:

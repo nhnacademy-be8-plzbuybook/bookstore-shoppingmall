@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,4 +27,7 @@ public class OrderRequestDto {
     private BigDecimal deliveryFee;
     @NotNull
     private BigDecimal orderPrice;
+    @Setter
+    private String memberEmail;
+    private String nonMemberPassword;
 }

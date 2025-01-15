@@ -117,10 +117,11 @@ create table order_cancel
     foreign key (oc_order_id) references orders (order_id)
 );
 
+
 create table delivery_fee_policy
 (
     delivery_fee_policy_id  bigint         not null auto_increment,
-    name                    varchar(100)   not null,
+    name                    varchar(100)   not null unique ,
     default_delivery_fee    decimal(10, 2) not null,
     free_delivery_threshold decimal(10, 2) not null,
     primary key (delivery_fee_policy_id)
@@ -146,4 +147,13 @@ create table order_return
     completed_at    datetime     null,
     primary key (order_return_id),
     foreign key (or_order_id) references orders (order_id) on delete restrict
-)
+);
+
+create table order_product_coupon (
+    order_product_coupon_id bigint not null  auto_increment,
+    opc_order_product_id bigint not null ,
+    member_coupon_id bigint not null ,
+    discount decimal(10,2) not null ,
+    primary key (order_product_coupon_id),
+    foreign key (opc_order_product_id) references order_product(order_product_id)
+);
