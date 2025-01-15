@@ -13,11 +13,9 @@ public class MemberStatusScheduler {
 
     private final MemberService memberService;
 
-    @Scheduled(cron = "0/30 02 16 * * ?")
+    @Scheduled(cron = "0 0 0 * * * ")
     public void updateDormantStatusDaily() {
-        log.info("스케쥴러 실행 시작");
         memberService.updateDormantStatus();
-        log.info("스케줄러 실행 완료");
-}
+    }
 
 }
