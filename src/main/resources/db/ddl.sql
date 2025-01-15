@@ -117,10 +117,11 @@ create table order_cancel
     foreign key (oc_order_id) references orders (order_id)
 );
 
+
 create table delivery_fee_policy
 (
     delivery_fee_policy_id  bigint         not null auto_increment,
-    name                    varchar(100)   not null,
+    name                    varchar(100)   not null unique ,
     default_delivery_fee    decimal(10, 2) not null,
     free_delivery_threshold decimal(10, 2) not null,
     primary key (delivery_fee_policy_id)
