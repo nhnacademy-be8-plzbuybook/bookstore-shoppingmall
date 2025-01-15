@@ -23,6 +23,8 @@ import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
+import com.nhnacademy.book.review.domain.ReviewImage;
+import com.nhnacademy.book.review.exception.ReviewNotFoundException;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
 import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +100,70 @@ public class MemberPointServiceImpl implements MemberPointService {
         addMemberPoint(requestDto);
     }
 
+
+    @Override
+    public void addReviewPoint(Review review) {
+        PointCondition reviewCondition = pointConditionRepository.findByName("REVIEW")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        PointCondition photoReviewCondition = pointConditionRepository.findByName("PHOTO_REVIEW")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        String pointConditionName;
+        int pointsToAdd;
+
+        // 사진 여부에 따라 포인트 조건 설정
+        if (reviewImageRepository.existsByReview_ReviewId(review.getReviewId())) {
+            pointConditionName = "PHOTO_REVIEW";
+            pointsToAdd = photoReviewCondition.getConditionPoint();
+        } else {
+            pointConditionName = "REVIEW";
+            pointsToAdd = reviewCondition.getConditionPoint();
+        }
+
+        // 포인트 기록 추가
+        addMemberPoint(new MemberPointAddRequestDto(
+                review.getMember().getMemberId(),
+                review.getReviewId(),
+                pointConditionName,
+                pointsToAdd,
+                null
+        ));
+    }
+
+    @Override
+    public void updatePointForReview(Review review, boolean isPhotoAdded) {
+        PointCondition photoReview = pointConditionRepository.findByName("PHOTO_ADD")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        PointCondition photoRemove = pointConditionRepository.findByName("PHOTO_REMOVE")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        if (isPhotoAdded) {
+            // 사진 추가 시 포인트 지급
+            if (!review.isPhotoPointGiven()) {
+                addMemberPoint(new MemberPointAddRequestDto(
+                        review.getMember().getMemberId(),
+                        review.getReviewId(),
+                        photoReview.getName(),
+                        photoReview.getConditionPoint(),
+                        null
+                ));
+                //사진 추가 포인트 지급함
+                review.setPhotoPointGiven(true);
+            }
+        } else {
+            // 사진 삭제 시 포인트 차감
+            if (review.isPhotoPointGiven()) {
+                addMemberPoint(new MemberPointAddRequestDto(
+                        review.getMember().getMemberId(),
+                        review.getReviewId(),
+                        photoRemove.getName(),
+                        - photoRemove.getConditionPoint(),
+                        null
+                ));
+                review.setPhotoPointGiven(false); // 포인트 지급 상태 업데이트
+            }
+        }
+    }
 
     @Override
     public MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto) {

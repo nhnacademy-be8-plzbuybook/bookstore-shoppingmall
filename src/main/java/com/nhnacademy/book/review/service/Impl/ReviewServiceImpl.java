@@ -80,7 +80,8 @@ public class ReviewServiceImpl implements ReviewService {
                 member,
                 confirmedOrderProduct,
                 requestDto.getScore(),
-                requestDto.getContent()
+                requestDto.getContent(),
+                false
         );
 
         Review savedReview = reviewRepository.save(review);
@@ -91,10 +92,12 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewImage.setReview(savedReview);
                 String id = objectStorageService.getUrl(imageUrl);
                 reviewImage.setReviewImageUrl(id);
+                review.setPhotoPointGiven(true);
                 reviewImageRepository.save(reviewImage);
             }
         }
 
+        memberPointService.addReviewPoint(review);
         return new ReviewResponseDto(
                 savedReview.getReviewId(),
                 savedReview.getMember().getMemberId(),
@@ -163,6 +166,8 @@ public class ReviewServiceImpl implements ReviewService {
         //기존 이미지 삭제
         reviewImageRepository.deleteByReview(review);
 
+        boolean isPhotoAdded = false;
+
         if(imageUrls != null && !imageUrls.isEmpty()){
             for (String imageUrl : imageUrls) {
                 ReviewImage reviewImage = new ReviewImage();
@@ -171,8 +176,14 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewImage.setReviewImageUrl(id);
                 reviewImageRepository.save(reviewImage);
             }
+            isPhotoAdded = true;
         }
 
+        if(isPhotoAdded && !review.isPhotoPointGiven()){
+            memberPointService.updatePointForReview(review, true);
+        } else if(!isPhotoAdded && review.isPhotoPointGiven()){
+            memberPointService.updatePointForReview(review, false);
+        }
         reviewRepository.save(review);
 
 
