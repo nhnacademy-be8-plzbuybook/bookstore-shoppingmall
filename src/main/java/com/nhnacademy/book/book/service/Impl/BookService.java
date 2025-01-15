@@ -2,6 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.*;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
