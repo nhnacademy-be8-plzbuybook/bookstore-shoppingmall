@@ -12,6 +12,7 @@ import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
 import com.nhnacademy.book.member.domain.service.MemberService;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -45,6 +48,7 @@ public class MemberServiceImpl implements MemberService {
     private final AuthRepository authRepository;
     private final MemberCertificationRepository memberCertificationRepository;
     private final Clock clock;
+    private final OrderProductRepository orderProductRepository;
 
     //회원 생성
     @Override
@@ -478,5 +482,50 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return memberId;
+    }
+
+    @Override
+    public void updateMemberGrades() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+
+        List<Object[]> totalAmounts = orderProductRepository.findTotalAmountByMemberAndRecentOrders(threeMonthsAgo);
+
+        for(Object[] totalAmount : totalAmounts) {
+            Long memberId = (Long) totalAmount[0];
+            BigDecimal total = (BigDecimal) totalAmount[1];
+
+            String newGrade = determineMemberGrade(total);
+
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없다!"));
+
+            MemberGrade currentGrade = member.getMemberGrade();
+
+            if(currentGrade == null || !currentGrade.getMemberGradeName().equals(newGrade)) {
+                Optional<MemberGrade> newGradeEntity = memberGradeRepository.findByMemberGradeName(newGrade);
+                if (newGradeEntity.isEmpty()){
+                    throw new MemberGradeNotFoundException("유효하지 않는 등급!");
+                }
+
+                currentGrade = newGradeEntity.get();
+                currentGrade.setGradeChange(LocalDateTime.now());
+
+                member.setMemberGrade(currentGrade);
+                memberRepository.save(member);
+
+            }
+        }
+    }
+
+    private String determineMemberGrade(BigDecimal total) {
+        if (total.compareTo(BigDecimal.valueOf(300_000)) >= 0){
+            return "PLATINUM";
+        } else if(total.compareTo(BigDecimal.valueOf(200_000)) >= 0){
+            return "GOLD";
+        } else if(total.compareTo(BigDecimal.valueOf(100_000)) >= 0){
+            return "ROYAL";
+        } else {
+            return "NORMAL";
+        }
     }
 }

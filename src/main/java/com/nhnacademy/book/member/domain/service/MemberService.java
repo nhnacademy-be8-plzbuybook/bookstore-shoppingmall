@@ -19,4 +19,5 @@ public interface MemberService {
     void updateDormantStatus();
     void updateMemberByAdmin(String email, MemberModifyByAdminRequestDto memberModifyByAdminRequestDto);
     Long getMemberIdByEmail(String email);
+    void updateMemberGrades();
 }
