@@ -54,7 +54,7 @@ public class PublisherControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(publisherRegisterDto)))
                 .andDo(print()) // 로그 출력
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         Mockito.verify(publisherService, Mockito.times(1)).createPublisher(any(PublisherRegisterDto.class));
 
@@ -67,7 +67,7 @@ public class PublisherControllerTest {
 
         mockMvc.perform(delete("/api/publishers/{publisherId}",1L))
                 .andDo(print()) // 로그 출력
-                .andExpect(status().isOk()); // HTTP 200 응답 확인
+                .andExpect(status().isNoContent()); // HTTP 200 응답 확인
 
 
         Mockito.verify(publisherService, Mockito.times(1)).deletePublisher(1L);
