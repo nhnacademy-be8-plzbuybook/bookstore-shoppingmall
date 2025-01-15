@@ -44,13 +44,18 @@ public class Review {
     @Column(name = "modify_date")
     private LocalDateTime modifiedDate;
 
+    @Column(name = "is_photo_point_given")
+    private boolean isPhotoPointGiven;
+
+
 //    //리뷰 작성용
-    public Review(Member member, OrderProduct orderProduct, Integer score, String content) {
+    public Review(Member member, OrderProduct orderProduct, Integer score, String content, boolean isPhotoPointGiven) {
         this.member = member;
         this.orderProduct = orderProduct;
         this.score = score;
         this.content = content;
         this.writeDate = LocalDateTime.now();
+        this.isPhotoPointGiven = isPhotoPointGiven;
     }
 //
 //    //리뷰 수정용
