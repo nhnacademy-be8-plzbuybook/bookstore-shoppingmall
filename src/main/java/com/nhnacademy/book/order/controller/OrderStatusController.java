@@ -1,7 +1,8 @@
-package com.nhnacademy.book.order.controller.command;
+package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
 import com.nhnacademy.book.order.dto.OrderStatusModifyRequestDto;
+import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +10,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.nhnacademy.book.order.enums.OrderStatus.DELIVERED;
 
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @RestController
-public class OrderStatusCommandController {
+public class OrderStatusController {
     private final OrderProductService orderProductService;
     private final OrderService orderService;
+
+    /**
+     * 주문상태 목록조회
+     *
+     * @return
+     */
+    @GetMapping("/order-status")
+    public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
+        List<OrderStatus> orderStatuses = List.of(OrderStatus.values());
+        return ResponseEntity.ok(orderStatuses);
+    }
 
     /**
      * 주문상태 수정

@@ -1,7 +1,7 @@
-package com.nhnacademy.book.order.controller.command;
+package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
-import com.nhnacademy.book.order.service.command.OrderCancellationService;
+import com.nhnacademy.book.order.service.OrderCancellationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
