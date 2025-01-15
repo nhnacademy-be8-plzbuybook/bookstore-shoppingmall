@@ -55,20 +55,6 @@ public class TagService {
         } else throw new TagNotFoundException("tag not found");
     }
 
-//    public List<TagResponseDto> searchTagsByKeyword(String keyword) {
-//        List<Tag> tags = tagRepository.findByTagNameContaining(keyword);
-//        return tags.stream()
-//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<TagResponseDto> findAll() {
-//        List<Tag> tags = tagRepository.findAll();
-//        return tags.stream()
-//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-//                .collect(Collectors.toList());
-//    }
-
 
     public Page<TagResponseDto> searchTagsByKeyword(String keyword, Pageable pageable) {
         Page<Tag> tagsPage = tagRepository.findByTagNameContaining(keyword, pageable);
@@ -97,17 +83,6 @@ public class TagService {
         return tag.getTagName();
     }
 
-
-
-
-
-
-    public TagResponseDto toTagResponseDto(Tag tag) {
-        return new TagResponseDto(
-                tag.getTagId(),
-                tag.getTagName()
-        );
-    }
 
 
 

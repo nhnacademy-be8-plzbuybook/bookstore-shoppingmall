@@ -7,6 +7,7 @@ import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +22,12 @@ public class PublisherController {
     @PostMapping
     public ResponseEntity<Void> createPublisher(@RequestBody PublisherRegisterDto publisherRegisterDto) {
         publisherService.createPublisher(publisherRegisterDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @DeleteMapping("/{publisherId}")
     public ResponseEntity<Void> deletePublisherById(@PathVariable Long publisherId) {
         publisherService.deletePublisher(publisherId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{publisherId}")
@@ -34,10 +35,6 @@ public class PublisherController {
         return ResponseEntity.ok(publisherService.findPublisherById(publisherId));
     }
 
-    @GetMapping("/search/{publisherId}")
-    public ResponseEntity<PublisherResponseDto> searchPublisher(@PathVariable Long publisherId) {
-        return ResponseEntity.ok(publisherService.getPublisherFromElastic(publisherId));
-    }
 
 
 }

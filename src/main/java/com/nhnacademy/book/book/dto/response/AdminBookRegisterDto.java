@@ -17,7 +17,7 @@ public class AdminBookRegisterDto {
     private LocalDate bookPubDate; // 출판일
     private String publisher; // 출판사
     private String bookIsbn13; // ISBN
-    private BigDecimal standardBookPrice; // 판매가
+    private BigDecimal standardBookPrice; // 정가
     private List<String> imageUrl; // 이미지 URL
     private List<CategorySimpleResponseDto> categories; // 카테고리 정보
     private List<AuthorResponseDto> authors; // 작가 정보
