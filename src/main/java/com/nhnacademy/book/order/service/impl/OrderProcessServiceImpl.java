@@ -107,20 +107,13 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // TODO: 쿠폰 사용처리
         }
 
-            // TODO: 포인트 사용처리
-            Integer usedPoint = orderCache.getUsedPoint();
-            if (usedPoint != null && usedPoint > 0) {
-                memberPointService.usedPoint(orderCache instanceof MemberOrderRequestDto
-                                ? ((MemberOrderRequestDto) orderCache).getMemberEmail()
-                                : null,
-                        usedPoint);
-
-                order.setUsedPoint(usedPoint);
-
-                BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
-                order.setOrderPrice(finalPrice);
-            }
-
+        // 포인트 사용처리
+        Integer usedPoint = orderCache.getUsedPoint();
+        BigDecimal finalPrice = order.getOrderPrice();
+        if (usedPoint != null && usedPoint > 0) {
+            memberPointService.usedPoint(((MemberOrderRequestDto) orderCache).getMemberEmail(), usedPoint);
+            finalPrice = finalPrice.subtract(BigDecimal.valueOf(usedPoint));
+        }
 
         // 배송지저장
         orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
@@ -131,8 +124,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             Member member = memberRepository.findByEmail(memberOrderCache.getMemberEmail())
                     .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-            BigDecimal orderTotalPrice = order.getOrderPrice();
-            memberPointService.addPurchasePoint(member, orderCache, orderTotalPrice);
+            memberPointService.addPurchasePoint(member, orderCache, finalPrice);
         }
 
         // 주문상태 "결제완료"로 변경
