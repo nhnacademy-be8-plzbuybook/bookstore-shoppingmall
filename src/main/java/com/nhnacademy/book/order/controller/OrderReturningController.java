@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.controller;
 
+import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
@@ -25,25 +26,25 @@ public class OrderReturningController {
         return ResponseEntity.status(HttpStatus.OK).body(orderReturnDtoPage);
     }
 
-//    @GetMapping("/order-returns/{tracking-number}")
-//    public ResponseEntity<OrderReturnDto> getOrderReturn(@PathVariable("tracking-number") String trackingNumber) {
-//        OrderReturnDto orderReturnDto = orderReturningService.getOrderReturnByTrackingNumber(trackingNumber);
-//        return ResponseEntity.status(HttpStatus.OK).body(orderReturnDto);
-//    }
-
-
-
     /**
      * 주문반품 요청
      *
      * @param orderId 반품할 주문 아이디
-     * @param refundRequest 주문반품요청 DTO
+     * @param orderProductReturnRequest 주문반품요청 DTO
      * @return
      */
-    @PostMapping("/{order-id}/return")
-    public ResponseEntity<?> requestReturnOrder(@PathVariable("order-id") String orderId,
-                                                @Valid @RequestBody OrderReturnRequestDto refundRequest) {
-        orderReturningService.requestOrderReturn(orderId, refundRequest);
+//    @PostMapping("/{order-id}/return")
+//    public ResponseEntity<?> requestReturnOrder(@PathVariable("order-id") String orderId,
+//                                                @Valid @RequestBody OrderReturnRequestDto refundRequest) {
+//        orderReturningService.requestOrderReturn(orderId, refundRequest);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+
+    @PostMapping("/{order-id}/order-products/{order-product-id}/return")
+    public ResponseEntity<?> requestReturnOrderProduct(@PathVariable("order-id") String orderId,
+                                                       @PathVariable("order-product-id") Long orderProductId,
+                                                       @Valid @RequestBody OrderProductReturnRequestDto orderProductReturnRequest) {
+        orderReturningService.requestOrderProductReturn(orderId, orderProductId, orderProductReturnRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -54,9 +55,16 @@ public class OrderReturningController {
      * @param orderId
      * @return
      */
-    @PostMapping("/{order-id}/return/complete")
-    public ResponseEntity<?> completeReturnOrder(@PathVariable("order-id") String orderId) {
-        orderReturningService.completeOrderReturn(orderId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+//    @PostMapping("/{order-id}/return/complete")
+//    public ResponseEntity<?> completeReturnOrder(@PathVariable("order-id") String orderId) {
+//        orderReturningService.completeOrderReturn(orderId);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
+
+    @PostMapping("/{order-id}/order-products/{order-product-id}/return/complete")
+    public ResponseEntity<?> completeReturnOrderProduct(@PathVariable("order-id") String orderId,
+                                                        @PathVariable("order-product-id") Long orderProductId) {
+        orderReturningService.completeOrderProductReturn(orderProductId);
+        return ResponseEntity.status(HttpStatus.OK).body(orderId);
     }
 }
