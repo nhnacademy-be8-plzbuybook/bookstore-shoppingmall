@@ -146,4 +146,13 @@ create table order_return
     completed_at    datetime     null,
     primary key (order_return_id),
     foreign key (or_order_id) references orders (order_id) on delete restrict
-)
+);
+
+create table order_product_coupon (
+    order_product_coupon_id bigint not null  auto_increment,
+    opc_order_product_id bigint not null ,
+    member_coupon_id bigint not null ,
+    discount decimal(10,2) not null ,
+    primary key (order_product_coupon_id),
+    foreign key (opc_order_product_id) references order_product(order_product_id)
+);
