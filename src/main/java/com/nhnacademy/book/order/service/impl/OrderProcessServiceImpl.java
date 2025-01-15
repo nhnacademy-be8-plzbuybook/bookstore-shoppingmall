@@ -37,6 +37,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderProductService orderProductService;
     private final OrderProductWrappingService orderProductWrappingService;
     private final MemberPointService memberPointService;
+    private final OrderProductCouponService orderProductCouponService;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -78,6 +79,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // 주문상품-포장 저장
             savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
             // TODO: 쿠폰 사용처리
+            orderProductCouponService.saveOrderProductCoupon(savedOrderProduct.getOrderProductId(), orderProductRequest.getAppliedCoupons());
         }
 
         // TODO: 포인트 사용처리
@@ -87,11 +89,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
                             ? ((MemberOrderRequestDto) orderCache).getMemberEmail()
                             : null,
                     usedPoint);
-
-            order.setUsedPoint(usedPoint);
-
-            BigDecimal finalPrice = order.getOrderPrice().subtract(BigDecimal.valueOf(usedPoint));
-            order.setOrderPrice(finalPrice);
         }
 
 
