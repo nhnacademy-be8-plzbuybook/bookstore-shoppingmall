@@ -6,9 +6,11 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
+import com.nhnacademy.book.order.service.impl.MemberOrderService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
@@ -41,6 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final MemberOrderRepository memberOrderRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final ObjectStorageService objectStorageService;
+    private final MemberPointService memberPointService;
 
     @Override
     public ReviewResponseDto createReview(ReviewCreateRequestDto requestDto, List<String> imageUrls) {
@@ -77,7 +80,8 @@ public class ReviewServiceImpl implements ReviewService {
                 member,
                 confirmedOrderProduct,
                 requestDto.getScore(),
-                requestDto.getContent()
+                requestDto.getContent(),
+                false
         );
 
         Review savedReview = reviewRepository.save(review);
@@ -88,10 +92,12 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewImage.setReview(savedReview);
                 String id = objectStorageService.getUrl(imageUrl);
                 reviewImage.setReviewImageUrl(id);
+                review.setPhotoPointGiven(true);
                 reviewImageRepository.save(reviewImage);
             }
         }
 
+        memberPointService.addReviewPoint(review);
         return new ReviewResponseDto(
                 savedReview.getReviewId(),
                 savedReview.getMember().getMemberId(),
@@ -160,6 +166,8 @@ public class ReviewServiceImpl implements ReviewService {
         //기존 이미지 삭제
         reviewImageRepository.deleteByReview(review);
 
+        boolean isPhotoAdded = false;
+
         if(imageUrls != null && !imageUrls.isEmpty()){
             for (String imageUrl : imageUrls) {
                 ReviewImage reviewImage = new ReviewImage();
@@ -168,8 +176,16 @@ public class ReviewServiceImpl implements ReviewService {
                 reviewImage.setReviewImageUrl(id);
                 reviewImageRepository.save(reviewImage);
             }
+            isPhotoAdded = true;
         }
 
+        if(isPhotoAdded && !review.isPhotoPointGiven()){
+            memberPointService.updatePointForReview(review, true);
+        } else if(!isPhotoAdded && review.isPhotoPointGiven()){
+            memberPointService.updatePointForReview(review, false);
+        }
         reviewRepository.save(review);
+
+
     }
 }

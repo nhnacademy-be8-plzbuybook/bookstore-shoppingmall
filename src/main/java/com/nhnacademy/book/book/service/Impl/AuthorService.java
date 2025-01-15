@@ -40,13 +40,6 @@ public class AuthorService {
     }
 
 
-
-//    public List<AuthorResponseDto> getAllAuthors() {
-//        List<Author> authors = authorRepository.findAll();
-//
-//        return authors.stream().map(this::toResponseDto).collect(Collectors.toList());
-//    }
-
     public AuthorResponseDto getAuthorById(Long id) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new AuthorsNotFoundException("Author not found"));

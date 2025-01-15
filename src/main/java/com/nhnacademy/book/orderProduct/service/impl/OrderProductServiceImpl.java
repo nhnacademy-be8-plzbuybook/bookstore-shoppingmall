@@ -27,7 +27,6 @@ public class OrderProductServiceImpl implements OrderProductService {
     private final OrderProductRepository orderProductRepository;
     private final SellingBookRepository sellingBookRepository;
     private final OrderCacheService orderCacheService;
-    private final OrderRepository orderRepository;
 
     @Transactional
     @Override
@@ -70,15 +69,5 @@ public class OrderProductServiceImpl implements OrderProductService {
     @Override
     public void purchaseConfirmOrderProduct(Long orderProductId) {
         patchStatus(orderProductId, new OrderProductStatusPatchRequestDto(OrderProductStatus.PURCHASE_CONFIRMED));
-    }
-
-    @Override
-    public void cancelOrderProduct(Long orderProductId, Integer quantity) {
-        OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
-        // 주문상품 상태확인
-        if (orderProduct.getStatus().getCode() > 1) {
-            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
-        }
-
     }
 }

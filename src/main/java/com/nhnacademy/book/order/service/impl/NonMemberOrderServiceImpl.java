@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class NonMemberOrderService {
+public class NonMemberOrderServiceImpl{
     private final NonMemberOrderRepository nonMemberOrderRepository;
     private final OrderRepository orderRepository;
 
@@ -21,7 +21,7 @@ public class NonMemberOrderService {
      * @param saveRequest 주문ID, 비회원주문 비밀번호가 포함된 DTo
      * @return 저장된 비회원주문 ID
      */
-    public Long addNonMemberOrder(NonMemberOrderSaveRequestDto saveRequest) {
+    public Long placeOrder(NonMemberOrderSaveRequestDto saveRequest) {
         if (saveRequest.getNonMemberOrderPassword().isBlank()) {
             throw new IllegalArgumentException("비회원 주문 비밀번호가 제대로 설정되지 않았습니다.");
         }
