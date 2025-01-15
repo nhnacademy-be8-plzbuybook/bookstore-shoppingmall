@@ -21,4 +21,6 @@ public class SellingBookRegisterDto {
     private SellingBookStatus sellingBookStatus;
     private Long sellingBookViewCount;//조회수
     private Boolean used; // 중고 여부
+
+
 }

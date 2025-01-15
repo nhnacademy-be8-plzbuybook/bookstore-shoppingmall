@@ -41,17 +41,6 @@ public class CategoryService {
         return convertToDto(category);
     }
 
-//    public List<CategoryResponseDto> findAllCategories() {
-//        List<Category> categories = categoryRepository.findAll();
-//        if (categories.isEmpty()) {
-//            throw new CategoryNotFoundException("Category list is empty");
-//        }
-//
-//        return categories.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
         if (parentCategoryDto == null || parentCategoryDto.getCategoryId() == null) {
             throw new CategoryNotFoundException("ParentCategoryDto or CategoryId is null");
@@ -127,24 +116,6 @@ public class CategoryService {
     }
 
 
-//    public List<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword) {
-//        return categoryRepository.findByCategoryNameContaining(keyword)
-//                .stream()
-//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<CategorySimpleResponseDto> findAllCategories() {
-//        List<Category> categories = categoryRepository.findAll();
-//        if (categories.isEmpty()) {
-//            throw new CategoryNotFoundException("Category list is empty");
-//        }
-//
-//        return categories
-//                .stream()
-//                .map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()))
-//                .collect(Collectors.toList());
-//    }
 public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword, Pageable pageable) {
     Page<Category> categories = categoryRepository.findByCategoryNameContaining(keyword, pageable);
     return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));

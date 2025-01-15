@@ -2,6 +2,8 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.*;
+import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
+import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
@@ -33,11 +35,13 @@ public class SellingBookService {
     private final LikesRepository likesRepository;
     private final MemberRepository memberRepository;
     private final MemberService memberService; // 추가
+    private final SellingBookSearchRepository sellingBookSearchRepository;
+    private final BookInfoRepository bookInfoRepository;
 
     @Autowired
     public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
                               BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository,
-                              MemberRepository memberRepository, MemberService memberService) {
+                              MemberRepository memberRepository, MemberService memberService, SellingBookSearchRepository sellingBookSearchRepository, BookInfoRepository bookInfoRepository) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
@@ -46,6 +50,8 @@ public class SellingBookService {
         this.likesRepository = likesRepository;
         this.memberRepository = memberRepository;
         this.memberService = memberService;
+        this.sellingBookSearchRepository = sellingBookSearchRepository;
+        this.bookInfoRepository = bookInfoRepository;
     }
 
     /**
@@ -64,62 +70,7 @@ public class SellingBookService {
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
     }
 
-    /**
-     * 관리자페이지에서 페이징 처리만 함.
-     * @param pageable
-     * @return
-     */
-    public Page<AdminBookRegisterDto> getBooks(Pageable pageable) {
-        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
 
-        return sellingBooks.map(sellingBook -> {
-            Book book = sellingBook.getBook();
-            List<String> bookImage = bookImageRepository.findByBook_BookId(book.getBookId())
-                    .stream()
-                    .map(BookImage::getImageUrl)
-                    .collect(Collectors.toList());;
-
-            // 카테고리 정보 매핑
-            List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
-
-
-
-
-
-
-            // 작가 정보 매핑
-            List<Author> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId());
-
-
-
-
-
-            // 출판사 정보 가져오기
-            String publisher = book.getPublisher().getPublisherName();
-
-            return new AdminBookRegisterDto(
-                    book.getBookId(),
-                    sellingBook.getBookTitle(),    // 제목
-                    book.getBookPubDate(),         // 출판일
-                    publisher,                     // 출판사
-                    book.getBookIsbn13(),          // ISBN
-                    book.getBookPriceStandard(),
-                    bookImage, // 이미지 URL
-                    authors.stream()
-                            .map(author -> new AuthorResponseDto(
-                                    author.getAuthorId(),
-                                    author.getAuthorName()
-                            ))
-                            .toList(),
-                    categories.stream()
-                            .map(category -> new CategorySimpleResponseDto(
-                                    category.getCategoryId(),
-                                    category.getCategoryName()
-                            ))
-                            .toList()
-            );
-        });
-    }
 
 
 
@@ -253,6 +204,32 @@ public class SellingBookService {
         return responseDto;
     }
 
+    //TODO
+    public void registerSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
+        // 1. 책 ID로 책 정보 조회
+        Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책 ID입니다."));
+
+        // 2. 판매책 정보 생성
+        SellingBook sellingBook = new SellingBook();
+        sellingBook.setBook(book); // 책과 매핑
+        sellingBook.setSellingBookPrice(sellingBookRegisterDto.getSellingBookPrice()); // 판매가
+        sellingBook.setSellingBookPackageable(sellingBookRegisterDto.getSellingBookPackageable()); // 선물포장 가능 여부
+        sellingBook.setSellingBookStock(sellingBookRegisterDto.getSellingBookStock()); // 재고
+        sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.safeValueOf(String.valueOf(sellingBookRegisterDto.getSellingBookStatus()))); // 도서 상태
+        sellingBook.setSellingBookViewCount(sellingBookRegisterDto.getSellingBookViewCount() != null
+                ? sellingBookRegisterDto.getSellingBookViewCount() : 0L); // 조회수 (기본값 0)
+        sellingBook.setUsed(sellingBookRegisterDto.getUsed() != null ? sellingBookRegisterDto.getUsed() : false); // 중고 여부 (기본값 false)
+
+        // 3. 판매책 저장
+        sellingBookRepository.save(sellingBook);
+
+        // 로그 출력 (디버깅 용도)
+        log.info("판매책 등록 완료: {}", sellingBook);
+
+    }
+
+
 
     /**
      * 판매책 삭제
@@ -263,6 +240,8 @@ public class SellingBookService {
             throw new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId);
         }
         sellingBookRepository.deleteById(sellingBookId);
+        bookInfoRepository.deleteBySellingBookId(sellingBookId);
+
     }
 
     /**
