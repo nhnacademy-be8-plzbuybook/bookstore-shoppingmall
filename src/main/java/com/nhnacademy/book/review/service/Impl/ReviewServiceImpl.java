@@ -6,6 +6,7 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
+import com.nhnacademy.book.order.service.impl.MemberOrderService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
@@ -184,5 +185,7 @@ public class ReviewServiceImpl implements ReviewService {
             memberPointService.updatePointForReview(review, false);
         }
         reviewRepository.save(review);
+
+
     }
 }

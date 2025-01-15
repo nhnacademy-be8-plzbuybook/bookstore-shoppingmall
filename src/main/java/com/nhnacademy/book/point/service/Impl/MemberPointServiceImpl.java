@@ -1,10 +1,17 @@
 package com.nhnacademy.book.point.service.Impl;
 
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.payment.entity.Payment;
 import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
@@ -15,6 +22,7 @@ import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
+import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
 import com.nhnacademy.book.review.domain.ReviewImage;
 import com.nhnacademy.book.review.exception.ReviewNotFoundException;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
@@ -38,10 +46,6 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final MemberPointRepository memberPointRepository;
     private final MemberRepository memberRepository;
     private final PointConditionRepository pointConditionRepository;
-    private final ReviewRepository reviewRepository;
-    private final ReviewImageRepository reviewImageRepository;
-    private final MemberGradeRepository memberGradeRepository;
-    private final PaymentRepository paymentRepository;
 
     // 회원 가입시
     @Override
@@ -61,6 +65,41 @@ public class MemberPointServiceImpl implements MemberPointService {
 
         addMemberPoint(requestDto);
     }
+
+    // 도서구매시
+    public void addPurchasePoint(Member member, OrderRequestDto orderRequest, BigDecimal paymentPrice) {
+        PointCondition pointCondition = pointConditionRepository.findByName("BOOK_PURCHASE")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        BigDecimal basePercentage = pointCondition.getConditionPercentage();
+
+        BigDecimal gradePercentage = switch (member.getMemberGrade().getMemberGradeName()) {
+            case "NORMAL" -> new BigDecimal("0.01");
+            case "ROYAL" -> new BigDecimal("0.02");
+            case "GOLD" -> new BigDecimal("0.03");
+            case "PLATINUM" -> new BigDecimal("0.03");
+            default -> throw new MemberGradeNotFoundException("회원 등급이 존재하지 않습니다.");
+        };
+        BigDecimal totalPercentage = basePercentage.add(gradePercentage);
+
+        BigDecimal packagingFee = orderRequest.getOrderProducts().stream()
+                .map(product -> product.getWrapping() != null ? product.getWrapping().getPrice() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal accumulatedAmount = paymentPrice.subtract(packagingFee);
+
+        BigDecimal totalPoints = accumulatedAmount.multiply(totalPercentage);
+
+        // 포인트 적립 기록 추가
+        MemberPointAddRequestDto requestDto = new MemberPointAddRequestDto(
+                member.getMemberId(),
+                null,
+                "BOOK_PURCHASE",
+                totalPoints.intValue(),
+                totalPercentage
+        );
+        addMemberPoint(requestDto);
+    }
+
 
     @Override
     public void addReviewPoint(Review review) {
