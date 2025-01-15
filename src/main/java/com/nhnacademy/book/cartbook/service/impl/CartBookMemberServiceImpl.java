@@ -8,8 +8,9 @@ import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.cart.exception.CartNotFoundException;
 import com.nhnacademy.book.cart.repository.CartRepository;
-import com.nhnacademy.book.cartbook.dto.request.*;
-import com.nhnacademy.book.cartbook.dto.response.*;
+import com.nhnacademy.book.cartbook.dto.request.CreateCartBookRequestDto;
+import com.nhnacademy.book.cartbook.dto.request.UpdateCartBookRequestDto;
+import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 import com.nhnacademy.book.cartbook.entity.CartBook;
 import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartException;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
@@ -206,7 +207,6 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
         Long memberId = memberRepository.getMemberIdByEmail(email);
         cartBookRepository.delete(
                 cartBookRepository.findById(bookCartId)
-                        //.filter(book -> book.getCart().getMember().getEmail().equals(email))
                         .orElseThrow(() -> new SellingBookNotFoundInBookCartException("장바구니에서 해당 상품을 찾을 수 없습니다."))
         );
         cartBookRedisRepository.delete("Member" + memberId, bookCartId);

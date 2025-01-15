@@ -41,7 +41,6 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
         SellingBook sellingBook = sellingBookRepository.findById(createCartBookRequestDto.sellingBookId())
                 .orElseThrow(() -> new BookNotFoundException("비회원 장바구니에서 찾는 도서가 존재하지 않습니다."));
 
-        log.info("sessionID: {}", sessionId);
         List<ReadCartBookResponseDto> existingCartItems = cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
         Long cartBookId = (long) (existingCartItems.size() + 1); // 자동으로 증가
 
@@ -62,26 +61,21 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
     @Override
     public Long updateGuestCartItem(Long cartId, int quantity, String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        log.info("cartId: {}", cartId);
         return cartBookRedisRepository.update("Guest:" + sessionId, cartId, quantity);
     }
 
     @Override
-    public Long removeItemFromGuestCart(Long sellingBookId, String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        return cartBookRedisRepository.delete("Guest:" + sessionId, sellingBookId);
+    public Long removeItemFromGuestCart(Long cartId, String sessionId) {
+        return cartBookRedisRepository.delete("Guest:" + sessionId, cartId);
     }
 
     @Override
     public void clearGuestCart(String sessionId) {
-        log.info("sessionId: {}", sessionId);
         cartBookRedisRepository.deleteAll("Guest:" + sessionId);
     }
 
     @Override
     public List<ReadCartBookResponseDto> getGuestCart(String sessionId) {
-        log.info("sessionId: {}", sessionId);
         return cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
     }
 
