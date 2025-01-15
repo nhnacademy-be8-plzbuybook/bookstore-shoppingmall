@@ -1,6 +1,7 @@
 package com.nhnacademy.book.payment.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.OrderProductCancelRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -57,16 +58,25 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-
     @Override
     public void cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest) {
-        Orders order = orderRepository.findById(cancelRequest.getOrderId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
-        JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, cancelRequest);
-        //cancels의 마지막 cancel를 저장
+
+    }
+
+    @Override
+    public void cancelPayment(String orderId, OrderProductCancelRequestDto orderProductCancelRequest) {
+        Payment payment = paymentRepository.findByOrdersId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
+
+
+        PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(orderProductCancelRequest.getReason(), orderProductCancelRequest.getPrice(), orderId);
+        JSONObject jsonObject = tossPaymentService.cancelPayment(payment.getPaymentKey(), paymentCancelRequest);
+
         LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
         LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
         ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
-        Payment payment = Payment.builder()
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+
+        paymentRepository.save(Payment.builder()
                 .paymentKey((String) jsonObject.get("paymentKey"))
                 .status((String) jsonObject.get("status"))
                 .method((String) jsonObject.get("method"))
@@ -74,7 +84,28 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(BigDecimal.valueOf((Integer)latestCancel.get("cancelAmount")))
                 .easyPayProvider((String) easyPay.get("provider"))
                 .orders(order)
-                .build();
-        paymentRepository.save(payment);
+                .build()
+        );
     }
+
+
+//    @Override
+//    public void cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest) {
+//        Orders order = orderRepository.findById(cancelRequest.getOrderId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+//        JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, cancelRequest);
+//        //cancels의 마지막 cancel를 저장
+//        LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
+//        LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
+//        ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
+//        Payment payment = Payment.builder()
+//                .paymentKey((String) jsonObject.get("paymentKey"))
+//                .status((String) jsonObject.get("status"))
+//                .method((String) jsonObject.get("method"))
+//                .recordedAt(canceledAt.toLocalDateTime())
+//                .amount(BigDecimal.valueOf((Integer)latestCancel.get("cancelAmount")))
+//                .easyPayProvider((String) easyPay.get("provider"))
+//                .orders(order)
+//                .build();
+//        paymentRepository.save(payment);
+//    }
 }
