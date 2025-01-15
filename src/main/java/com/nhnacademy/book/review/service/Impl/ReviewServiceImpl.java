@@ -95,8 +95,6 @@ public class ReviewServiceImpl implements ReviewService {
             }
         }
 
-        memberPointService.addReviewPoint(savedReview);
-
         return new ReviewResponseDto(
                 savedReview.getReviewId(),
                 savedReview.getMember().getMemberId(),
@@ -176,8 +174,6 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         reviewRepository.save(review);
-
-//        memberPointService.updateReviewPoint(review);
 
 
     }
