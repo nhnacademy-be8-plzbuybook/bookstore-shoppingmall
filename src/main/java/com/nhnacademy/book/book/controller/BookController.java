@@ -52,20 +52,6 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookDetailFromElastic(bookId));
     }
 
-    // 도서 등록 기능 (관리자)
-//    @PostMapping
-//    public ResponseEntity<BookRegisterDto> registerBook(@RequestBody BookRegisterDto bookRegisterDto) {
-//        bookService.registerBook(bookRegisterDto);
-//        return ResponseEntity.ok(bookRegisterDto);
-//    }
-//
-//    // 도서 등록 기능 (관리자)
-//    @PostMapping("/adminregister")
-//    public ResponseEntity<BookDetailResponseDto>  registerSellingBook(@RequestBody AdminSellingBookRegisterDto adminSellingBookRegisterDto) {
-//        BookDetailResponseDto response = bookService.registerBook(adminSellingBookRegisterDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//    }
-
 
     // 도서 삭제 기능 (관리자)
     @DeleteMapping("/{bookId}")
