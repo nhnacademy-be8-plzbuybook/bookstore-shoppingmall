@@ -1,5 +1,6 @@
 package com.nhnacademy.book.objectStorage.service;
 
+import com.nhnacademy.book.book.dto.response.FileUploadResponse;
 import com.nhnacademy.book.objectStorage.config.ObjectStorageConfig;
 import com.nhnacademy.book.objectStorage.exception.ObjectStorageFileUploadException;
 import com.nhnacademy.book.objectStorage.exception.ObjectStorageTokenException;
@@ -99,6 +100,30 @@ public class ObjectStorageService {
         }
 
         return name;
+    }
+
+    public List<FileUploadResponse> uploadObjectstourl(List<MultipartFile> multipartFiles) {
+        if (multipartFiles == null || multipartFiles.isEmpty()) {
+            throw new ObjectStorageFileUploadException("No files upload.");
+        }
+
+        String requestToken = objectStorageAuthService.requestToken();
+        List<FileUploadResponse> uploadedFileResponses = new ArrayList<>();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            try {
+                validateFile(multipartFile); // 파일 검증
+                String fileName = createUniqueFileName(multipartFile.getOriginalFilename());
+                String tokenId = extractTokenId(requestToken);
+                String url = getUrl(fileName);
+
+                uploadFileToStorage(url, multipartFile.getInputStream(), tokenId); // 파일 업로드
+                uploadedFileResponses.add(new FileUploadResponse(url)); // URL을 DTO에 담아 추가
+            } catch (HttpClientErrorException | IOException e) {
+                throw new ObjectStorageFileUploadException("Failed to upload file: " + multipartFile.getOriginalFilename());
+            }
+        }
+        return uploadedFileResponses;
     }
 
     // 파일 검증 메서드 (이미지 및 기타 파일 형식 지원)

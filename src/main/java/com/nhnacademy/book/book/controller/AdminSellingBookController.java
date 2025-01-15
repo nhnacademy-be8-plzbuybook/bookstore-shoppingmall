@@ -7,9 +7,10 @@ import com.nhnacademy.book.book.dto.response.AdminBookRegisterDto;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/admin/selling-books")
+@RequiredArgsConstructor
 public class AdminSellingBookController {
 
     private final SellingBookService sellingBookService;
 
     private final SellingBookRepository sellingBookRepository;
     private final BookService bookService;
+    private final ObjectStorageService objectStorageService;
 
-    @Autowired
-    public AdminSellingBookController(SellingBookService sellingBookService, SellingBookRepository sellingBookRepository, BookService bookService) {
-        this.sellingBookService = sellingBookService;
-        this.sellingBookRepository = sellingBookRepository;
-        this.bookService = bookService;
-    }
     /**
      * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
      * 도서 삭제: DELETE /api/admin/selling-books/{sellingBookId}
@@ -81,6 +78,7 @@ public class AdminSellingBookController {
      * @param updateDto
      * @return
      */
+    //    @PostMapping(value = "/{sellingBookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PostMapping("/{sellingBookId}")
     public ResponseEntity<SellingBookRegisterDto> updateSellingBook(
             @PathVariable Long sellingBookId,
