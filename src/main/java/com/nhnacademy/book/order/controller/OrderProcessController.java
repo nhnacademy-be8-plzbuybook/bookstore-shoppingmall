@@ -23,13 +23,6 @@ public class OrderProcessController {
     public ResponseEntity<OrderResponseDto> requestOrder(@RequestHeader(name = "X-USER-ID", required = false) String memberEmail,
                                                          @Valid @RequestBody OrderRequestDto orderRequest) {
 
-        //회원검증
-//        if (memberEmail != null && !memberEmail.isBlank()) {
-//            if (memberService.getMemberByEmail(memberEmail) == null) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//            }
-//        }
-
         if (memberEmail != null) {
             orderRequest.setMemberEmail(memberEmail);
         }
