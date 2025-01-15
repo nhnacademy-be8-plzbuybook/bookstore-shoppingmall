@@ -1,12 +1,9 @@
 package com.nhnacademy.book.review.service.Impl;
 
 import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
-import com.nhnacademy.book.order.entity.MemberOrder;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
-import com.nhnacademy.book.order.service.impl.MemberOrderService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;

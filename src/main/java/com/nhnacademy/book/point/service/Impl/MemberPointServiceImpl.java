@@ -1,18 +1,11 @@
 package com.nhnacademy.book.point.service.Impl;
 
-import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberGradeNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
-import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
-import com.nhnacademy.book.orderProduct.entity.OrderProduct;
-import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
-import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
-import com.nhnacademy.book.payment.entity.Payment;
-import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
 import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
@@ -22,11 +15,7 @@ import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.MemberPointService;
 import com.nhnacademy.book.review.domain.Review;
-import com.nhnacademy.book.review.exception.InvalidOrderProductStatusException;
-import com.nhnacademy.book.review.domain.ReviewImage;
-import com.nhnacademy.book.review.exception.ReviewNotFoundException;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
-import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,6 +35,7 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final MemberPointRepository memberPointRepository;
     private final MemberRepository memberRepository;
     private final PointConditionRepository pointConditionRepository;
+    private final ReviewImageRepository reviewImageRepository;
 
     // 회원 가입시
     @Override
@@ -157,7 +147,7 @@ public class MemberPointServiceImpl implements MemberPointService {
                         review.getMember().getMemberId(),
                         review.getReviewId(),
                         photoRemove.getName(),
-                        - photoRemove.getConditionPoint(),
+                        -photoRemove.getConditionPoint(),
                         null
                 ));
                 review.setPhotoPointGiven(false); // 포인트 지급 상태 업데이트
@@ -268,7 +258,6 @@ public class MemberPointServiceImpl implements MemberPointService {
             throw new IllegalStateException("포인트 차감 중 문제가 발생했습니다. 남은 포인트: ");
         }
     }
-
 
 
 }
