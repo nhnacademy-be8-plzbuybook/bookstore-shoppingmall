@@ -27,7 +27,7 @@ public class OrderProductCouponServiceImpl implements OrderProductCouponService 
 
                 //TODO: 쿠폰 사용처리
 
-                //TODO: 쿠폰저장
+                // 주문상품 쿠폰저장
                 orderProductCouponRepository.save(orderProductAppliedCouponDto.toEntity(orderProduct));
             }
 
