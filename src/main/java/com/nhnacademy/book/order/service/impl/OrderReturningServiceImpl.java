@@ -2,10 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
-import com.nhnacademy.book.order.dto.OrderReturnDto;
-import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
-import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
+import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.entity.OrderProductReturn;
 import com.nhnacademy.book.order.entity.OrderReturn;
 import com.nhnacademy.book.order.entity.Orders;
@@ -103,6 +100,7 @@ public class OrderReturningServiceImpl implements OrderReturningService {
         return orderId;
     }
 
+    @Transactional
     @Override
     public Long completeOrderProductReturn(Long orderProductId) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품정보를 찾을 수 없습니다."));
@@ -129,11 +127,18 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 //                .orElseThrow(() -> new NotFoundException("주문반품정보를 찾을 수 없습니다."));
 //    }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
+//    @Override
+//    public Page<OrderReturnDto> getAllOrderReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
+//        Page<OrderReturnDto> orderReturnDtoPage = orderReturnQueryRepository.findOrderReturnPage(searchRequest, pageable);
+//        return orderReturnDtoPage;
+//    }
+
+
     @Override
-    public Page<OrderReturnDto> getAllOrderReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
-        Page<OrderReturnDto> orderReturnDtoPage = orderReturnQueryRepository.findOrderReturnPage(searchRequest, pageable);
-        return orderReturnDtoPage;
+    @Transactional(readOnly = true)
+    public Page<OrderProductReturnDto> getAllOrderProductReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
+        return orderReturnQueryRepository.findOrderProductReturnPage(searchRequest, pageable);
     }
 
 

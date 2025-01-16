@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.controller;
 
+import com.nhnacademy.book.order.dto.OrderProductReturnDto;
 import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
@@ -18,17 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class OrderReturnController {
     private final OrderReturningService orderReturningService;
 
-    @GetMapping("/order-returns")
-    public ResponseEntity<Page<OrderReturnDto>> getOrderReturns(@ModelAttribute OrderReturnSearchRequestDto searchRequest,
-                                                                Pageable pageable) {
-        Page<OrderReturnDto> orderReturnDtoPage = orderReturningService.getAllOrderReturns(searchRequest, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(orderReturnDtoPage);
+    @GetMapping("/order-product-returns")
+    public ResponseEntity<Page<OrderProductReturnDto>> getOrderReturns(@ModelAttribute OrderReturnSearchRequestDto searchRequest,
+                                                                       Pageable pageable) {
+        Page<OrderProductReturnDto> orderProductReturnDtoPage = orderReturningService.getAllOrderProductReturns(searchRequest, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(orderProductReturnDtoPage);
     }
 
     /**
      * 주문반품 요청
      *
-     * @param orderId 반품할 주문 아이디
+     * @param orderId                   반품할 주문 아이디
      * @param orderProductReturnRequest 주문반품요청 DTO
      * @return
      */
@@ -38,7 +39,6 @@ public class OrderReturnController {
 //        orderReturningService.requestOrderReturn(orderId, refundRequest);
 //        return ResponseEntity.status(HttpStatus.OK).build();
 //    }
-
     @PostMapping("/{order-id}/order-products/{order-product-id}/return")
     public ResponseEntity<?> requestReturnOrderProduct(@PathVariable("order-id") String orderId,
                                                        @PathVariable("order-product-id") Long orderProductId,
@@ -59,7 +59,6 @@ public class OrderReturnController {
 //        orderReturningService.completeOrderReturn(orderId);
 //        return ResponseEntity.status(HttpStatus.OK).build();
 //    }
-
     @PostMapping("/{order-id}/order-products/{order-product-id}/return/complete")
     public ResponseEntity<?> completeReturnOrderProduct(@PathVariable("order-id") String orderId,
                                                         @PathVariable("order-product-id") Long orderProductId) {

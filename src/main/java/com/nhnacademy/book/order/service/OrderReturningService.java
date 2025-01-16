@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.service;
 
+import com.nhnacademy.book.order.dto.OrderProductReturnDto;
 import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnDto;
 import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
@@ -13,7 +14,8 @@ public interface OrderReturningService {
 
 //    OrderReturnDto getOrderReturnByTrackingNumber(String trackingNumber);
 
-    Page<OrderReturnDto> getAllOrderReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable);
+//    Page<OrderReturnDto> getAllOrderReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable);
+    Page<OrderProductReturnDto> getAllOrderProductReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable);
 
     void requestOrderProductReturn(String orderId, Long orderProductId, OrderProductReturnRequestDto orderProductReturnRequest);
 
