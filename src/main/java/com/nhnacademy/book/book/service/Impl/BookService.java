@@ -171,14 +171,13 @@ public class BookService {
      * @return
      */
     public Page<AdminBookRegisterDto> getBooks(Pageable pageable) {
-        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
 
-        return sellingBooks.map(sellingBook -> {
-            Book book = sellingBook.getBook();
+        return bookPage.map(book -> {
             List<String> bookImage = bookImageRepository.findByBook_BookId(book.getBookId())
                     .stream()
                     .map(BookImage::getImageUrl)
-                    .collect(Collectors.toList());;
+                    .collect(Collectors.toList());
 
             // 카테고리 정보 매핑
             List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
@@ -191,7 +190,7 @@ public class BookService {
 
             return new AdminBookRegisterDto(
                     book.getBookId(),
-                    sellingBook.getBookTitle(),    // 제목
+                    book.getBookTitle(),    // 제목
                     book.getBookPubDate(),         // 출판일
                     publisher,                     // 출판사
                     book.getBookIsbn13(),          // ISBN
