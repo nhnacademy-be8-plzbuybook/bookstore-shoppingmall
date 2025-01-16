@@ -252,9 +252,9 @@ public class MemberPointServiceImpl implements MemberPointService {
             }
         }
 
-        if (usedPoint > 0) {
-            throw new IllegalStateException("포인트 차감 중 문제가 발생했습니다. 남은 포인트: ");
-        }
+//        if (usedPoint < 0) {
+//            throw new IllegalStateException("포인트 차감 중 문제가 발생했습니다. 남은 포인트: ");
+//        }
     }
 
 

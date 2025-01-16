@@ -80,50 +80,50 @@ public class BookService {
     }
 
     // 도서 수정 값관련 서비스
-    public BookRegisterDto getBookUpdate(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
-        String imageUrl = book.getBookImages().isEmpty() ? null : book.getBookImages().get(0).getImageUrl();
-//        // 카테고리 정보 추출
-//        List<Category> categories = book.getBookCategories().stream()
-//                .map(BookCategory::getCategory)
+//    public BookRegisterDto getBookUpdate(Long bookId) {
+//        Book book = bookRepository.findById(bookId)
+//                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+//        String imageUrl = book.getBookImages().isEmpty() ? null : book.getBookImages().get(0).getImageUrl();
+////        // 카테고리 정보 추출
+////        List<Category> categories = book.getBookCategories().stream()
+////                .map(BookCategory::getCategory)
+////                .collect(Collectors.toList());
+//
+//        // Debugging
+//        log.debug("도서 정보: {}", book);
+//
+//        // 작가 정보 추출
+//        List<String> authors = book.getBookAuthors().stream()
+//                .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
 //                .collect(Collectors.toList());
-
-        // Debugging
-        log.debug("도서 정보: {}", book);
-
-        // 작가 정보 추출
-        List<String> authors = book.getBookAuthors().stream()
-                .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
-                .collect(Collectors.toList());
-
-        List<CategoryResponseDto> categoryDtos = book.getBookCategories().stream()
-                .map(bookCategory -> new CategoryResponseDto(
-                        bookCategory.getCategory().getCategoryId(),
-                        bookCategory.getCategory().getCategoryName(),
-                        bookCategory.getCategory().getCategoryDepth(),
-                        bookCategory.getCategory().getParentCategory() != null
-                                ? bookCategory.getCategory().getParentCategory().getCategoryId()
-                                : null,
-                        null // 자식 카테고리 필요 시 추가 처리
-                ))
-                .collect(Collectors.toList());
-
-        return new BookRegisterDto(
-                book.getBookId(),
-                book.getBookTitle(),
-                book.getBookIndex(),
-                book.getBookDescription(),
-                book.getBookPubDate(),
-                book.getBookPriceStandard(),
-                book.getBookIsbn13(),
-                book.getPublisher().getPublisherName(),
-                imageUrl,
-                categoryDtos,
-                authors
-        );
-
-    }
+//
+//        List<CategoryResponseDto> categoryDtos = book.getBookCategories().stream()
+//                .map(bookCategory -> new CategoryResponseDto(
+//                        bookCategory.getCategory().getCategoryId(),
+//                        bookCategory.getCategory().getCategoryName(),
+//                        bookCategory.getCategory().getCategoryDepth(),
+//                        bookCategory.getCategory().getParentCategory() != null
+//                                ? bookCategory.getCategory().getParentCategory().getCategoryId()
+//                                : null,
+//                        null // 자식 카테고리 필요 시 추가 처리
+//                ))
+//                .collect(Collectors.toList());
+//
+//        return new BookRegisterDto(
+//                book.getBookId(),
+//                book.getBookTitle(),
+//                book.getBookIndex(),
+//                book.getBookDescription(),
+//                book.getBookPubDate(),
+//                book.getBookPriceStandard(),
+//                book.getBookIsbn13(),
+//                book.getPublisher().getPublisherName(),
+//                imageUrl,
+//                categoryDtos,
+//                authors
+//        );
+//
+//    }
 
 
     public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
@@ -276,71 +276,71 @@ public class BookService {
 
     }
 
-    // 도서 수정 기능 (관리자)
-    public void updateBook( BookRegisterDto bookUpdateRequest) {
-
-        //1. 도서 정보 조회
-        Book book = bookRepository.findById(bookUpdateRequest.getBookId())
-
-                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
-        book.setBookTitle(bookUpdateRequest.getBookTitle());
-        book.setBookIndex(bookUpdateRequest.getBookIndex());
-        book.setBookDescription(bookUpdateRequest.getBookDescription());
-        book.setBookPubDate(bookUpdateRequest.getBookPubDate());
-        book.setBookPriceStandard(bookUpdateRequest.getBookPriceStandard());
-        book.setBookIsbn13(bookUpdateRequest.getBookIsbn13());
-        bookRepository.save(book);
-
-        // 3. 출판사 업데이트
-        Publisher publisher = publisherRepository.findByPublisherName(bookUpdateRequest.getPublisher())
-                .orElseGet(() -> {
-                    Publisher newPublisher = new Publisher(bookUpdateRequest.getPublisher());
-                    return publisherRepository.save(newPublisher);
-                });
-        book.setPublisher(publisher);
-
-        // 4. 이미지 등록
-        book.getBookImages().clear();
-        bookImageRepository.deleteAllByBook(book);
-        if (bookUpdateRequest.getImageUrl() != null) {
-            BookImage bookImage = new BookImage(book, bookUpdateRequest.getImageUrl());
-            bookImageRepository.save(bookImage); // 저장
-        }
-
-
-        // 5. 기존 카테고리 제거 및 새 카테고리 등록
-        book.getBookCategories().clear();
-        Long ca = categoryRepository.findByCategoryId(bookUpdateRequest.getCategories().getFirst().getCategoryId()).get().getCategoryId();
-        categoryRepository.deleteCategoryAndChildren(ca); //카테고리 아이디를 어디서 불러오지
-        List<Category> categories = bookUpdateRequest.getCategories().stream()
-                .map(category -> categoryRepository.findByCategoryId(category.getCategoryId()).get()
-                ).toList();
-
-
-        for(Category category : categories) {
-            BookCategoryRequestDto requestDto = new BookCategoryRequestDto();
-            requestDto.setCategoryId(category.getCategoryId());
-            requestDto.setBookId(book.getBookId());
-            bookCategoryService.createBookCategory(requestDto);
-        }
-
-        // 5. 작가 등록
-        book.getBookAuthors().clear();
-        //bookAuthorService.deleteBookAuthor(bookAuthorId);
-        List<Author> authors = bookUpdateRequest.getAuthors().stream()
-                .map(authorName -> authorRepository.findByAuthorName(authorName)
-                        .orElseGet(() -> authorRepository.save(new Author(authorName))))
-                .toList();
-        for(Author author : authors) {
-            BookAuthorRequestDto requestDto = new BookAuthorRequestDto();
-            requestDto.setAuthorId(author.getAuthorId());
-            requestDto.setBookId(book.getBookId());
-            bookAuthorService.createBookAuthor(requestDto);
-        }
-
-
-
-    }
+//    // 도서 수정 기능 (관리자)
+//    public void updateBook( BookRegisterDto bookUpdateRequest) {
+//
+//        //1. 도서 정보 조회
+//        Book book = bookRepository.findById(bookUpdateRequest.getBookId())
+//
+//                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+//        book.setBookTitle(bookUpdateRequest.getBookTitle());
+//        book.setBookIndex(bookUpdateRequest.getBookIndex());
+//        book.setBookDescription(bookUpdateRequest.getBookDescription());
+//        book.setBookPubDate(bookUpdateRequest.getBookPubDate());
+//        book.setBookPriceStandard(bookUpdateRequest.getBookPriceStandard());
+//        book.setBookIsbn13(bookUpdateRequest.getBookIsbn13());
+//        bookRepository.save(book);
+//
+//        // 3. 출판사 업데이트
+//        Publisher publisher = publisherRepository.findByPublisherName(bookUpdateRequest.getPublisher())
+//                .orElseGet(() -> {
+//                    Publisher newPublisher = new Publisher(bookUpdateRequest.getPublisher());
+//                    return publisherRepository.save(newPublisher);
+//                });
+//        book.setPublisher(publisher);
+//
+//        // 4. 이미지 등록
+//        book.getBookImages().clear();
+//        bookImageRepository.deleteAllByBook(book);
+//        if (bookUpdateRequest.getImageUrl() != null) {
+//            BookImage bookImage = new BookImage(book, bookUpdateRequest.getImageUrl());
+//            bookImageRepository.save(bookImage); // 저장
+//        }
+//
+//
+//        // 5. 기존 카테고리 제거 및 새 카테고리 등록
+//        book.getBookCategories().clear();
+//        Long ca = categoryRepository.findByCategoryId(bookUpdateRequest.getCategories().getFirst().getCategoryId()).get().getCategoryId();
+//        categoryRepository.deleteCategoryAndChildren(ca); //카테고리 아이디를 어디서 불러오지
+//        List<Category> categories = bookUpdateRequest.getCategories().stream()
+//                .map(category -> categoryRepository.findByCategoryId(category.getCategoryId()).get()
+//                ).toList();
+//
+//
+//        for(Category category : categories) {
+//            BookCategoryRequestDto requestDto = new BookCategoryRequestDto();
+//            requestDto.setCategoryId(category.getCategoryId());
+//            requestDto.setBookId(book.getBookId());
+//            bookCategoryService.createBookCategory(requestDto);
+//        }
+//
+//        // 5. 작가 등록
+//        book.getBookAuthors().clear();
+//        //bookAuthorService.deleteBookAuthor(bookAuthorId);
+//        List<Author> authors = bookUpdateRequest.getAuthors().stream()
+//                .map(authorName -> authorRepository.findByAuthorName(authorName)
+//                        .orElseGet(() -> authorRepository.save(new Author(authorName))))
+//                .toList();
+//        for(Author author : authors) {
+//            BookAuthorRequestDto requestDto = new BookAuthorRequestDto();
+//            requestDto.setAuthorId(author.getAuthorId());
+//            requestDto.setBookId(book.getBookId());
+//            bookAuthorService.createBookAuthor(requestDto);
+//        }
+//
+//
+//
+//    }
 
     public Page<BookResponseDto> findBooksNotInSellingBooks(Pageable pageable) {
         // 캐시 초기화
