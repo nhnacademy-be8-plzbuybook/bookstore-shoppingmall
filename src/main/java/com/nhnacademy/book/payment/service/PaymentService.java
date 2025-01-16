@@ -1,6 +1,5 @@
 package com.nhnacademy.book.payment.service;
 
-import com.nhnacademy.book.order.dto.OrderProductCancelRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentConfirmRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentSaveRequestDto;
@@ -8,6 +7,5 @@ import com.nhnacademy.book.payment.dto.PaymentSaveRequestDto;
 public interface PaymentService {
     String recordPayment(PaymentSaveRequestDto saveRequest);
     void verifyPayment(PaymentConfirmRequestDto confirmRequest);
-    void cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest);
-    void cancelPayment(String orderId, OrderProductCancelRequestDto orderProductCancelRequest);
+    void cancelPayment(PaymentCancelRequestDto cancelRequest);
 }
