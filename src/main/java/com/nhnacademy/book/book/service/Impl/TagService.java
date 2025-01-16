@@ -28,7 +28,7 @@ public class TagService {
     public boolean existsTag(Long tagId) {
         if(tagRepository.existsByTagId(tagId)){
             return true;
-        } else throw new TagNameAlreadyException("태그 못 찾음");
+        } else throw new TagNotFoundException("tag not found");
     }
 
 
@@ -50,7 +50,7 @@ public class TagService {
     }
 
     public Tag findTagById(Long tagId) {
-        if(existsTag(tagId)){
+        if(tagRepository.existsByTagId(tagId)){
             return tagRepository.findByTagId(tagId);
         } else throw new TagNotFoundException("tag not found");
     }
@@ -66,8 +66,9 @@ public class TagService {
         return tagsPage.map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()));
     }
 
+
     public void deleteTagById(Long tagId) {
-        if(existsTag(tagId)){
+        if(tagRepository.existsByTagId(tagId)){
             tagRepository.deleteById(tagId);
         } else {
             throw new TagNotFoundException("tag not found");
@@ -75,7 +76,7 @@ public class TagService {
     }
 
     public String findTagNameByTagId(Long tagId) {
-        if(!existsTag(tagId)){
+        if(!tagRepository.existsByTagId(tagId)){
             throw new TagNotFoundException("tag not found");
         }
 

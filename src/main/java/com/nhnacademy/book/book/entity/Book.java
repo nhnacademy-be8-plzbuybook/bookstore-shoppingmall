@@ -77,6 +77,11 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookImage> bookImages = new ArrayList<>();
 
+    public Book(long l, String testBook) {
+        this.bookId = l;
+        this.bookTitle = testBook;
+    }
+
     // 이미지 추가 메서드
     public void addImage(String imageUrl) {
         BookImage bookImage = new BookImage(this, imageUrl);

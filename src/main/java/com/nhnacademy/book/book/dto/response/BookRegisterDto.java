@@ -46,5 +46,8 @@ public class BookRegisterDto {
 
     }
 
+    public BookRegisterDto() {
+
+    }
 }
 

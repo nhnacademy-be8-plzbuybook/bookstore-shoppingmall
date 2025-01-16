@@ -5,6 +5,7 @@ import com.nhnacademy.book.book.dto.response.TagResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookTag;
 import com.nhnacademy.book.book.entity.Tag;
+import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.TagNotFoundException;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.BookTagRepository;
@@ -41,15 +42,18 @@ public class BookTagService {
     public void save(Long bookId, Long tagId) {
         BookTag bookTag = new BookTag();
         Book book;
-        if(bookService.existsBook(bookId)){
+        if(bookRepository.existsByBookId(bookId)) {
             book = bookRepository.findByBookId(bookId);
             bookTag.setBook(book);
-
+        } else {
+            throw new BookNotFoundException("book not found");
         }
         Tag tag;
-        if(tagService.existsTag(tagId)){
+        if(tagRepository.existsByTagId(tagId)){
             tag = tagService.findTagById(tagId);
             bookTag.setTag(tag);
+        } else {
+            throw new TagNotFoundException("tag not found");
         }
 
         bookTagRepository.save(bookTag);

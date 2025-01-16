@@ -2,7 +2,6 @@ package com.nhnacademy.book.book.controller;
 
 
 import com.nhnacademy.book.book.dto.response.*;
-import com.nhnacademy.book.book.dto.response.BookRegisterDto;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import com.nhnacademy.book.book.service.Impl.BookSearchService;
