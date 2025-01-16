@@ -8,6 +8,7 @@ import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.cartbook.dto.request.CreateCartBookRequestDto;
 import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
+import com.nhnacademy.book.cartbook.exception.BookStatusNotSellingBookException;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
 import com.nhnacademy.book.cartbook.service.CartBookGuestService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,9 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
         SellingBook sellingBook = sellingBookRepository.findById(createCartBookRequestDto.sellingBookId())
                 .orElseThrow(() -> new BookNotFoundException("비회원 장바구니에서 찾는 도서가 존재하지 않습니다."));
+        if(!sellingBook.getSellingBookStatus().equals(SellingBook.SellingBookStatus.SELLING)) {
+            throw new BookStatusNotSellingBookException("판매중인 도서가 아닙니다.");
+        }
 
         List<ReadCartBookResponseDto> existingCartItems = cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
         Long cartBookId = (long) (existingCartItems.size() + 1); // 자동으로 증가
