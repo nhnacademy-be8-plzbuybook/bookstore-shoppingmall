@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -27,9 +29,12 @@ public class OrderProductWrapping {
 
     private int quantity;
 
-    public OrderProductWrapping(OrderProduct orderProduct, WrappingPaper wrappingPaper, int quantity) {
+    private BigDecimal price;
+
+    public OrderProductWrapping(OrderProduct orderProduct, WrappingPaper wrappingPaper, int quantity, BigDecimal price) {
         this.orderProduct = orderProduct;
         this.wrappingPaper = wrappingPaper;
         this.quantity = quantity;
+        this.price = price;
     }
 }

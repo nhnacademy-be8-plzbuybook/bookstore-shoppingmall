@@ -1,6 +1,11 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+//import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
@@ -13,17 +18,13 @@ import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
-import com.nhnacademy.book.order.service.OrderProcessService;
-import com.nhnacademy.book.order.service.OrderValidationService;
-import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @Service
@@ -32,12 +33,12 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderValidationService orderValidationService;
     private final OrderCacheService orderCacheService;
     private final OrderDeliveryAddressService orderDeliveryAddressService;
-    private final MemberOrderServiceImpl memberOrderServiceImpl;
-    private final NonMemberOrderServiceImpl nonMemberOrderServiceImpl;
     private final OrderRepository orderRepository;
     private final OrderProductService orderProductService;
     private final OrderProductWrappingService orderProductWrappingService;
     private final MemberPointService memberPointService;
+    private final OrderProductCouponService orderProductCouponService;
+    private final CustomerOrderService customerOrderService;
     private final MemberRepository memberRepository;
     private final CouponClient couponClient;
 
@@ -49,7 +50,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
      */
     @Transactional
     @Override
-    public OrderResponseDto processRequestedOrder(OrderRequestDto orderRequest) {
+    public OrderResponseDto requestOrder(OrderRequestDto orderRequest) {
         // 주문 검증
         orderValidationService.validateOrder(orderRequest);
         // 주문 저장
@@ -71,14 +72,17 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     public String completeOrder(String orderId) {
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
         // 주문캐시정보 가져오기
-        OrderRequestDto orderCache = orderCacheService.fetchOrderCache(orderId);
+        OrderRequestDto orderRequest = orderCacheService.fetchOrderCache(orderId);
 
-        for (OrderProductRequestDto orderProductRequest : orderCache.getOrderProducts()) {
+        for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
             // 주문상품 저장
             OrderProduct savedOrderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
             order.addOrderProduct(savedOrderProduct);
 
             // 주문상품-포장 저장
+            orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(), orderProductRequest.getWrapping());
+            // TODO: 쿠폰 사용처리
+            orderProductCouponService.saveOrderProductCoupon(savedOrderProduct.getOrderProductId(), orderProductRequest.getAppliedCoupons());
             savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
 
             // TODO: 쿠폰 사용처리
@@ -89,17 +93,21 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             }
         }
 
-        // 포인트 사용처리
-        Integer usedPoint = orderCache.getUsedPoint();
-        BigDecimal finalPrice = order.getOrderPrice();
+        // TODO: 포인트 사용처리
+        Integer usedPoint = orderRequest.getUsedPoint();
         if (usedPoint != null && usedPoint > 0) {
-            memberPointService.usedPoint(((MemberOrderRequestDto) orderCache).getMemberEmail(), usedPoint);
-            finalPrice = finalPrice.subtract(BigDecimal.valueOf(usedPoint));
+            memberPointService.usedPoint(orderRequest instanceof MemberOrderRequestDto
+                            ? ((MemberOrderRequestDto) orderRequest).getMemberEmail()
+                            : null,
+                    usedPoint);
         }
 
+
         // 배송지저장
-        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderCache.getOrderDeliveryAddress());
+        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
         // 회원/비회원 주문 저장
+//        addOrderByMemberType(orderId, orderCache);
+        customerOrderService.placeCustomerOrder(orderId, orderRequest);
         addOrderByMemberType(orderId, orderCache);
 
         if (orderCache instanceof MemberOrderRequestDto memberOrderCache) {
@@ -111,39 +119,10 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
+        // 주문상품 상태 변경
+        order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.PAYMENT_COMPLETED));
 
         return orderId;
     }
-
-    /**
-     * 주문상품-포장 저장
-     *
-     * @param orderProduct 주문상품 요청 DTO
-     */
-    private void savedOrderProductWrapping(OrderProduct savedOrderProduct, OrderProductRequestDto orderProduct) {
-        if (orderProduct.getWrapping() != null) {
-            OrderProductWrappingDto orderProductWrapping = orderProduct.getWrapping();
-            orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(),
-                    orderProductWrapping.getWrappingPaperId(), orderProduct.getQuantity());
-        }
-    }
-
-
-    /**
-     * 주문타입(회원|비회원) 별로 주문 저장
-     *
-     * @param orderId      주문 ID
-     * @param orderRequest 주문요청 DTO
-     */
-    private void addOrderByMemberType(String orderId, OrderRequestDto orderRequest) {
-        if (orderRequest instanceof MemberOrderRequestDto memberOrderRequestDto) {
-            memberOrderServiceImpl.placeOrder(new MemberOrderSaveRequestDto(memberOrderRequestDto.getMemberEmail(), orderId));
-        } else if (orderRequest instanceof NonMemberOrderRequestDto nonMemberOrderRequestDto) {
-            nonMemberOrderServiceImpl.placeOrder(new NonMemberOrderSaveRequestDto(orderId, nonMemberOrderRequestDto.getNonMemberPassword()));
-        } else {
-            throw new IllegalArgumentException("Invalid order request type");
-        }
-    }
-
 
 }

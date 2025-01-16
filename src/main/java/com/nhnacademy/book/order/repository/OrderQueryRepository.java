@@ -19,8 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.nhnacademy.book.book.entity.QBook.book;
 import static com.nhnacademy.book.book.entity.QBookImage.bookImage;
@@ -30,6 +33,7 @@ import static com.nhnacademy.book.order.entity.QMemberOrder.memberOrder;
 import static com.nhnacademy.book.order.entity.QNonMemberOrder.nonMemberOrder;
 import static com.nhnacademy.book.order.entity.QOrderDelivery.orderDelivery;
 import static com.nhnacademy.book.order.entity.QOrderDeliveryAddress.orderDeliveryAddress;
+import static com.nhnacademy.book.order.entity.QOrderProductCoupon.orderProductCoupon;
 import static com.nhnacademy.book.order.entity.QOrderProductWrapping.orderProductWrapping;
 import static com.nhnacademy.book.order.entity.QOrders.orders;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
@@ -48,15 +52,15 @@ public class OrderQueryRepository {
         // with @QueryProjection
         List<OrderDto> orderDtos = queryFactory
                 .select(
-        new QOrderDto(
-                        orders.id,
-                        orders.number,
-                        orders.orderedAt,
-                        orders.status,
-                        orders.name,
-                        orders.orderPrice,
-                        getMemberEmail()
-                )).distinct()
+                        new QOrderDto(
+                                orders.id,
+                                orders.number,
+                                orders.orderedAt,
+                                orders.status,
+                                orders.name,
+                                orders.orderPrice,
+                                getMemberEmail()
+                        )).distinct()
                 .from(orders)
                 .leftJoin(memberOrder).on(memberOrder.order.eq(orders))
                 .leftJoin(nonMemberOrder).on(nonMemberOrder.order.eq(orders))
@@ -232,6 +236,28 @@ public class OrderQueryRepository {
                 .leftJoin(wrappingPaper).on(wrappingPaper.id.eq(orderProductWrapping.wrappingPaper.id))
                 .where(orderProduct.order.id.eq(orderId))
                 .fetch();
+
+        Map<Long, List<OrderProductCouponDto>> orderProductCouponMap = queryFactory
+                .select(
+                        new QOrderProductCouponDto(
+                                orderProductCoupon.couponId,
+                                orderProduct.orderProductId,
+                                orderProductCoupon.discount
+                        )
+                )
+                .from(orderProductCoupon)
+                .innerJoin(orderProduct).on(orderProduct.order.id.eq(orderId))
+                .fetch()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        OrderProductCouponDto::getOrderProductId// orderProductId를 기준으로 그룹화
+                ));
+
+        orderProductDtos.forEach(op -> {
+            List<OrderProductCouponDto> orderProductCouponDtos = orderProductCouponMap.get(op.getOrderProductId());
+            op.setOrderProductCoupons(orderProductCouponDtos != null ? orderProductCouponDtos : Collections.emptyList());
+        });
+
 
         return orderProductDtos;
     }

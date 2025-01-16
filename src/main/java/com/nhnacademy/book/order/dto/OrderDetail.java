@@ -31,25 +31,6 @@ public class OrderDetail {
     private OrderDeliveryDto orderDelivery;
     private PaymentDto payment;
 
-
-//    @QueryProjection
-//    @Builder
-//    public OrderDetail(List<OrderProductDto> orderProducts, OrderDeliveryAddressDto orderDeliveryAddress, PaymentDto payment,
-//                       BigDecimal deliveryFee, LocalDateTime orderedAt, LocalDate deliveryWishDate, OrderStatus status,
-//                       int usedPoint, BigDecimal couponDiscount, String orderNumber) {
-//        this.orderProducts = orderProducts;
-//        this.orderDeliveryAddress = orderDeliveryAddress;
-//        this.payment = payment;
-//        this.deliveryFee = deliveryFee;
-//        this.orderedAt = orderedAt;
-//        this.deliveryWishDate = deliveryWishDate;
-//        this.status = status;
-//        this.usedPoint = usedPoint;
-//        this.couponDiscount = couponDiscount;
-//        this.orderNumber = orderNumber;
-//    }
-
-
     @Builder
     @QueryProjection
     public OrderDetail(String orderId,
@@ -75,5 +56,10 @@ public class OrderDetail {
         this.orderDeliveryAddress = orderDeliveryAddress;
         this.orderDelivery = orderDelivery;
         this.payment = payment;
+    }
+
+    public void setOrderProducts(List<OrderProductDto> orderProducts) {
+        this.orderProducts = orderProducts;
+        this.couponDiscount = orderProducts.stream().map(OrderProductDto::getCouponDiscounts).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

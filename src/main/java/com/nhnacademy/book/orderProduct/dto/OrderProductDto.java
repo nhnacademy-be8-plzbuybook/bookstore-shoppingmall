@@ -1,11 +1,14 @@
 package com.nhnacademy.book.orderProduct.dto;
 
+import com.nhnacademy.book.order.dto.OrderProductCouponDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -18,6 +21,8 @@ public class OrderProductDto {
     private BigDecimal price;
     private String status;
     private OrderProductWrapping orderProductWrapping;
+    @Setter
+    private List<OrderProductCouponDto> orderProductCoupons;
 
     @QueryProjection
     public OrderProductDto(Long orderProductId, String imageUrl, Long bookId, String bookTitle, int quantity, BigDecimal price,
@@ -30,6 +35,10 @@ public class OrderProductDto {
         this.price = price;
         this.status = status.getStatus();
         this.orderProductWrapping = orderProductWrapping;
+    }
+
+    public BigDecimal getCouponDiscounts() {
+        return orderProductCoupons.stream().map(OrderProductCouponDto::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
 

@@ -18,10 +18,7 @@ import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
 @Slf4j
@@ -62,14 +59,20 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public void cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest) {
-        Orders order = orderRepository.findById(cancelRequest.getOrderId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
-        JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, cancelRequest);
-        //cancels의 마지막 cancel를 저장
+    public void cancelPayment(PaymentCancelRequestDto cancelRequest) {
+        String orderId = cancelRequest.getOrderId();
+        String paymentKey = paymentRepository.findOldestPaymentKeyByOrdersId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
+
+
+        PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(cancelRequest.getReason(), cancelRequest.getCancelAmount(), orderId);
+        JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, paymentCancelRequest);
+
         LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
         LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
         ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
-        Payment payment = Payment.builder()
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+
+        paymentRepository.save(Payment.builder()
                 .paymentKey((String) jsonObject.get("paymentKey"))
                 .status((String) jsonObject.get("status"))
                 .method((String) jsonObject.get("method"))
@@ -77,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .amount(BigDecimal.valueOf((Integer)latestCancel.get("cancelAmount")))
                 .easyPayProvider((String) easyPay.get("provider"))
                 .orders(order)
-                .build();
-        paymentRepository.save(payment);
+                .build()
+        );
     }
 }

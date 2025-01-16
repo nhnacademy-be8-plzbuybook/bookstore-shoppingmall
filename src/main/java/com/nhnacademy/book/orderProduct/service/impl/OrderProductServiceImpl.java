@@ -17,6 +17,7 @@ import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.math.BigDecimal;
 import java.util.Optional;

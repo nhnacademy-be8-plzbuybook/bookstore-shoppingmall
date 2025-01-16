@@ -17,7 +17,7 @@ public class DeliveryFeePolicy {
     @Column(name = "delivery_fee_policy_id")
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, unique = true, nullable = false)
     private String name;
 
     @Column(nullable = false)
