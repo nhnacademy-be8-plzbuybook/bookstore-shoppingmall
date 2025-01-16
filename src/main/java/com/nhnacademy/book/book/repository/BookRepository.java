@@ -73,6 +73,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByCategoryContaining(@Param("keyword") String keyword);
 
 
+    @Query("SELECT b FROM Book b WHERE b.bookId NOT IN (SELECT sb.book.bookId FROM SellingBook sb)")
+    List<Book> findBooksNotInSellingBooks();
 
 
     // 제목에 특정 문자열이 포함된 책 조회

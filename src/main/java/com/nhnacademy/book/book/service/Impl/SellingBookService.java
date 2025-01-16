@@ -241,6 +241,8 @@ public class SellingBookService {
         }
         sellingBookRepository.deleteById(sellingBookId);
         bookInfoRepository.deleteBySellingBookId(sellingBookId);
+        sellingBookRepository.flush(); // 데이터베이스와 동기화
+
 
     }
 

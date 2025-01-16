@@ -10,6 +10,8 @@ import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,10 @@ public class BookService {
     private final AuthorService authorService;
     private final BookAuthorRepository bookAuthorRepository;
     private final BookInfoRepository bookInfoRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
 
     public boolean existsBook(Long bookId){
@@ -241,5 +247,26 @@ public class BookService {
         bookRepository.save(book);
     }
 
+    public List<BookResponseDto> findBooksNotInSellingBooks() {
+        //JPA의 쿼리 결과는 1차 캐시에 저장될 수 있습니다. 삭제 작업이 완료된 후에도 이전 쿼리 결과가 캐싱되어 삭제된 데이터가 반영되지 않을 수 있습니다.
+        //
+        //EntityManager를 사용하여 캐시를 무효화하거나 쿼리를 강제로 다시 실행합니다.
+
+        entityManager.clear(); // 캐시 초기화
+
+        // 레포지토리에서 데이터 조회
+        List<Book> books = bookRepository.findBooksNotInSellingBooks();
+
+
+        // 엔티티를 DTO로 변환
+        return books.stream()
+                .map(book -> new BookResponseDto(
+                        book.getBookId(),
+                        book.getBookTitle(),
+                        book.getBookPriceStandard(),
+                        book.getBookIsbn13()
+                ))
+                .collect(Collectors.toList());
+    }
 
 }
