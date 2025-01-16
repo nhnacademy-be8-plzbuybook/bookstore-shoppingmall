@@ -15,4 +15,6 @@ public interface BookImageRepository extends JpaRepository<BookImage, Long> {
     Optional<BookImage> findByBook(Book book); // Book으로 이미지 조회
 
     List<BookImage> findByBook_BookId(Long bookId);
+
+    void deleteAllByBook(Book book);
 }

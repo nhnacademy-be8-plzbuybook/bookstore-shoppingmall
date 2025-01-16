@@ -75,10 +75,17 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    //도서 수정 기능 (관리자) - 수정할때 값 불러오기
+    @GetMapping("/update/{bookId}")
+    public ResponseEntity<BookRegisterDto> getBook(@PathVariable Long bookId) {
+        BookRegisterDto bookDetail = bookService.getBookUpdate(bookId); // DTO 생성
+        return ResponseEntity.ok(bookDetail);
+    }
+
     // 도서 수정 기능 (관리자)
-    @PutMapping("/{bookId}")
-    public ResponseEntity<Void> updateBook(@PathVariable Long bookId, @RequestBody BookRegisterDto bookUpdateRequest) {
-        bookService.updateBook(bookId, bookUpdateRequest);
+    @PutMapping("/update/{bookId}")
+    public ResponseEntity<Void> updateBook(@RequestBody BookRegisterDto bookUpdateRequest) {
+        bookService.updateBook( bookUpdateRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
