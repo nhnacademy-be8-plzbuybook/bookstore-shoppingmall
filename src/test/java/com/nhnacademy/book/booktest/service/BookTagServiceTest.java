@@ -56,7 +56,6 @@ public class BookTagServiceTest {
         when(bookService.existsBook(1L)).thenReturn(true);
         when(bookRepository.findByBookId(1L)).thenReturn(book);
 
-        when(tagService.existsTag(1L)).thenReturn(true);
         when(tagService.findTagById(1L)).thenReturn(tag);
     }
 

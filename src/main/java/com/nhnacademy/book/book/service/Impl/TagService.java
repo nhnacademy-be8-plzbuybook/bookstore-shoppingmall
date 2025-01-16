@@ -25,12 +25,6 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public boolean existsTag(Long tagId) {
-        if(tagRepository.existsByTagId(tagId)){
-            return true;
-        } else throw new TagNotFoundException("tag not found");
-    }
-
 
     public TagResponseDto save(TagRegisterDto tagRegisterDto) {
 
