@@ -170,4 +170,18 @@ create table order_product_cancel
     primary key (order_product_cancel_id),
     foreign key (opc_order_product_id) references order_product (order_product_id)
 
-)
+);
+
+
+create table order_product_return
+(
+    order_product_return_id bigint       not null auto_increment,
+    opr_order_product_id    bigint       not null,
+    reason                  varchar(500) not null,
+    tracking_number         varchar(30)  not null,
+    quantity                int          not null,
+    requested_at            datetime     not null default current_timestamp,
+    completed_at            datetime     null,
+    primary key (order_product_return_id),
+    foreign key (opr_order_product_id) references order_product (order_product_id) on delete restrict
+);

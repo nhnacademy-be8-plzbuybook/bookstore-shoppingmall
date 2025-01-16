@@ -21,10 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class CustomerOrderServiceImpl implements CustomerOrderService {
-    private NonMemberOrderRepository nonMemberOrderRepository;
-    private MemberOrderRepository memberOrderRepository;
-    private OrderRepository orderRepository;
-    private MemberRepository memberRepository;
+    private final NonMemberOrderRepository nonMemberOrderRepository;
+    private final MemberOrderRepository memberOrderRepository;
+    private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     @Override

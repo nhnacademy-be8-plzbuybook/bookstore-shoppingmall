@@ -2,7 +2,6 @@ package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnDto;
-import com.nhnacademy.book.order.dto.OrderReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
 import com.nhnacademy.book.order.service.OrderReturningService;
 import jakarta.validation.Valid;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @RestController
-public class OrderReturningController {
+public class OrderReturnController {
     private final OrderReturningService orderReturningService;
 
     @GetMapping("/order-returns")

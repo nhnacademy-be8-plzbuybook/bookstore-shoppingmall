@@ -16,9 +16,6 @@ public class OrderProductReturnRequestDto {
     private String reason;
 
     @NotNull
-    private BigDecimal price;
-
-    @NotNull
     @Min(1)
     private Integer quantity;
 
