@@ -83,6 +83,10 @@ public class BookController {
     }
 
 
-
+    @GetMapping("/not-in-selling-books")
+    public ResponseEntity<List<BookResponseDto>> getBooksNotInSellingBooks() {
+        List<BookResponseDto> books = bookService.findBooksNotInSellingBooks();
+        return ResponseEntity.ok(books);
+    }
 
 }

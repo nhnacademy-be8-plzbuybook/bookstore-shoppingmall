@@ -60,6 +60,8 @@ public class Book {
     @Column(nullable = false, length = 40, unique = true)
     private String bookIsbn13;
 
+
+    //책을 삭제할때는 판매책도 삭제되게
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SellingBook> sellingBooks = new ArrayList<>();
 
