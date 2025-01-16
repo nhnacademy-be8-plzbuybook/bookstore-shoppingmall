@@ -2,10 +2,15 @@ package com.nhnacademy.book.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
+import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
+import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
+import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.entity.SellingBook;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -45,5 +50,15 @@ public class BookRegisterDto {
         this.categories = categoryDtos; // categories로 변경
         this.authors = authors;
     }
+
+
+    public List<Category> getCategories() {
+        if (this.categories == null) {
+            return new ArrayList<>();  // null일 경우 빈 리스트 반환
+        }
+        return categories;
+    }
+
+
 
 }

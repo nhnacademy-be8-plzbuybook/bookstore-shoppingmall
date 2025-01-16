@@ -12,8 +12,7 @@ import java.util.List;
 
 public interface MemberPointService {
     void addSignUpPoint(Member member);
-    void addPurchasePoint(Member member, OrderRequestDto orderRequest, BigDecimal paymentPrice);
-    //    void addBookPurchasePoint(Member member, Long orderId, Integer orderStatus);
+    void addPurchasePoint(Member member, OrderRequestDto orderRequest);
     void addReviewPoint(Review review);
     MemberPointAddResponseDto addMemberPoint(MemberPointAddRequestDto requestDto);
     List<MemberPointListResponseDto> getMemberPointsByMemberId(Long memberId);

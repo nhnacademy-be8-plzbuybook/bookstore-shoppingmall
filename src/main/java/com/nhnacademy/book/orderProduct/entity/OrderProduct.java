@@ -2,6 +2,8 @@ package com.nhnacademy.book.orderProduct.entity;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.converter.OrderProductStatusConverter;
+import com.nhnacademy.book.order.entity.OrderProductCoupon;
+import com.nhnacademy.book.order.entity.OrderProductWrapping;
 import com.nhnacademy.book.order.entity.Orders;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -40,6 +44,12 @@ public class OrderProduct {
 
     @Convert(converter = OrderProductStatusConverter.class)
     private OrderProductStatus status;
+
+    @OneToMany(mappedBy = "orderProduct", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderProductWrapping> orderProductWrappings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "orderProduct", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderProductCoupon> orderProductCoupons = new ArrayList<>();
 
     @Builder
     public OrderProduct(Long id, SellingBook sellingBook, Orders order, BigDecimal price, Integer quantity,

@@ -2,11 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
-import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
-import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
@@ -88,22 +84,6 @@ public class BookAuthorService {
         bookAuthorSearchRepository.deleteById(bookAuthorId);
     }
 
-    public List<BookResponseDto> findBooksByAuthorId(Long authorId) {
-        List<Book> books = bookAuthorRepository.findBooksByAuthorId(authorId);
-
-        if (!authorRepository.existsById(authorId)) {
-            throw new AuthorIdNotFoundException("Author id: " + authorId + " not found");
-        }
-
-        return books.stream()
-                .map(book -> new BookResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookPriceStandard(),  // 가격
-                        book.getBookIsbn13() // ISBN13
-                ))
-                .collect(Collectors.toList());
-    }
 
 
 

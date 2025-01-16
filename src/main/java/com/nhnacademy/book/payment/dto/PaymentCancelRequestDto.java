@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class PaymentCancelRequestDto {
     @JsonProperty("cancelReason")
     @NotBlank
-    private String cancelReason;
+    private String reason;
 
     @JsonProperty("cancelAmount")
     @Nullable

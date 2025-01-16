@@ -18,6 +18,6 @@ public class PaymentDto {
         this.amount = amount;
         this.method = method;
         this.easyPayProvider = easyPayProvider;
-        this.recordedAt = this.recordedAt;
+        this.recordedAt = recordedAt;
     }
 }

@@ -30,6 +30,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: none
+    open-in-view: false # osiv 비활성화
 logging:
   level:
     org:

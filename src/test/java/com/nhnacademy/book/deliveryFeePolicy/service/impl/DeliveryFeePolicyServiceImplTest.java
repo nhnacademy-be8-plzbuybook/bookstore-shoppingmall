@@ -1,6 +1,7 @@
 //package com.nhnacademy.book.deliveryFeePolicy.service.impl;
 //
 //import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
+//import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyDto;
 //import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicySaveRequestDto;
 //import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyUpdateRequestDto;
 //import com.nhnacademy.book.deliveryFeePolicy.entity.DeliveryFeePolicy;
@@ -32,19 +33,21 @@
 //    void getDeliveryFeePolicy_success() {
 //        //given
 //        long id = 1L;
+//        String name = "기본 배송비정책";
 //        BigDecimal defaultFee = new BigDecimal("3000");
 //        BigDecimal freeThreshold = new BigDecimal("30000");
-//        DeliveryFeePolicy existingPolicy = new DeliveryFeePolicy(1L, defaultFee, freeThreshold);
+//        DeliveryFeePolicy existingPolicy = new DeliveryFeePolicy(1L, name, defaultFee, freeThreshold);
 //
 //        when(deliveryFeePolicyRepository.findById(id)).thenReturn(Optional.of(existingPolicy));
 //
 //        //when
-//        DeliveryFeePolicy foundPolicy = deliveryFeePolicyService.getDeliveryFeePolicy(id);
+//        DeliveryFeePolicyDto foundPolicy = deliveryFeePolicyService.getDeliveryFeePolicy(id);
 //
 //        //then
 //        verify(deliveryFeePolicyRepository).findById(id);
-//        assertEquals(defaultFee, foundPolicy.getDefaultDeliveryFee());
-//        assertEquals(freeThreshold, foundPolicy.getFreeDeliveryThreshold());
+//        assertEquals(name, foundPolicy.name());
+//        assertEquals(defaultFee, foundPolicy.defaultDeliveryFee());
+//        assertEquals(freeThreshold, foundPolicy.freeDeliveryThreshold());
 //    }
 //
 //    @Test
@@ -66,12 +69,13 @@
 //    @Test
 //    void createDeliveryFeePolicy_success() {
 //        // Given
+//        String name = "배송비정책";
 //        BigDecimal defaultFee = new BigDecimal("3000");
 //        BigDecimal freeThreshold = new BigDecimal("30000");
-//        DeliveryFeePolicySaveRequestDto saveRequest = new DeliveryFeePolicySaveRequestDto(defaultFee, freeThreshold);
-//        DeliveryFeePolicy savedPolicy = new DeliveryFeePolicy(1L, defaultFee, freeThreshold);
+//        DeliveryFeePolicySaveRequestDto saveRequest = new DeliveryFeePolicySaveRequestDto(name, defaultFee, freeThreshold);
+//        DeliveryFeePolicy savedPolicy = new DeliveryFeePolicy(1L, name, defaultFee, freeThreshold);
 //
-//        when(deliveryFeePolicyRepository.existsByDefaultDeliveryFeeAndFreeDeliveryThreshold(defaultFee, freeThreshold)).thenReturn(false);
+//        when(deliveryFeePolicyRepository.existsByName(name)).thenReturn(false);
 //        when(deliveryFeePolicyRepository.save(any(DeliveryFeePolicy.class))).thenReturn(savedPolicy);
 //
 //        // When
@@ -79,25 +83,25 @@
 //
 //        // Then
 //        assertEquals(1L, actualId);
-//        verify(deliveryFeePolicyRepository).existsByDefaultDeliveryFeeAndFreeDeliveryThreshold(defaultFee, freeThreshold);
 //        verify(deliveryFeePolicyRepository).save(any(DeliveryFeePolicy.class));
 //    }
 //
 //    @Test
 //    void createDeliveryFeePolicy_duplicated() {
 //        //given
+//        String name = "기본 배송비정책";
 //        BigDecimal defaultFee = new BigDecimal("3000");
 //        BigDecimal freeThreshold = new BigDecimal("30000");
-//        DeliveryFeePolicySaveRequestDto saveRequest = new DeliveryFeePolicySaveRequestDto(defaultFee, freeThreshold);
+//        DeliveryFeePolicySaveRequestDto saveRequest = new DeliveryFeePolicySaveRequestDto(name, defaultFee, freeThreshold);
 //        DeliveryFeePolicy mockPolicy = mock(DeliveryFeePolicy.class);
 //
-//        when(deliveryFeePolicyRepository.existsByDefaultDeliveryFeeAndFreeDeliveryThreshold(defaultFee, freeThreshold)).thenReturn(true);
+//        when(deliveryFeePolicyRepository.existsByName(name)).thenReturn(true);
 //
 //        //when
 //        ConflictException e = assertThrows(ConflictException.class, () -> deliveryFeePolicyService.createDeliveryFeePolicy(saveRequest));
 //
 //        //then
-//        verify(deliveryFeePolicyRepository).existsByDefaultDeliveryFeeAndFreeDeliveryThreshold(defaultFee, freeThreshold);
+//        verify(deliveryFeePolicyRepository).existsByName(name);
 //        verify(deliveryFeePolicyRepository, never()).save(any(DeliveryFeePolicy.class));
 //        assertEquals("duplicated delivery fee policy", e.getMessage());
 //    }
@@ -106,9 +110,10 @@
 //    void modifyDeliveryFeePolicy_success() {
 //        // Given
 //        long id = 1L;
+//        String name ="배송비정책";
 //        BigDecimal newDefaultFee = new BigDecimal("4000");
 //        BigDecimal newFreeThreshold = new BigDecimal("40000");
-//        DeliveryFeePolicyUpdateRequestDto updateRequest = new DeliveryFeePolicyUpdateRequestDto(newDefaultFee, newFreeThreshold);
+//        DeliveryFeePolicyUpdateRequestDto updateRequest = new DeliveryFeePolicyUpdateRequestDto(name, newDefaultFee, newFreeThreshold);
 //        DeliveryFeePolicy existingPolicy = new DeliveryFeePolicy(id, new BigDecimal("3000"), new BigDecimal("30000"));
 //
 //        when(deliveryFeePolicyRepository.findById(id)).thenReturn(Optional.of(existingPolicy));

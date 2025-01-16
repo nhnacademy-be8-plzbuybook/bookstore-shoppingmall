@@ -1,8 +1,6 @@
 package com.nhnacademy.book.order.repository;
 
-import com.nhnacademy.book.order.dto.OrderReturnDto;
-import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
-import com.nhnacademy.book.order.dto.QOrderReturnDto;
+import com.nhnacademy.book.order.dto.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.nhnacademy.book.order.entity.QOrderProductReturn.orderProductReturn;
 import static com.nhnacademy.book.order.entity.QOrderReturn.orderReturn;
+import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,29 +22,65 @@ import static com.nhnacademy.book.order.entity.QOrderReturn.orderReturn;
 public class OrderReturnQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<OrderReturnDto> findOrderReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
-        List<OrderReturnDto> orderReturns = queryFactory
-                .select(new QOrderReturnDto(
-                        orderReturn.id,
-                        orderReturn.reason,
-                        orderReturn.trackingNumber,
-                        orderReturn.requestedAt,
-                        orderReturn.completedAt,
-                        orderReturn.order.id
-                ))
-                .from(orderReturn)
+//    public Page<OrderReturnDto> findOrderReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
+//        List<OrderReturnDto> orderReturns = queryFactory
+//                .select(new QOrderReturnDto(
+//                        orderReturn.id,
+//                        orderReturn.reason,
+//                        orderReturn.trackingNumber,
+//                        orderReturn.requestedAt,
+//                        orderReturn.completedAt,
+//                        orderReturn.order.id
+//                ))
+//                .from(orderReturn)
+//                .where(
+//                        eqTrackingNumber(searchRequest.getTrackingNumber()),
+//                        eqStatus(searchRequest.getStatus())
+//                )
+//                .orderBy(orderReturn.requestedAt.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        Long countResult = queryFactory
+//                .select(orderReturn.count())
+//                .from(orderReturn)
+//                .where(
+//                        eqTrackingNumber(searchRequest.getTrackingNumber()),
+//                        eqStatus(searchRequest.getStatus())
+//                )
+//                .fetchOne();
+//
+//        long total = countResult != null ? countResult : 0L;
+//        return new PageImpl<>(orderReturns, pageable, total);
+//    }
+
+    public Page<OrderProductReturnDto> findOrderProductReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
+        List<OrderProductReturnDto> orderProductReturns = queryFactory
+                .select(new QOrderProductReturnDto(
+                        orderProductReturn.id,
+                        orderProductReturn.reason,
+                        orderProductReturn.quantity,
+                        orderProductReturn.trackingNumber,
+                        orderProductReturn.requestedAt,
+                        orderProductReturn.completedAt,
+                        orderProduct.order.id,
+                        orderProduct.orderProductId
+                        ))
+                .from(orderProductReturn)
+                .join(orderProduct).on(orderProduct.eq(orderProductReturn.orderProduct))
                 .where(
                         eqTrackingNumber(searchRequest.getTrackingNumber()),
                         eqStatus(searchRequest.getStatus())
                 )
-                .orderBy(orderReturn.requestedAt.desc())
+                .orderBy(orderProductReturn.requestedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long countResult = queryFactory
-                .select(orderReturn.count())
-                .from(orderReturn)
+                .select(orderProductReturn.count())
+                .from(orderProductReturn)
                 .where(
                         eqTrackingNumber(searchRequest.getTrackingNumber()),
                         eqStatus(searchRequest.getStatus())
@@ -52,25 +88,26 @@ public class OrderReturnQueryRepository {
                 .fetchOne();
 
         long total = countResult != null ? countResult : 0L;
-        return new PageImpl<>(orderReturns, pageable, total);
+        return new PageImpl<>(orderProductReturns, pageable, total);
     }
 
     private BooleanExpression eqTrackingNumber(String trackingNumber) {
         if (trackingNumber == null || trackingNumber.isBlank()) {
             return null;
         }
-        return orderReturn.trackingNumber.eq(trackingNumber);
+        return orderProductReturn.trackingNumber.eq(trackingNumber);
     }
 
     private BooleanExpression eqStatus(String status) {
         if (status == null || status.isBlank()) {
             return null;
-        }
-        else if (status.equals("RETURN_COMPLETED")) {
-            return orderReturn.completedAt.isNotNull();
+        } else if (status.equals("RETURN_COMPLETED")) {
+            return orderProductReturn.completedAt.isNotNull();
         } else if (status.equals("RETURN_REQUESTED")) {
-            return orderReturn.completedAt.isNull();
+            return orderProductReturn.completedAt.isNull();
         }
         return null;
     }
+
+
 }

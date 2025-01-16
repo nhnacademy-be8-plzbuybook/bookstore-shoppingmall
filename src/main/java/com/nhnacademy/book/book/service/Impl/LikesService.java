@@ -1,10 +1,9 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +63,7 @@ public class LikesService {
     }
 
     //회원 Id를 통해 좋아요 누른 책의 list를 가져오는 api
-    public Page<SellingBookResponseDto> getLikeBooks(Long memberId, Pageable pageable) {
+    public Page<SellingBookAndBookResponseDto> getLikeBooks(Long memberId, Pageable pageable) {
         Page<SellingBook> likedBooks = likesRepository.findLikedBooksByMemberId(memberId, pageable);
 
         return likedBooks.map(this::toResponseDto);
@@ -76,7 +75,7 @@ public class LikesService {
     /**
      * SellingBook -> SellingBookResponseDto 변환
      */
-    private SellingBookResponseDto toResponseDto(SellingBook sellingBook) {
+    private SellingBookAndBookResponseDto toResponseDto(SellingBook sellingBook) {
         Book book = sellingBook.getBook();
         BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
 
@@ -96,7 +95,7 @@ public class LikesService {
         // 출판사 정보 가져오기
         String publisher = book.getPublisher().getPublisherName();
 
-        return new SellingBookResponseDto(
+        return new SellingBookAndBookResponseDto(
                 sellingBook.getSellingBookId(),
                 book.getBookId(),
                 sellingBook.getBookTitle(),

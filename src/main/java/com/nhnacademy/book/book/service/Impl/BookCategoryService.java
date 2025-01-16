@@ -52,22 +52,7 @@ public class BookCategoryService {
         );
     }
 
-    public List<BookResponseDto> findBooksByCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
-        List<Book> books = bookCategoryRepository.findBooksByCategory(category);
-
-
-        return books.stream()
-                .map(book -> new BookResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13()
-                ))
-                .collect(Collectors.toList());
-    }
 
     public List<CategoryResponseDto> findCategoriesByBookId(Long bookId) {
         Book book = bookRepository.findById(bookId)
@@ -103,21 +88,4 @@ public class BookCategoryService {
     }
 
 
-    public List<BookResponseDto> findBooksByCategoryId(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
-
-        List<Book> books = bookCategoryRepository.findBooksByCategoryId(categoryId);
-
-
-
-        return books.stream()
-                .map(book -> new BookResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13()
-                ))
-                .collect(Collectors.toList());
-    }
 }

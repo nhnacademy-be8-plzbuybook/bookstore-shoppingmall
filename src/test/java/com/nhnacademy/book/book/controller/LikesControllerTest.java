@@ -1,6 +1,6 @@
 package com.nhnacademy.book.book.controller;
 
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.service.Impl.LikesService;
 import com.nhnacademy.book.member.domain.Member;
@@ -12,14 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -114,12 +111,12 @@ class LikesControllerTest {
         List<String> categories = new ArrayList<>();
         List<String> authors = new ArrayList<>();
 
-        List<SellingBookResponseDto> likedBooks = Arrays.asList(
-                new SellingBookResponseDto(1L, 1L, "test", new BigDecimal("100.00"), true,1, SellingBook.SellingBookStatus.SELLING, true,1L, "test", "test", categories, authors),
-                new SellingBookResponseDto(2L, 2L, "test", new BigDecimal("100.00"), false,1, SellingBook.SellingBookStatus.SELLING, false,1L, "test", "test", categories, authors)
+        List<SellingBookAndBookResponseDto> likedBooks = Arrays.asList(
+                new SellingBookAndBookResponseDto(1L, 1L, "test", new BigDecimal("100.00"), true,1, SellingBook.SellingBookStatus.SELLING, true,1L, "test", "test", categories, authors),
+                new SellingBookAndBookResponseDto(2L, 2L, "test", new BigDecimal("100.00"), false,1, SellingBook.SellingBookStatus.SELLING, false,1L, "test", "test", categories, authors)
         );
 
-        Page<SellingBookResponseDto> page = new PageImpl<>(likedBooks);
+        Page<SellingBookAndBookResponseDto> page = new PageImpl<>(likedBooks);
 
         when(likesService.getLikeBooks(1L, PageRequest.of(0,16))).thenReturn(page);
 

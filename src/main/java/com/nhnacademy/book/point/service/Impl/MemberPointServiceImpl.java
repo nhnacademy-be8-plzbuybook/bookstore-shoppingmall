@@ -6,6 +6,7 @@ import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
 import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
@@ -36,6 +37,7 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final MemberRepository memberRepository;
     private final PointConditionRepository pointConditionRepository;
     private final ReviewImageRepository reviewImageRepository;
+    private final OrderProductRepository orderProductRepository;
 
     // 회원 가입시
     @Override
@@ -57,7 +59,7 @@ public class MemberPointServiceImpl implements MemberPointService {
     }
 
     // 도서구매시
-    public void addPurchasePoint(Member member, OrderRequestDto orderRequest, BigDecimal paymentPrice) {
+    public void addPurchasePoint(Member member, OrderRequestDto orderRequest) {
         PointCondition pointCondition = pointConditionRepository.findByName("BOOK_PURCHASE")
                 .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
         BigDecimal basePercentage = pointCondition.getConditionPercentage();
@@ -66,16 +68,12 @@ public class MemberPointServiceImpl implements MemberPointService {
             case "NORMAL" -> new BigDecimal("0.01");
             case "ROYAL" -> new BigDecimal("0.02");
             case "GOLD" -> new BigDecimal("0.03");
-            case "PLATINUM" -> new BigDecimal("0.03");
+            case "PLATINUM" -> new BigDecimal("0.04");
             default -> throw new MemberGradeNotFoundException("회원 등급이 존재하지 않습니다.");
         };
         BigDecimal totalPercentage = basePercentage.add(gradePercentage);
 
-        BigDecimal packagingFee = orderRequest.getOrderProducts().stream()
-                .map(product -> product.getWrapping() != null ? product.getWrapping().getPrice() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal accumulatedAmount = paymentPrice.subtract(packagingFee);
+        BigDecimal accumulatedAmount = orderProductRepository.findLatestOrderTotalPriceByMemberId(member.getMemberId());
 
         BigDecimal totalPoints = accumulatedAmount.multiply(totalPercentage);
 
