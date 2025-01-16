@@ -52,12 +52,7 @@ public class BookRegisterDto {
     }
 
 
-    public List<Category> getCategories() {
-        if (this.categories == null) {
-            return new ArrayList<>();  // null일 경우 빈 리스트 반환
-        }
-        return categories;
-    }
+
 
 
 
