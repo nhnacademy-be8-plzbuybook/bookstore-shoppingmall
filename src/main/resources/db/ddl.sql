@@ -83,10 +83,11 @@ create table order_product
 # 주문상품 포장
 create table order_product_wrapping
 (
-    order_product_wrapping_id bigint not null auto_increment,
-    opw_order_product_id      bigint not null,
-    opw_wrapping_paper_id     bigint not null,
-    quantity                  int    not null default 1 check ( quantity >= 1 ),
+    order_product_wrapping_id bigint  not null auto_increment,
+    opw_order_product_id      bigint  not null,
+    opw_wrapping_paper_id     bigint  not null,
+    quantity                  int     not null default 1 check ( quantity >= 1 ),
+    price                     decimal not null,
     primary key (order_product_wrapping_id),
     foreign key (opw_order_product_id) references order_product (order_product_id) on delete cascade,
     foreign key (opw_wrapping_paper_id) references wrapping_paper (wrapping_paper_id) on delete restrict
@@ -121,7 +122,7 @@ create table order_cancel
 create table delivery_fee_policy
 (
     delivery_fee_policy_id  bigint         not null auto_increment,
-    name                    varchar(100)   not null unique ,
+    name                    varchar(100)   not null unique,
     default_delivery_fee    decimal(10, 2) not null,
     free_delivery_threshold decimal(10, 2) not null,
     primary key (delivery_fee_policy_id)
@@ -142,18 +143,31 @@ create table order_return
     order_return_id bigint       not null auto_increment,
     or_order_id     char(36)     not null,
     reason          varchar(500) not null,
-    tracking_number varchar(30) not null unique ,
+    tracking_number varchar(30)  not null unique,
     requested_at    datetime     not null default current_timestamp,
     completed_at    datetime     null,
     primary key (order_return_id),
     foreign key (or_order_id) references orders (order_id) on delete restrict
 );
 
-create table order_product_coupon (
-    order_product_coupon_id bigint not null  auto_increment,
-    opc_order_product_id bigint not null ,
-    member_coupon_id bigint not null ,
-    discount decimal(10,2) not null ,
+create table order_product_coupon
+(
+    order_product_coupon_id bigint         not null auto_increment,
+    opc_order_product_id    bigint         not null,
+    member_coupon_id        bigint         not null,
+    discount                decimal(10, 2) not null,
     primary key (order_product_coupon_id),
-    foreign key (opc_order_product_id) references order_product(order_product_id)
+    foreign key (opc_order_product_id) references order_product (order_product_id)
 );
+
+create table order_product_cancel
+(
+    order_product_cancel_id bigint       not null auto_increment,
+    reason                  varchar(500) not null,
+    quantity                int          not null default 1 check ( quantity > 0 ),
+    canceled_at             datetime     not null default current_timestamp,
+    opc_order_product_id    bigint       not null,
+    primary key (order_product_cancel_id),
+    foreign key (opc_order_product_id) references order_product (order_product_id)
+
+)
