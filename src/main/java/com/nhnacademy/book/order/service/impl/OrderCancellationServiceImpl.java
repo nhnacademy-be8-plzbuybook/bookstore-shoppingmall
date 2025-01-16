@@ -4,6 +4,8 @@ import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.feign.dto.RefundCouponRequestDto;
 import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
 import com.nhnacademy.book.order.entity.OrderCancel;
 import com.nhnacademy.book.order.entity.Orders;
@@ -36,7 +38,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final PaymentService paymentService;
     private final OrderProductRepository orderProductRepository;
     private final SellingBookRepository sellingBookRepository;
-
+    private final CouponClient couponClient;
 
     @Transactional
     @Override
@@ -53,6 +55,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
         //TODO: 포인트 복구
         //TODO: 쿠폰 복구
+        //couponClient.refundCoupon(new RefundCouponRequestDto(Long couponId, Long memberId)); // 회원식별키와 쿠폰식별키 필요함
         //TODO: 재고 복구 (캐시, db 둘 다 ?)
         List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
         restoreOrderProductsStock(orderProducts);

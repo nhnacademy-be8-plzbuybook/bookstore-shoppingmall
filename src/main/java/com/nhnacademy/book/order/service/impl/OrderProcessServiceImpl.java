@@ -1,15 +1,13 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
 import com.nhnacademy.book.order.dto.NonMemberOrderSaveRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.*;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
@@ -41,6 +39,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderProductWrappingService orderProductWrappingService;
     private final MemberPointService memberPointService;
     private final MemberRepository memberRepository;
+    private final CouponClient couponClient;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -81,7 +80,13 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 
             // 주문상품-포장 저장
             savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
+
             // TODO: 쿠폰 사용처리
+            if (orderProductRequest.getAppliedCoupons() != null) {
+                for (OrderProductAppliedCouponDto appliedCoupon : orderProductRequest.getAppliedCoupons()) {
+                    couponClient.useCoupon(appliedCoupon.getCouponId());
+                }
+            }
         }
 
         // 포인트 사용처리

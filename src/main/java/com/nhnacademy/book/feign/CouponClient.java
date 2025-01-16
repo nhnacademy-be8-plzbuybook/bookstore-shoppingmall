@@ -34,6 +34,19 @@ public interface CouponClient {
     @GetMapping("/api/member-coupons/member/{member-id}/unused")
     ResponseEntity<Page<MemberCouponGetResponseDto>> getUnusedMemberCouponsByMemberId(@PathVariable("member-id") Long memberId, Pageable pageable);
 
+    /**
+     * 쿠폰 상태 변경: UNUSED -> USED
+     * PATCH /api/coupons/{coupon-id}/use
+     */
+    @PatchMapping("/api/coupons/{coupon-id}/use")
+    ResponseEntity<String> useCoupon(@PathVariable("coupon-id") @Min(0) Long couponId);
+
+    /**
+     * 회원이 보유한 쿠폰 사용
+     * PATCH /api/member-coupons/members/{member-id}/coupons/{coupon-id}/use
+     */
+    @PatchMapping("/api/member-coupons/members/{member-id}/coupons/{coupon-id}/use")
+    ResponseEntity<String> useMemberCoupon(@PathVariable("member-id") Long memberId, @PathVariable("coupon-id") Long couponId);
 
     /**
      * 주문금액 할인계산
@@ -60,5 +73,12 @@ public interface CouponClient {
     @GetMapping("/api/coupons/id/{coupon-id}")
     ResponseEntity<CouponResponseDto> getCouponById(@PathVariable("coupon-id") Long couponId);
 
+    /**
+     * POST /api/coupons/refund
+     * @param refundCouponRequestDto : Long couponId (쿠폰식별키), Long mcMemberId (회원 식별키)
+     * @return "환불이 완료되었습니다"
+     */
+    @PostMapping("/api/coupons/refund")
+    ResponseEntity<String> refundCoupon(@RequestBody RefundCouponRequestDto refundCouponRequestDto);
 
 }
