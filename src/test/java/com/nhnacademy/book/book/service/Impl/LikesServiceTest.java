@@ -1,6 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.member.domain.Member;
@@ -120,7 +120,7 @@ class LikesServiceTest {
         when(likesRepository.findLikedBooksByMemberId(1L, pageable)).thenReturn(page);
 
         // 메서드 호출
-        Page<SellingBookResponseDto> result = likesService.getLikeBooks(1L, pageable);
+        Page<SellingBookAndBookResponseDto> result = likesService.getLikeBooks(1L, pageable);
 
         // 검증
         assertNotNull(result);

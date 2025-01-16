@@ -74,7 +74,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 
     @Query("SELECT b FROM Book b WHERE b.bookId NOT IN (SELECT sb.book.bookId FROM SellingBook sb)")
-    List<Book> findBooksNotInSellingBooks();
+    Page<Book> findBooksNotInSellingBooks(Pageable pageable);
 
 
     // 제목에 특정 문자열이 포함된 책 조회

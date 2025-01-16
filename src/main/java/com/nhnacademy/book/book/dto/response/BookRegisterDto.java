@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class AdminBookRegisterDto {
+public class BookRegisterDto {
     private Long bookId;
     private String bookTitle; // 제목
     private LocalDate bookPubDate; // 출판일
@@ -22,7 +22,7 @@ public class AdminBookRegisterDto {
     private List<CategorySimpleResponseDto> categories; // 카테고리 정보
     private List<AuthorResponseDto> authors; // 작가 정보
 
-    public AdminBookRegisterDto(
+    public BookRegisterDto(
             Long bookId,
             String bookTitle,                       // 제목
             LocalDate bookPubDate,                  // 출판일

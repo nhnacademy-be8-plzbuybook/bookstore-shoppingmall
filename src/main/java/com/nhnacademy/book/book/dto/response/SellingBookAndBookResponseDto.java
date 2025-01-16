@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class SellingBookResponseDto {
+public class SellingBookAndBookResponseDto {
 
     private Long sellingBookId;
     private Long bookId;
@@ -26,4 +26,8 @@ public class SellingBookResponseDto {
     private String publisher;        // 출판사 정보
     private List<String> categories; // 카테고리 정보
     private List<String> authors;    // 작가 정보
+
+    public SellingBookAndBookResponseDto() {
+
+    }
 }
