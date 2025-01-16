@@ -25,18 +25,17 @@ public class CartBookGuestController {
 
     @PostMapping()
     public ResponseEntity<Map<String, Long>> createGuestCart(@RequestBody CreateCartBookRequestDto createCartBookRequestDto,
-                                                             @RequestHeader("cart") String sessionId
-                                                             ) {
-        log.info("sessionId: {}", sessionId);
+                                                             @RequestHeader("cart") String sessionId) {
+
         Long cartId = cartBookGuestService.AddToGuestCart(createCartBookRequestDto, sessionId);
         Map<String, Long> response = new HashMap<>();
         response.put("cartId", cartId);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping()
     public ResponseEntity<List<ReadCartBookResponseDto>> getGuestCart(@RequestHeader("cart") String sessionId) {
-        log.info("sessionId: {}", sessionId);
         return ResponseEntity.ok(cartBookGuestService.getGuestCart(sessionId));
     }
 
@@ -44,28 +43,30 @@ public class CartBookGuestController {
     public ResponseEntity<Map<String, Long>> updateGuestCartItem(@RequestParam Long cartId,
                                                                 @RequestParam int quantity,
                                                                 @RequestHeader("cart") String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        log.info("cartId: {}", cartId);
+
         Long updatedCartId = cartBookGuestService.updateGuestCartItem(cartId, quantity, sessionId);
         Map<String, Long> response = new HashMap<>();
         response.put("cartId", updatedCartId);
+
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping()
     public ResponseEntity<Void> clearGuestCart(@RequestHeader("cart") String sessionId) {
-        log.info("sessionId: {}", sessionId);
+
         cartBookGuestService.clearGuestCart(sessionId);
+
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{sessionId}")
-    public ResponseEntity<Map<String, Long>> removeItemFromGuestCart(@RequestParam Long sellingBookId,
-                                                                    @RequestHeader("cart") String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        Long deletedCartId = cartBookGuestService.removeItemFromGuestCart(sellingBookId, sessionId);
+    @DeleteMapping("/{cartId}")
+    public ResponseEntity<Map<String, Long>> removeItemFromGuestCart(@PathVariable("cartId") Long cartId,
+                                            @RequestHeader("cart") String sessionId) {
+
+        Long deletedCartId = cartBookGuestService.removeItemFromGuestCart(cartId, sessionId);
         Map<String, Long> response = new HashMap<>();
         response.put("cartId", deletedCartId);
+
         return ResponseEntity.ok(response);
     }
 }

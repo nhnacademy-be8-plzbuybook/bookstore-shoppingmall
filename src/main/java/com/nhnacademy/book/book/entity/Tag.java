@@ -26,4 +26,8 @@ public class Tag {
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookTag> bookTags = new ArrayList<>();
 
+    public Tag(long l, String science) {
+        this.tagId = l;
+        this.tagName = science;
+    }
 }

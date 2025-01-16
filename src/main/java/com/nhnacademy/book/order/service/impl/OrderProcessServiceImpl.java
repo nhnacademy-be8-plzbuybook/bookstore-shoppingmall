@@ -5,6 +5,14 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
+import com.nhnacademy.book.order.dto.MemberOrderSaveRequestDto;
+import com.nhnacademy.book.order.dto.NonMemberOrderSaveRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.*;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
@@ -31,6 +39,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final MemberPointService memberPointService;
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
+    private final MemberRepository memberRepository;
+    private final CouponClient couponClient;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -73,6 +83,14 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(), orderProductRequest.getWrapping());
             // TODO: 쿠폰 사용처리
             orderProductCouponService.saveOrderProductCoupon(savedOrderProduct.getOrderProductId(), orderProductRequest.getAppliedCoupons());
+            savedOrderProductWrapping(savedOrderProduct, orderProductRequest);
+
+            // TODO: 쿠폰 사용처리
+            if (orderProductRequest.getAppliedCoupons() != null) {
+                for (OrderProductAppliedCouponDto appliedCoupon : orderProductRequest.getAppliedCoupons()) {
+                    couponClient.useCoupon(appliedCoupon.getCouponId());
+                }
+            }
         }
 
         // TODO: 포인트 사용처리
@@ -90,6 +108,14 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         // 회원/비회원 주문 저장
 //        addOrderByMemberType(orderId, orderCache);
         customerOrderService.placeCustomerOrder(orderId, orderRequest);
+        addOrderByMemberType(orderId, orderCache);
+
+        if (orderCache instanceof MemberOrderRequestDto memberOrderCache) {
+            Member member = memberRepository.findByEmail(memberOrderCache.getMemberEmail())
+                    .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
+
+            memberPointService.addPurchasePoint(member, orderCache);
+        }
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);

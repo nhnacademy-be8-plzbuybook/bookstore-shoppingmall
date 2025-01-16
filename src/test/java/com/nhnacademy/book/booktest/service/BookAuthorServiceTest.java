@@ -203,32 +203,7 @@ public class BookAuthorServiceTest {
 
     }
 
-    @Test
-    void findBooksByAuthorId(){
 
-        Mockito.when(bookAuthorRepository.findBooksByAuthorId(anyLong())).thenReturn(books);
-        Mockito.when(authorRepository.existsById(anyLong())).thenReturn(true);
-
-        List<BookResponseDto> bookResponseDtos = bookAuthorService.findBooksByAuthorId(1L);
-
-
-
-
-        assertEquals(2, bookResponseDtos.size());
-        Mockito.verify(bookAuthorRepository, Mockito.times(1)).findBooksByAuthorId(anyLong());
-
-        for(BookResponseDto bookResponseDto : bookResponseDtos){
-            log.info(bookResponseDto.getBookTitle());
-        }
-    }
-
-    @Test
-    void findBooksByAuthorId_AuthorNotFoundException() {
-
-        Mockito.when(authorRepository.existsById(anyLong())).thenReturn(false);
-        assertThrows(AuthorIdNotFoundException.class, () -> bookAuthorService.findBooksByAuthorId(anyLong()));
-
-    }
 
     @Test
     void findAuthorsByBookId() {

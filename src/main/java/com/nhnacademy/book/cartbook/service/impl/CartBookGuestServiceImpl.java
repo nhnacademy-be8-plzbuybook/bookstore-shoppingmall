@@ -8,6 +8,7 @@ import com.nhnacademy.book.book.repository.BookImageRepository;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.cartbook.dto.request.CreateCartBookRequestDto;
 import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
+import com.nhnacademy.book.cartbook.exception.BookStatusNotSellingBookException;
 import com.nhnacademy.book.cartbook.repository.CartBookRedisRepository;
 import com.nhnacademy.book.cartbook.service.CartBookGuestService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +41,20 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
         SellingBook sellingBook = sellingBookRepository.findById(createCartBookRequestDto.sellingBookId())
                 .orElseThrow(() -> new BookNotFoundException("비회원 장바구니에서 찾는 도서가 존재하지 않습니다."));
+        if (!sellingBook.getSellingBookStatus().equals(SellingBook.SellingBookStatus.SELLING)) {
+            throw new BookStatusNotSellingBookException("판매중인 도서가 아닙니다.");
+        }
 
-        log.info("sessionID: {}", sessionId);
         List<ReadCartBookResponseDto> existingCartItems = cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
+        if (cartBookRedisRepository.isHit("Guest:" + sessionId)) {
+            for (ReadCartBookResponseDto existingCartItem : existingCartItems) {
+                if (existingCartItem.sellingBookId().equals(sellingBook.getSellingBookId())) {
+                    int quantity = existingCartItem.quantity() + createCartBookRequestDto.quantity();
+                    return cartBookRedisRepository.update("Guest:" + sessionId, existingCartItem.cartId(), quantity);
+                }
+            }
+        }
+
         Long cartBookId = (long) (existingCartItems.size() + 1); // 자동으로 증가
 
         ReadCartBookResponseDto readCartBookResponseDto = ReadCartBookResponseDto.builder()
@@ -62,35 +74,30 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
     @Override
     public Long updateGuestCartItem(Long cartId, int quantity, String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        log.info("cartId: {}", cartId);
         return cartBookRedisRepository.update("Guest:" + sessionId, cartId, quantity);
     }
 
     @Override
-    public Long removeItemFromGuestCart(Long sellingBookId, String sessionId) {
-        log.info("sessionId: {}", sessionId);
-        return cartBookRedisRepository.delete("Guest:" + sessionId, sellingBookId);
+    public Long removeItemFromGuestCart(Long cartId, String sessionId) {
+        return cartBookRedisRepository.delete("Guest:" + sessionId, cartId);
     }
 
     @Override
     public void clearGuestCart(String sessionId) {
-        log.info("sessionId: {}", sessionId);
         cartBookRedisRepository.deleteAll("Guest:" + sessionId);
     }
 
     @Override
     public List<ReadCartBookResponseDto> getGuestCart(String sessionId) {
-        log.info("sessionId: {}", sessionId);
         return cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
     }
 
     private String getImageUrl(SellingBook sellingBook, BookImageRepository bookImageRepository) {
-        Book book =  sellingBook.getBook(); // 판매책으로 책정보를 가져옴
+        Book book = sellingBook.getBook(); // 판매책으로 책정보를 가져옴
         BookImage bookImage = bookImageRepository.findByBook(book).orElse(null); // 책으로 책이미지를 가져옴
         String url = bookImage.getImageUrl(); // 책이미지에서 이미지 url 을 가져옴
 
-        if(url != null && !url.isEmpty()) {
+        if (url != null && !url.isEmpty()) {
             log.info("책에 대한 이미지 url이 존재하지 않습니다.");
         }
         return url;

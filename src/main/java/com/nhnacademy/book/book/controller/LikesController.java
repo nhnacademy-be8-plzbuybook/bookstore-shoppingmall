@@ -1,16 +1,12 @@
 package com.nhnacademy.book.book.controller;
 
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.service.Impl.LikesService;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.service.MemberService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +43,7 @@ public class LikesController {
 
     //회원 Id를 통해 좋아요 누른 책의 list를 가져오는 api
     @GetMapping("/members/{memberId}/liked-books")
-    public Page<SellingBookResponseDto> getLikedBooks(
+    public Page<SellingBookAndBookResponseDto> getLikedBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "16") int size,
             @PathVariable Long memberId

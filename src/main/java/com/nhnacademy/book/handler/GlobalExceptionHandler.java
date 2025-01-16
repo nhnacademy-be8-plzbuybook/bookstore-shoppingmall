@@ -1,6 +1,9 @@
 package com.nhnacademy.book.handler;
 
 import com.nhnacademy.book.book.exception.*;
+import com.nhnacademy.book.cartbook.exception.BookStatusNotSellingBookException;
+import com.nhnacademy.book.cartbook.exception.CartBookDoesNotExistException;
+import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
@@ -17,7 +20,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import org.springframework.web.servlet.View;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -328,6 +330,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
     @ExceptionHandler(AuthorNameNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleAuthorNameNotFoundException(AuthorNameNotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -337,6 +340,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
     @ExceptionHandler(AuthorsNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleAuthorsNotFoundException(AuthorsNotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -346,6 +350,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
     @ExceptionHandler(BookAuthorNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleBookAuthorNotFoundException(BookAuthorNotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -365,6 +370,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleCategoryAlreadyExistsException(CategoryAlreadyExistsException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -395,6 +401,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
     @ExceptionHandler(SellingBookNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleSellingBookNotFoundException(SellingBookNotFoundException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -463,6 +470,36 @@ public class GlobalExceptionHandler {
     // 리뷰id에 해당한느 리뷰가 없을 떄
     @ExceptionHandler(ReviewNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleReviewNotFoundException(ReviewNotFoundException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(BookStatusNotSellingBookException.class)
+    public ResponseEntity<ErrorResponseDto> handleBookStatusNotSellingBookException(BookStatusNotSellingBookException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(CartBookDoesNotExistException.class)
+    public ResponseEntity<ErrorResponseDto> handleCartBookDoesNotExistException(CartBookDoesNotExistException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(SellingBookNotFoundInBookCartException.class)
+    public ResponseEntity<ErrorResponseDto> handleSellingBookNotFoundInBookCartException(SellingBookNotFoundInBookCartException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),

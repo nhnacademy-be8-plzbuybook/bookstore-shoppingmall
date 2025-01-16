@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Setter
 public class SellingBookRegisterDto {
     private Long bookId; // 책 ID
-    private Long sellingBookId; // 추가 필요
     private BigDecimal sellingBookPrice; // 판매가
     private Boolean sellingBookPackageable; // 선물 포장 가능 여부
     private Integer sellingBookStock; // 재고

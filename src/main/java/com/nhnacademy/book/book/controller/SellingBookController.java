@@ -2,7 +2,8 @@ package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
+import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class SellingBookController {
      */
     //유저
     @GetMapping
-    public ResponseEntity<Page<SellingBookResponseDto>> getBooks(
+    public ResponseEntity<Page<SellingBookAndBookResponseDto>> getBooks(
             @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
             @RequestParam(defaultValue = "16") int size,        // 페이지 크기
             @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 정렬 기준
@@ -83,7 +84,6 @@ public class SellingBookController {
      * @return
      */
 
-    // 수정 완료
     @PostMapping
     public ResponseEntity<SellingBookRegisterDto> registerSellingBooks(
             @RequestBody @Valid SellingBookRegisterDto sellingBookRegisterDto) {
@@ -110,7 +110,7 @@ public class SellingBookController {
 
 
     @PutMapping("/{sellingBookId}")
-    public ResponseEntity<SellingBookRegisterDto> updateSellingBook(
+    public ResponseEntity<SellinBookResponseDto> updateSellingBook(
             @PathVariable Long sellingBookId,
             @RequestBody SellingBookRegisterDto updateDto) {
         return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
@@ -133,7 +133,7 @@ public class SellingBookController {
      * 조회수 정렬 판매책 조회 - 조회수 높은순, 낮은순
      */
     @GetMapping("/view-count")
-    public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByViewCount(
+    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCount(
             @RequestParam(defaultValue = "desc") String sortDirection) {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount(sortDirection));
     }
@@ -143,7 +143,7 @@ public class SellingBookController {
      * 도서 상태별 판매책 조회 - 판매중인, 품절된 그런거
      */
     @GetMapping("/status")
-    public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByStatus(
+    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByStatus(
             @RequestParam SellingBook.SellingBookStatus status) {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByStatus(status));
     }
@@ -154,7 +154,7 @@ public class SellingBookController {
      * @return
      */
     @GetMapping("/view-count/desc")
-    public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByViewCountDesc() {
+    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountDesc() {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("desc"));
     }
 
@@ -164,7 +164,7 @@ public class SellingBookController {
      * @return
      */
     @GetMapping("/view-count/asc")
-    public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByViewCountAsc() {
+    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountAsc() {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("asc"));
     }
 
@@ -177,9 +177,9 @@ public class SellingBookController {
      * @return
      */
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<SellingBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
         System.out.println("요청: 카테고리 ID " +  categoryId);
-        List<SellingBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
+        List<SellingBookAndBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
         log.debug("응답 크기: {}", response.size());
         return ResponseEntity.ok(response);
     }
