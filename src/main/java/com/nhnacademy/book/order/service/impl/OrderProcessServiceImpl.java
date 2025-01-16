@@ -101,7 +101,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             Member member = memberRepository.findByEmail(memberOrderCache.getMemberEmail())
                     .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다."));
 
-            memberPointService.addPurchasePoint(member, orderCache, finalPrice);
+            memberPointService.addPurchasePoint(member, orderCache);
         }
 
         // 주문상태 "결제완료"로 변경
