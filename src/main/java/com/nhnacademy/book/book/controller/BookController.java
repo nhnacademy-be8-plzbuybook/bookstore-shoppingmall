@@ -1,6 +1,7 @@
 package com.nhnacademy.book.book.controller;
 
 
+import com.nhnacademy.book.book.dto.request.BookRegisterRequestDto;
 import com.nhnacademy.book.book.dto.response.*;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
@@ -36,7 +37,7 @@ public class BookController {
     // 도서 등록 기능 (관리자)
     @PostMapping
     public ResponseEntity<Void> registerBook(
-            @RequestBody @Valid com.nhnacademy.book.book.dto.request.BookRegisterDto registerDto) {
+            @RequestBody @Valid BookRegisterRequestDto registerDto) {
 
         bookService.registerBook(registerDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -68,19 +69,19 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-//    //도서 수정 기능 (관리자) - 수정할때 값 불러오기
-//    @GetMapping("/update/{bookId}")
-//    public ResponseEntity<BookRegisterDto> getBook(@PathVariable Long bookId) {
-//        BookRegisterDto bookDetail = bookService.getBookUpdate(bookId); // DTO 생성
-//        return ResponseEntity.ok(bookDetail);
-//    }
-//
-//    // 도서 수정 기능 (관리자)
-//    @PutMapping("/update/{bookId}")
-//    public ResponseEntity<Void> updateBook(@RequestBody BookRegisterDto bookUpdateRequest) {
-//        bookService.updateBook( bookUpdateRequest);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//    }
+    //도서 수정 기능 (관리자) - 수정할때 값 불러오기
+    @GetMapping("/update/{bookId}")
+    public ResponseEntity<BookRegisterRequestDto> getBook(@PathVariable Long bookId) {
+        BookRegisterRequestDto bookDetail = bookService.getBookUpdate(bookId); // DTO 생성
+        return ResponseEntity.ok(bookDetail);
+    }
+
+    // 도서 수정 기능 (관리자)
+    @PutMapping("/{bookId}")
+    public ResponseEntity<Void> updateBook(@RequestBody BookRegisterRequestDto bookUpdateRequest) {
+        bookService.updateBook(bookUpdateRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 
     @GetMapping("/not-in-selling-books")
