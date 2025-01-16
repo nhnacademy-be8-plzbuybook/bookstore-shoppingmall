@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.BirthdayCouponRequestDto;
+import com.nhnacademy.book.feign.service.CouponService;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.BirthdayCouponService;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Service
 public class BirthdayCouponServiceImpl implements BirthdayCouponService {
     private final MemberRepository memberRepository;
-    private final CouponClient couponClient;
+    private final CouponService couponService;
 
     @Transactional(readOnly = true)
     @Override
@@ -31,7 +31,7 @@ public class BirthdayCouponServiceImpl implements BirthdayCouponService {
 
             members.stream()
                     .map(m -> new BirthdayCouponRequestDto(m.getMemberId(), now))
-                    .forEach(couponClient::issueBirthdayCoupon);
+                    .forEach(couponService::issueBirthdayCoupon);
 
             pageable = pageable.next();
         } while (!members.isLast());

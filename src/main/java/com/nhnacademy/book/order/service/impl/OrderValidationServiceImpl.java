@@ -5,9 +5,9 @@ import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
-import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.CouponCalculationRequestDto;
 import com.nhnacademy.book.feign.dto.CouponCalculationResponseDto;
+import com.nhnacademy.book.feign.service.CouponService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -35,7 +35,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     private final WrappingPaperService wrappingPaperService;
     private final OrderCacheService orderCacheService;
     private final DeliveryFeePolicyService deliveryFeePolicyService;
-    private final CouponClient couponClient;
+    private final CouponService couponService;
 
 
     @Transactional(readOnly = true)
@@ -151,7 +151,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         Long couponId = appliedCoupon.getCouponId();
         BigDecimal discount = appliedCoupon.getDiscount();
 
-        couponClient.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
+        couponService.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
 
         // 쿠폰 아이디가 유효한지 검증
         // 할인가격이 유효한지 검증

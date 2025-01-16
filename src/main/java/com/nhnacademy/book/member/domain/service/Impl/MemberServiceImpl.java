@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
+import com.nhnacademy.book.feign.service.CouponService;
 import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
@@ -43,8 +43,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberAuthRepository memberAuthRepository;
     private final MemberPointService memberPointService;
-
-    private final CouponClient couponClient;
+    private final CouponService couponService;
     private final AuthRepository authRepository;
     private final MemberCertificationRepository memberCertificationRepository;
     private final Clock clock;
@@ -123,7 +122,7 @@ public class MemberServiceImpl implements MemberService {
                     savedMember.getMemberId(),
                     LocalDateTime.now()
             );
-            couponClient.issueWelcomeCoupon(welComeCouponRequestDto);
+            couponService.issueWelcomeCoupon(welComeCouponRequestDto);
         } catch (Exception e) {
             // 에러를 던지면 로직이 멈추기 떄문에 에러 로그 출력만 하도록 변경
             log.error("Welcome 쿠폰발급이 실패 하였습니다!");

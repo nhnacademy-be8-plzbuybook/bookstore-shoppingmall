@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.BirthdayCouponRequestDto;
+import com.nhnacademy.book.feign.service.CouponService;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
@@ -36,7 +36,7 @@ class BirthdayCouponServiceImplTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private CouponClient couponClient;
+    private CouponService couponService;
 
     private Member mockMember;
     private MemberGrade mockMemberGrade;
@@ -67,7 +67,7 @@ class BirthdayCouponServiceImplTest {
         birthdayCouponService.issueBirthdayCoupons(month, pageable);
 
         verify(memberRepository, times(1)).findByBirthMonth(eq(month), any(Pageable.class));
-        verify(couponClient, times(1)).issueBirthdayCoupon(any(BirthdayCouponRequestDto.class));
+        verify(couponService, times(1)).issueBirthdayCoupon(any(BirthdayCouponRequestDto.class));
     }
 
 }

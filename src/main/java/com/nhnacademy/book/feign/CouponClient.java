@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +50,7 @@ public interface CouponClient {
     /**
      * 주문금액 할인계산
      * POST /api/member-coupons/member/{coupon-id}/calculate
+     *
      * @param email
      * @param couponId
      * @param calculationRequestDto : BigDecimal price
@@ -58,8 +58,9 @@ public interface CouponClient {
      */
     @PostMapping("/api/member-coupons/member/{coupon-id}/calculate")
     ResponseEntity<CouponCalculationResponseDto> applyOrderProductCoupon(@RequestHeader("X-USER-ID") String email,
-                                                                                @PathVariable("coupon-id") Long couponId,
-                                                                                @RequestBody @Valid CouponCalculationRequestDto calculationRequestDto);
+                                                                         @PathVariable("coupon-id") Long couponId,
+                                                                         @RequestBody @Valid CouponCalculationRequestDto calculationRequestDto);
+
     @PostMapping("/api/member-coupons/member/{coupon-id}/validation")
     ResponseEntity<ValidationCouponCalculation> validateCouponCalculation(@PathVariable("coupon-id") Long couponId, @RequestBody @Valid CouponCalculationRequestDto calculationRequestDto);
 
@@ -75,6 +76,7 @@ public interface CouponClient {
 
     /**
      * POST /api/coupons/refund
+     *
      * @param refundCouponRequestDto : Long couponId (쿠폰식별키), Long mcMemberId (회원 식별키)
      * @return "환불이 완료되었습니다"
      */

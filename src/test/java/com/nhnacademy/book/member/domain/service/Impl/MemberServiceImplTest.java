@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
+import com.nhnacademy.book.feign.service.CouponService;
 import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
@@ -67,7 +67,7 @@ class MemberServiceImplTest {
     private AuthRepository authRepository;
 
     @Mock
-    private CouponClient couponClient;
+    private CouponService couponService;
 
     @Mock
     private Clock clock;
@@ -333,7 +333,7 @@ class MemberServiceImplTest {
         memberService.createMember(memberCreateRequestDto);
 
         // 쿠폰 요청 메서드 호출 확인
-        verify(couponClient, times(1)).issueWelcomeCoupon(any(WelComeCouponRequestDto.class));
+        verify(couponService, times(1)).issueWelcomeCoupon(any(WelComeCouponRequestDto.class));
     }
 
     @Test
