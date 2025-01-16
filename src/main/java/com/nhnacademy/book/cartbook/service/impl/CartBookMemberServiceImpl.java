@@ -186,7 +186,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
         CartBook cartBook = cartBookRepository.findBySellingBook_SellingBookIdAndCart_CartId(updateCartBookRequestDto.sellingBookId(), cart.getCartId())
                 .orElseThrow(() -> new SellingBookNotFoundInBookCartException("장바구니에서 해당 책을 찾을 수 없습니다."));
 
-        cartBook.setQuantity(cartBook.getQuantity() + updateCartBookRequestDto.quantity());
+        cartBook.setQuantity(updateCartBookRequestDto.quantity());
 
         cartBook.setSellingBook(
                 sellingBookRepository.findById(updateCartBookRequestDto.sellingBookId())
