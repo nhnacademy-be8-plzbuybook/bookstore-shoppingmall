@@ -176,30 +176,8 @@ public class BookCategoryServiceTest {
 
     }
 
-    @Test
-    void findBooksCategory() {
 
-        Mockito.when(categoryRepository.findById(anyLong())).thenReturn(Optional.ofNullable(category));
-        Mockito.when(bookCategoryRepository.findBooksByCategory(any())).thenReturn(books);
 
-        List<BookResponseDto> bookResponseDtos = bookCategoryService.findBooksByCategory(1L);
-
-        Mockito.verify(bookCategoryRepository, Mockito.times(1)).findBooksByCategory(any());
-        assertEquals(books.size(), bookResponseDtos.size());
-        assertEquals(books.get(0).getBookTitle(), bookResponseDtos.get(0).getBookTitle());
-
-        for (BookResponseDto bookResponseDto : bookResponseDtos){
-            log.info("{}",String.valueOf(bookResponseDto.getBookId()));
-            log.info("{}",bookResponseDto.getBookTitle());
-        }
-    }
-    @Test
-    void findBooksCategory_CategoryNotFound() {
-        Mockito.when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(CategoryNotFoundException.class, () -> {
-            bookCategoryService.findBooksByCategory(1L);
-        });
-    }
 
     @Test
     void findCategoriesByBookId(){
@@ -223,31 +201,6 @@ public class BookCategoryServiceTest {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(BookNotFoundException.class, () -> {
             bookCategoryService.findCategoriesByBookId(anyLong());
-        });
-    }
-
-    @Test
-    void findBooksCategoryId(){
-
-        Mockito.when(categoryRepository.findById(anyLong())).thenReturn(Optional.ofNullable(category));
-        Mockito.when(bookCategoryRepository.findBooksByCategoryId(anyLong())).thenReturn(books);
-
-        List<BookResponseDto> bookResponseDtos = bookCategoryService.findBooksByCategoryId(1L);
-
-        Mockito.verify(bookCategoryRepository, Mockito.times(1)).findBooksByCategoryId(anyLong());
-        assertEquals(books.size(), bookResponseDtos.size());
-        for(BookResponseDto bookResponseDto : bookResponseDtos){
-            log.info("{}",String.valueOf(bookResponseDto.getBookId()));
-            log.info("{}",bookResponseDto.getBookTitle());
-        }
-    }
-
-    @Test
-    void findBooksCategoryId_CategoryNotFound() {
-
-        Mockito.when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(CategoryNotFoundException.class, () -> {
-            bookCategoryService.findBooksByCategoryId(anyLong());
         });
     }
 

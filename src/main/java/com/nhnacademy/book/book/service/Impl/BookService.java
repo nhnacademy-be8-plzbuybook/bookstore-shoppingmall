@@ -3,19 +3,18 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.*;
 import com.nhnacademy.book.book.dto.response.*;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.dto.response.BookRegisterDto;
 import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
-import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -80,40 +79,10 @@ public class BookService {
         );
     }
 
-    public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
-        // Elasticsearch에서 BookDocument 조회
-        log.debug("Searching for book with ID: {}", bookId);
-
-        BookDocument bookDocument = bookSearchRepository.findByBookId(bookId);
-
-        if (bookDocument == null) {
-            log.error("Book not found with ID: {}", bookId);
-
-            throw new BookNotFoundException("Book with ID " + bookId + " not found.");
-        }
-
-
-        log.debug("Found book: {}", bookDocument);
-
-        // BookDetailResponseDto로 변환하여 반환
-        return new BookDetailResponseDto(
-                bookDocument.getBookId(),
-                bookDocument.getBookTitle(),
-                bookDocument.getBookIndex(),
-                bookDocument.getBookDescription(),
-                bookDocument.getBookPubDate(),
-                bookDocument.getBookPriceStandard(),
-                bookDocument.getBookIsbn13(),
-                bookDocument.getPublisherId(),
-                bookDocument.getImageUrl());
-    }
-
-
-
 
     // 도서 등록 기능 (관리자)
     @Transactional
-    public void registerBook(BookRegisterDto bookRegisterDto) {
+    public void registerBook(com.nhnacademy.book.book.dto.request.BookRegisterDto bookRegisterDto) {
         if(Objects.isNull(bookRegisterDto)){
             throw new BookNotFoundException("등록 할 책 정보 못 찾음");
         }
@@ -176,7 +145,7 @@ public class BookService {
      * @param pageable
      * @return
      */
-    public Page<AdminBookRegisterDto> getBooks(Pageable pageable) {
+    public Page<BookRegisterDto> getBooks(Pageable pageable) {
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
         return bookPage.map(book -> {
@@ -194,7 +163,7 @@ public class BookService {
             // 출판사 정보 가져오기
             String publisher = book.getPublisher().getPublisherName();
 
-            return new AdminBookRegisterDto(
+            return new BookRegisterDto(
                     book.getBookId(),
                     book.getBookTitle(),    // 제목
                     book.getBookPubDate(),         // 출판일
@@ -234,7 +203,7 @@ public class BookService {
     }
 
     // 도서 수정 기능 (관리자)
-    public void updateBook(Long bookId, BookRegisterDto bookUpdateRequest) {
+    public void updateBook(Long bookId, com.nhnacademy.book.book.dto.request.BookRegisterDto bookUpdateRequest) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
         book.setBookTitle(bookUpdateRequest.getBookTitle());
@@ -246,26 +215,24 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public List<BookResponseDto> findBooksNotInSellingBooks() {
-        //JPA의 쿼리 결과는 1차 캐시에 저장될 수 있습니다. 삭제 작업이 완료된 후에도 이전 쿼리 결과가 캐싱되어 삭제된 데이터가 반영되지 않을 수 있습니다.
-        //
-        //EntityManager를 사용하여 캐시를 무효화하거나 쿼리를 강제로 다시 실행합니다.
-
-        entityManager.clear(); // 캐시 초기화
+    public Page<BookResponseDto> findBooksNotInSellingBooks(Pageable pageable) {
+        // 캐시 초기화
+        entityManager.clear();
 
         // 레포지토리에서 데이터 조회
-        List<Book> books = bookRepository.findBooksNotInSellingBooks();
+        Page<Book> booksPage = bookRepository.findBooksNotInSellingBooks(pageable);
 
-
-        // 엔티티를 DTO로 변환
-        return books.stream()
-                .map(book -> new BookResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13()
-                ))
-                .collect(Collectors.toList());
+        // 엔티티를 DTO로 변환하여 반환
+        return booksPage.map(book -> new BookResponseDto(
+                book.getBookId(),
+                book.getBookTitle(),
+                book.getBookPriceStandard(),
+                book.getBookIsbn13(),
+                book.getBookPubDate(),
+                book.getPublisher().getPublisherName()
+        ));
     }
 
+    public void setEntityManager(EntityManager entityManager) {
+    }
 }
