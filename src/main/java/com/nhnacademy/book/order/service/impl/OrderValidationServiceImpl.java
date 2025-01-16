@@ -5,6 +5,9 @@ import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
+import com.nhnacademy.book.feign.CouponClient;
+import com.nhnacademy.book.feign.dto.CouponCalculationRequestDto;
+import com.nhnacademy.book.feign.dto.CouponCalculationResponseDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -14,9 +17,13 @@ import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +35,8 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     private final WrappingPaperService wrappingPaperService;
     private final OrderCacheService orderCacheService;
     private final DeliveryFeePolicyService deliveryFeePolicyService;
+    private final CouponClient couponClient;
+
 
     @Transactional(readOnly = true)
     @Override
@@ -139,6 +148,13 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     public void validateCoupon(OrderProductAppliedCouponDto appliedCoupon) {
         //TODO: 쿠폰 검증
         // 할인가 검증
+        Long couponId = appliedCoupon.getCouponId();
+        BigDecimal discount = appliedCoupon.getDiscount();
+
+        couponClient.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
+
+        // 쿠폰 아이디가 유효한지 검증
+        // 할인가격이 유효한지 검증
 //        return new ValidateCouponDto(appliedCoupon.getCouponId(), appliedCoupon.getDiscount());
     }
 
