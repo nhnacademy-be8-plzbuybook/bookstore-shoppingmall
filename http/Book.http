@@ -213,3 +213,6 @@ GET localhost:8090/api/admin/selling-books
 
 ### asd
 GET localhost:8090/api/books/not-in-selling-books
+
+### e
+GET localhost:8080/api/books/update/414
