@@ -1,6 +1,9 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -30,6 +33,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final MemberPointService memberPointService;
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
+    private final MemberRepository memberRepository;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -89,6 +93,14 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         // 회원/비회원 주문 저장
 //        addOrderByMemberType(orderId, orderCache);
         customerOrderService.placeCustomerOrder(orderId, orderRequest);
+
+
+        if (orderRequest instanceof MemberOrderRequestDto memberOrderRequest) {
+            Member member = memberRepository.findByEmail(memberOrderRequest.getMemberEmail())
+                    .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다!"));
+
+            memberPointService.addPurchasePoint(member, orderRequest);
+        }
 
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);

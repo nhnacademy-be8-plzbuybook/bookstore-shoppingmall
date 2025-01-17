@@ -35,6 +35,7 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     private final OrderDeliveryService orderDeliveryService;
     private final OrderProductRepository orderProductRepository;
     private final OrderProductReturnRepository orderProductReturnRepository;
+    private final ReturnPointServiceImpl returnPointService;
 
 
     /**
@@ -110,6 +111,8 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
         //TODO: 반품 포인트적립 (결제금액 - 반품 택배비)
         //TODO: 재고 복구
+        //포인트 환불
+        returnPointService.returnPoint(orderProductId);
 
         // 주문상품상태 변경
         orderProduct.updateStatus(OrderProductStatus.RETURN_COMPLETED);
@@ -158,7 +161,7 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     private void validateOrderProductForReturning(OrderProduct orderProduct) {
         int statusCode = orderProduct.getStatus().getCode();
         // 발송완료 <= statusCode <= 배송완료
-        if (!(statusCode >= 2 && statusCode <= 4)) {
+        if (!(statusCode >= 2 && statusCode <= 5)) {
             throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
         }
         Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));

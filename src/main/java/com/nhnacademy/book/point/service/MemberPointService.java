@@ -19,6 +19,7 @@ public interface MemberPointService {
     int getAvailablePoints(String email);
     void usedPoint(String email, Integer usedPoint);
     void updatePointForReview(Review review, boolean isPhotoAdded);
+    void restorePoint(Member member, int points);
 
 
 
