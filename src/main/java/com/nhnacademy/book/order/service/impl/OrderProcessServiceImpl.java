@@ -7,6 +7,7 @@ import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.order.exception.OrderRequestFailException;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
@@ -40,13 +41,19 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     @Transactional
     @Override
     public OrderResponseDto requestOrder(OrderRequestDto orderRequest) {
-        // 주문 검증
-        orderValidationService.validateOrder(orderRequest);
-        // 주문 저장
-        OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
-        // 주문정보 캐싱
-        orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
-        return orderResponseDto;
+        try {
+            // 주문 검증
+            orderValidationService.validateOrder(orderRequest);
+            // 주문 저장
+            OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
+            // 주문정보 캐싱
+            orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
+            return orderResponseDto;
+        } catch (Exception e) {
+            // 보상 트랜잭션
+            orderCacheService.rollbackOrderedStock(orderRequest);
+            throw new OrderRequestFailException("주문요청 중 오류가 발생했습니다.");
+        }
     }
 
 

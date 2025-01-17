@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.service.OrderCacheService;
@@ -140,6 +141,14 @@ public class OrderCacheServiceImpl implements OrderCacheService {
             throw new RuntimeException("재고 캐시를 찾을 수 없습니다.");
         }
         return Integer.parseInt((String) stock);
+    }
+
+    @Override
+    public void rollbackOrderedStock(OrderRequestDto orderRequest) {
+        for (OrderProductRequestDto orderProductRequest: orderRequest.getOrderProducts()) {
+            String key = getStockCacheKey(orderProductRequest.getProductId());
+            orderRedisTemplate.opsForValue().increment(key, orderProductRequest.getQuantity());
+        }
     }
 
     private String getOrderCacheKey(String orderId) {
