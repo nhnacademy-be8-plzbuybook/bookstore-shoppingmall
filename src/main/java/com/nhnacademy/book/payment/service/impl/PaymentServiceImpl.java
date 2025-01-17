@@ -68,7 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public void cancelPayment(PaymentCancelRequestDto cancelRequest) {
+    public Long cancelPayment(PaymentCancelRequestDto cancelRequest) {
+        //TODO: paymentKey를 받아야 될듯? 아닌가
         String orderId = cancelRequest.getOrderId();
         String paymentKey = paymentRepository.findOldestPaymentKeyByOrdersId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
 
@@ -81,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
         ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
 
-        paymentRepository.save(Payment.builder()
+        Payment payment = paymentRepository.save(Payment.builder()
                 .paymentKey((String) jsonObject.get("paymentKey"))
                 .status((String) jsonObject.get("status"))
                 .method((String) jsonObject.get("method"))
@@ -91,6 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orders(order)
                 .build()
         );
+        return payment.getId();
     }
 
     @Transactional

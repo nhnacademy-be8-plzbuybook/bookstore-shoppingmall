@@ -9,6 +9,6 @@ public interface PaymentService {
     Long recordPayment(PaymentSaveRequestDto saveRequest);
     void removePayment(Long paymentId);
     void verifyPayment(PaymentConfirmRequestDto confirmRequest);
-    void cancelPayment(PaymentCancelRequestDto cancelRequest);
+    Long cancelPayment(PaymentCancelRequestDto cancelRequest);
     JSONObject confirmPayment(PaymentConfirmRequestDto confirmRequest);
 }

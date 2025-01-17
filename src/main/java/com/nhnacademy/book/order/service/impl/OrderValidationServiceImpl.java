@@ -54,8 +54,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         validateDeliveryFee(order);
         // 배송 희망날짜 검증
         validateDeliveryWishDate(order.getDeliveryWishDate());
-        // 주문금액 검증
-        //validateOrderPrice(order);
     }
 
 
@@ -192,33 +190,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     @Override
     public void validateDeliveryWishDate(LocalDate deliveryWishDate) {
         //TODO: 배송희망날짜 가능 여부 구현
-    }
-
-
-    private void validateOrderPrice(OrderRequestDto order) {
-        BigDecimal productPrice = BigDecimal.ZERO;
-        BigDecimal wrappingPrice = BigDecimal.ZERO;
-        BigDecimal couponDiscount = BigDecimal.ZERO;
-
-        for (OrderProductRequestDto orderProduct : order.getOrderProducts()) {
-            productPrice = productPrice.add(orderProduct.getPrice().multiply(BigDecimal.valueOf(orderProduct.getQuantity())));
-            if (isWrapped(orderProduct)) {
-                wrappingPrice = wrappingPrice.add(orderProduct.getWrapping().getPrice().multiply(BigDecimal.valueOf(orderProduct.getWrapping().getQuantity())));
-            }
-            if (isCouponApplied(orderProduct)) {
-                for (OrderProductAppliedCouponDto coupon : orderProduct.getAppliedCoupons()) {
-                    couponDiscount = couponDiscount.subtract(coupon.getDiscount());
-                }
-            }
-        }
-        BigDecimal orderPrice = productPrice
-                .add(wrappingPrice)
-                .subtract(couponDiscount)
-                .subtract(BigDecimal.valueOf(order.getUsedPoint()));
-
-        if (order.getOrderPrice().compareTo(orderPrice) != 0) {
-            throw new PriceMismatchException("주문금액이 변동되었습니다.");
-        }
     }
 
     /**

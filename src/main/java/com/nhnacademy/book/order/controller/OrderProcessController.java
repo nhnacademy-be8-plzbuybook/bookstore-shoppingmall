@@ -26,7 +26,6 @@ public class OrderProcessController {
         if (memberEmail != null) {
             orderRequest.setMemberEmail(memberEmail);
         }
-
         OrderResponseDto orderResponse = orderProcessService.requestOrder(orderRequest);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
     }
