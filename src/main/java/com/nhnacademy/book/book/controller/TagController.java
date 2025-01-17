@@ -67,7 +67,6 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-//    @GetMapping("/book-tags")
     @GetMapping("/tags/{tag-id}/books")
     public ResponseEntity<List<BookTagResponseDto>> getAllBookTags(@PathVariable(name="tag-id") Long tagId) {
         List<BookTagResponseDto> bookTags = bookTagService.getBookTagList(tagId);
@@ -75,7 +74,6 @@ public class TagController {
     }
 
 
-//    @PostMapping("/books-tags")
 
     @PostMapping("/books/{book-id}/tags/{tag-id}")
     public ResponseEntity<Void> saveBookTag(@PathVariable(name = "book-id") Long bookId, @PathVariable(name = "tag-id") Long tagId) {
@@ -84,7 +82,6 @@ public class TagController {
     }
 
 
-//    @DeleteMapping("/book-tags")
     @DeleteMapping("/books/{book-id}/tags/{tag-id}")
     public ResponseEntity<Void> deleteBookTag(@PathVariable(name = "book-id") Long bookId, @PathVariable(name = "tag-id") Long tagId) {
         bookTagService.deleteBookTagList(bookId,tagId);
@@ -93,7 +90,6 @@ public class TagController {
 
 
 
-//    @GetMapping("/book-tags/{bookId}")
     @GetMapping("/books/{book-id}/tags")
     public ResponseEntity<List<BookTagResponseDto>> getBookTagsByBookId(@PathVariable(name = "book-id") Long bookId) {
         List<BookTagResponseDto> bookTags = bookTagService.getBookTagListByBookId(bookId);
