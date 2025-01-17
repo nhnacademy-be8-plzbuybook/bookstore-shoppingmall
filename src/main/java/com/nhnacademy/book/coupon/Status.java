@@ -1,4 +1,4 @@
-package com.nhnacademy.book.feign;
+package com.nhnacademy.book.coupon;
 
 public enum Status {
     UNUSED, // 미사용

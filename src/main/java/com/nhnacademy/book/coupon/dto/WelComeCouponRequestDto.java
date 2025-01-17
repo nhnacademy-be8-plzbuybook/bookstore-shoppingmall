@@ -1,4 +1,4 @@
-package com.nhnacademy.book.feign.dto;
+package com.nhnacademy.book.coupon.dto;
 
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
-package com.nhnacademy.book.feign;
+package com.nhnacademy.book.coupon;
 
-import com.nhnacademy.book.feign.dto.*;
+import com.nhnacademy.book.coupon.dto.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.cloud.openfeign.FeignClient;
