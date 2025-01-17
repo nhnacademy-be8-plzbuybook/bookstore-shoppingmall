@@ -103,7 +103,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 
             return orderId;
         } catch (Exception e) {
-            // 캐시 재고차감 복구
+            // TODO: 재고차감 복구
 //            orderCacheService.rollbackOrderedStock(orderRequest);
             // orders 삭제
             orderRepository.delete(order);
