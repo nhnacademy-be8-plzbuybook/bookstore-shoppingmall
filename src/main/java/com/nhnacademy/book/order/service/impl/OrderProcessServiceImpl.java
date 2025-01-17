@@ -59,8 +59,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             return orderResponseDto;
         } catch (Exception e) {
             // 보상 트랜잭션
-//            orderCacheService.rollbackOrderedStock(orderRequest);
-            throw new OrderRequestFailException(e.getMessage(), e);
+            // orderCacheService.rollbackOrderedStock(orderRequest);
+            throw new OrderRequestFailException(e.getMessage());
         }
     }
 
@@ -75,64 +75,74 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     @Override
     public String completeOrder(String orderId) {
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
-        // 주문캐시정보 가져오기
-        OrderRequestDto orderRequest = orderCacheService.fetchOrderCache(orderId);
         try {
-            for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
-                // 주문상품 저장
-                OrderProduct savedOrderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
-                order.addOrderProduct(savedOrderProduct);
-
-                // 주문상품-포장 저장
-                orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(), orderProductRequest.getWrapping());
-                // 쿠폰 사용처리
-                orderProductCouponService.saveOrderProductCoupon(savedOrderProduct.getOrderProductId(), orderProductRequest.getAppliedCoupons());
-            }
+            // 주문캐시정보 가져오기
+            OrderRequestDto orderRequest = orderCacheService.fetchOrderCache(orderId);
+            // 주문상품 저장
+            saveOrderProduct(order, orderRequest);
             // 포인트 사용처리
-            Integer usedPoint = orderRequest.getUsedPoint();
-            if (usedPoint != null && usedPoint > 0) {
-                memberPointService.usedPoint(orderRequest instanceof MemberOrderRequestDto
-                                ? ((MemberOrderRequestDto) orderRequest).getMemberEmail()
-                                : null,
-                        usedPoint);
-            }
-          
-               // 배송지저장
-        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
-        // 회원/비회원 주문 저장
-//        addOrderByMemberType(orderId, orderCache);
-        customerOrderService.placeCustomerOrder(orderId, orderRequest);
+            processUsingPoint(orderRequest);
+            // 배송지저장
+            orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
+            // 회원/비회원 주문 저장
+            customerOrderService.placeCustomerOrder(orderId, orderRequest);
+            // 주문포인트적립
+            addOrderPoint(orderRequest);
 
+            return orderId;
+
+        } catch (Exception e) {
+            rollbackWhenOrderCompletionFail(order);
+            throw new OrderCompletionFailException("주문완료 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private void saveOrderProduct(Orders order, OrderRequestDto orderRequest) {
+        for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
+            // 주문상품 저장
+            OrderProduct savedOrderProduct = orderProductService.saveOrderProduct(order, orderProductRequest);
+            order.addOrderProduct(savedOrderProduct);
+
+            // 주문상품-포장 저장
+            orderProductWrappingService.saveOrderProductWrapping(savedOrderProduct.getOrderProductId(), orderProductRequest.getWrapping());
+            // 쿠폰 사용처리
+            orderProductCouponService.saveOrderProductCoupon(savedOrderProduct.getOrderProductId(), orderProductRequest.getAppliedCoupons());
+        }
+    }
+
+    private void processUsingPoint(OrderRequestDto orderRequest) {
+        Integer usedPoint = orderRequest.getUsedPoint();
+        if (usedPoint != null && usedPoint > 0) {
+            memberPointService.usedPoint(orderRequest instanceof MemberOrderRequestDto
+                            ? ((MemberOrderRequestDto) orderRequest).getMemberEmail()
+                            : null,
+                    usedPoint);
+        }
+    }
+
+    private void addOrderPoint(OrderRequestDto orderRequest) {
         if (orderRequest instanceof MemberOrderRequestDto memberOrderRequest) {
             Member member = memberRepository.findByEmail(memberOrderRequest.getMemberEmail())
                     .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다!"));
 
             memberPointService.addPurchasePoint(member, orderRequest);
         }
+    }
 
-        // 주문상태 "결제완료"로 변경
-        order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
-        // 주문상품 상태 변경
-        order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.PAYMENT_COMPLETED));
-
-        return orderId;
-           
-        } catch (Exception e) {
-            // TODO: 재고차감 복구
-//            orderCacheService.rollbackOrderedStock(orderRequest);
-            // orders 삭제
-            orderRepository.delete(order);
-            // 결제취소 요청
-            Long paymentId = paymentService.cancelPayment(new PaymentCancelRequestDto("주문완료 중 오류 발생", null, orderId));
-            // payment 삭제
-            if (paymentId != null) {
-                paymentService.removePayment(paymentId);
-            }
-            //TODO: 쿠폰 사용취소처리
-            //TODO: 포인트 사용취소처리
-            throw new OrderCompletionFailException("주문완료 중 오류가 발생했습니다.", e);
+    private void rollbackWhenOrderCompletionFail(Orders order) {
+        // TODO: 재고차감 복구
+        // orderCacheService.rollbackOrderedStock(orderRequest);
+        // orders 삭제
+        orderRepository.delete(order);
+        // 결제취소 요청
+        Long paymentId = paymentService.cancelPayment(new PaymentCancelRequestDto("주문완료 중 오류 발생", null, order.getId()));
+        // payment 삭제
+        if (paymentId != null) {
+            paymentService.removePayment(paymentId);
         }
-
+        // 주문상태변경
+        //TODO: 쿠폰 사용취소처리
+        //TODO: 포인트 사용취소처리
     }
 
 }
