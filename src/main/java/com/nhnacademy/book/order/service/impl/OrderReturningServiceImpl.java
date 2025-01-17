@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderProductReturnDto;
 import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
@@ -15,6 +16,7 @@ import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
+import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     private final OrderProductReturnRepository orderProductReturnRepository;
     private final OrderStatusService orderStatusService;
     private final OrderValidationService orderValidationService;
+    private final OrderProductService orderProductService;
 
     @Transactional
     @Override
@@ -58,7 +61,12 @@ public class OrderReturningServiceImpl implements OrderReturningService {
         orderValidationService.validateOrderProductForReturnCompletion(orderProduct);
 
         //TODO: 반품 포인트적립 (결제금액 - 반품 택배비)
-        //TODO: 재고 복구
+
+        //TODO: 상품 재고 복구
+        orderProductService.addOrderProductStock(orderProductId, orderProductReturn.getQuantity());
+//        restoreOrderProductStock(orderProduct, orderProductReturn.getQuantity());
+
+        //TODO: 쿠폰 복구
 
         // 주문상품상태 변경
         orderStatusService.modifyOrderProductStatus(orderProductId, OrderProductStatus.RETURN_COMPLETED);
@@ -77,6 +85,10 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     }
 
 
+    private void restoreOrderProductStock(OrderProduct orderProduct, int quantity) {
+        SellingBook sellingBook = orderProduct.getSellingBook();
+        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + quantity);
+    }
 
 //    private void validateOrderProductForReturning(OrderProduct orderProduct) {
 //        int statusCode = orderProduct.getStatus().getCode();
