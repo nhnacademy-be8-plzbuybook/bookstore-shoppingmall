@@ -3,6 +3,7 @@ package com.nhnacademy.book.order.service.impl;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
+import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import com.nhnacademy.book.feign.CouponClient;
@@ -11,10 +12,16 @@ import com.nhnacademy.book.feign.dto.CouponCalculationResponseDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
+import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
+import com.nhnacademy.book.order.repository.OrderDeliveryRepository;
+import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
+import com.nhnacademy.book.order.service.OrderDeliveryService;
 import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
+import com.nhnacademy.book.orderProduct.entity.OrderProduct;
+import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import jakarta.validation.Valid;
@@ -36,6 +43,8 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     private final OrderCacheService orderCacheService;
     private final DeliveryFeePolicyService deliveryFeePolicyService;
     private final CouponClient couponClient;
+    private final OrderRepository orderRepository;
+    private final OrderDeliveryService orderDeliveryService;
 
 
     @Transactional(readOnly = true)
@@ -95,6 +104,34 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         // 포인트를 사용했을 때만 검증
         if (usedPoint > 0) {
             //TODO: 포인트 검증
+        }
+    }
+
+    @Override
+    public void validateOrderProductForReturning(OrderProduct orderProduct) {
+        int statusCode = orderProduct.getStatus().getCode();
+        // 발송완료 <= statusCode <= 구매확정
+        if (!(statusCode >= 2 && statusCode <= 5)) {
+            throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
+        }
+        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+        boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
+        if (!isReturnable) {
+            throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
+        }
+    }
+
+    @Override
+    public void validateOrderProductForReturnCompletion(OrderProduct orderProduct) {
+        if (orderProduct.getStatus() != OrderProductStatus.RETURN_REQUESTED) {
+            throw new ConflictException("반품요청된 주문상품이 아닙니다.");
+        }
+    }
+
+    @Override
+    public void validateOrderProductForCanceling(OrderProduct orderProduct) {
+        if (orderProduct.getStatus().getCode() > 1) {
+            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
         }
     }
 

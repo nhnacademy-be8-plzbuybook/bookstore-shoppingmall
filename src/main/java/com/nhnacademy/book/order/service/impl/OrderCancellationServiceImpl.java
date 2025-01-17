@@ -11,10 +11,12 @@ import com.nhnacademy.book.order.dto.OrderProductCancelRequestDto;
 import com.nhnacademy.book.order.entity.OrderProductCoupon;
 import com.nhnacademy.book.order.entity.OrderProductWrapping;
 import com.nhnacademy.book.order.entity.Orders;
+import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderProductCancelRepository;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.order.service.OrderCancellationService;
+import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
@@ -35,6 +37,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final SellingBookRepository sellingBookRepository;
     private final OrderProductCancelRepository orderProductCancelRepository;
     private final OrderRepository orderRepository;
+    private final OrderValidationService orderValidationService;
 
     private final CouponClient couponClient;
 
@@ -48,7 +51,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
         for (OrderProductCancelRequestDto orderProductCancelRequest : cancelRequest.getCancelProducts()) {
             OrderProduct orderProduct = orderProductRepository.findById(orderProductCancelRequest.getOrderProductId()).orElseThrow(() -> new NotFoundException("주문상품을 찾을 수 없습니다."));
-            validateOrderProductForCanceling(orderProduct);
+            orderValidationService.validateOrderProductForCanceling(orderProduct);
 
             // TODO: 쿠폰복구
 
@@ -63,10 +66,12 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
             // 주문상품취소 저장
             orderProductCancelRepository.save(orderProductCancelRequest.toEntity(cancelRequest.getReason(), orderProduct));
 
-            // 상태변경
+            // 주문상품 상태변경
             orderProduct.updateStatus(OrderProductStatus.ORDER_CANCELLED);
         }
 
+        // 주문상태변경
+        order.updateOrderStatus((OrderStatus.fromOrderProductStatus(order.getOrderProducts().stream().map(OrderProduct::getStatus).toList())));
         paymentService.cancelPayment(new PaymentCancelRequestDto(cancelRequest.getReason(), totalCancelAmount, orderId));
     }
 
@@ -95,11 +100,11 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
         orderCacheService.addStockCache(orderProduct.getOrderProductId(), Long.valueOf(orderProduct.getQuantity()));
     }
 
-    private void validateOrderProductForCanceling(OrderProduct orderProduct) {
-        // 주문상품의 상태가 "발송완료" 이상이면 주문취소 불가능
-        if (orderProduct.getStatus().getCode() > 1) {
-            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
-        }
-    }
+//    private void validateOrderProductForCanceling(OrderProduct orderProduct) {
+//        // 주문상품의 상태가 "발송완료" 이상이면 주문취소 불가능
+//        if (orderProduct.getStatus().getCode() > 1) {
+//            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
+//        }
+//    }
 
 }
