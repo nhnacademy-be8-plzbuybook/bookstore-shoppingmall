@@ -77,8 +77,8 @@ public class BookController {
     }
 
     // 도서 수정 기능 (관리자)
-    @PutMapping("/{bookId}")
-    public ResponseEntity<Void> updateBook(@RequestBody BookRegisterRequestDto bookUpdateRequest) {
+    @PutMapping
+    public ResponseEntity<Void> updateBook( @RequestBody BookRegisterRequestDto bookUpdateRequest) {
         bookService.updateBook(bookUpdateRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
