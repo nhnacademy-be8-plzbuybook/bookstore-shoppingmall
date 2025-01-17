@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
-import com.nhnacademy.book.feign.dto.BirthdayCouponRequestDto;
+import com.nhnacademy.book.coupon.dto.BirthdayCouponRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +35,7 @@ class BirthdayCouponServiceImplTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private CouponClient couponClient;
+    private CouponService couponService;
 
     private Member mockMember;
     private MemberGrade mockMemberGrade;
@@ -67,7 +66,7 @@ class BirthdayCouponServiceImplTest {
         birthdayCouponService.issueBirthdayCoupons(month, pageable);
 
         verify(memberRepository, times(1)).findByBirthMonth(eq(month), any(Pageable.class));
-        verify(couponClient, times(1)).issueBirthdayCoupon(any(BirthdayCouponRequestDto.class));
+        verify(couponService, times(1)).issueBirthdayCoupon(any(BirthdayCouponRequestDto.class));
     }
 
 }
