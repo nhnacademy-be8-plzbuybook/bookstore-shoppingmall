@@ -97,7 +97,7 @@ public class OrderQueryController {
      * 주문상품 구매확정
      *
      * @param orderProductId 주문상품 ID
-     * @return void
+     * @return 상태코드
      */
     @PutMapping("/order-products/{order-product-id}/purchase-confirm")
     public ResponseEntity<Void> purchaseConfirm(@PathVariable("order-product-id") Long orderProductId) {

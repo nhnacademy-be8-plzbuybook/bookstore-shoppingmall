@@ -14,6 +14,13 @@ public class OrderCancellationController {
     private final OrderCancellationService orderCancellationService;
 
 
+    /**
+     * 주문취소
+     *
+     * @param orderId 주문아이디
+     * @param cancelRequest 주문취소 DTO
+     * @return 상태코드
+     */
     @PostMapping("/{order-id}/cancel")
     public ResponseEntity<Void> cancelOrderProduct(@PathVariable("order-id") String orderId,
                                                    @RequestBody OrderCancelRequestDto cancelRequest) {

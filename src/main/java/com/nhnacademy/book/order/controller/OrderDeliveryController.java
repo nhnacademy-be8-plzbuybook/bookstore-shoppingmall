@@ -18,9 +18,9 @@ public class OrderDeliveryController {
     /**
      * 주문배송 등록
      *
-     * @param orderId
-     * @param registerRequest
-     * @return ResponseEntity
+     * @param orderId 주문아이디
+     * @param registerRequest 주문배송등록 DTO
+     * @return 상태코드
      */
     @PostMapping("/{order-id}/deliveries")
     public ResponseEntity<Void> registerOrderDelivery(@PathVariable("order-id") String orderId,
@@ -32,9 +32,9 @@ public class OrderDeliveryController {
     /**
      * 주문배송 완료처리
      *
-     * @param orderId
-     * @param deliveryId
-     * @return
+     * @param orderId 주문아이디
+     * @param deliveryId 주문배송 아이디
+     * @return 상태코드
      */
     @PostMapping("/{order-id}/deliveries/{delivery-id}/complete")
     public ResponseEntity<Void> completeOrderDelivery(@PathVariable("order-id") String orderId,
