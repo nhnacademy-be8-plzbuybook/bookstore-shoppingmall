@@ -267,4 +267,22 @@ public class MemberPointServiceImpl implements MemberPointService {
 
     }
 
+
+    // 반품시 포인트 지급
+    @Override
+    public void restorePoint(Member member, int points) {
+        PointCondition pointCondition = pointConditionRepository.findByName("RETURN").orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        MemberPoint returnPoint = new MemberPoint();
+        returnPoint.setMember(member);
+        returnPoint.setPoint(points);
+        returnPoint.setPointCondition(pointCondition);
+        returnPoint.setAddDate(LocalDateTime.now());
+        returnPoint.setEndDate(LocalDateTime.now().plusYears(1));
+        returnPoint.setType("SAVE");
+
+        memberPointRepository.save(returnPoint);
+
+    }
+
 }

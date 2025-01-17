@@ -101,7 +101,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             memberPointService.addPurchasePoint(member, orderRequest);
         }
 
-
         // 주문상태 "결제완료"로 변경
         order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
         // 주문상품 상태 변경
