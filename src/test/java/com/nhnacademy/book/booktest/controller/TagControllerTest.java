@@ -79,6 +79,24 @@ public class TagControllerTest {
     }
 
     @Test
+    void testGetAllTagsWithKeyword() throws Exception {
+        String keyword = "test";
+        Pageable pageable = PageRequest.of(0, 10);
+        TagResponseDto tagResponseDto = new TagResponseDto();
+        tagResponseDto.setTagName("Test Tag");
+        Page<TagResponseDto> tags = new PageImpl<>(List.of(tagResponseDto), pageable, 1);
+
+        Mockito.when(tagService.searchTagsByKeyword(eq(keyword), eq(pageable))).thenReturn(tags);
+
+        mockMvc.perform(get("/api/tags")
+                        .param("keyword", keyword)
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].tagName").value("Test Tag"));
+    }
+
+    @Test
     void testGetTagNameByTagId() throws Exception {
         Long tagId = 1L;
         String tagName = "Test Tag";
