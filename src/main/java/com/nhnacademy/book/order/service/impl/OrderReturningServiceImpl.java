@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.entity.OrderProductReturn;
 import com.nhnacademy.book.order.entity.OrderReturn;
@@ -64,6 +65,11 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     @Override
     public void requestOrderProductReturn(String orderId, Long orderProductId, OrderProductReturnRequestDto orderProductReturnRequest) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품정보를 찾을 수 없습니다."));
+
+        if(orderProduct.getQuantity() < orderProductReturnRequest.getQuantity()) {
+            throw new StockNotEnoughException("반품 수량이 주문한 수량을 초과할 수 없다!");
+        }
+
         // 반품요청 조건 검증
         validateOrderProductForReturning(orderProduct);
 
