@@ -1,6 +1,6 @@
-package com.nhnacademy.book.feign.dto;
+package com.nhnacademy.book.coupon.dto;
 
-import com.nhnacademy.book.feign.Status;
+import com.nhnacademy.book.coupon.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

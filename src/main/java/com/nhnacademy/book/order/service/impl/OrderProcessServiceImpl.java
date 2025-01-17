@@ -94,7 +94,6 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 //        addOrderByMemberType(orderId, orderCache);
         customerOrderService.placeCustomerOrder(orderId, orderRequest);
 
-
         if (orderRequest instanceof MemberOrderRequestDto memberOrderRequest) {
             Member member = memberRepository.findByEmail(memberOrderRequest.getMemberEmail())
                     .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다!"));

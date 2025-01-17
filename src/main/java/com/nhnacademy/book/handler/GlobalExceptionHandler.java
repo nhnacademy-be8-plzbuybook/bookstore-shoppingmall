@@ -7,7 +7,7 @@ import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartExcep
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
-import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
+import com.nhnacademy.book.coupon.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
