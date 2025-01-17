@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.nhnacademy.book.order.entity.QOrderProductReturn.orderProductReturn;
-import static com.nhnacademy.book.order.entity.QOrderReturn.orderReturn;
 import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct;
 
 @Transactional(readOnly = true)
@@ -22,38 +21,6 @@ import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct
 public class OrderReturnQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-//    public Page<OrderReturnDto> findOrderReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
-//        List<OrderReturnDto> orderReturns = queryFactory
-//                .select(new QOrderReturnDto(
-//                        orderReturn.id,
-//                        orderReturn.reason,
-//                        orderReturn.trackingNumber,
-//                        orderReturn.requestedAt,
-//                        orderReturn.completedAt,
-//                        orderReturn.order.id
-//                ))
-//                .from(orderReturn)
-//                .where(
-//                        eqTrackingNumber(searchRequest.getTrackingNumber()),
-//                        eqStatus(searchRequest.getStatus())
-//                )
-//                .orderBy(orderReturn.requestedAt.desc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        Long countResult = queryFactory
-//                .select(orderReturn.count())
-//                .from(orderReturn)
-//                .where(
-//                        eqTrackingNumber(searchRequest.getTrackingNumber()),
-//                        eqStatus(searchRequest.getStatus())
-//                )
-//                .fetchOne();
-//
-//        long total = countResult != null ? countResult : 0L;
-//        return new PageImpl<>(orderReturns, pageable, total);
-//    }
 
     public Page<OrderProductReturnDto> findOrderProductReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
         List<OrderProductReturnDto> orderProductReturns = queryFactory

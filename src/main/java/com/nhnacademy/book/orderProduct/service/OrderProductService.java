@@ -12,4 +12,5 @@ public interface OrderProductService {
     Optional<OrderProduct> findOrderProductBySellingBookId(Long sellingBookId);
     void patchStatus(Long orderProductId, OrderProductStatusPatchRequestDto patchRequest);
     void purchaseConfirmOrderProduct(Long orderProductId);
+    void addOrderProductStock(Long orderProductId, int quantity);
 }
