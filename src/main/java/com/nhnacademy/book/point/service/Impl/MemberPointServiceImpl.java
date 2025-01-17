@@ -170,7 +170,7 @@ public class MemberPointServiceImpl implements MemberPointService {
         memberPoint.setPoint(pointsToAdd);
         memberPoint.setAddDate(LocalDateTime.now());
         memberPoint.setEndDate(LocalDateTime.now().plusYears(1));
-        memberPoint.setType("SAVE");
+        memberPoint.setType(requestDto.getConditionPoint() < 0 ? "USE" : "SAVE");
         memberPointRepository.save(memberPoint);
 
         return new MemberPointAddResponseDto(
