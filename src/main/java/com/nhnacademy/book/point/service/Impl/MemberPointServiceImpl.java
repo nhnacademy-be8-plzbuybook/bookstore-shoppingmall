@@ -170,7 +170,7 @@ public class MemberPointServiceImpl implements MemberPointService {
         memberPoint.setPoint(pointsToAdd);
         memberPoint.setAddDate(LocalDateTime.now());
         memberPoint.setEndDate(LocalDateTime.now().plusYears(1));
-        memberPoint.setType("SAVE");
+        memberPoint.setType(requestDto.getConditionPoint() < 0 ? "USE" : "SAVE");
         memberPointRepository.save(memberPoint);
 
         return new MemberPointAddResponseDto(
@@ -208,10 +208,19 @@ public class MemberPointServiceImpl implements MemberPointService {
     public int getAvailablePoints(String email) {
         List<MemberPoint> points = memberPointRepository.findByMember_email(email);
 
-        return points.stream()
+        int totalSavedPoints = points.stream()
                 .filter(point -> point.getEndDate() != null && point.getEndDate().isAfter(LocalDateTime.now()))
+                .filter(point -> "SAVE".equals(point.getType()))
                 .mapToInt(MemberPoint::getPoint)
                 .sum();
+
+        int totalUsedPoints = points.stream()
+                .filter(point -> "USE".equals(point.getType()))
+                .mapToInt(point -> Math.abs(point.getPoint()))
+                .sum();
+
+        // 사용 가능 포인트 = 적립된 포인트 - 사용된 포인트
+        return totalSavedPoints - totalUsedPoints;
     }
 
 
@@ -234,28 +243,46 @@ public class MemberPointServiceImpl implements MemberPointService {
             if ((point.getEndDate() == null || point.getEndDate().isAfter(LocalDateTime.now())) && usedPoint > 0) {
                 int deductable = Math.min(point.getPoint(), usedPoint);
 
-                // 기존 포인트 차감
-                point.setPoint(point.getPoint() - deductable); // 기존 포인트 업데이트
                 usedPoint -= deductable; // 남은 포인트 계산
-                memberPointRepository.save(point); // 기존 포인트 업데이트
 
+                // 포인트 사용 기록 추가
                 MemberPoint usedPointRecord = new MemberPoint();
                 usedPointRecord.setMember(member);
-                usedPointRecord.setPoint(-deductable);
+                usedPointRecord.setPoint(-deductable); // 사용된 포인트
                 usedPointRecord.setUsingDate(LocalDateTime.now());
                 usedPointRecord.setType("USE");
 
-                PointCondition condition = pointConditionRepository.findById(5L).orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                PointCondition condition = pointConditionRepository.findById(5L)
+                        .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
                 usedPointRecord.setPointCondition(condition);
 
                 memberPointRepository.save(usedPointRecord);
+
+                if (usedPoint == 0) {
+                    break;
+                }
             }
+
         }
 
-//        if (usedPoint < 0) {
-//            throw new IllegalStateException("포인트 차감 중 문제가 발생했습니다. 남은 포인트: ");
-//        }
     }
 
+
+    // 반품시 포인트 지급
+    @Override
+    public void restorePoint(Member member, int points) {
+        PointCondition pointCondition = pointConditionRepository.findByName("RETURN").orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+
+        MemberPoint returnPoint = new MemberPoint();
+        returnPoint.setMember(member);
+        returnPoint.setPoint(points);
+        returnPoint.setPointCondition(pointCondition);
+        returnPoint.setAddDate(LocalDateTime.now());
+        returnPoint.setEndDate(LocalDateTime.now().plusYears(1));
+        returnPoint.setType("SAVE");
+
+        memberPointRepository.save(returnPoint);
+
+    }
 
 }

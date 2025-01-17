@@ -2,15 +2,10 @@ package com.nhnacademy.book.book.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
-import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
-import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.entity.Category;
-import com.nhnacademy.book.book.entity.SellingBook;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,7 +14,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 //@AllArgsConstructor
-public class BookRegisterDto {
+public class BookRegisterRequestDto {
     private Long bookId;
     private String bookTitle;
     private String bookIndex;
@@ -33,7 +28,7 @@ public class BookRegisterDto {
     private List<CategoryResponseDto> categories;        // 카테고리
     private List<String> authors; // 작가 정보
 
-    public BookRegisterDto(Long bookId, String bookTitle, String bookIndex,
+    public BookRegisterRequestDto(Long bookId, String bookTitle, String bookIndex,
                            String bookDescription, LocalDate bookPubDate,
                            BigDecimal bookPriceStandard, String bookIsbn13, String publisherName,
                            String imageUrl, List<CategoryResponseDto> categoryDtos,

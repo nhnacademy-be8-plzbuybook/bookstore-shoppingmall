@@ -9,6 +9,8 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.CouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.dto.CouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -40,6 +42,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     private final CouponClient couponClient;
     private final OrderRepository orderRepository;
     private final OrderDeliveryService orderDeliveryService;
+    private final CouponService couponService;
 
 
     @Transactional(readOnly = true)
@@ -195,7 +198,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         Long couponId = appliedCoupon.getCouponId();
         BigDecimal discount = appliedCoupon.getDiscount();
 
-        couponClient.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
+        couponService.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
 
         // 쿠폰 아이디가 유효한지 검증
         // 할인가격이 유효한지 검증

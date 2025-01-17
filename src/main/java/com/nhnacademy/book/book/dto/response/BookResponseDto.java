@@ -19,4 +19,7 @@ public class BookResponseDto {
     private String publisher; // 출판사
 
 
+    public BookResponseDto() {
+
+    }
 }

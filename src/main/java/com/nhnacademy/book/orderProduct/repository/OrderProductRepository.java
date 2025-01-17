@@ -1,5 +1,7 @@
 package com.nhnacademy.book.orderProduct.repository;
 
+import com.nhnacademy.book.order.entity.OrderProductReturn;
+import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,34 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
             "    WHERE mo2.member.memberId = :memberId " +
             ")")
     BigDecimal findLatestOrderTotalPriceByMemberId(Long memberId);
+
+
+    //orderProduct Id로 orders 의 사용 포인트를 가져오기 위함
+    @Query("SELECT op.order FROM OrderProduct op WHERE op.orderProductId = :orderProductId")
+    Orders findOrderByOrderProductId(Long orderProductId);
+
+    //orderProductId로 회원 Id 구해온다
+    @Query("SELECT mo.member.memberId " +
+            "FROM OrderProduct op " +
+            "JOIN op.order o " +
+            "JOIN MemberOrder mo ON mo.order.id = o.id " +
+            "WHERE op.orderProductId = :orderProductId")
+    Long findMemberIdByOrderProductId(Long orderProductId);
+
+    //주문서에서 가격 : 수량으로 있는거를 list로 가져온다
+    @Query("SELECT op FROM OrderProduct op " +
+            "JOIN op.order o " +
+            "JOIN MemberOrder mo ON mo.order.id = o.id " +
+            "WHERE mo.member.memberId = :memberId AND mo.id = :memberOrderId")
+    List<OrderProduct> findByMemberOrderId(Long memberId, Long memberOrderId);
+
+
+    @Query("SELECT opr FROM OrderProductReturn opr JOIN opr.orderProduct op WHERE op.orderProductId = :orderProductId")
+    OrderProductReturn findByOrderProductOrderProductId(Long orderProductId);
+
+    @Query("SELECT mo.id FROM MemberOrder mo " +
+            "JOIN mo.order o " +
+            "JOIN o.orderProducts op " +
+            "WHERE op.orderProductId = :orderProductId")
+    Long findMemberOrderIdByOrderProductId(Long orderProductId);
 }

@@ -1,6 +1,9 @@
 package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
@@ -35,6 +38,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
     private final PaymentService paymentService;
+    private final MemberRepository memberRepository;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -92,16 +96,27 @@ public class OrderProcessServiceImpl implements OrderProcessService {
                                 : null,
                         usedPoint);
             }
-            // 배송지저장
-            orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
-            // 회원/비회원 주문 저장
-            customerOrderService.placeCustomerOrder(orderId, orderRequest);
-            // 주문상태 "결제완료"로 변경
-            order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
-            // 주문상품 상태 변경
-            order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.PAYMENT_COMPLETED));
+          
+               // 배송지저장
+        orderDeliveryAddressService.addOrderDeliveryAddress(orderId, orderRequest.getOrderDeliveryAddress());
+        // 회원/비회원 주문 저장
+//        addOrderByMemberType(orderId, orderCache);
+        customerOrderService.placeCustomerOrder(orderId, orderRequest);
 
-            return orderId;
+        if (orderRequest instanceof MemberOrderRequestDto memberOrderRequest) {
+            Member member = memberRepository.findByEmail(memberOrderRequest.getMemberEmail())
+                    .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다!"));
+
+            memberPointService.addPurchasePoint(member, orderRequest);
+        }
+
+        // 주문상태 "결제완료"로 변경
+        order.updateOrderStatus(OrderStatus.PAYMENT_COMPLETED);
+        // 주문상품 상태 변경
+        order.getOrderProducts().forEach(op -> op.updateStatus(OrderProductStatus.PAYMENT_COMPLETED));
+
+        return orderId;
+           
         } catch (Exception e) {
             // TODO: 재고차감 복구
 //            orderCacheService.rollbackOrderedStock(orderRequest);
@@ -117,6 +132,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             //TODO: 포인트 사용취소처리
             throw new OrderCompletionFailException("주문완료 중 오류가 발생했습니다.", e);
         }
+
     }
 
 }
