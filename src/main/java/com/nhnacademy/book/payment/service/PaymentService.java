@@ -7,8 +7,12 @@ import org.json.simple.JSONObject;
 
 public interface PaymentService {
     Long recordPayment(PaymentSaveRequestDto saveRequest);
+
     void removePayment(Long paymentId);
+
     void verifyPayment(PaymentConfirmRequestDto confirmRequest);
+
     Long cancelPayment(PaymentCancelRequestDto cancelRequest);
+
     JSONObject confirmPayment(PaymentConfirmRequestDto confirmRequest);
 }
