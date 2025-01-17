@@ -34,7 +34,7 @@ public class OrderProductServiceImpl implements OrderProductService {
     public OrderProduct saveOrderProduct(Orders order, OrderProductRequestDto orderProductRequest) {
         SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
         // 판매책 재고 차감
-        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
+//        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
 
         BigDecimal couponDiscount = BigDecimal.ZERO;
         if (orderProductRequest.getAppliedCoupons() != null && !orderProductRequest.getAppliedCoupons().isEmpty()) {

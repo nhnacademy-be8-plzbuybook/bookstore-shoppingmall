@@ -13,5 +13,6 @@ public interface WrappingPaperService {
     Long createWrappingPaper(WrappingCreateSaveRequestDto saveRequest);
     Long modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest);
     void removeWrappingPaper(long id);
+    void reduceStock(Long wrappingPaperId, int quantity);
 }
 

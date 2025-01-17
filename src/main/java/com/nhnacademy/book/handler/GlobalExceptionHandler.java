@@ -11,6 +11,7 @@ import com.nhnacademy.book.feign.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
+import com.nhnacademy.book.order.exception.OrderRequestFailException;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
@@ -500,6 +501,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SellingBookNotFoundInBookCartException.class)
     public ResponseEntity<ErrorResponseDto> handleSellingBookNotFoundInBookCartException(SellingBookNotFoundInBookCartException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
+    @ExceptionHandler(OrderRequestFailException.class)
+    public ResponseEntity<ErrorResponseDto> handleOrderRequestFail(OrderRequestFailException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),

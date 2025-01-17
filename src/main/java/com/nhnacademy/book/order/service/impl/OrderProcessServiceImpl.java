@@ -55,8 +55,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             return orderResponseDto;
         } catch (Exception e) {
             // 보상 트랜잭션
-            orderCacheService.rollbackOrderedStock(orderRequest);
-            throw new OrderRequestFailException("주문요청 중 오류가 발생했습니다.");
+//            orderCacheService.rollbackOrderedStock(orderRequest);
+            throw new OrderRequestFailException(e.getMessage(), e);
         }
     }
 
@@ -104,7 +104,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             return orderId;
         } catch (Exception e) {
             // 캐시 재고차감 복구
-            orderCacheService.rollbackOrderedStock(orderRequest);
+//            orderCacheService.rollbackOrderedStock(orderRequest);
             // orders 삭제
             orderRepository.delete(order);
             // 결제취소 요청

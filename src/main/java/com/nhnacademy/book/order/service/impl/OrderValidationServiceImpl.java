@@ -5,6 +5,7 @@ import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
 import com.nhnacademy.book.feign.CouponClient;
 import com.nhnacademy.book.feign.dto.CouponCalculationRequestDto;
@@ -137,16 +138,23 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     public void validateSellingBook(OrderProductRequestDto orderProduct) {
         SellingBook sellingBook = sellingBookRepository.findById(orderProduct.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
 
+        Integer currentStock = sellingBook.getSellingBookStock();
+        if (currentStock < orderProduct.getQuantity()) {
+            throw new StockNotEnoughException("재고가 부족합니다.");
+        }
+
         if (sellingBook.getSellingBookPrice().compareTo(orderProduct.getPrice()) != 0) {
             throw new PriceMismatchException(sellingBook.getBookTitle() + "의 가격이 변동되었습니다.");
         }
+        // 재고 선차감
+        sellingBook.setSellingBookStock(currentStock - orderProduct.getQuantity());
         // 재고선점
-        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
-        if (preemptedQuantity == null) {
-            // 재고 업데이트
-            Long stock = (long) (sellingBook.getSellingBookStock() - orderProduct.getQuantity());
-            orderCacheService.addStockCache(sellingBook.getSellingBookId(), stock);
-        }
+//        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
+//        if (preemptedQuantity == null) {
+//            // 재고 업데이트
+//            Long stock = (long) (sellingBook.getSellingBookStock() - orderProduct.getQuantity());
+//            orderCacheService.addStockCache(sellingBook.getSellingBookId(), stock);
+//        }
     }
 
 
@@ -159,17 +167,24 @@ public class OrderValidationServiceImpl implements OrderValidationService {
     public void validateWrappingPaper(OrderProductWrappingDto orderProductWrapping) {
         // 포장지 검증
         WrappingPaperDto wrappingPaper = wrappingPaperService.getWrappingPaper(orderProductWrapping.getWrappingPaperId());
+        Long currentStock = wrappingPaper.getStock();
+        //재고검증
+        if (currentStock < orderProductWrapping.getQuantity()) {
+            throw new StockNotEnoughException(wrappingPaper.getName() + "의 재고가 부족합니다.");
+        }
         // 포장지 금액 검증
         if (wrappingPaper.getPrice().compareTo(orderProductWrapping.getPrice()) != 0) {
             throw new PriceMismatchException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
         }
+        // 재고선차감
+        wrappingPaperService.reduceStock(wrappingPaper.getId(), orderProductWrapping.getQuantity());
         // 재고선점
-        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
-        if (preemptedQuantity == null) {
-            // 재고 업데이트
-            Long requiredQuantity = wrappingPaper.getStock() - orderProductWrapping.getQuantity();
-            orderCacheService.addStockCache(wrappingPaper.getId(), requiredQuantity);
-        }
+//        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
+//        if (preemptedQuantity == null) {
+//            // 재고 업데이트
+//            Long requiredQuantity = wrappingPaper.getStock() - orderProductWrapping.getQuantity();
+//            orderCacheService.addStockCache(wrappingPaper.getId(), requiredQuantity);
+//        }
     }
 
 
