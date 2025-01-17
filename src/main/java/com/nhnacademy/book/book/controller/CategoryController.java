@@ -10,6 +10,8 @@ import jakarta.ws.rs.PUT;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -24,18 +27,8 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-//
-//    @GetMapping
-//    public ResponseEntity<List<CategorySimpleResponseDto>> getSimpleCategories(
-//            @RequestParam(required = false) String keyword) {
-//        if (keyword != null && !keyword.isEmpty()) {
-//            List<CategorySimpleResponseDto> categories = categoryService.searchCategoriesByKeyword(keyword);
-//            return ResponseEntity.ok(categories);
-//        }
-//        return ResponseEntity.ok(categoryService.findAllCategories());
-//    }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CategorySimpleResponseDto>> getSimpleCategories(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
@@ -57,15 +50,17 @@ public class CategoryController {
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping
     public ResponseEntity<Void> saveCategory(@RequestBody CategoryRegisterDto categoryRegisterDto) {
 
         categoryService.saveCategory(categoryRegisterDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+
 
 
 

@@ -1,7 +1,7 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.feign.CouponClient;
-import com.nhnacademy.book.feign.dto.WelComeCouponRequestDto;
+import com.nhnacademy.book.coupon.dto.WelComeCouponRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.member.domain.*;
 import com.nhnacademy.book.member.domain.dto.*;
 import com.nhnacademy.book.member.domain.exception.*;
@@ -11,11 +11,8 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
-import com.nhnacademy.book.point.service.Impl.MemberPointServiceImpl;
-import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +20,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.orm.jpa.support.SharedEntityManagerBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.annotation.meta.When;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.List;
@@ -67,7 +61,7 @@ class MemberServiceImplTest {
     private AuthRepository authRepository;
 
     @Mock
-    private CouponClient couponClient;
+    private CouponService couponService;
 
     @Mock
     private Clock clock;
@@ -333,7 +327,7 @@ class MemberServiceImplTest {
         memberService.createMember(memberCreateRequestDto);
 
         // 쿠폰 요청 메서드 호출 확인
-        verify(couponClient, times(1)).issueWelcomeCoupon(any(WelComeCouponRequestDto.class));
+        verify(couponService, times(1)).issueWelcomeCoupon(any(WelComeCouponRequestDto.class));
     }
 
     @Test

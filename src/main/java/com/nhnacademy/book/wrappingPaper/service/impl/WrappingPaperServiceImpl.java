@@ -86,6 +86,12 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         wrappingPaperRepository.deleteById(id);
     }
 
+    @Override
+    public void reduceStock(Long wrappingPaperId, int quantity) {
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("포장지를 찾을 수 없습니다."));
+        wrappingPaper.setStock(wrappingPaper.getStock() - quantity);
+    }
+
     private boolean isWrappingPaperExists(String name) {
         return wrappingPaperRepository.existsByName(name);
     }

@@ -1,6 +1,8 @@
 package com.nhnacademy.book.order.service;
 
 
+import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
+
 public interface OrderProductWrappingService {
-    long saveOrderProductWrapping(Long orderProductId, Long wrappingPaperId, int quantity);
+    void saveOrderProductWrapping(long orderProductId, OrderProductWrappingDto orderProductWrapping);
 }

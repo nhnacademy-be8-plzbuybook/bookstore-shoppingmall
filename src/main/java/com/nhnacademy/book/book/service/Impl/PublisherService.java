@@ -49,17 +49,6 @@ public class PublisherService {
         return convertToDto(savedPublisher);
     }
 
-    public PublisherResponseDto getPublisherFromElastic(Long publisherId) {
-        PublisherDocument publisherDocument = publisherSearchRepository.findById(publisherId).get();
-        if (publisherDocument == null) {
-            throw new PublisherNotFoundException("Publisher not found");
-        }
-        PublisherResponseDto publisherResponseDto = new PublisherResponseDto();
-        publisherResponseDto.setPublisherId(publisherDocument.getPublisherId());
-        publisherResponseDto.setPublisherName(publisherDocument.getPublisherName());
-        return publisherResponseDto;
-
-    }
 
     // Publisher 삭제
     public void deletePublisher(Long publisherId) {

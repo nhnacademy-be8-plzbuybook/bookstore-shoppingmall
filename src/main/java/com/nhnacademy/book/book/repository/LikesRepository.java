@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.dto.response.SellingBookResponseDto;
 import com.nhnacademy.book.book.entity.Likes;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.member.domain.Member;
@@ -11,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

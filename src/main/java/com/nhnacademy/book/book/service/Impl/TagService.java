@@ -25,12 +25,6 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public boolean existsTag(Long tagId) {
-        if(tagRepository.existsByTagId(tagId)){
-            return true;
-        } else throw new TagNameAlreadyException("태그 못 찾음");
-    }
-
 
     public TagResponseDto save(TagRegisterDto tagRegisterDto) {
 
@@ -50,24 +44,10 @@ public class TagService {
     }
 
     public Tag findTagById(Long tagId) {
-        if(existsTag(tagId)){
+        if(tagRepository.existsByTagId(tagId)){
             return tagRepository.findByTagId(tagId);
         } else throw new TagNotFoundException("tag not found");
     }
-
-//    public List<TagResponseDto> searchTagsByKeyword(String keyword) {
-//        List<Tag> tags = tagRepository.findByTagNameContaining(keyword);
-//        return tags.stream()
-//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<TagResponseDto> findAll() {
-//        List<Tag> tags = tagRepository.findAll();
-//        return tags.stream()
-//                .map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()))
-//                .collect(Collectors.toList());
-//    }
 
 
     public Page<TagResponseDto> searchTagsByKeyword(String keyword, Pageable pageable) {
@@ -80,8 +60,9 @@ public class TagService {
         return tagsPage.map(tag -> new TagResponseDto(tag.getTagId(), tag.getTagName()));
     }
 
+
     public void deleteTagById(Long tagId) {
-        if(existsTag(tagId)){
+        if(tagRepository.existsByTagId(tagId)){
             tagRepository.deleteById(tagId);
         } else {
             throw new TagNotFoundException("tag not found");
@@ -89,7 +70,7 @@ public class TagService {
     }
 
     public String findTagNameByTagId(Long tagId) {
-        if(!existsTag(tagId)){
+        if(!tagRepository.existsByTagId(tagId)){
             throw new TagNotFoundException("tag not found");
         }
 
@@ -97,17 +78,6 @@ public class TagService {
         return tag.getTagName();
     }
 
-
-
-
-
-
-    public TagResponseDto toTagResponseDto(Tag tag) {
-        return new TagResponseDto(
-                tag.getTagId(),
-                tag.getTagName()
-        );
-    }
 
 
 

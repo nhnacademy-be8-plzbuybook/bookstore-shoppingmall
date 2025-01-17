@@ -12,6 +12,8 @@ import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +34,11 @@ public class AuthorService {
         this.authorSearchRepository = authorSearchRepository;
     }
 
-
-
-
-    public List<AuthorResponseDto> getAllAuthors() {
-        List<Author> authors = authorRepository.findAll();
-
-        return authors.stream().map(this::toResponseDto).collect(Collectors.toList());
+    public Page<AuthorResponseDto> getAllAuthors(Pageable pageable) {
+        Page<Author> authors = authorRepository.findAll(pageable);
+        return authors.map(this::toResponseDto);
     }
+
 
     public AuthorResponseDto getAuthorById(Long id) {
         Author author = authorRepository.findById(id)

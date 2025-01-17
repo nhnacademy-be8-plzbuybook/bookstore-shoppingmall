@@ -18,7 +18,8 @@ public class SellingBook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sellingBookId;
 
-    @ManyToOne(cascade = CascadeType.REMOVE) // 도서 삭제 시 판매 책도 삭제
+    //판매책을 삭제할때는 책이 삭제 안되게
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 

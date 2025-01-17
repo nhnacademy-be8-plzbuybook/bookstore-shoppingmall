@@ -186,12 +186,12 @@ GET localhost:8090/api/book-tags?tagId=12
 
 ### 결아햄 이거야 이거
 
-POST http://localhost:8090//api/admin/selling-books/register
+POST http://localhost:8090/api/admin/selling-books/register
 Content-Type: application/json
 
 {
   "bookTitle": "Test Book Title",
-  "bookIndex": "12345",
+  "bookIndex": "334234",
   "bookDescription": "A description of the test book.",
   "bookPubDate": "2025-01-01",
   "bookPriceStandard": 25.99,
@@ -209,3 +209,10 @@ Content-Type: application/json
 
 ### ㄹㅈㄹ
 GET localhost:8090/api/admin/selling-books
+
+
+### asd
+GET localhost:8090/api/books/not-in-selling-books
+
+### e
+GET localhost:8080/api/books/update/414

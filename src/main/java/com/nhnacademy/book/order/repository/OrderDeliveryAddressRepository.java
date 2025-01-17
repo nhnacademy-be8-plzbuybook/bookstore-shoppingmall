@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface OrderDeliveryAddressRepository extends JpaRepository<OrderDeliveryAddress, Long> {
-    Optional<OrderDeliveryAddressDto> findByOrder_Id(String orderId);
+//    Optional<OrderDeliveryAddressDto> findByOrder_Id(String orderId);
 
 }

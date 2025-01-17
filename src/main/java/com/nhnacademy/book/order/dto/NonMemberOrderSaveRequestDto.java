@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class NonMemberOrderSaveRequestDto {
+public class NonMemberOrderSaveRequestDto extends CustomerOrderSaveRequestDto{
     private String orderId;
     private String nonMemberOrderPassword;
 }

@@ -30,6 +30,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: none
+    open-in-view: false # osiv 비활성화
 logging:
   level:
     org:
@@ -102,3 +103,5 @@ eureka:
 aladin:
   api:
     url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101
+    url2: https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101&OptResult=ebookList,usedList,reviewLis
+

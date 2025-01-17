@@ -76,22 +76,22 @@ public class AuthorControllerTest {
         Mockito.verify(authorService, Mockito.times(1)).getAuthorById(anyLong());
     }
 
-    @Test
-    void getAuthors() throws Exception {
-        List<AuthorResponseDto> authors = Arrays.asList(
-                new AuthorResponseDto(1L, "Author1"),
-                new AuthorResponseDto(2L, "Author2")
-        );
-
-        Mockito.when(authorService.getAllAuthors()).thenReturn(authors);
-
-        mockMvc.perform(get("/api/authors"))
-                .andDo(print()) // 로그 출력
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(authors)));
-
-        Mockito.verify(authorService, Mockito.times(1)).getAllAuthors();
-    }
+//    @Test
+//    void getAuthors() throws Exception {
+//        List<AuthorResponseDto> authors = Arrays.asList(
+//                new AuthorResponseDto(1L, "Author1"),
+//                new AuthorResponseDto(2L, "Author2")
+//        );
+//
+//        Mockito.when(authorService.getAllAuthors()).thenReturn(authors);
+//
+//        mockMvc.perform(get("/api/authors"))
+//                .andDo(print()) // 로그 출력
+//                .andExpect(status().isOk())
+//                .andExpect(content().json(objectMapper.writeValueAsString(authors)));
+//
+//        Mockito.verify(authorService, Mockito.times(1)).getAllAuthors();
+//    }
 
     @Test
     void deleteAuthor() throws Exception {

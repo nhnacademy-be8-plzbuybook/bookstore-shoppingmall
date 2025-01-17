@@ -2,13 +2,11 @@ package com.nhnacademy.book.orderProduct.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
-import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
@@ -27,14 +25,13 @@ public class OrderProductServiceImpl implements OrderProductService {
     private final OrderProductRepository orderProductRepository;
     private final SellingBookRepository sellingBookRepository;
     private final OrderCacheService orderCacheService;
-    private final OrderRepository orderRepository;
 
     @Transactional
     @Override
     public OrderProduct saveOrderProduct(Orders order, OrderProductRequestDto orderProductRequest) {
         SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
         // 판매책 재고 차감
-        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
+//        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
 
         BigDecimal couponDiscount = BigDecimal.ZERO;
         if (orderProductRequest.getAppliedCoupons() != null && !orderProductRequest.getAppliedCoupons().isEmpty()) {
@@ -72,13 +69,11 @@ public class OrderProductServiceImpl implements OrderProductService {
         patchStatus(orderProductId, new OrderProductStatusPatchRequestDto(OrderProductStatus.PURCHASE_CONFIRMED));
     }
 
+    @Transactional
     @Override
-    public void cancelOrderProduct(Long orderProductId, Integer quantity) {
-        OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
-        // 주문상품 상태확인
-        if (orderProduct.getStatus().getCode() > 1) {
-            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
-        }
-
+    public void addOrderProductStock(Long orderProductId, int quantity) {
+        OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품을 찾을 수 없습니다."));
+        SellingBook sellingBook = orderProduct.getSellingBook();
+        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + quantity);
     }
 }

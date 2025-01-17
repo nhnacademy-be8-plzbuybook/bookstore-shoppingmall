@@ -29,8 +29,11 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
 
     @Override
     public Long update(String hashName, Long id, int quantity) {
+        log.info("id: {}", id);
+        log.info("quantity: {}", quantity);
+        log.info("hashName: {}", hashName);
         ReadCartBookResponseDto resp = (ReadCartBookResponseDto) cartRedisTemplate.opsForHash().get(hashName + ":", id.toString());
-
+        log.info("resp: {}", resp);
          assert resp != null;
         ReadCartBookResponseDto updatedResp = ReadCartBookResponseDto.builder()
                 .cartId(resp.cartId())
@@ -44,6 +47,7 @@ public class CartBookRedisRepositoryImpl implements CartBookRedisRepository {
                 .build();
         cartRedisTemplate.opsForHash().put(hashName + ":", id.toString(), updatedResp);
         cartRedisTemplate.expire(hashName+":", 1, TimeUnit.HOURS);
+        log.info("updatedResp quantity: {}", updatedResp.quantity());
         return id;
     }
 

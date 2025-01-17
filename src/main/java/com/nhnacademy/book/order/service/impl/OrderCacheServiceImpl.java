@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.order.dto.orderRequests.MemberOrderRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.NonMemberOrderRequestDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.service.OrderCacheService;
+import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -140,6 +142,21 @@ public class OrderCacheServiceImpl implements OrderCacheService {
             throw new RuntimeException("재고 캐시를 찾을 수 없습니다.");
         }
         return Integer.parseInt((String) stock);
+    }
+
+    @Override
+    public void rollbackOrderedStock(OrderRequestDto orderRequest) {
+        for (OrderProductRequestDto orderProductRequest : orderRequest.getOrderProducts()) {
+            String key = getStockCacheKey(orderProductRequest.getProductId());
+            // 주문상품 재고 추가
+            orderRedisTemplate.opsForValue().increment(key, orderProductRequest.getQuantity());
+            if (orderProductRequest.getWrapping() != null) {
+                OrderProductWrappingDto orderProductWrappingDto = orderProductRequest.getWrapping();
+                key = getStockCacheKey(orderProductWrappingDto.getWrappingPaperId());
+                // 포장지 재고 추가
+                orderRedisTemplate.opsForValue().increment(key, orderProductWrappingDto.getQuantity());
+            }
+        }
     }
 
     private String getOrderCacheKey(String orderId) {

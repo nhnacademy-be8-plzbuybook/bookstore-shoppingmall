@@ -24,4 +24,7 @@ public class BookInfoResponseDto {
     private Long sellingBookId;
 
 
+    public BookInfoResponseDto() {
+
+    }
 }

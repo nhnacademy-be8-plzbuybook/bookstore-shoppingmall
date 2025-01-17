@@ -55,6 +55,8 @@ public class TagController {
         return ResponseEntity.ok(tags);
     }
 
+
+
     @GetMapping("/tags/{tagId}")
     public ResponseEntity<String> getTagNameByTagId(@PathVariable Long tagId) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findTagNameByTagId(tagId));
@@ -67,27 +69,31 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-
-    @GetMapping("/book-tags")
-    public ResponseEntity<List<BookTagResponseDto>> getAllBookTags(@RequestParam Long tagId) {
+    @GetMapping("/tags/{tag-id}/books")
+    public ResponseEntity<List<BookTagResponseDto>> getAllBookTags(@PathVariable(name="tag-id") Long tagId) {
         List<BookTagResponseDto> bookTags = bookTagService.getBookTagList(tagId);
         return ResponseEntity.ok(bookTags);
     }
 
-    @PostMapping("/book-tags")
-    public ResponseEntity<Void> saveBookTag(@RequestParam Long bookId, @RequestParam Long tagId) {
+
+
+    @PostMapping("/books/{book-id}/tags/{tag-id}")
+    public ResponseEntity<Void> saveBookTag(@PathVariable(name = "book-id") Long bookId, @PathVariable(name = "tag-id") Long tagId) {
         bookTagService.save(bookId,tagId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/book-tags")
-    public ResponseEntity<Void> deleteBookTag(@RequestParam Long bookId, @RequestParam Long tagId) {
+
+    @DeleteMapping("/books/{book-id}/tags/{tag-id}")
+    public ResponseEntity<Void> deleteBookTag(@PathVariable(name = "book-id") Long bookId, @PathVariable(name = "tag-id") Long tagId) {
         bookTagService.deleteBookTagList(bookId,tagId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/book-tags/{bookId}")
-    public ResponseEntity<List<BookTagResponseDto>> getBookTagsByBookId(@PathVariable Long bookId) {
+
+
+    @GetMapping("/books/{book-id}/tags")
+    public ResponseEntity<List<BookTagResponseDto>> getBookTagsByBookId(@PathVariable(name = "book-id") Long bookId) {
         List<BookTagResponseDto> bookTags = bookTagService.getBookTagListByBookId(bookId);
         return ResponseEntity.ok(bookTags);
     }
