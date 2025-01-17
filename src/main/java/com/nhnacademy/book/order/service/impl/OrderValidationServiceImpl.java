@@ -2,13 +2,12 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.coupon.CouponClient;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
-import com.nhnacademy.book.feign.CouponClient;
-import com.nhnacademy.book.feign.dto.CouponCalculationRequestDto;
 import com.nhnacademy.book.coupon.dto.CouponCalculationRequestDto;
 import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
