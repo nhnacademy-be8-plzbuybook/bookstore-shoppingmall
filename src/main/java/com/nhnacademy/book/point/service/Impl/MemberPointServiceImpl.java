@@ -237,6 +237,10 @@ public class MemberPointServiceImpl implements MemberPointService {
             throw new IllegalArgumentException("사용 가능한 포인트가 부족합니다.");
         }
 
+        if (availablePoints - usedPoint < 0) {
+            throw new IllegalArgumentException("사용 후 포인트 총합이 음수가 될 수 없습니다.");
+        }
+
         List<MemberPoint> points = memberPointRepository.findByMember_email(email);
 
         for (MemberPoint point : points) {
