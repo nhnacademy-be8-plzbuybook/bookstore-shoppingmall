@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.payment.entity.Payment;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -71,6 +68,7 @@ public class PaymentSaveRequestDto {
                 .build();
     }
 
+    @AllArgsConstructor
     @Getter
     @Setter
     public static class EasyPay {
@@ -78,6 +76,7 @@ public class PaymentSaveRequestDto {
         private String provider;
     }
 
+    @AllArgsConstructor
     @Getter
     @Setter
     public static class Receipt {
