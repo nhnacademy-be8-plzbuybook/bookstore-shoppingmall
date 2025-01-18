@@ -20,7 +20,7 @@ public class ExternalPaymentController {
 
 
     @PostMapping("/confirm/widget")
-    public ResponseEntity<JSONObject> confirmPayment(@RequestBody PaymentConfirmRequestDto confirmRequest) throws JsonProcessingException {
+    public ResponseEntity<JSONObject> confirmPayment(@RequestBody PaymentConfirmRequestDto confirmRequest) {
         // 결제 요청 전 저장한 정보와 같은지 검증
         paymentService.verifyPayment(confirmRequest);
         JSONObject response = paymentService.confirmPayment(confirmRequest);
