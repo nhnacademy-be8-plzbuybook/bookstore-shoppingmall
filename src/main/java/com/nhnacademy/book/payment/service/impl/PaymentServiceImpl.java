@@ -71,20 +71,19 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Long cancelPayment(PaymentCancelRequestDto cancelRequest) {
-        //TODO: paymentKey를 받아야 될듯? 아닌가
         String orderId = cancelRequest.getOrderId();
-        String paymentKey = paymentRepository.findOldestPaymentKeyByOrdersId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
+        Payment payment = paymentRepository.findOldestByOrderId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
 
 
         PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(cancelRequest.getReason(), cancelRequest.getCancelAmount(), orderId);
-        JSONObject jsonObject = tossPaymentService.cancelPayment(paymentKey, paymentCancelRequest);
+        JSONObject jsonObject = tossPaymentService.cancelPayment(payment.getPaymentKey(), paymentCancelRequest);
 
         LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
         LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
         ZonedDateTime canceledAt = ZonedDateTime.parse((String) latestCancel.get("canceledAt"));
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
 
-        Payment payment = paymentRepository.save(Payment.builder()
+        Payment savedPayment = paymentRepository.save(Payment.builder()
                 .paymentKey((String) jsonObject.get("paymentKey"))
                 .status((String) jsonObject.get("status"))
                 .method((String) jsonObject.get("method"))
@@ -94,7 +93,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orders(order)
                 .build()
         );
-        return payment.getId();
+        return savedPayment.getId();
     }
 
     @Transactional
