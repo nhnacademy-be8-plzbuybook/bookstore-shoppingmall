@@ -188,7 +188,8 @@ public class MemberPointServiceImpl implements MemberPointService {
 
     @Override
     public List<MemberPointListResponseDto> getMemberPointsByMemberId(Long memberId) {
-        List<MemberPoint> points = memberPointRepository.findAllByMember_MemberId(memberId);
+        List<MemberPoint> points = memberPointRepository.findAllByMemberIdOrderByDateDesc(memberId);
+
         return points.stream()
                 .map(point -> new MemberPointListResponseDto(
                         point.getMemberPointId(),
