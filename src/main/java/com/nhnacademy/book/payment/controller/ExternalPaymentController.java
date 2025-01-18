@@ -25,10 +25,8 @@ public class ExternalPaymentController {
         paymentService.verifyPayment(confirmRequest);
         JSONObject response = paymentService.confirmPayment(confirmRequest);
 
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 
 
 }

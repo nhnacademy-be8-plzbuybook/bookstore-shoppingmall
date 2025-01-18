@@ -27,18 +27,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class OrderProcessServiceImpl implements OrderProcessService {
+    private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
+
     private final OrderCrudService orderCrudService;
     private final OrderValidationService orderValidationService;
     private final OrderCacheService orderCacheService;
     private final OrderDeliveryAddressService orderDeliveryAddressService;
-    private final OrderRepository orderRepository;
     private final OrderProductService orderProductService;
     private final OrderProductWrappingService orderProductWrappingService;
     private final MemberPointService memberPointService;
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
     private final PaymentService paymentService;
-    private final MemberRepository memberRepository;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
