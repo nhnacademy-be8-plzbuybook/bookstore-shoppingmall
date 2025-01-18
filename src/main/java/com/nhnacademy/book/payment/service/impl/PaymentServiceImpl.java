@@ -3,6 +3,8 @@ package com.nhnacademy.book.payment.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,9 +64,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (orderCache == null) {
             throw new NotFoundException("주문 캐시를 찾을 수 없습니다.");
         }
-
-        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee().subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0)));
-        if (confirmRequest.getAmount().compareTo(paymentPrice) != 0) {
+        BigDecimal couponDiscounts = calculateCouponDiscounts(orderCache);
+        BigDecimal amount = orderCache.getOrderPrice()
+                .add(orderCache.getDeliveryFee())
+                .subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0))
+                .subtract(couponDiscounts);
+        if (confirmRequest.getAmount().compareTo(amount) != 0) {
             throw new IllegalArgumentException("주문결제 정보가 일치하지 않습니다."); //400
         }
     }
@@ -73,7 +79,6 @@ public class PaymentServiceImpl implements PaymentService {
     public Long cancelPayment(PaymentCancelRequestDto cancelRequest) {
         String orderId = cancelRequest.getOrderId();
         Payment payment = paymentRepository.findOldestByOrderId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
-
 
         PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(cancelRequest.getReason(), cancelRequest.getCancelAmount(), orderId);
         JSONObject jsonObject = tossPaymentService.cancelPayment(payment.getPaymentKey(), paymentCancelRequest);
@@ -114,6 +119,17 @@ public class PaymentServiceImpl implements PaymentService {
             tossPaymentService.cancelPayment(confirmRequest.getPaymentKey(), new PaymentCancelRequestDto("결제 중 오류발생", null, confirmRequest.getOrderId()));
             throw new PaymentFailException("결제승인 중 오류가 발생했습니다.");
         }
+    }
+
+    private BigDecimal calculateCouponDiscounts(OrderRequestDto orderRequest) {
+        BigDecimal couponDiscounts = BigDecimal.ZERO;
+        List<OrderProductRequestDto> orderProducts = orderRequest.getOrderProducts();
+        for (OrderProductRequestDto orderProduct : orderProducts) {
+            if (orderProduct.getAppliedCoupons() != null) {
+                couponDiscounts = couponDiscounts.add(orderProduct.getAppliedCoupons().stream().map(OrderProductAppliedCouponDto::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add));
+            }
+        }
+        return couponDiscounts;
     }
 
     private void changeOrderStatusPaymentCompleted(String orderId) {
