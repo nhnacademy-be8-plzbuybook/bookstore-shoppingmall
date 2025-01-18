@@ -49,7 +49,7 @@ public class OrderQueryController {
      */
     @GetMapping("/my")
     public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
-                                                      @RequestParam(required = false) OrderSearchRequestDto searchRequest,
+                                                      OrderSearchRequestDto searchRequest,
                                                       Pageable pageable) {
         // 회원 검증
         if (memberEmail == null || memberEmail.isBlank()) {
