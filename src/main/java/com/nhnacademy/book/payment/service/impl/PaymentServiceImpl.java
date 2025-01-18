@@ -8,6 +8,7 @@ import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
@@ -70,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0))
                 .subtract(couponDiscounts);
         if (confirmRequest.getAmount().compareTo(amount) != 0) {
-            throw new IllegalArgumentException("주문결제 정보가 일치하지 않습니다."); //400
+            throw new PriceMismatchException("주문결제 정보가 일치하지 않습니다."); //400
         }
     }
 
@@ -80,8 +81,7 @@ public class PaymentServiceImpl implements PaymentService {
         String orderId = cancelRequest.getOrderId();
         Payment payment = paymentRepository.findOldestByOrderId(orderId).orElseThrow(() -> new NotFoundException("결제정보를 찾을 수 없습니다."));
 
-        PaymentCancelRequestDto paymentCancelRequest = new PaymentCancelRequestDto(cancelRequest.getReason(), cancelRequest.getCancelAmount(), orderId);
-        JSONObject jsonObject = tossPaymentService.cancelPayment(payment.getPaymentKey(), paymentCancelRequest);
+        JSONObject jsonObject = tossPaymentService.cancelPayment(payment.getPaymentKey(), cancelRequest);
 
         LinkedHashMap<String, Object> latestCancel = tossPaymentService.extractLatestCancel(jsonObject);
         LinkedHashMap<String, Object> easyPay = (LinkedHashMap<String, Object>) jsonObject.get("easyPay");
