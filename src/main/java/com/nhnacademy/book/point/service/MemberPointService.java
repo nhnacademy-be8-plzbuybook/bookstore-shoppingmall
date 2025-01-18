@@ -7,7 +7,6 @@ import com.nhnacademy.book.point.dto.MemberPointAddResponseDto;
 import com.nhnacademy.book.point.dto.MemberPointListResponseDto;
 import com.nhnacademy.book.review.domain.Review;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface MemberPointService {

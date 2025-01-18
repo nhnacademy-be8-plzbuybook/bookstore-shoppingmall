@@ -220,8 +220,11 @@ public class MemberPointServiceImpl implements MemberPointService {
                 .mapToInt(point -> Math.abs(point.getPoint()))
                 .sum();
 
-        // 사용 가능 포인트 = 적립된 포인트 - 사용된 포인트
-        return totalSavedPoints - totalUsedPoints;
+        int availablePoints = totalSavedPoints - totalUsedPoints;
+
+        return Math.max(availablePoints, 0);
+
+
     }
 
 
@@ -237,41 +240,18 @@ public class MemberPointServiceImpl implements MemberPointService {
             throw new IllegalArgumentException("사용 가능한 포인트가 부족합니다.");
         }
 
-        if (availablePoints - usedPoint < 0) {
-            throw new IllegalArgumentException("사용 후 포인트 총합이 음수가 될 수 없습니다.");
-        }
+        MemberPoint usedPointRecord = new MemberPoint();
+        usedPointRecord.setMember(member);
+        usedPointRecord.setPoint(-usedPoint);
+        usedPointRecord.setUsingDate(LocalDateTime.now());
+        usedPointRecord.setType("USE");
 
-        List<MemberPoint> points = memberPointRepository.findByMember_email(email);
+        PointCondition condition = pointConditionRepository.findByName("USE")
+                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        usedPointRecord.setPointCondition(condition);
 
-        for (MemberPoint point : points) {
-            // 유효기간 체크
-            if ((point.getEndDate() == null || point.getEndDate().isAfter(LocalDateTime.now())) && usedPoint > 0) {
-                int deductable = Math.min(point.getPoint(), usedPoint);
-
-                usedPoint -= deductable; // 남은 포인트 계산
-
-                // 포인트 사용 기록 추가
-                MemberPoint usedPointRecord = new MemberPoint();
-                usedPointRecord.setMember(member);
-                usedPointRecord.setPoint(-deductable); // 사용된 포인트
-                usedPointRecord.setUsingDate(LocalDateTime.now());
-                usedPointRecord.setType("USE");
-
-                PointCondition condition = pointConditionRepository.findById(5L)
-                        .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
-                usedPointRecord.setPointCondition(condition);
-
-                memberPointRepository.save(usedPointRecord);
-
-                if (usedPoint == 0) {
-                    break;
-                }
-            }
-
-        }
-
+        memberPointRepository.save(usedPointRecord);
     }
-
 
     // 반품시 포인트 지급
     @Override
