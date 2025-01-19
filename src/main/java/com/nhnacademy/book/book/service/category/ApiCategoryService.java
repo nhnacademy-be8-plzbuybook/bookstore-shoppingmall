@@ -2,24 +2,28 @@ package com.nhnacademy.book.book.service.category;
 
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
+import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ApiCategoryService {
-    private final CategoryRepository categoryRepository;
+
+
+    @Autowired
+    private  CategoryRepository categoryRepository;
 
     @Autowired
     private BookRepository bookRepository;
 
-    public ApiCategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
 
     /**
      * 카테고리 경로를 > 기준으로 나눠서 저장
@@ -40,21 +44,22 @@ public class ApiCategoryService {
             // 부모와 이름을 기준으로 카테고리 찾기
             final Category currentParent = parentCategory; // 람다식 내 사용되는 변수는 final 또는 effectively final 이어야 함
 
-            int finalDepth = depth;
-            Category category = categoryRepository
-                    .findByCategoryNameAndParentCategory(categoryName, currentParent)
-                    .orElseGet(() -> {
-                        log.debug("새로운 카테고리 생성: {}, 깊이: {}", categoryName, finalDepth + 1);
-                        // 새 카테고리 생성
-                        Category newCategory = new Category();
-                        newCategory.setCategoryName(categoryName);
-                        newCategory.setCategoryDepth(finalDepth + 1); // depth 설정
-                        newCategory.setParentCategory(currentParent); // 부모 카테고리 설정
+            Category category = categoryRepository.findByCategoryNameAndParentCategory(categoryName, currentParent)
+                    .orElse(null);
 
-                        return categoryRepository.save(newCategory); // 저장
-                    });
+            if (category == null) {
+                log.debug("새로운 카테고리 생성: {}, 깊이: {}", categoryName, depth + 1);
+                // 새 카테고리 생성
+                category = new Category();
+                category.setCategoryName(categoryName);
+                category.setCategoryDepth(depth + 1); // depth 설정
+                category.setParentCategory(currentParent); // 부모 카테고리 설정
 
-            log.debug("저장된/찾은 카테고리: {}, ID: {}", category.getCategoryName(), category.getCategoryId());
+                categoryRepository.save(category); // 저장
+                log.debug("저장된 카테고리: {}, ID: {}", category.getCategoryName(), category.getCategoryId());
+            } else {
+                log.debug("이미 존재하는 카테고리: {}, ID: {}", category.getCategoryName(), category.getCategoryId());
+            }
 
             parentCategory = category; // 현재 카테고리를 부모로 설정
         }

@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+import java.util.List;
+
 
 /**
  * 도서 하나의 세부 정보를 나타냄.
@@ -31,6 +33,21 @@ public class AladinResponse {
     @JsonProperty("priceStandard")
     private int priceStandard;
 
+    @JsonProperty("priceSales")
+    private int priceSales;
+
+    @JsonProperty("totalResults")
+    private int totalResults;
+
+    @JsonProperty("startIndex")
+    private int startIndex;
+
+    @JsonProperty("itemsPerPage")
+    private int itemsPerPage;
+
+    @JsonProperty("version")
+    private String version;
+
     @JsonProperty("cover")
     private String cover;
 
@@ -43,4 +60,14 @@ public class AladinResponse {
     @JsonProperty("categoryPath")
     private String categoryPath; // 카테고리 경로
 
+    @JsonProperty("item")  // JSON에서 "item" 키에 해당
+    private List<AladinResponse> item;
+
+    public List<AladinResponse> getBooks() {
+        return item;
+    }
+
+    public void setBooks(List<AladinResponse> books) {
+        this.item = books;
+    }
 }
