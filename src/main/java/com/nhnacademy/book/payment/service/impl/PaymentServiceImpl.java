@@ -117,6 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (Exception e) {
             // 결제취소
             tossPaymentService.cancelPayment(confirmRequest.getPaymentKey(), new PaymentCancelRequestDto("결제 중 오류발생", null, confirmRequest.getOrderId()));
+            // 재고 롤백
+            orderCacheService.rollbackOrderedStock(confirmRequest.getOrderId());
             throw new PaymentFailException("결제승인 중 오류가 발생했습니다.");
         }
     }

@@ -1,5 +1,6 @@
 package com.nhnacademy.book.payment.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.book.order.entity.Orders;
@@ -68,19 +69,27 @@ public class PaymentSaveRequestDto {
                 .build();
     }
 
-    @AllArgsConstructor
     @Getter
     @Setter
     public static class EasyPay {
         @JsonProperty("provider")
         private String provider;
+
+        @JsonCreator
+        public EasyPay(@JsonProperty("provider") String provider) {
+            this.provider = provider;
+        }
     }
 
-    @AllArgsConstructor
     @Getter
     @Setter
     public static class Receipt {
         @JsonProperty("url")
         private String url;
+
+        @JsonCreator
+        public Receipt(@JsonProperty("url") String url) {
+            this.url = url;
+        }
     }
 }

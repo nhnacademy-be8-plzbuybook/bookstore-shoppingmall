@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @Service
 public class OrderProcessServiceImpl implements OrderProcessService {
@@ -57,10 +59,11 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             OrderResponseDto orderResponseDto = orderCrudService.createOrder(orderRequest);
             // 주문정보 캐싱
             orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
+            // 재고 선점
+            Map<String, Integer> stockMap = orderCacheService.preemptOrderStock(orderResponseDto.getOrderId(), orderRequest);
+
             return orderResponseDto;
         } catch (Exception e) {
-            // 보상 트랜잭션
-            // orderCacheService.rollbackOrderedStock(orderRequest);
             throw new OrderRequestFailException(e.getMessage());
         }
     }
@@ -89,9 +92,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             customerOrderService.placeCustomerOrder(orderId, orderRequest);
             // 주문포인트적립
             addOrderPoint(orderRequest);
-
-            return orderId;
-
+            throw new RuntimeException("");
+//            return orderId;
         } catch (Exception e) {
             rollbackWhenOrderCompletionFail(order);
             throw new OrderCompletionFailException("주문완료 중 오류가 발생했습니다.", e);
@@ -132,7 +134,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 
     private void rollbackWhenOrderCompletionFail(Orders order) {
         // TODO: 재고차감 복구
-        // orderCacheService.rollbackOrderedStock(orderRequest);
+        orderCacheService.rollbackOrderedStock(order.getId());
         // orders 삭제
         orderRepository.delete(order);
         // 결제취소 요청
