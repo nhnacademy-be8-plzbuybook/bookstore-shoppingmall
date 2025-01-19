@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.service.api;
 
-import com.nhnacademy.book.book.dto.response.aladin.AladinBookListResponse;
 import com.nhnacademy.book.book.dto.response.aladin.AladinResponse;
 import com.nhnacademy.book.book.service.mapping.MappingService;
 import jakarta.transaction.Transactional;
@@ -29,7 +28,7 @@ public class ApiService {
         this.mappingService = mappingService;
     }
     /**
-     * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다.
+     * 알라딘 상품 리스트 API를 사용하여 최신 도서 정보를 가져와 저장합니다. 파라미터로 한느거 씀 대량 저장
      */
     public void saveBooksFromListApi(String queryType, String searchTarget, int start, int maxResults) {
         int currentPage = 1;
@@ -42,9 +41,9 @@ public class ApiService {
                 String listUrl = String.format("%s&QueryType=%s&SearchTarget=%s&start=%d&MaxResults=%d",
                         aladinApiUrl, queryType, searchTarget, start, maxResults);
 
-                log.debug("API 호출 URL: {}", listUrl);
+                log.info("API 호출 URL: {}", listUrl);
 
-                AladinBookListResponse response = callAladinApi(listUrl);
+                AladinResponse response = callAladinApi(listUrl);
 
                 if (response == null || response.getBooks() == null || response.getBooks().isEmpty()) {
                     log.debug("더 이상 가져올 데이터가 없습니다. 현재 페이지: {}", currentPage);
@@ -58,9 +57,9 @@ public class ApiService {
                     boolean isSaved = mappingService.processBookData(bookData);
                     if (isSaved) {
                         totalBooksSaved++;
-                        log.debug("저장된 책: {}", bookData.getTitle());
+                        log.info("저장된 책: {}", bookData.getTitle());
                     } else {
-                        log.debug("중복된 책 스킵: {}", bookData.getIsbn13());
+                        log.info("중복된 책 스킵: {}", bookData.getIsbn13());
                     }
                 }
 
@@ -71,51 +70,12 @@ public class ApiService {
             log.error("API 호출 중 오류 발생: {}", e.getMessage(), e);
         }
 
-        log.debug("총 가져온 책 수: {}", totalBooksFetched);
-        log.debug("총 저장된 책 수: {}", totalBooksSaved);
-    }
-
-
-    /**
-     * 특정 ISBN 리스트를 기반으로 개별 도서 데이터를 조회하여 저장합니다.
-     *
-     * @param isbns ISBN 리스트
-     */
-    @Transactional
-    public boolean saveBooksByIsbns(List<String> isbns) {
-        boolean isSaved = false;
-
-        // API 기본 URL (검색용)
-        String searchUrlTemplate = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=ttbfkqlaus1419001&Query=%s&QueryType=ISBN&MaxResults=1&SearchTarget=Book&output=js&Version=20131101";
-
-        try {
-            for (String isbn : isbns) {
-                // 동적 URL 생성
-                String url = String.format(searchUrlTemplate, isbn);
-
-                // API 호출 및 응답 처리
-                AladinBookListResponse response = restTemplate.getForObject(url, AladinBookListResponse.class);
-
-                if (response != null && response.getBooks() != null && !response.getBooks().isEmpty()) {
-                    // 각 책 데이터를 처리
-                    for (AladinResponse book : response.getBooks()) {
-                        mappingService.processBookData(book);
-                        isSaved = true; // 저장된 경우 true로 설정
-                    }
-                } else {
-                    log.warn("ISBN으로 검색된 데이터가 없습니다: {}", isbn);
-                }
-            }
-        } catch (Exception e) {
-            log.error("알라딘 ISBN API 호출 중 오류 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("알라딘 ISBN API 호출 실패", e);
-        }
-
-        return isSaved;
+        log.info("총 가져온 책 수: {}", totalBooksFetched);
+        log.info("총 저장된 책 수: {}", totalBooksSaved);
     }
 
     /**
-     * ItemId를 기반으로 도서 정보를 저장합니다.
+     * ItemId를 기반으로 도서 정보를 저장합니다. --이거 써 isbn 으로 하는거
      *
      * @param itemIds ItemId 리스트
      * @return 저장 실패한 ItemId 리스트
@@ -125,20 +85,18 @@ public class ApiService {
     public List<String> saveBooksByItemIds(List<String> itemIds) {
         List<String> failedItemIds = new ArrayList<>();
         String itemIdUrlTemplate = aladinApiUrl2 + "&itemIdType=ISBN&ItemId=%s";
-                //"&itemIdType=ISBN&QueryType=ItemNewAll&itemIdType=ItemId&ItemId=%s";
-//"https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList";
         for (String itemId : itemIds) {
             try {
                 String url = String.format(itemIdUrlTemplate, itemId);
-                AladinBookListResponse response = callAladinApi(url);
+                AladinResponse response = callAladinApi(url);
 
                 if (response != null && response.getBooks() != null && !response.getBooks().isEmpty()) {
                     for (AladinResponse book : response.getBooks()) {
                         boolean isSaved = mappingService.processBookData(book);
                         if (isSaved) {
-                            log.debug("저장된 ItemId 도서: {}", book.getTitle());
+                            log.info("저장된 ItemId 도서: {}", book.getTitle());
                         } else {
-                            log.debug("중복된 책 스킵: {}", book.getIsbn13());
+                            log.info("중복된 책 스킵: {}", book.getIsbn13());
                         }
                     }
                 } else {
@@ -157,57 +115,14 @@ public class ApiService {
     /**
      * API를 호출하고 응답을 반환합니다.
      */
-    private AladinBookListResponse callAladinApi(String url) {
+    private AladinResponse callAladinApi(String url) {
         try {
-            log.debug("API 호출 URL: {}", url);
-            return restTemplate.getForObject(url, AladinBookListResponse.class);
+            log.info("API 호출 URL: {}", url);
+            return restTemplate.getForObject(url, AladinResponse.class);
         } catch (Exception e) {
             log.error("API 호출 실패: {}", e.getMessage(), e);
             return null;
         }
     }
-
-
-    @Transactional
-    public List<String> saveBooksByIsbnsDetailed(List<String> isbns) {
-        List<String> failedIsbns = new ArrayList<>();
-
-        // API 기본 URL (검색용)
-        String searchUrlTemplate = "https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList";
-                //"http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Query=%s&QueryType=ISBN&MaxResults=1&SearchTarget=Book&output=js&Version=20131101";
-//https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=9788994492032&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
-        //https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
-
-        try {
-            for (String isbn : isbns) {
-                // 동적 URL 생성
-                String url = String.format(searchUrlTemplate, isbn);
-
-                // API 호출 및 응답 처리
-                AladinBookListResponse response = restTemplate.getForObject(url, AladinBookListResponse.class);
-
-                if (response != null && response.getBooks() != null && !response.getBooks().isEmpty()) {
-                    try {
-                        // 각 책 데이터를 처리
-                        for (AladinResponse book : response.getBooks()) {
-                            mappingService.processBookData(book);
-                        }
-                    } catch (Exception e) {
-                        log.error("ISBN 데이터 처리 중 오류 발생: {}", isbn, e);
-                        failedIsbns.add(isbn); // 실패한 ISBN 추가
-                    }
-                } else {
-                    log.warn("ISBN으로 검색된 데이터가 없습니다: {}", isbn);
-                    failedIsbns.add(isbn); // 검색 실패 ISBN 추가
-                }
-            }
-        } catch (Exception e) {
-            log.error("알라딘 ISBN API 호출 중 오류 발생: {}", e.getMessage(), e);
-            throw new RuntimeException("알라딘 ISBN API 호출 실패", e);
-        }
-
-        return failedIsbns;
-    }
-
 
 }
