@@ -10,6 +10,7 @@ import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCrudService;
+import com.nhnacademy.book.order.service.OrderProductCouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
     private final SellingBookService sellingBookService;
+    private final OrderProductCouponService orderProductCouponService;
 
     @Transactional
     @Override
@@ -96,7 +98,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
 
     private BigDecimal calculatePaymentPrice(OrderRequestDto orderRequest) {
         BigDecimal point = orderRequest.getUsedPoint() != null ? BigDecimal.valueOf(orderRequest.getUsedPoint()) : BigDecimal.ZERO;
-        BigDecimal couponDiscount = calculateCouponDiscounts(orderRequest);
+        BigDecimal couponDiscount = getCouponDiscounts(orderRequest);
 
         return orderRequest.getOrderPrice()
                 .add(orderRequest.getDeliveryFee())
@@ -104,16 +106,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
                 .subtract(couponDiscount);
     }
 
-    private BigDecimal calculateCouponDiscounts(OrderRequestDto orderRequest) {
-        BigDecimal couponDiscounts = BigDecimal.ZERO;
-        List<OrderProductRequestDto> orderProducts = orderRequest.getOrderProducts();
-        for(OrderProductRequestDto orderProduct: orderProducts) {
-            if (orderProduct.getAppliedCoupons() != null) {
-                for (OrderProductAppliedCouponDto appliedCoupon: orderProduct.getAppliedCoupons()) {
-                    couponDiscounts = couponDiscounts.add(appliedCoupon.getDiscount());
-                }
-            }
-        }
-        return couponDiscounts;
+    private BigDecimal getCouponDiscounts(OrderRequestDto orderRequest) {
+        return orderProductCouponService.calculateCouponDiscounts(orderRequest.getOrderProducts());
     }
 }
