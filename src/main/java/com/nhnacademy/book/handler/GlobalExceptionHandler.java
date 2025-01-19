@@ -372,6 +372,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
 
+    // ISBN 중복 예외 처리
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleBookAlreadyExistsException(BookAlreadyExistsException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
+
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleCategoryAlreadyExistsException(CategoryAlreadyExistsException e) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
