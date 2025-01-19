@@ -1,6 +1,7 @@
 package com.nhnacademy.book.orderProduct.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
@@ -29,7 +30,7 @@ public class OrderProductServiceImpl implements OrderProductService {
     @Transactional
     @Override
     public OrderProduct saveOrderProduct(Orders order, OrderProductRequestDto orderProductRequest) {
-        SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
+        SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new SellingBookNotFoundException("찾을 수 없는 상품입니다."));
         // 판매책 재고 차감
         sellingBook.setSellingBookStock(orderCacheService.getProductStockCache(sellingBook.getSellingBookId()));
 
