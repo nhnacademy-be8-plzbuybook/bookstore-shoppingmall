@@ -26,7 +26,6 @@ public class OrderProcessController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> requestOrder(@RequestHeader(name = "X-USER-ID", required = false) String memberEmail,
                                                          @Valid @RequestBody OrderRequestDto orderRequest) {
-
         if (memberEmail != null) {
             orderRequest.setMemberEmail(memberEmail);
         }

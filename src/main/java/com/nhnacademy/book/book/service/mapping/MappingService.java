@@ -2,6 +2,7 @@ package com.nhnacademy.book.book.service.mapping;
 
 import com.nhnacademy.book.book.dto.response.aladin.AladinResponse;
 import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.exception.BookAlreadyExistsException;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.book.service.category.ApiCategoryService;
 import com.nhnacademy.book.book.service.image.ImageService;
@@ -66,8 +67,11 @@ public class MappingService {
             log.debug("저장된 판매책: {}", sellingBook.getSellingBookId());
 
             return true; // 처리 성공
+        } catch (BookAlreadyExistsException  e) {
+            log.error("이미 있는 책: ISBN13 = {}, 이유: {}", bookData.getIsbn13(), e.getMessage());
+            return false;
         } catch (Exception e) {
-            log.error("도서 처리 중 오류 발생: ISBN13 = {}, 오류 메시지: {}", bookData.getIsbn13(), e.getMessage(), e);
+            log.error("예기치 못한 오류 발생: ISBN13 = {}, 오류 메시지: {}", bookData.getIsbn13(), e.getMessage(), e);
             return false;
         }
     }
@@ -121,7 +125,7 @@ public class MappingService {
     private SellingBook createSellingBook(Book book, AladinResponse bookData) {
         SellingBook sellingBook = new SellingBook();
         sellingBook.setBook(book);
-        sellingBook.setSellingBookPrice(BigDecimal.valueOf(bookData.getPriceStandard()));
+        sellingBook.setSellingBookPrice(BigDecimal.valueOf(bookData.getPriceSales()));
         sellingBook.setSellingBookPackageable(false);
         sellingBook.setSellingBookStock(100);
         sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING);

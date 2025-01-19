@@ -51,7 +51,7 @@ jobs:
             sudo docker stop shoppingmall-instance1 || true
             sudo docker rm shoppingmall-instance1 || true
             sudo docker build -t shoppingmall-image .
-            sudo docker run -d -p 8090:8090 --name shoppingmall-instance1 --network front_network -e "SPRING_PROFILES_ACTIVE=prod" -e "TZ=Asia/Seoul" shoppingmall-image
+            sudo docker run -d -p 8090:8090 --name shoppingmall-instance1 --network front_network -e "SERVER_PORT=8090" -e "SPRING_PROFILES_ACTIVE=prod" -e "TZ=Asia/Seoul" shoppingmall-image
 
             while [[ "$(sudo docker inspect -f '{{.State.Status}}' shoppingmall-instance1)" != "running" ]]; do \
               echo "Waiting for shoppingmall-instance1 container to become healthy..."; \
@@ -62,7 +62,7 @@ jobs:
             sudo docker stop shoppingmall-instance2 || true
             sudo docker rm shoppingmall-instance2 || true
             sudo docker build -t shoppingmall-image .
-            sudo docker run -d -p 8091:8091 --name shoppingmall-instance2 --network front_network -e "SPRING_PROFILES_ACTIVE=prod" -e "TZ=Asia/Seoul" shoppingmall-image
+            sudo docker run -d -p 8091:8091 --name shoppingmall-instance2 --network front_network -e "SERVER_PORT=8091" -e "SPRING_PROFILES_ACTIVE=prod" -e "TZ=Asia/Seoul" shoppingmall-image
 
             while [[ "$(sudo docker inspect -f '{{.State.Status}}' shoppingmall-instance2)" != "running" ]]; do \
               echo "Waiting for shoppingmall-instance2 container to become healthy..."; \

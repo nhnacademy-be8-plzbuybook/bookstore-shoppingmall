@@ -26,36 +26,6 @@ public class MemberPointController {
 
     private final MemberPointService memberPointService;
     private final MemberRepository memberRepository;
-    private final ReviewRepository reviewRepository;
-
-    @PostMapping("members/{member_id}/points/signup")
-    public ResponseEntity<String> addSignUpPoint(@PathVariable Long member_id) {
-        try {
-            Member member = memberRepository.findById(member_id)
-                    .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
-            memberPointService.addSignUpPoint(member);
-            return new ResponseEntity<>("회원 가입 포인트가 적립되었습니다.", HttpStatus.CREATED);
-        } catch (MemberNotFoundException e) {
-            return new ResponseEntity<>("회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-//    @PostMapping("/members/{member_id}/points/purchase/{order_id}")
-//    public ResponseEntity<String> addBookPurchasePoint(@PathVariable("member_id") Long member_id,
-//                                                       @PathVariable("order_id") Long order_id,
-//                                                       @RequestParam("orderStatus") Integer orderStatus) {
-//        try {
-//             Member member = memberRepository.findById(member_id)
-//                    .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
-//            memberPointService.addBookPurchasePoint(member, order_id, orderStatus);
-//            return new ResponseEntity<>("도서 구매 포인트가 적립되었습니다.", HttpStatus.CREATED);
-//        } catch (IllegalStateException e) {
-//            return new ResponseEntity<>("구매확정 이후에만 포인트가 적립됩니다.", HttpStatus.BAD_REQUEST);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>("포인트 적립 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
 
     @GetMapping("/members/{member_id}/points")
     public ResponseEntity<List<MemberPointListResponseDto>> getMemberPoints(@PathVariable Long member_id) {

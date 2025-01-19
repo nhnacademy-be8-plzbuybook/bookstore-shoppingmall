@@ -5,18 +5,18 @@ import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import java.math.BigDecimal;
+
 import java.util.List;
 
 @Slf4j
@@ -33,6 +33,7 @@ public class SellingBookController {
 
     /**
      * index 화면 페이징 한후 로드
+     *
      * @param page
      * @param size
      * @param sortBy
@@ -77,9 +78,9 @@ public class SellingBookController {
     }
 
 
-
     /**
      * 판매도서 등록 기능 (관리자)
+     *
      * @param sellingBookRegisterDto
      * @return
      */
@@ -98,6 +99,7 @@ public class SellingBookController {
 
     /**
      * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
+     *
      * @param sellingBookId
      * @return
      */ // 수정완료
@@ -108,14 +110,12 @@ public class SellingBookController {
     }
 
 
-
     @PutMapping("/{sellingBookId}")
     public ResponseEntity<SellinBookResponseDto> updateSellingBook(
             @PathVariable Long sellingBookId,
             @RequestBody SellingBookRegisterDto updateDto) {
         return ResponseEntity.ok(sellingBookService.updateSellingBook(sellingBookId, updateDto));
     }
-
 
 
     /**
@@ -151,6 +151,7 @@ public class SellingBookController {
 
     /**
      * 내림차순 만 되는거
+     *
      * @return
      */
     @GetMapping("/view-count/desc")
@@ -161,6 +162,7 @@ public class SellingBookController {
 
     /**
      * 올림만 되는ㄴ거
+     *
      * @return
      */
     @GetMapping("/view-count/asc")
@@ -169,36 +171,35 @@ public class SellingBookController {
     }
 
 
-
-
     /**
      * 카테고리별
+     *
      * @param categoryId
      * @return
      */
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
-        System.out.println("요청: 카테고리 ID " +  categoryId);
+        System.out.println("요청: 카테고리 ID " + categoryId);
         List<SellingBookAndBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
         log.debug("응답 크기: {}", response.size());
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 판매책 가격과 임시 수량을 곱한 총 금액 반환
-     *
-     * @param sellingBookId 판매책 ID
-     * @param quantity 주문 수량 (임시 설정)
-     * @return 가격 * 수량의 총합
-     */
-    @GetMapping("/{sellingBookId}/calculate-price")
-    public ResponseEntity<BigDecimal> calculateOrderPrice(
-            @PathVariable Long sellingBookId,
-            @RequestParam int quantity) {
-        BigDecimal totalPrice = sellingBookService.calculateOrderPrice(sellingBookId, quantity);
-        return ResponseEntity.ok(totalPrice);
-    }
-
+//    /**
+//     * 판매책 가격과 임시 수량을 곱한 총 금액 반환
+//     *
+//     * @param sellingBookId 판매책 ID
+//     * @param quantity 주문 수량 (임시 설정)
+//     * @return 가격 * 수량의 총합
+//     */
+//    @GetMapping("/{sellingBookId}/calculate-price")
+//    public ResponseEntity<BigDecimal> calculateOrderPrice(
+//            @PathVariable Long sellingBookId,
+//            @RequestParam int quantity) {
+//        BigDecimal totalPrice = sellingBookService.calculateOrderPrice(sellingBookId, quantity);
+//        return ResponseEntity.ok(totalPrice);
+//    }
+//
 
 }
 
