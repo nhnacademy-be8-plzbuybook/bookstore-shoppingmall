@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,10 +25,14 @@ public class Orders {
     @Column(name = "order_id", length = 36, nullable = false)
     private String id;
 
+    @Column(nullable = false, unique = true)
     private String number;
 
+    @Column(nullable = false)
     private String name;
 
+    @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime orderedAt;
 
     private LocalDate deliveryWishDate;
@@ -35,12 +40,15 @@ public class Orders {
     @Setter
     private Integer usedPoint;
 
+    @Column(nullable = false)
     private BigDecimal deliveryFee;
 
     @Setter
+    @Column(nullable = false)
     private BigDecimal orderPrice;
 
     @Convert(converter = OrderStatusConverter.class)
+    @Column(nullable = false)
     private OrderStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
