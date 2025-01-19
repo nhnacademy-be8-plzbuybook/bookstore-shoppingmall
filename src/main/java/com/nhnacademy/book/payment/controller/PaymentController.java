@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
 @RestController
-public class ExternalPaymentController {
+public class PaymentController {
     private final PaymentService paymentService;
 
 
