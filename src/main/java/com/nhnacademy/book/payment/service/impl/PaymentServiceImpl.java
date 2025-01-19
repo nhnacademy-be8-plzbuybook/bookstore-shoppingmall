@@ -3,6 +3,7 @@ package com.nhnacademy.book.payment.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
+import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -60,7 +61,13 @@ public class PaymentServiceImpl implements PaymentService {
             throw new NotFoundException("주문 캐시를 찾을 수 없습니다.");
         }
 
-        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee().subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0)));
+        BigDecimal couponDiscount = orderCache.getOrderProducts().stream()
+                .filter(o -> o.getAppliedCoupons() != null)
+                .flatMap(o -> o.getAppliedCoupons().stream())
+                .map(OrderProductAppliedCouponDto::getDiscount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal paymentPrice = orderCache.getOrderPrice().add(orderCache.getDeliveryFee().subtract(BigDecimal.valueOf(orderCache.getUsedPoint() != null ? orderCache.getUsedPoint() : 0))).subtract(couponDiscount);
         if (confirmRequest.getAmount().compareTo(paymentPrice) != 0) {
             throw new IllegalArgumentException("주문결제 정보가 일치하지 않습니다."); //400
         }
