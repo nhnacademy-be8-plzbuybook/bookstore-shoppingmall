@@ -108,7 +108,7 @@ POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Fore
 
 
 ### 베스트 셀러 국내도서 - 50개 나옴
-POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=10&maxResults=10
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=1&maxResults=10
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
 POST http://localhost:8090/api/books/sync/isbn

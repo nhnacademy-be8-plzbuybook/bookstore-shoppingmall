@@ -48,9 +48,6 @@ public class AladinResponse {
     @JsonProperty("version")
     private String version;
 
-    @JsonProperty("query")
-    private String query;
-
     @JsonProperty("cover")
     private String cover;
 
