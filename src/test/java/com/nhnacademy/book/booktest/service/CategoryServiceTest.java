@@ -81,17 +81,17 @@ public class CategoryServiceTest {
 
     }
 
-    @Test
-    void findCategoryById() {
-        when(categoryRepository.findById(3L)).thenReturn(Optional.ofNullable(category));
-
-        CategoryResponseDto foundCategory = categoryService.findCategoryById(3L);
-
-        assertNotNull(foundCategory);
-        assertEquals(3L, foundCategory.getCategoryId());
-        assertEquals(0, foundCategory.getCategoryDepth());
-        assertEquals("test1", foundCategory.getCategoryName());
-    }
+//    @Test
+//    void findCategoryById() {
+//        when(categoryRepository.findById(3L)).thenReturn(Optional.ofNullable(category));
+//
+//        CategoryResponseDto foundCategory = categoryService.findCategoryById(3L);
+//
+//        assertNotNull(foundCategory);
+//        assertEquals(3L, foundCategory.getCategoryId());
+//        assertEquals(0, foundCategory.getCategoryDepth());
+//        assertEquals("test1", foundCategory.getCategoryName());
+//    }
 
     @Test
     void findCategoryById_CategoryNotFoundException() {

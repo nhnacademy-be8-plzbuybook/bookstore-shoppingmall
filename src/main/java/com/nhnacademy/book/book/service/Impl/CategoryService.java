@@ -35,10 +35,30 @@ public class CategoryService {
     }
 
     public CategoryResponseDto findCategoryById(Long id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository.findByCategoryId(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
 
         return convertToDto(category);
+    }
+
+
+
+    public List<CategoryResponseDto> findByParentCategoryId(Long parentCategoryId) {
+        Category parentCategory = categoryRepository.findById(parentCategoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("ParentCategory not found with ID: " + parentCategoryId));
+
+        List<Category> childrenCategories = categoryRepository.findByParentCategoryId(parentCategoryId);
+
+        if (childrenCategories.isEmpty()) {
+            throw new CategoryNotFoundException("No children categories found for parent: " + parentCategory.getCategoryName());
+        }
+
+        // Category -> CategoryResponseDto 변환
+        return childrenCategories.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+
     }
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
@@ -137,6 +157,17 @@ public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword,
         categoryRepository.deleteCategoryAndChildren(categoryId);
     }
 
+
+    public List<Category> findAllChildCategories(Long parentId) {
+        List<Category> childCategories = categoryRepository.findByParentCategoryCategoryId(parentId); // 부모 카테고리에 해당하는 자식 카테고리 찾기
+        List<Category> allCategories = new ArrayList<>(childCategories);
+
+        for (Category category : childCategories) {
+            allCategories.addAll(findAllChildCategories(category.getCategoryId())); // 자식 카테고리에 대해서 재귀적으로 호출
+        }
+
+        return allCategories;
+    }
 
 
     // Category 엔티티를 CategoryResponseDto로 변환하는 메서드

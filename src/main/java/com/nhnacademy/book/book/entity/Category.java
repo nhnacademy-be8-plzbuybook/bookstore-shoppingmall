@@ -24,7 +24,7 @@ public class Category {
     @JoinColumn(name = "category_parent_id", nullable = true)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Category> childrenCategory = new ArrayList<>();
 
     @Column(length = 100)

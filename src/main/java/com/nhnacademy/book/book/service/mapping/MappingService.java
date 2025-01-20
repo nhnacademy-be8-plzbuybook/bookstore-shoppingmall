@@ -105,7 +105,6 @@ public class MappingService {
                 book.addAuthor(author);
             }
         }
-
         // 날짜 설정
         try {
             book.setBookPubDate(LocalDate.parse(response.getPubDate(), DateTimeFormatter.ISO_DATE));

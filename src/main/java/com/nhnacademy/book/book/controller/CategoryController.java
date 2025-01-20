@@ -5,6 +5,7 @@ import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
 import jakarta.ws.rs.PUT;
 import org.springframework.data.domain.Page;
@@ -22,9 +23,11 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, CategoryRepository categoryRepository) {
         this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -60,6 +63,17 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @GetMapping(value = "/children-category",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CategoryResponseDto>> getCategory(@RequestParam Long parentId) {
+        return ResponseEntity.ok(categoryService.findByParentCategoryId(parentId));
+    }
+
+
+
+    @GetMapping("/zz")
+    public ResponseEntity<List<Category>> getget(){
+        return ResponseEntity.ok(categoryRepository.findChildCategoriesDepth2());
+    }
 
 
 
