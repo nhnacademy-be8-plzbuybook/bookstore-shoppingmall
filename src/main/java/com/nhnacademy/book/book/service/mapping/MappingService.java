@@ -6,6 +6,7 @@ import com.nhnacademy.book.book.exception.BookAlreadyExistsException;
 import com.nhnacademy.book.book.repository.*;
 import com.nhnacademy.book.book.service.category.ApiCategoryService;
 import com.nhnacademy.book.book.service.image.ImageService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -39,18 +40,19 @@ public class MappingService {
      * @param bookData 알라딘 API에서 가져온 개별 책 데이터
      * @return 중복 데이터 여부 (중복: false, 처리 성공: true)
      */
+    @Transactional
     public boolean processBookData(AladinResponse bookData) {
         try {
             // 중복 데이터 체크
             if (bookRepository.existsByBookIsbn13(bookData.getIsbn13())) {
-                log.debug("이미 존재하는 도서: ISBN13 = {}", bookData.getIsbn13());
+                log.info("이미 존재하는 도서: ISBN13 = {}", bookData.getIsbn13());
                 return false;
             }
 
             // Book 매핑 및 저장
             Book book = mapToBookEntity(bookData);
             bookRepository.save(book);
-            log.debug("저장된 책: {}", book.getBookTitle());
+            log.info("저장된 책: {}", book.getBookTitle());
 
             // 카테고리 저장 및 연결
             if (bookData.getCategoryName() != null) {
@@ -64,7 +66,7 @@ public class MappingService {
             // SellingBook 생성 및 저장
             SellingBook sellingBook = createSellingBook(book, bookData);
             sellingBookRepository.save(sellingBook);
-            log.debug("저장된 판매책: {}", sellingBook.getSellingBookId());
+            log.info("저장된 판매책: {}", sellingBook.getSellingBookId());
 
             return true; // 처리 성공
         } catch (BookAlreadyExistsException  e) {
@@ -125,7 +127,16 @@ public class MappingService {
     private SellingBook createSellingBook(Book book, AladinResponse bookData) {
         SellingBook sellingBook = new SellingBook();
         sellingBook.setBook(book);
-        sellingBook.setSellingBookPrice(BigDecimal.valueOf(bookData.getPriceSales()));
+
+        // 가격 검증 및 기본값 설정
+        BigDecimal priceStandard = BigDecimal.valueOf(bookData.getPriceStandard());
+        if (priceStandard.compareTo(BigDecimal.ZERO) <= 0) { // 가격이 0 이하인 경우
+            log.warn("잘못된 가격 정보: ISBN13 = {}, 기본값 1000 적용", bookData.getIsbn13());
+            priceStandard = BigDecimal.valueOf(1000); // 기본값 설정
+        }
+
+        sellingBook.setSellingBookPrice(priceStandard);
+
         sellingBook.setSellingBookPackageable(false);
         sellingBook.setSellingBookStock(100);
         sellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING);
