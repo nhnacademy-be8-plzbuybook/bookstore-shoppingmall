@@ -1,6 +1,5 @@
 package com.nhnacademy.book.cartbook.repository;
 
-import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.cartbook.entity.CartBook;
 import com.nhnacademy.book.member.domain.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,12 +12,5 @@ public interface CartBookRepository extends JpaRepository<CartBook, Long> {
 
     void deleteByCart(Cart cart);
 
-    Optional<CartBook> findBySellingBookAndCart(SellingBook sellingBook, Cart cart);
-
-    Optional<CartBook> findBySellingBook_SellingBookIdAndCart_CartId (Long sellingBookId, Long CartId);
-
-    boolean existsCartBookBySellingBook_SellingBookIdAndCart(Long sellingBookSellingBookId, Cart cart);
-
-    List<CartBook> findAllByCart_CartId(Long cartId);
-
+    Optional<CartBook> findBySellingBook_SellingBookIdAndCart_CartId(Long sellingBookId, Long CartId);
 }
