@@ -12,6 +12,7 @@ import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
 import com.nhnacademy.book.order.exception.OrderRequestFailException;
+import com.nhnacademy.book.order.exception.OrderReturnBadRequestException;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
@@ -530,4 +531,15 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
+    @ExceptionHandler(OrderReturnBadRequestException.class)
+    public ResponseEntity<ErrorResponseDto> handleOrderReturnBadRequest(OrderReturnBadRequestException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
+
 }
