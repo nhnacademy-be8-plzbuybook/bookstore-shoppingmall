@@ -97,7 +97,7 @@ POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Fore
 
 
 ### 신간 리스트 전체 조회 - 50개 나옴
-POST http://localhost:8090/api/books/sync?queryType=ItemNewAll&searchTarget=Book&start=1&maxResults=50
+POST http://localhost:8090/api/books/sync?queryType=ItemNewAll&searchTarget=Book&start=3&maxResults=50
 
 ### 블로거 베스트 셀러
 POST http://localhost:8090/api/books/sync?queryType=BlogBest&searchTarget=Book&start=1&maxResults=50
@@ -108,7 +108,7 @@ POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Fore
 
 
 ### 베스트 셀러 국내도서 - 50개 나옴
-POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=1&maxResults=10
+POST http://localhost:8090/api/books/sync?queryType=Bestseller&searchTarget=Book&start=30&maxResults=10
 
 ### /sync/isbn는 여러 ISBN 리스트를 받아 한 번에 저장할 수 있습니다.
 POST http://localhost:8090/api/books/sync/isbn
