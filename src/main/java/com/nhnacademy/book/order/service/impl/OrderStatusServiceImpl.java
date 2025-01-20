@@ -28,10 +28,11 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         // 주문상태변경
         order.updateOrderStatus(modifyRequest.getStatus());
         // 주문상품 상태변경
-        modifyOrderProductsStatus(orderId, modifyRequest.getStatus());
+        modifyOrderProductsStatus(order, modifyRequest.getStatus());
 
     }
 
+    @Transactional
     @Override
     public void modifyOrderProductStatus(Long orderProductId, OrderProductStatus orderProductStatus) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품정보를 찾을 수 없습니다."));
@@ -40,8 +41,8 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         order.updateOrderStatus(OrderStatus.fromOrderProductStatus(order.getOrderProducts().stream().map(OrderProduct::getStatus).toList()));
     }
 
-    private void modifyOrderProductsStatus(String orderId, OrderStatus orderStatus) {
-        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+    private void modifyOrderProductsStatus(Orders order, OrderStatus orderStatus) {
+        List<OrderProduct> orderProducts = order.getOrderProducts();
         if (orderProducts != null) {
             for (OrderProduct orderProduct : orderProducts) {
                 orderProduct.updateStatus(OrderProductStatus.fromStatus(orderStatus.getStatus()));

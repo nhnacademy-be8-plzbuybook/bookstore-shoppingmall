@@ -21,7 +21,6 @@ import static com.nhnacademy.book.orderProduct.entity.QOrderProduct.orderProduct
 public class OrderReturnQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-
     public Page<OrderProductReturnDto> findOrderProductReturnPage(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
         List<OrderProductReturnDto> orderProductReturns = queryFactory
                 .select(new QOrderProductReturnDto(

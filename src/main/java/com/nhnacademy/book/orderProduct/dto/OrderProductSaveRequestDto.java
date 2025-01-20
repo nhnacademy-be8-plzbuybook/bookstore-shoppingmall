@@ -27,12 +27,6 @@ public class OrderProductSaveRequestDto {
     @Nullable
     @Valid
     private OrderProductWrappingDto wrapping;
-
-    public OrderProduct toEntity() {
-        return OrderProduct.builder()
-
-                .build();
-    }
 }
 
 

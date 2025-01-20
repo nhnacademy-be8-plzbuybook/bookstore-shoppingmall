@@ -65,8 +65,14 @@ public class OrderCrudServiceImpl implements OrderCrudService {
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
         BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
+        String firstBookTitle = book.getBookTitle();
+
+        if (firstBookTitle.length() >= 50) {
+            firstBookTitle = firstBookTitle.substring(0, 46) + "...";
+        }
+
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size() - 1);
         }
         return book.getBookTitle();
     }
