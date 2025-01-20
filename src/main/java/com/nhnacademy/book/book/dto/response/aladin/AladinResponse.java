@@ -45,6 +45,10 @@ public class AladinResponse {
     @JsonProperty("itemsPerPage")
     private int itemsPerPage;
 
+
+    @JsonProperty("query")
+    private String query;
+
     @JsonProperty("version")
     private String version;
 
