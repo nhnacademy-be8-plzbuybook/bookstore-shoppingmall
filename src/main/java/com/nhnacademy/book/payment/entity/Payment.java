@@ -35,7 +35,7 @@ public class Payment {
     private String easyPayProvider;
 
     @Setter
-    @OneToOne
+    @ManyToOne
     @JoinColumn( name = "p_order_id", referencedColumnName = "order_id")
     private Orders orders;
 

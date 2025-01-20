@@ -24,7 +24,7 @@ public class OrderStatusController {
     /**
      * 주문상태 목록조회
      *
-     * @return
+     * @return 주문상태 리스트
      */
     @GetMapping("/order-status")
     public ResponseEntity<List<OrderStatus>> getOrderStatuses() {
@@ -35,9 +35,9 @@ public class OrderStatusController {
     /**
      * 주문상태 수정
      *
-     * @param orderId
-     * @param modifyRequest
-     * @return
+     * @param orderId 주문 아이디
+     * @param modifyRequest 주문상태 수정 DTO
+     * @return 상태코드
      */
     @PutMapping("{order-id}/status")
     public ResponseEntity<Void> patchOrderStatus(@PathVariable("order-id") String orderId,
@@ -53,9 +53,9 @@ public class OrderStatusController {
     /**
      * 주문상품상태 수정
      *
-     * @param orderProductId
-     * @param patchRequest
-     * @return
+     * @param orderProductId 주문상품 아이디
+     * @param patchRequest 주문상품상태 수정 DTO
+     * @return 상태코드
      */
     @PutMapping("/order-products/{order-product-id}/status")
     public ResponseEntity<Void> patchOrderProductsStatus(@PathVariable("order-product-id") Long orderProductId,

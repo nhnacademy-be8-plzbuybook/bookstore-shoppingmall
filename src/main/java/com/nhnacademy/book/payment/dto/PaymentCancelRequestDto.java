@@ -19,6 +19,7 @@ public class PaymentCancelRequestDto {
     @JsonProperty("cancelAmount")
     @Nullable
     private BigDecimal cancelAmount;
-    @Setter
+
+    @NotBlank
     private String orderId;
 }

@@ -3,7 +3,7 @@
 create table orders
 (
     order_id           char(36)       not null,
-    number             char(26)       not null,
+    number             char(26)       not null unique,
     name               varchar(100)   not null,
     ordered_at         datetime       not null default current_timestamp,
     delivery_wish_date date           null,
@@ -13,9 +13,11 @@ create table orders
     status             tinyint        not null,
     primary key (order_id)
 );
+alter table orders
+    modify column number char(26) not null unique;
 
 #
-비회원 주문
+    비회원 주문
 create table non_member_order
 (
     non_member_order_id bigint       not null auto_increment,
