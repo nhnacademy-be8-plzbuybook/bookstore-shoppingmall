@@ -8,7 +8,6 @@ import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
 import com.nhnacademy.book.book.exception.AuthorsNotFoundException;
-import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,6 +34,20 @@ public class AuthorService {
         Page<Author> authors = authorRepository.findAll(pageable);
         return authors.map(this::toResponseDto);
     }
+
+
+
+
+    public Page<AuthorResponseDto> searchAuthorsByKeyword(String keyword, Pageable pageable) {
+        Page<Author> authorsPage = authorRepository.findByAuthorNameContaining(keyword, pageable);
+        return authorsPage.map(author -> new AuthorResponseDto(author.getAuthorId(), author.getAuthorName()));
+    }
+
+    public Page<AuthorResponseDto> findAll(Pageable pageable) {
+        Page<Author> authorsPage = authorRepository.findAll(pageable);
+        return authorsPage.map(author -> new AuthorResponseDto(author.getAuthorId(), author.getAuthorName()));
+    }
+
 
 
     public AuthorResponseDto getAuthorById(Long id) {
