@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String getNonMemberOrder(NonMemberOrderDetailAccessRequestDto accessRequest) {
         NonMemberOrderAccessResponseDto nonMemberOrderAccessResponseDto = orderQueryRepository.findNonMemberOrderByOrderNumber(accessRequest.getOrderNumber())
-                .orElseThrow(() -> new NotFoundException("비회원주문 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("주문 정보를 찾을 수 없습니다."));
         validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderAccessResponseDto.getPassword());
 
         return nonMemberOrderAccessResponseDto.getOrderId();
