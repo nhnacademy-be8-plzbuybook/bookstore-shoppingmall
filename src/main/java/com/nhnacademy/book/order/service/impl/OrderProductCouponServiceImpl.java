@@ -21,10 +21,10 @@ public class OrderProductCouponServiceImpl implements OrderProductCouponService 
 
 
     @Override
-    public Long saveOrderProductCoupon(Long orderProductId, List<OrderProductAppliedCouponDto> appliedCoupon) {
+    public Long saveOrderProductCoupon(Long orderProductId, List<OrderProductAppliedCouponDto> appliedCoupons) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
-        if (appliedCoupon != null) {
-            for (OrderProductAppliedCouponDto orderProductAppliedCouponDto : appliedCoupon) {
+        if (appliedCoupons != null) {
+            for (OrderProductAppliedCouponDto orderProductAppliedCouponDto : appliedCoupons) {
                 //TODO: 쿠폰 검증
 
                 //TODO: 쿠폰 사용처리
@@ -32,9 +32,8 @@ public class OrderProductCouponServiceImpl implements OrderProductCouponService 
                 // 주문상품 쿠폰저장
                 orderProductCouponRepository.save(orderProductAppliedCouponDto.toEntity(orderProduct));
             }
-
         }
-        return 0L;
+        return orderProductId;
     }
 
     @Override
