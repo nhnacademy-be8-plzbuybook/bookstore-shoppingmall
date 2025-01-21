@@ -9,6 +9,7 @@ import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
 import com.nhnacademy.book.order.exception.OrderRequestFailException;
+import com.nhnacademy.book.order.exception.OrderReturnBadRequestException;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.review.exception.*;
 import com.nhnacademy.book.skm.exception.KeyMangerException;
@@ -20,14 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import java.net.BindException;
+
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -255,7 +254,13 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/order-request-fail")
         public void throwOrderRequestFailException() {
             throw new OrderRequestFailException("주문 요청에 실패했습니다.");
+
         }
+        @GetMapping("/test/order-return-bad-request")
+        public void throwOrderReturnBadRequestException() {
+            throw new OrderReturnBadRequestException("반환 요청이 잘못되었습니다.");
+        }
+
 
     }
 
@@ -685,5 +690,16 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("주문 요청에 실패했습니다."));
     }
+
+    @Test
+    @DisplayName("반환 요청이 잘못되었을 때 예외 처리 테스트")
+    void handleOrderReturnBadRequestException() throws Exception {
+        mockMvc.perform(get("/test/order-return-bad-request"))
+                .andExpect(status().isBadRequest()) // HTTP 400 상태 확인
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("반환 요청이 잘못되었습니다.")); // JSON 응답의 상세 메시지 검증
+    }
+
 
 }

@@ -115,8 +115,9 @@ class MemberPointServiceImplTest {
 
     }
 
+
     @Test
-    @DisplayName("리뷰작성시 포인트 적립 성공")
+    @DisplayName("사진리뷰작성시 포인트 적립 성공")
     void addReviewPoint_WithPhoto_Success() {
         Long memberId = 1L;
         Member member = new Member();
@@ -128,11 +129,11 @@ class MemberPointServiceImplTest {
 
         PointCondition photoReviewCondition = new PointCondition();
         photoReviewCondition.setName("PHOTO_REVIEW");
-        photoReviewCondition.setConditionPoint(200);
+        photoReviewCondition.setConditionPoint(500);
 
         PointCondition reviewCondition = new PointCondition();
         reviewCondition.setName("REVIEW");
-        reviewCondition.setConditionPoint(100);
+        reviewCondition.setConditionPoint(200);
 
         when(pointConditionRepository.findByName("PHOTO_REVIEW")).thenReturn(Optional.of(photoReviewCondition));
         when(pointConditionRepository.findByName("REVIEW")).thenReturn(Optional.of(reviewCondition));
@@ -144,6 +145,41 @@ class MemberPointServiceImplTest {
         verify(memberPointRepository).save(argThat(memberPoint ->
                 memberPoint.getMember().getMemberId().equals(1L) &&
                         memberPoint.getPointCondition().getName().equals("PHOTO_REVIEW") &&
+                        memberPoint.getPoint() == 500 &&
+                        memberPoint.getType().equals("SAVE")
+        ));
+
+
+    }
+    @Test
+    @DisplayName("리뷰작성시 포인트 적립 성공")
+    void addReviewPoint__Success() {
+        Long memberId = 1L;
+        Member member = new Member();
+        member.setMemberId(1L);
+
+        Review review = new Review();
+        review.setReviewId(100L);
+        review.setMember(member);
+
+        PointCondition photoReviewCondition = new PointCondition();
+        photoReviewCondition.setName("PHOTO_REVIEW");
+        photoReviewCondition.setConditionPoint(500);
+
+        PointCondition reviewCondition = new PointCondition();
+        reviewCondition.setName("REVIEW");
+        reviewCondition.setConditionPoint(200);
+
+        when(pointConditionRepository.findByName("PHOTO_REVIEW")).thenReturn(Optional.of(photoReviewCondition));
+        when(pointConditionRepository.findByName("REVIEW")).thenReturn(Optional.of(reviewCondition));
+        when(reviewImageRepository.existsByReview_ReviewId(100L)).thenReturn(false);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+        memberPointService.addReviewPoint(review);
+
+        verify(memberPointRepository).save(argThat(memberPoint ->
+                memberPoint.getMember().getMemberId().equals(1L) &&
+                        memberPoint.getPointCondition().getName().equals("REVIEW") &&
                         memberPoint.getPoint() == 200 &&
                         memberPoint.getType().equals("SAVE")
         ));
