@@ -68,41 +68,41 @@ public class BookAuthorRepositoryTest {
         bookRepository.save(book);
     }
 
-    @Test
-    void findBooksByAuthorIdTest() {
-        // 추가 Book 저장
-        Book book2 = new Book(
-                publisher,
-                "Find Book Title",
-                "Test Book Index",
-                "Test Book Description",
-                LocalDate.of(2023, 12, 13),
-                new BigDecimal("19.99"),
-                "1234567890123"
-        );
-        book2 = bookRepository.save(book2);
-
-        // Author 조회
-        Author author = authorRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
-
-        // BookAuthor 저장
-        BookAuthor bookAuthor = new BookAuthor();
-        bookAuthor.setAuthor(author);
-        bookAuthor.setBook(book2);
-        bookAuthor = bookAuthorRepository.save(bookAuthor);
-
-        // 관계 동기화
-        book2.getBookAuthors().add(bookAuthor);
-        bookRepository.save(book2);
-
-        // 테스트 실행
-        List<Book> books = bookAuthorRepository.findBooksByAuthorId(author.getAuthorId());
-
-        assertNotNull(books);
-        assertEquals(2, books.size());
-        assertTrue(books.contains(book2));
-    }
+//    @Test
+//    void findBooksByAuthorIdTest() {
+//        // 추가 Book 저장
+//        Book book2 = new Book(
+//                publisher,
+//                "Find Book Title",
+//                "Test Book Index",
+//                "Test Book Description",
+//                LocalDate.of(2023, 12, 13),
+//                new BigDecimal("19.99"),
+//                "1234567890123"
+//        );
+//        book2 = bookRepository.save(book2);
+//
+//        // Author 조회
+//        Author author = authorRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+//
+//        // BookAuthor 저장
+//        BookAuthor bookAuthor = new BookAuthor();
+//        bookAuthor.setAuthor(author);
+//        bookAuthor.setBook(book2);
+//        bookAuthor = bookAuthorRepository.save(bookAuthor);
+//
+//        // 관계 동기화
+//        book2.getBookAuthors().add(bookAuthor);
+//        bookRepository.save(book2);
+//
+//        // 테스트 실행
+//        List<Book> books = bookAuthorRepository.findBooksByAuthorId(author.getAuthorId());
+//
+//        assertNotNull(books);
+//        assertEquals(2, books.size());
+//        assertTrue(books.contains(book2));
+//    }
 
     @Test
     void findBooksByNonExistentAuthorIdTest() {

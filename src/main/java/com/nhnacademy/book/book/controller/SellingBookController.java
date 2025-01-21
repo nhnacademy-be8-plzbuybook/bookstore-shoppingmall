@@ -4,7 +4,6 @@ import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
-import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +32,6 @@ public class SellingBookController {
 
     /**
      * index 화면 페이징 한후 로드
-     *
-     * @param page
-     * @param size
-     * @param sortBy
-     * @param sortDir
-     * @return
      */
     //유저
     @GetMapping
@@ -80,9 +73,6 @@ public class SellingBookController {
 
     /**
      * 판매도서 등록 기능 (관리자)
-     *
-     * @param sellingBookRegisterDto
-     * @return
      */
 
     @PostMapping
@@ -99,9 +89,6 @@ public class SellingBookController {
 
     /**
      * 판매책 삭제 -> 특정 판매책 삭제 -> db 에서 실제로 삭제 관리자
-     *
-     * @param sellingBookId
-     * @return
      */ // 수정완료
     @DeleteMapping("/{sellingBookId}")
     public ResponseEntity<Void> deleteSellingBook(@PathVariable Long sellingBookId) {
@@ -120,9 +107,6 @@ public class SellingBookController {
 
     /**
      * 판매책 상세조회 -> 특정 판매책을 ID 로조회
-     *
-     * @param sellingBookId
-     * @return
      */
     @GetMapping("/{sellingBookId}")
     public ResponseEntity<BookDetailResponseDto> getSellingBook(@PathVariable Long sellingBookId) {
@@ -139,67 +123,52 @@ public class SellingBookController {
     }
 
 
-    /**
-     * 도서 상태별 판매책 조회 - 판매중인, 품절된 그런거
-     */
-    @GetMapping("/status")
-    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByStatus(
-            @RequestParam SellingBook.SellingBookStatus status) {
-        return ResponseEntity.ok(sellingBookService.getSellingBooksByStatus(status));
-    }
+//    /**
+//     * 도서 상태별 판매책 조회 - 판매중인, 품절된 그런거
+//     */
+//    @GetMapping("/status")
+//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByStatus(
+//            @RequestParam SellingBook.SellingBookStatus status) {
+//        return ResponseEntity.ok(sellingBookService.getSellingBooksByStatus(status));
+//    }
 
-
-    /**
-     * 내림차순 만 되는거
-     *
-     * @return
-     */
-    @GetMapping("/view-count/desc")
-    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountDesc() {
-        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("desc"));
-    }
-
-
-    /**
-     * 올림만 되는ㄴ거
-     *
-     * @return
-     */
-    @GetMapping("/view-count/asc")
-    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountAsc() {
-        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("asc"));
-    }
-
-
-    /**
-     * 카테고리별
-     *
-     * @param categoryId
-     * @return
-     */
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
-        System.out.println("요청: 카테고리 ID " + categoryId);
-        List<SellingBookAndBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
-        log.debug("응답 크기: {}", response.size());
-        return ResponseEntity.ok(response);
-    }
 
 //    /**
-//     * 판매책 가격과 임시 수량을 곱한 총 금액 반환
+//     * 내림차순 만 되는거
 //     *
-//     * @param sellingBookId 판매책 ID
-//     * @param quantity 주문 수량 (임시 설정)
-//     * @return 가격 * 수량의 총합
+//     * @return
 //     */
-//    @GetMapping("/{sellingBookId}/calculate-price")
-//    public ResponseEntity<BigDecimal> calculateOrderPrice(
-//            @PathVariable Long sellingBookId,
-//            @RequestParam int quantity) {
-//        BigDecimal totalPrice = sellingBookService.calculateOrderPrice(sellingBookId, quantity);
-//        return ResponseEntity.ok(totalPrice);
+//    @GetMapping("/view-count/desc")
+//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountDesc() {
+//        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("desc"));
 //    }
 //
+//
+//    /**
+//     * 올림만 되는ㄴ거
+//     *
+//     * @return
+//     */
+//    @GetMapping("/view-count/asc")
+//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountAsc() {
+//        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("asc"));
+//    }
+
+
+//    /**
+//     * 카테고리별
+//     *
+//     * @param categoryId
+//     * @return
+//     */
+//    @GetMapping("/category/{categoryId}")
+//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
+//        log.info("요청: 카테고리 ID  {}" , categoryId);
+//        List<SellingBookAndBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
+//        log.debug("응답 크기: {}", response.size());
+//        return ResponseEntity.ok(response);
+//    }
+
 
 }
 

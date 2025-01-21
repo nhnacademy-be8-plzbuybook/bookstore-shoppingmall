@@ -127,7 +127,6 @@ public class SellingBookService {
         return responseDto;
     }
 
-    //TODO
     public void registerSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
         // 1. 책 ID로 책 정보 조회
         Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())

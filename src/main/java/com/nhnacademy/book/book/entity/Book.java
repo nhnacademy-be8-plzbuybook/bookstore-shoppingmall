@@ -1,11 +1,7 @@
 package com.nhnacademy.book.book.entity;
 
-import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
-import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
