@@ -71,6 +71,26 @@ class PointConditionControllerTest {
 
     }
 
+    @Test
+    @DisplayName("포인트 조건 생성 실패")
+    void createPointCondition_Failure_IllegalArgumentException() throws Exception {
+        PointConditionRequestDto requestDto = new PointConditionRequestDto();
+        requestDto.setName("TEST_CONDITION");
+        requestDto.setConditionPoint(1000);
+        requestDto.setConditionPercentage(null);
+        requestDto.setStatus(true);
+
+        when(pointConditionService.createPointCondition(any(PointConditionRequestDto.class)))
+                .thenThrow(new IllegalArgumentException("잘못된 입력 값입니다."));
+
+        mockMvc.perform(post("/api/points/conditions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").doesNotExist());
+
+    }
+
 
     @Test
     @DisplayName("포인트 조건 목록 조회 성공")

@@ -420,4 +420,75 @@ class MemberCertificationServiceImplTest {
         );
         verify(memberCertificationRepository, times(1)).findAll();
     }
+
+    @Test
+    @DisplayName("회원의 마지막 로그인 시간 갱신 성공")
+    void updateLastLoginByEmail_Success() {
+        String email = "test@naver.com";
+
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "test", "010-1234-5678", email, LocalDate.now(), "encodedPassword");
+
+        MemberCertification certification = new MemberCertification();
+        certification.setMember(member);
+        certification.setLastLogin(LocalDateTime.of(2025, 1, 21, 13, 30));
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberCertificationRepository.findByMember_MemberId(member.getMemberId())).thenReturn(Optional.of(certification));
+        when(memberCertificationRepository.save(any(MemberCertification.class))).thenReturn(certification);
+
+        LastLoginRequestDto requestDto = new LastLoginRequestDto();
+        requestDto.setEmail(email);
+
+        LastLoginResponseDto responseDto = memberCertificationService.updateLastLoginByEmail(requestDto);
+
+        assertAll(
+                () -> assertNotNull(responseDto),
+                () -> assertEquals(email, responseDto.getEmail()),
+                () -> assertEquals(certification.getLastLogin(), responseDto.getLastLogin())
+        );
+    }
+
+    @Test
+    @DisplayName("회원의 마지막 로그인 시간 갱신 실패 - 회원을 찾을 수 없음")
+    void updateLastLoginByEmail_MemberNotFound() {
+        String email = "test@naver.com";
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        LastLoginRequestDto requestDto = new LastLoginRequestDto();
+        requestDto.setEmail(email);
+
+        assertThrows(MemberNotFoundException.class,
+                () -> memberCertificationService.updateLastLoginByEmail(requestDto));
+
+        verify(memberRepository, times(1)).findByEmail(email);
+        verify(memberCertificationRepository, never()).findByMember_MemberId(any());
+        verify(memberCertificationRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("회원의 마지막 로그인 시간 갱신 실패 - 인증 정보를 찾을 수 없음")
+    void updateLastLoginByEmail_CertificationNotFound() {
+        String email = "test@naver.com";
+
+        MemberGrade memberGrade = new MemberGrade(1L, "NORMAL", new BigDecimal("100.0"), LocalDateTime.now());
+        MemberStatus memberStatus = new MemberStatus(1L, "ACTIVE");
+        Member member = new Member(1L, memberGrade, memberStatus, "test", "010-1234-5678", email, LocalDate.now(), "encodedPassword");
+
+        when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+        when(memberCertificationRepository.findByMember_MemberId(member.getMemberId())).thenReturn(Optional.empty());
+
+        LastLoginRequestDto requestDto = new LastLoginRequestDto();
+        requestDto.setEmail(email);
+
+        assertThrows(CertificationNotFoundException.class,
+                () -> memberCertificationService.updateLastLoginByEmail(requestDto));
+
+        verify(memberRepository, times(1)).findByEmail(email);
+        verify(memberCertificationRepository, times(1)).findByMember_MemberId(member.getMemberId());
+        verify(memberCertificationRepository, never()).save(any());
+    }
+
 }

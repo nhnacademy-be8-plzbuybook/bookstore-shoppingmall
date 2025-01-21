@@ -183,4 +183,27 @@ class MemberCertificationControllerTest {
         verify(memberCertificationService, times(1)).getAllCertifications();
 
     }
+
+    @Test
+    @DisplayName("마지막 로그인 일시 갱신 테스트")
+    void updateLastLoginByEmail_Success() throws Exception {
+        LastLoginRequestDto requestDto = new LastLoginRequestDto();
+        requestDto.setEmail("test@naver.com");
+
+        LastLoginResponseDto responseDto = new LastLoginResponseDto();
+        responseDto.setEmail("test@naver.com");
+        responseDto.setLastLogin(LocalDateTime.of(2025, 1, 21, 13, 30));
+
+        when(memberCertificationService.updateLastLoginByEmail(any(LastLoginRequestDto.class)))
+                .thenReturn(responseDto);
+
+        mockMvc.perform(post("/api/members/last-login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("test@naver.com"))
+                .andExpect(jsonPath("$.lastLogin").value("2025-01-21T13:30:00"));
+
+    }
 }

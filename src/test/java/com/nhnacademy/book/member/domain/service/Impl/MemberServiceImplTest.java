@@ -11,6 +11,8 @@ import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.MemberStatusRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
+import com.nhnacademy.book.order.repository.MemberOrderRepository;
+import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +68,9 @@ class MemberServiceImplTest {
 
     @Mock
     private Clock clock;
+
+    @Mock
+    private OrderProductRepository orderProductRepository;
 
 
     @InjectMocks
@@ -1064,4 +1070,83 @@ class MemberServiceImplTest {
         // Mock 호출 검증
         verify(memberRepository).getMemberIdByEmail(email);
     }
+
+    @Test
+    @DisplayName("회원 등급 갱신 성공")
+    void updateMemberGrades_Success() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+
+        Long memberId = 1L;
+        BigDecimal totalAmount = BigDecimal.valueOf(250_000);
+        List<Object[]> totalAmounts = new ArrayList<>();
+        totalAmounts.add(new Object[]{memberId, totalAmount});
+
+        // 현재 등급(NORMAL)
+        MemberGrade currentGrade = new MemberGrade(1L, "NORMAL", BigDecimal.ZERO, LocalDateTime.now().minusMonths(3));
+
+        // 갱신할 등급(GOLD)
+        MemberGrade newGrade = new MemberGrade(2L, "GOLD", BigDecimal.valueOf(200_000), LocalDateTime.now());
+
+        Member member = new Member();
+        member.setMemberId(memberId);
+        member.setMemberGrade(currentGrade);
+
+        when(orderProductRepository.findTotalAmountByMemberAndRecentOrders(any(LocalDateTime.class)))
+                .thenReturn(totalAmounts);
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberGradeRepository.findByMemberGradeName("GOLD")).thenReturn(Optional.of(newGrade));
+
+        // 메서드 호출
+        memberService.updateMemberGrades();
+
+        // 검증
+        assertEquals("GOLD", member.getMemberGrade().getMemberGradeName()); // 등급이 GOLD로 갱신되었는지 확인
+        verify(memberRepository).save(member); // 저장 메서드가 호출되었는지 확인
+    }
+
+    @Test
+    @DisplayName("회원 등급 갱신 실패 - 회원 등급이 없음")
+    void updateMemberGrades_Fail_NoGrade() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+
+        Long memberId = 1L;
+        BigDecimal totalAmount = BigDecimal.valueOf(250_000);
+        List<Object[]> totalAmounts = new ArrayList<>();
+        totalAmounts.add(new Object[]{memberId, totalAmount});
+
+        // 현재 등급(NORMAL)
+        MemberGrade currentGrade = new MemberGrade(1L, "NORMAL", BigDecimal.ZERO, LocalDateTime.now().minusMonths(3));
+
+        Member member = new Member();
+        member.setMemberId(memberId);
+        member.setMemberGrade(currentGrade);
+
+        when(orderProductRepository.findTotalAmountByMemberAndRecentOrders(any(LocalDateTime.class)))
+                .thenReturn(totalAmounts);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberGradeRepository.findByMemberGradeName("GOLD")).thenReturn(Optional.empty());
+
+        // 메서드 실행 및 예외 검증
+        assertThrows(MemberGradeNotFoundException.class, () -> memberService.updateMemberGrades());
+    }
+
+    @Test
+    @DisplayName("회원 등급 갱신 실패 - 회원이 없음")
+    void updateMemberGrades_Fail_NoMember() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+
+        Long memberId = 1L;
+        BigDecimal totalAmount = BigDecimal.valueOf(250_000);
+        List<Object[]> totalAmounts = new ArrayList<>();
+        totalAmounts.add(new Object[]{memberId, totalAmount});
+
+        when(orderProductRepository.findTotalAmountByMemberAndRecentOrders(any(LocalDateTime.class)))
+                .thenReturn(totalAmounts);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        // 메서드 실행 및 예외 검증
+        assertThrows(MemberNotFoundException.class, () -> memberService.updateMemberGrades());
+    }
+
 }

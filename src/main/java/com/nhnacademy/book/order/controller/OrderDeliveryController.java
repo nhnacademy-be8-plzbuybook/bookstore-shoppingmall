@@ -18,13 +18,13 @@ public class OrderDeliveryController {
     /**
      * 주문배송 등록
      *
-     * @param orderId 주문아이디
+     * @param orderId         주문아이디
      * @param registerRequest 주문배송등록 DTO
      * @return 상태코드
      */
     @PostMapping("/{order-id}/deliveries")
     public ResponseEntity<Void> registerOrderDelivery(@PathVariable("order-id") String orderId,
-                                                   @Valid @RequestBody OrderDeliveryRegisterRequestDto registerRequest) {
+                                                      @Valid @RequestBody OrderDeliveryRegisterRequestDto registerRequest) {
         orderDeliveryService.registerOrderDelivery(orderId, registerRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -32,7 +32,7 @@ public class OrderDeliveryController {
     /**
      * 주문배송 완료처리
      *
-     * @param orderId 주문아이디
+     * @param orderId    주문아이디
      * @param deliveryId 주문배송 아이디
      * @return 상태코드
      */
