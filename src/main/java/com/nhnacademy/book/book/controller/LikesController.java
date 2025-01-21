@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class LikesController {
     private final LikesService likesService;
 
-    @PostMapping("/member-selling-books/like/{sellingBookId}")
+    @PostMapping(value = "/member-selling-books/like/{sellingBookId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> toggleLike(
             @RequestHeader(value = "X-USER-ID") String email,
             @PathVariable Long sellingBookId
