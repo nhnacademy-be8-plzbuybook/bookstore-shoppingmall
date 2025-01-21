@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
+import com.nhnacademy.book.coupon.dto.RefundCouponRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.coupon.service.CouponService;
@@ -39,6 +40,8 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final OrderRepository orderRepository;
     private final OrderValidationService orderValidationService;
     private final ReturnPointService returnPointService;
+    private final CouponService couponService;
+
     @Transactional
     @Override
     public void cancelOrderProducts(String orderId, OrderCancelRequestDto cancelRequest) {
@@ -52,6 +55,8 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
             orderValidationService.validateOrderProductForCanceling(orderProduct);
 
             // TODO: 쿠폰복구
+            //couponService.cancelCoupon(couponId) //쿠폰사용취소인 경우 (couponId)
+            //couponService.refundCoupon(new RefundCouponRequestDto(couponId, memberId)); //쿠폰환불인 경우 (couponId, memberId)
 
             // TODO: 포인트 복구
             returnPointService.returnPoint(orderProduct.getOrderProductId());
