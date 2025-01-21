@@ -54,16 +54,7 @@ public class AuthorController {
         return ResponseEntity.ok(authorService.getAuthorById(authorId));
     }
 
-
-//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Page<AuthorResponseDto>> getAllAuthors(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        return ResponseEntity.ok(authorService.getAllAuthors(pageable));
-//    }
-
-    @DeleteMapping("/{authorId}")
+    @DeleteMapping("/authors/{authorId}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long authorId) {
         authorService.deleteAuthorById(authorId);
         authorSearchRepository.deleteById(authorId);
