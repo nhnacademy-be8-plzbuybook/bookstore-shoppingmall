@@ -169,165 +169,133 @@ class WrappingPaperControllerTest {
         System.out.println(result.getResponse().getContentAsString());
     }
 
-//    @Test
-//    void createWrappingPaper_without_imageFile() throws Exception {
-//        //given
-//        WrappingCreateSaveRequestDto saveRequest = new WrappingCreateSaveRequestDto("test", new BigDecimal("1000"), 100L);
-//        WrappingPaperCreateResponseDto saveResponse = new WrappingPaperCreateResponseDto(1L);
-//
-//        when(wrappingPaperService.createWrappingPaper(any(WrappingCreateSaveRequestDto.class), any(MultipartFile.class))).thenReturn(saveResponse);
-//        MockMultipartFile saveRequestPart = new MockMultipartFile(
-//                "saveRequest",
-//                "",
-//                "application/json",
-//                objectMapper.writeValueAsBytes(saveRequest)
-//        );
-//
-//        //when
-//        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL)
-//                        .file(saveRequestPart)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andReturn();
-//
-//        String response = mvcResult.getResponse().getContentAsString();
-//        ErrorResponseDto errorResponseDto = objectMapper.readValue(response, ErrorResponseDto.class);
-//        assertEquals(400, errorResponseDto.getStatus());
-//        assertTrue(errorResponseDto.getMessage().contains("imageFile"));
-//        verify(wrappingPaperService, never()).createWrappingPaper(any(WrappingCreateSaveRequestDto.class), any(MultipartFile.class));
-//    }
-//
-//    @Test
-//    void modifyWrappingPaper() throws Exception {
-//        //given
-//        long id = 1L;
-//        WrappingPaperUpdateRequestDto updateRequest = new WrappingPaperUpdateRequestDto("test", new BigDecimal("1000"), 100L, "/default/image");
-//        WrappingPaperUpdateResponseDto updateResponse = new WrappingPaperUpdateResponseDto(1L);
-//
-//        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class))).thenReturn(updateResponse);
-//        MockMultipartFile imageFile = new MockMultipartFile(
-//                "imageFile",
-//                "test-image.png",
-//                "image/png",
-//                "mock image content".getBytes()
-//        );
-//        MockMultipartFile updateRequestPart = new MockMultipartFile(
-//                "updateRequest",
-//                "",
-//                "application/json",
-//                objectMapper.writeValueAsBytes(updateRequest)
-//        );
-//
-//        //when
-//        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
-//                        .file(updateRequestPart)
-//                        .file(imageFile)
-//                        .with(request -> {
-//                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
-//                            return request;
-//                        })
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(updateResponse)));
-//        verify(wrappingPaperService).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class));
-//    }
-//
-////    @Test
-////    void modifyWrappingPaper_without_imageFile() throws Exception {
-////        //given
-////        long id = 1L;
-////        WrappingPaperUpdateRequestDto updateRequest = new WrappingPaperUpdateRequestDto("test", new BigDecimal("1000"), 100L, "/default/image");
-////        WrappingPaperUpdateResponseDto updateResponse = new WrappingPaperUpdateResponseDto(1L);
-////
-////        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class))).thenReturn(updateResponse);
-////        MockMultipartFile updateRequestPart = new MockMultipartFile(
-////                "updateRequest",
-////                "",
-////                "application/json",
-////                objectMapper.writeValueAsBytes(updateRequest)
-////        );
-////
-////        //when
-////        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
-////                        .file(updateRequestPart)
-////                        .with(request -> {
-////                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
-////                            return request;
-////                        })
-////                        .contentType(MediaType.MULTIPART_FORM_DATA)
-////                        .accept(MediaType.APPLICATION_JSON))
-////                .andExpect(status().isOk())
-////                .andExpect(content().json(objectMapper.writeValueAsString(updateResponse)));
-////        verify(wrappingPaperService).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class));
-////    }
-//
-//    @Test
-//    void modifyWrappingPaper_invalid_argument() throws Exception {
-//        //given
-//        long id = 1L;
-//        WrappingPaperUpdateRequestDto updateRequest = new WrappingPaperUpdateRequestDto(" ", new BigDecimal("1000"), 100L, "/default/image");
-//        WrappingPaperUpdateResponseDto updateResponse = new WrappingPaperUpdateResponseDto(1L);
-//
-//        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class))).thenReturn(updateResponse);
-//        MockMultipartFile imageFile = new MockMultipartFile(
-//                "imageFile",
-//                "test-image.png",
-//                "image/png",
-//                "mock image content".getBytes()
-//        );
-//        MockMultipartFile updateRequestPart = new MockMultipartFile(
-//                "updateRequest",
-//                "",
-//                "application/json",
-//                objectMapper.writeValueAsBytes(updateRequest)
-//        );
-//
-//        //when
-//        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
-//                        .file(updateRequestPart)
-//                        .file(imageFile)
-//                        .with(request -> {
-//                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
-//                            return request;
-//                        })
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        verify(wrappingPaperService, never()).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class), any(MultipartFile.class));
-//    }
-//
-//    @Test
-//    void removeWrappingPaper() throws Exception {
-//        //given
-//        long id = existingWrappingPaper.getId();
-//
-//        doNothing().when(wrappingPaperService).removeWrappingPaper(id);
-//
-//        //when
-//        mockMvc.perform(delete(BASE_URL + "/" + id))
-//                .andExpect(status().isNoContent());
-//        verify(wrappingPaperService).removeWrappingPaper(id);
-//    }
-//
-//    @Test
-//    void removeWrappingPaper_not_found() throws Exception {
-//        //given
-//        long id = existingWrappingPaper.getId();
-//
-//        doThrow(new NotFoundException(id + "wrapping paper not found!")).when(wrappingPaperService).removeWrappingPaper(id);
-//
-//        //when
-//        MvcResult result = mockMvc.perform(delete(BASE_URL + "/" + id)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound())
-//                .andReturn();
-//
-//        String response = result.getResponse().getContentAsString();
-//        ErrorResponseDto errorResponseDto = objectMapper.readValue(response, ErrorResponseDto.class);
-//        assertEquals(HttpStatus.NOT_FOUND.value(), errorResponseDto.getStatus());
-//        assertEquals(id + "wrapping paper not found!", errorResponseDto.getMessage());
-//        verify(wrappingPaperService).removeWrappingPaper(id);
-//    }
+    @Test
+    void createWrappingPaper_without_imageFile() throws Exception {
+        //given
+        Long savedId = 1L;
+        when(wrappingPaperService.createWrappingPaper(any(WrappingCreateSaveRequestDto.class))).thenReturn(savedId);
+
+        //when
+        MvcResult mvcResult = mockMvc.perform(post(BASE_URL)
+                        .param("name", "name")
+                        .param("price", "1000")
+                        .param("stock", "100")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        ErrorResponseDto errorResponseDto = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(400, errorResponseDto.getStatus());
+        verify(wrappingPaperService, never()).createWrappingPaper(any(WrappingCreateSaveRequestDto.class));
+    }
+
+    @Test
+    void modifyWrappingPaper() throws Exception {
+        //given
+        Long id = 1L;
+
+        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class))).thenReturn(id);
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "imageFile",
+                "test-image.png",
+                "image/png",
+                "mock image content".getBytes()
+        );
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
+                        .file(imageFile)
+                        .param("name", "updatedName")
+                        .param("price", "1131")
+                        .param("stock", "110")
+                        .with(request -> {
+                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
+                            return request;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(id.toString()));
+        verify(wrappingPaperService).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class));
+    }
+
+    @Test
+    void modifyWrappingPaper_without_imageFile() throws Exception {
+        //given
+        Long id = 1L;
+
+        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class))).thenReturn(id);
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
+                        .param("name", "updatedName")
+                        .param("price", "1131")
+                        .param("stock", "110")
+                        .with(request -> {
+                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
+                            return request;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(id.toString()));
+        verify(wrappingPaperService).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class));
+    }
+
+    @Test
+    void modifyWrappingPaper_invalid_argument() throws Exception {
+        //given
+        Long id = 1L;
+
+        when(wrappingPaperService.modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class))).thenReturn(id);
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.multipart(BASE_URL + "/" + id)
+                        .param("name", " ")
+                        .param("price", "1131")
+                        .param("stock", "110")
+                        .with(request -> {
+                            request.setMethod("PUT"); // HTTP 메서드를 PUT으로 변경
+                            return request;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(wrappingPaperService, never()).modifyWrappingPaper(anyLong(), any(WrappingPaperUpdateRequestDto.class));
+    }
+
+    @Test
+    void removeWrappingPaper() throws Exception {
+        //given
+        long id = existingWrappingPaper.getId();
+
+        doNothing().when(wrappingPaperService).removeWrappingPaper(id);
+
+        //when
+        mockMvc.perform(delete(BASE_URL + "/" + id))
+                .andExpect(status().isNoContent());
+        verify(wrappingPaperService).removeWrappingPaper(id);
+    }
+
+    @Test
+    void removeWrappingPaper_not_found() throws Exception {
+        //given
+        long id = existingWrappingPaper.getId();
+
+        doThrow(new NotFoundException("포장지를 찾을 수 없습니다. 포장지 아이디: " + id)).when(wrappingPaperService).removeWrappingPaper(id);
+
+        //when
+        MvcResult result = mockMvc.perform(delete(BASE_URL + "/" + id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        ErrorResponseDto errorResponseDto = objectMapper.readValue(response, ErrorResponseDto.class);
+        assertEquals(HttpStatus.NOT_FOUND.value(), errorResponseDto.getStatus());
+        assertEquals("포장지를 찾을 수 없습니다. 포장지 아이디: " + id, errorResponseDto.getMessage());
+        verify(wrappingPaperService).removeWrappingPaper(id);
+    }
 }
