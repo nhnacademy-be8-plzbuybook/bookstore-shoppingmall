@@ -5,7 +5,6 @@ import com.nhnacademy.book.book.exception.*;
 import com.nhnacademy.book.cartbook.exception.BookStatusNotSellingBookException;
 import com.nhnacademy.book.cartbook.exception.CartBookDoesNotExistException;
 import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartException;
-import com.nhnacademy.book.coupon.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.order.exception.NonMemberPasswordNotMatchException;
@@ -161,10 +160,6 @@ class GlobalExceptionHandlerTest {
         @PostMapping("/test/duplicate-certification")
         public void throwDuplicateCertificationException() {
             throw new DuplicateCertificationException("중복된 인증 방법입니다.");
-        }
-        @GetMapping("/test/welcome-coupon-issue")
-        public void throwWelcomeCouponIssueException() {
-            throw new WelcomeCouponIssueException("Welcome 쿠폰 발행에 실패했습니다.");
         }
         @GetMapping("/test/author-id-not-found")
         public void throwAuthorIdNotFoundException() {
@@ -493,15 +488,6 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("Conflict"))
                 .andExpect(jsonPath("$.message").value("중복된 인증 방법입니다."));
-    }
-    @Test
-    @DisplayName("회원가입 시 Welcome 쿠폰 발행 실패 예외 처리 테스트")
-    void handleWelcomeCouponIssueException() throws Exception {
-        mockMvc.perform(get("/test/welcome-coupon-issue"))
-                .andExpect(status().isInternalServerError()) // HTTP 500 상태 확인
-                .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.error").value("Internal Server Error"))
-                .andExpect(jsonPath("$.message").value("Welcome 쿠폰 발행에 실패했습니다."));
     }
 
     @Test

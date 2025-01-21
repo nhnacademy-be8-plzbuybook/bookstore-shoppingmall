@@ -2,7 +2,7 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
+import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
