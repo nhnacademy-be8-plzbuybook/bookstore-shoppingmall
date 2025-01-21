@@ -56,48 +56,6 @@ public class BookCategoryService {
                 bookCategory.getCategory().getCategoryName()
         );
     }
-    public Page<BookResponseDto> getBooksByParentCategory(Long parentId, Pageable pageable) {
-        // 모든 자식 카테고리들 조회
-        List<Category> allCategories = categoryService.findAllChildCategories(parentId);
-
-        // Set을 사용하여 중복 제거
-        Set<BookResponseDto> bookResponseDtoSet = new HashSet<>();
-        long totalElements = 0;  // 총 데이터 수를 저장할 변수
-
-        // 각 카테고리 별로 책을 조회하여 결과를 합침
-        for (Category category : allCategories) {
-            // 각 카테고리의 책 조회
-            Page<Book> books = bookCategoryRepository.findBooksByCategories(Collections.singletonList(category), pageable);
-
-            // 결과 리스트에 책 데이터 추가 (중복 제거)
-            books.getContent().forEach(book -> {
-                BookResponseDto bookResponseDto = new BookResponseDto(
-                        book.getBookId(),
-                        book.getBookTitle(),
-                        book.getBookPriceStandard(),
-                        book.getBookIsbn13(),
-                        book.getBookPubDate(),
-                        book.getPublisher().getPublisherName()
-                );
-                bookResponseDtoSet.add(bookResponseDto);  // 중복 자동 제거
-            });
-
-            // 총 데이터 수를 합산
-            totalElements = bookResponseDtoSet.size();
-        }
-
-        // Set에서 List로 변환하여 PageImpl 생성
-        List<BookResponseDto> bookResponseDtos = new ArrayList<>(bookResponseDtoSet);
-
-        return new PageImpl<>(bookResponseDtos, pageable, totalElements);
-    }
-
-
-
-
-
-
-
 
     public List<CategoryResponseDto> findCategoriesByBookId(Long bookId) {
         Book book = bookRepository.findById(bookId)
