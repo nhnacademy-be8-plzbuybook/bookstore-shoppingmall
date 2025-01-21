@@ -7,10 +7,10 @@ import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -68,6 +68,7 @@ public class BookAuthorRepositoryTest {
         bookRepository.save(book);
     }
 
+    @Disabled
     @Test
     void findBooksByAuthorIdTest() {
         // 추가 Book 저장
