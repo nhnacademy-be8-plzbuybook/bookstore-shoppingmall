@@ -137,7 +137,7 @@ class CartBookMemberServiceImplTest {
     @DisplayName("회원 장바구니 도서 수량 수정 성공 테스트")
     void updateBookCartMember_Success() {
         // given
-        UpdateCartBookRequestDto requestDto = new UpdateCartBookRequestDto(testCartBook.getId(),testSellingBook.getSellingBookId(), 3);
+        UpdateCartBookRequestDto requestDto = new UpdateCartBookRequestDto(testCartBook.getId(), testSellingBook.getSellingBookId(), 3);
 
         given(memberRepository.getMemberIdByEmail(TEST_EMAIL)).willReturn(TEST_MEMBER_ID);
         given(cartRepository.findByMember_MemberId(TEST_MEMBER_ID)).willReturn(Optional.of(testCart));
@@ -213,24 +213,4 @@ class CartBookMemberServiceImplTest {
         assertThatThrownBy(() -> cartBookMemberService.createBookCartMember(requestDto, TEST_EMAIL))
                 .isInstanceOf(BookStatusNotSellingBookException.class);
     }
-//
-//    @Test
-//    void readAllCartMember() {
-//    }
-//
-//    @Test
-//    void createBookCartMember() {
-//    }
-//
-//    @Test
-//    void updateBookCartMember() {
-//    }
-//
-//    @Test
-//    void deleteBookCartMember() {
-//    }
-//
-//    @Test
-//    void deleteAllBookCartMember() {
-//    }
 }
