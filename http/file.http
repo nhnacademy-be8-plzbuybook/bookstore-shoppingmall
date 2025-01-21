@@ -1,0 +1,30 @@
+###
+POST http://localhost:10143/api/files/upload
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="directoryName"
+
+reviews
+--boundary123
+Content-Disposition: form-data; name="files"; filename="cat.jpeg"
+Content-Type: image/jpeg
+
+< /Users/heosuhyeok/Downloads/cat.jpeg
+--boundary123--
+
+
+###
+POST http://localhost:10143/api/files/upload
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="directoryName"
+
+books
+--boundary123
+Content-Disposition: form-data; name="files"; filename="frog.jpeg"
+Content-Type: image/jpeg
+
+< /Users/heosuhyeok/Downloads/frog.png
+--boundary123--

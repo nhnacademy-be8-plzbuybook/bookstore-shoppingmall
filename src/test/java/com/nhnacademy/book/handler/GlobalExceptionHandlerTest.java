@@ -12,7 +12,6 @@ import com.nhnacademy.book.order.exception.OrderRequestFailException;
 import com.nhnacademy.book.order.exception.OrderReturnBadRequestException;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.review.exception.*;
-import com.nhnacademy.book.skm.exception.KeyMangerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,6 +56,7 @@ class GlobalExceptionHandlerTest {
         public void throwMemberGradeNotFoundException() {
             throw new MemberGradeNotFoundException("회원 등급을 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/member-status-not-found")
         public void throwMemberStatusNotFoundException() {
             throw new MemberStatusNotFoundException("회원 상태를 찾을 수 없습니다.");
@@ -73,10 +71,12 @@ class GlobalExceptionHandlerTest {
         public void throwDefaultStatusGradeNotFoundException() {
             throw new DefaultStatusGradeNotfoundException("기본 상태를 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/member-email-not-found")
         public void throwMemberEmailNotFoundException() {
             throw new MemberEmailNotFoundException("이메일로 회원을 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/member-id-not-found")
         public void throwMemberIdNotFoundException() {
             throw new MemberIdNotFoundException("ID로 회원을 찾을 수 없습니다.");
@@ -91,6 +91,7 @@ class GlobalExceptionHandlerTest {
         public void throwDuplicateMemberGradeException() {
             throw new DuplicateMemberGradeException("회원 등급이 중복되었습니다.");
         }
+
         @GetMapping("/test/duplicate-member-modification")
         public void throwDuplicateMemberModificationException() {
             throw new DuplicateMemberModificationException("회원 수정 시 기존 값과 같습니다.");
@@ -131,11 +132,6 @@ class GlobalExceptionHandlerTest {
             throw new MissingServletRequestPartException("file");
         }
 
-        @GetMapping("/test/key-manager")
-        public void throwKeyManagerException() {
-            throw new KeyMangerException("키 관리 중 오류가 발생했습니다.");
-        }
-
         @GetMapping("/test/point-condition-not-found")
         public void throwPointConditionNotFoundException() {
             throw new PointConditionNotFoundException("포인트 조건을 찾을 수 없습니다.");
@@ -160,6 +156,7 @@ class GlobalExceptionHandlerTest {
         public void throwDuplicateCertificationException() {
             throw new DuplicateCertificationException("중복된 인증 방법입니다.");
         }
+
         @GetMapping("/test/author-id-not-found")
         public void throwAuthorIdNotFoundException() {
             throw new AuthorIdNotFoundException("Author ID를 찾을 수 없습니다.");
@@ -169,11 +166,13 @@ class GlobalExceptionHandlerTest {
         public void throwAuthorNameNotFoundException() {
             throw new AuthorNameNotFoundException("Author 이름을 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/authors-not-found")
         public void throwAuthorsNotFoundException() {
             throw new AuthorsNotFoundException("Authors를 찾을 수 없습니다.");
 
         }
+
         @GetMapping("/test/book-author-not-found")
         public void throwBookAuthorNotFoundException() {
             throw new BookAuthorNotFoundException("책의 저자를 찾을 수 없습니다.");
@@ -204,6 +203,7 @@ class GlobalExceptionHandlerTest {
         public void throwPublisherNotFoundException() {
             throw new PublisherNotFoundException("출판사를 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/selling-book-not-found")
         public void throwSellingBookNotFoundException() {
             throw new SellingBookNotFoundException("판매 중인 책을 찾을 수 없습니다.");
@@ -213,6 +213,7 @@ class GlobalExceptionHandlerTest {
         public void throwDuplicatePhoneException() {
             throw new DuplicatePhoneException("전화번호가 중복되었습니다.");
         }
+
         @GetMapping("/test/duplicate-review")
         public void throwDuplicateReviewException() {
             throw new DuplicateReviewException("중복된 리뷰입니다.");
@@ -222,6 +223,7 @@ class GlobalExceptionHandlerTest {
         public void throwInvalidOrderProductStatusException() {
             throw new InvalidOrderProductStatusException("리뷰를 작성할 수 없는 주문 상태입니다.");
         }
+
         @GetMapping("/test/invalid-order-access")
         public void throwInvalidOrderAccessException() {
             throw new InvalidOrderAccessException("해당 주문은 회원의 주문이 아닙니다.");
@@ -236,6 +238,7 @@ class GlobalExceptionHandlerTest {
         public void throwReviewNotFoundException() {
             throw new ReviewNotFoundException("해당 리뷰를 찾을 수 없습니다.");
         }
+
         @GetMapping("/test/book-status-not-selling")
         public void throwBookStatusNotSellingBookException() {
             throw new BookStatusNotSellingBookException("책 상태가 판매 중이 아닙니다.");
@@ -256,6 +259,7 @@ class GlobalExceptionHandlerTest {
             throw new OrderRequestFailException("주문 요청에 실패했습니다.");
 
         }
+
         @GetMapping("/test/order-return-bad-request")
         public void throwOrderReturnBadRequestException() {
             throw new OrderReturnBadRequestException("반환 요청이 잘못되었습니다.");
@@ -437,16 +441,6 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("키 관리 중 오류 예외 처리 테스트")
-    void handleKeyManagerException() throws Exception {
-        mockMvc.perform(get("/test/key-manager"))
-                .andExpect(status().isInternalServerError()) // HTTP 500 상태 확인
-                .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.error").value("Internal Server Error"))
-                .andExpect(jsonPath("$.message").value("키 관리 중 오류가 발생했습니다."));
-    }
-
-    @Test
     @DisplayName("포인트 조건을 찾을 수 없을 때 예외 처리 테스트")
     void handlePointConditionNotFoundException() throws Exception {
         mockMvc.perform(get("/test/point-condition-not-found"))
@@ -455,6 +449,7 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("포인트 조건을 찾을 수 없습니다."));
     }
+
     @Test
     @DisplayName("OrderProductId로 OrderProduct를 조회할 때 예외 처리 테스트")
     void handleOrderProductNotFoundException() throws Exception {
@@ -524,6 +519,7 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("Authors를 찾을 수 없습니다."));
     }
+
     @Test
     @DisplayName("BookAuthorNotFoundException 예외 처리 테스트")
     void handleBookAuthorNotFoundException() throws Exception {
@@ -583,6 +579,7 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("출판사를 찾을 수 없습니다."));
     }
+
     @Test
     @DisplayName("판매 중인 책을 찾을 수 없을 때 예외 처리 테스트")
     void handleSellingBookNotFoundException() throws Exception {
@@ -622,6 +619,7 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Bad Request"))
                 .andExpect(jsonPath("$.message").value("리뷰를 작성할 수 없는 주문 상태입니다."));
     }
+
     @Test
     @DisplayName("해당 주문이 회원의 주문이 아닐 때 예외 처리 테스트")
     void handleInvalidOrderAccessException() throws Exception {
@@ -651,6 +649,7 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.error").value("Not Found"))
                 .andExpect(jsonPath("$.message").value("해당 리뷰를 찾을 수 없습니다."));
     }
+
     @Test
     @DisplayName("책 상태가 판매 중이 아닐 떄 예외 처리 테스트")
     void handleBookStatusNotSellingBookException() throws Exception {

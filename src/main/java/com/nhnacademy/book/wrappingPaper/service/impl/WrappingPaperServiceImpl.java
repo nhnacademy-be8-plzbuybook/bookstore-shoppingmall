@@ -2,7 +2,6 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
@@ -19,7 +18,7 @@ import java.util.Optional;
 @Service
 public class WrappingPaperServiceImpl implements WrappingPaperService {
     private final WrappingPaperRepository wrappingPaperRepository;
-    private final ObjectStorageService objectStorageService;
+//    private final ObjectStorageService objectStorageService;
 
     @Transactional(readOnly = true)
     @Override
@@ -46,7 +45,9 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         if (isWrappingPaperExists(saveRequest.getName())) {
             throw new ConflictException(saveRequest.getName() + "는 이미 존재하는 포장지입니다.");
         }
-        String imagePath = uploadWrappingPaperImage(saveRequest.getImageFile());
+//        String imagePath = uploadWrappingPaperImage(saveRequest.getImageFile());
+        // TODO: 이미지 업로드 로직 구현
+        String imagePath = "TODO: 이미지 업로드 로직 구현";
         WrappingPaper wrappingPaper = saveRequest.toEntity(imagePath);
         WrappingPaper savedWrappingPaper = wrappingPaperRepository.save(wrappingPaper);
 
@@ -65,7 +66,9 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         }
         // 이미지 파일이 있으면 파일 업로드하고 포함해서 수정
         else {
-            String imagePath = uploadWrappingPaperImage(updateRequest.imageFile());
+//            String imagePath = uploadWrappingPaperImage(updateRequest.imageFile());
+            // TODO: 이미지 업로드 로직 구현
+            String imagePath = "TODO: 이미지 업로드 로직 구현";
             wrappingPaper.update(updateRequest.name(), updateRequest.price(), updateRequest.stock(), imagePath);
         }
         return id;
@@ -89,9 +92,9 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         return wrappingPaperRepository.existsByName(name);
     }
 
-    private String uploadWrappingPaperImage(MultipartFile imageFile) {
-        String uploadedFileName = objectStorageService.uploadObjects(List.of(imageFile)).getFirst();
-        return objectStorageService.getUrl(uploadedFileName);
-    }
+//    private String uploadWrappingPaperImage(MultipartFile imageFile) {
+//        String uploadedFileName = objectStorageService.uploadObjects(List.of(imageFile)).getFirst();
+//        return objectStorageService.getUrl(uploadedFileName);
+//    }
 
 }

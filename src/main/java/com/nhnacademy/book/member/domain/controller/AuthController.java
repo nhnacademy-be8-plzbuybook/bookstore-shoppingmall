@@ -33,9 +33,6 @@ public class AuthController {
     // 권한 ID로 조회
     @GetMapping("/auths/{auth_id}")
     public ResponseEntity<AuthResponseDto> getAuthById(@PathVariable Long auth_id) {
-//        AuthResponseDto auth = authService.getAuthById(auth_id)
-//                .orElseThrow(() -> new RuntimeException("권한을 찾을 수 없습니다."));
-//        return new ResponseEntity<>(auth, HttpStatus.OK);
         return authService.getAuthById(auth_id)
                 .map(auth -> new ResponseEntity<>(auth, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

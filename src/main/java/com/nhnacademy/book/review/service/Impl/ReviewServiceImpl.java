@@ -2,7 +2,6 @@ package com.nhnacademy.book.review.service.Impl;
 
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import com.nhnacademy.book.order.repository.MemberOrderRepository;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
@@ -39,7 +38,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberOrderRepository memberOrderRepository;
     private final ReviewImageRepository reviewImageRepository;
-    private final ObjectStorageService objectStorageService;
     private final MemberPointService memberPointService;
 
     @Override
@@ -87,7 +85,9 @@ public class ReviewServiceImpl implements ReviewService {
             for(String imageUrl : imageUrls){
                 ReviewImage reviewImage = new ReviewImage();
                 reviewImage.setReview(savedReview);
-                String id = objectStorageService.getUrl(imageUrl);
+                //TODO: 이미지 저장 로직 구현
+                    String id = "TODO: 이미지 저장 로직 구현";
+//                String id = objectStorageService.getUrl(imageUrl);
                 reviewImage.setReviewImageUrl(id);
                 review.setPhotoPointGiven(true);
                 reviewImageRepository.save(reviewImage);
@@ -169,7 +169,9 @@ public class ReviewServiceImpl implements ReviewService {
             for (String imageUrl : imageUrls) {
                 ReviewImage reviewImage = new ReviewImage();
                 reviewImage.setReview(review);
-                String id = objectStorageService.getUrl(imageUrl);
+                // TODO: 이미지 저장 로직 구현
+                String id = "TODO: 이미지 저장 로직 구현";
+//                String id = objectStorageService.getUrl(imageUrl);
                 reviewImage.setReviewImageUrl(id);
                 reviewImageRepository.save(reviewImage);
             }

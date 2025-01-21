@@ -2,7 +2,6 @@ package com.nhnacademy.book.review.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;
@@ -28,7 +27,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final OrderProductService orderProductService;
-    private final ObjectStorageService objectStorageService;
 
     @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReviewResponseDto> createReview(
@@ -62,7 +60,9 @@ public class ReviewController {
     }
 
     private String saveImage(MultipartFile image) {
-        return objectStorageService.uploadObjects(List.of(image)).get(0);
+        //TODO: 이미지 저장 로직 구현
+        return "TODO: 이미지 저장 로직 구현";
+//        return objectStorageService.uploadObjects(List.of(image)).get(0);
     }
 
     @GetMapping("/order-product/by-selling-book/{sellingBookId}")
