@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain;
 
-import com.nhnacademy.book.controller.AuthClient;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
