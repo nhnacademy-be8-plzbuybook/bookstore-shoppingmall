@@ -232,5 +232,8 @@ GET localhost:8090/api/books/by-category?parentId=2
 
 ### ㅁㄴㅇ
 
-GET localhost:8090/api/books/by-category?parentId=1&page=0
+GET localhost:8090/api/books/by-category?parentId=12&page=0
 
+### asd
+
+GET localhost:8090/api/categories/1/books

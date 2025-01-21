@@ -7,6 +7,7 @@ import com.nhnacademy.book.book.elastic.document.*;
 import com.nhnacademy.book.book.elastic.repository.*;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
+import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class BookSearchService {
 
     private final BookInfoRepository bookInfoRepository;
 
+    private final CategoryRepository categoryRepository;
+
     public Page<BookInfoResponseDto> searchBooksByKeyword2(String keyword, Pageable pageable) {
 
         List<BookInfoDocument> books = bookInfoRepository.searchBooksByKeyword(keyword);
@@ -46,6 +49,23 @@ public class BookSearchService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(bookInfoResponseDtos, pageable, books.size());
+    }
+
+    public Page<BookInfoResponseDto> findByExactCategoryName(Long categoryId, Pageable pageable) {
+        Category category = categoryRepository.findByCategoryId(categoryId).orElseThrow(() -> new CategoryNotFoundException("category Not Found"));
+        List<BookInfoDocument> books = bookInfoRepository.findByExactCategoryName(category.getCategoryName());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), books.size());
+
+        List<BookInfoDocument> pagedBooks = books.subList(start, end);
+
+        List<BookInfoResponseDto> bookInfoResponseDtos = pagedBooks.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(bookInfoResponseDtos, pageable, books.size());
+
     }
 
     private BookInfoResponseDto convertToDto(BookInfoDocument bookInfoDocument) {

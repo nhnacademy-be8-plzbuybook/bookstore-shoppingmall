@@ -43,23 +43,54 @@ public class CategoryService {
 
 
 
-    public List<CategoryResponseDto> findByParentCategoryId(Long parentCategoryId) {
-        Category parentCategory = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("ParentCategory not found with ID: " + parentCategoryId));
+//    public List<CategoryResponseDto> findByParentCategoryId(Long parentCategoryId) {
+//        Category parentCategory = categoryRepository.findById(parentCategoryId)
+//                .orElseThrow(() -> new CategoryNotFoundException("ParentCategory not found with ID: " + parentCategoryId));
+//
+//        List<Category> childrenCategories = categoryRepository.findByParentCategoryId(parentCategoryId);
+//
+//        if (childrenCategories.isEmpty()) {
+//            throw new CategoryNotFoundException("No children categories found for parent: " + parentCategory.getCategoryName());
+//        }
+//
+//        // Category -> CategoryResponseDto 변환
+//        return childrenCategories.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//
+//
+//    }
+public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
+    Category parentCategory = categoryRepository.findById(parentCategoryId)
+            .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));
 
-        List<Category> childrenCategories = categoryRepository.findByParentCategoryId(parentCategoryId);
+    // 리프 노드를 찾는 재귀 호출
+    List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
 
-        if (childrenCategories.isEmpty()) {
-            throw new CategoryNotFoundException("No children categories found for parent: " + parentCategory.getCategoryName());
+    if (leafCategories.isEmpty()) {
+        throw new CategoryNotFoundException("No leaf categories found for parent: " + parentCategory.getCategoryName());
+    }
+
+    // Category -> CategoryResponseDto 변환
+    return leafCategories.stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+}
+
+    private List<Category> findLeafCategoriesRecursive(Category category) {
+        List<Category> children = categoryRepository.findByParentCategoryId(category.getCategoryId());
+
+        // 자식이 없으면 리프 노드이므로 현재 카테고리를 반환
+        if (children.isEmpty()) {
+            return List.of(category);
         }
 
-        // Category -> CategoryResponseDto 변환
-        return childrenCategories.stream()
-                .map(this::convertToDto)
+        // 자식이 있으면 자식 카테고리에 대해 재귀 호출
+        return children.stream()
+                .flatMap(child -> findLeafCategoriesRecursive(child).stream())
                 .collect(Collectors.toList());
-
-
     }
+
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
         if (parentCategoryDto == null || parentCategoryDto.getCategoryId() == null) {
