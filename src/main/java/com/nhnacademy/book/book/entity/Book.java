@@ -3,10 +3,7 @@ package com.nhnacademy.book.book.entity;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -20,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 public class Book {
 
@@ -34,6 +32,20 @@ public class Book {
         this.bookPriceStandard = bookPriceStandard;
         this.bookIsbn13 = bookIsbn13;
     }
+
+    public Book(Long bookId, Publisher publisher, String bookTitle, String bookIndex,
+                String bookDescription, LocalDate bookPubDate, BigDecimal bookPriceStandard,
+                String bookIsbn13) {
+        this.bookId = bookId;
+        this.publisher = publisher;
+        this.bookTitle = bookTitle;
+        this.bookIndex = bookIndex;
+        this.bookDescription = bookDescription;
+        this.bookPubDate = bookPubDate;
+        this.bookPriceStandard = bookPriceStandard;
+        this.bookIsbn13 = bookIsbn13;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookId;
@@ -82,23 +94,23 @@ public class Book {
         this.bookTitle = testBook;
     }
 
-    // 이미지 추가 메서드
-    public void addImage(String imageUrl) {
-        BookImage bookImage = new BookImage(this, imageUrl);
-        this.bookImages.add(bookImage);
-    }
-    public Book(String bookTitle, String bookIndex,
-                String bookDescription, LocalDate bookPubDate,
-                BigDecimal sellingBookPrice, String bookIsbn13,
-                Publisher publisher, String imageUrl) {
-    }
-
-    public Book(String bookTitle, String bookIsbn13,
-                Object o, Object o1,
-                LocalDate bookPubDate,
-                BigDecimal sellingBookPrice,
-                String bookIsbn131, String publisher, String imageUrl) {
-    }
+//    // 이미지 추가 메서드
+//    public void addImage(String imageUrl) {
+//        BookImage bookImage = new BookImage(this, imageUrl);
+//        this.bookImages.add(bookImage);
+//    }
+//    public Book(String bookTitle, String bookIndex,
+//                String bookDescription, LocalDate bookPubDate,
+//                BigDecimal sellingBookPrice, String bookIsbn13,
+//                Publisher publisher, String imageUrl) {
+//    }
+//
+//    public Book(String bookTitle, String bookIsbn13,
+//                Object o, Object o1,
+//                LocalDate bookPubDate,
+//                BigDecimal sellingBookPrice,
+//                String bookIsbn131, String publisher, String imageUrl) {
+//    }
 
 
     @Override

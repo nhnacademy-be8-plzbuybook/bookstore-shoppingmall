@@ -35,11 +35,44 @@ public class CategoryService {
     }
 
     public CategoryResponseDto findCategoryById(Long id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository.findByCategoryId(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
 
         return convertToDto(category);
     }
+
+
+    public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
+        Category parentCategory = categoryRepository.findById(parentCategoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));
+
+        // 리프 노드를 찾는 재귀 호출
+        List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
+
+        if (leafCategories.isEmpty()) {
+            throw new CategoryNotFoundException("No leaf categories found for parent: " + parentCategory.getCategoryName());
+        }
+
+        // Category -> CategoryResponseDto 변환
+        return leafCategories.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private List<Category> findLeafCategoriesRecursive(Category category) {
+        List<Category> children = categoryRepository.findByParentCategoryId(category.getCategoryId());
+
+        // 자식이 없으면 리프 노드이므로 현재 카테고리를 반환
+        if (children.isEmpty()) {
+            return List.of(category);
+        }
+
+        // 자식이 있으면 자식 카테고리에 대해 재귀 호출
+        return children.stream()
+                .flatMap(child -> findLeafCategoriesRecursive(child).stream())
+                .collect(Collectors.toList());
+    }
+
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
         if (parentCategoryDto == null || parentCategoryDto.getCategoryId() == null) {
@@ -116,10 +149,10 @@ public class CategoryService {
     }
 
 
-public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword, Pageable pageable) {
-    Page<Category> categories = categoryRepository.findByCategoryNameContaining(keyword, pageable);
-    return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
-}
+    public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword, Pageable pageable) {
+        Page<Category> categories = categoryRepository.findByCategoryNameContaining(keyword, pageable);
+        return categories.map(category -> new CategorySimpleResponseDto(category.getCategoryId(), category.getCategoryName()));
+    }
 
     public Page<CategorySimpleResponseDto> findAllCategories(Pageable pageable) {
         Page<Category> categories = categoryRepository.findAll(pageable);
@@ -136,6 +169,7 @@ public Page<CategorySimpleResponseDto> searchCategoriesByKeyword(String keyword,
 
         categoryRepository.deleteCategoryAndChildren(categoryId);
     }
+
 
 
 

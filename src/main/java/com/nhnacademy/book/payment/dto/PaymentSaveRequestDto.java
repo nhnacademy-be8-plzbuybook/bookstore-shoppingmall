@@ -1,13 +1,11 @@
 package com.nhnacademy.book.payment.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.payment.entity.Payment;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -76,6 +74,11 @@ public class PaymentSaveRequestDto {
     public static class EasyPay {
         @JsonProperty("provider")
         private String provider;
+
+        @JsonCreator
+        public EasyPay(@JsonProperty("provider") String provider) {
+            this.provider = provider;
+        }
     }
 
     @Getter
@@ -83,5 +86,10 @@ public class PaymentSaveRequestDto {
     public static class Receipt {
         @JsonProperty("url")
         private String url;
+
+        @JsonCreator
+        public Receipt(@JsonProperty("url") String url) {
+            this.url = url;
+        }
     }
 }

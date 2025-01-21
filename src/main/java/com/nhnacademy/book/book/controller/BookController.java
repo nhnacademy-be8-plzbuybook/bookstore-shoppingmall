@@ -4,10 +4,8 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.BookRegisterRequestDto;
 import com.nhnacademy.book.book.dto.response.*;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
-import com.nhnacademy.book.book.service.Impl.BookAuthorService;
-import com.nhnacademy.book.book.service.Impl.BookSearchService;
-import com.nhnacademy.book.book.service.Impl.BookService;
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.service.Impl.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -33,6 +33,9 @@ public class BookController {
     private BookSearchService bookSearchService;
     @Autowired
     private BookSearchRepository bookSearchRepository;
+
+    private final BookCategoryService bookCategoryService;
+
 
     // 도서 등록 기능 (관리자)
     @PostMapping

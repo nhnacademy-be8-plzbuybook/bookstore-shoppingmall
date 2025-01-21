@@ -24,7 +24,7 @@ public class Category {
     @JoinColumn(name = "category_parent_id", nullable = true)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Category> childrenCategory = new ArrayList<>();
 
     @Column(length = 100)
@@ -46,6 +46,12 @@ public class Category {
 
     public Category(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public Category(long l, String parent, Object parentCategory) {
+        this.categoryId = l;
+        this.parentCategory = (Category) parentCategory;
+        this.categoryName = parent;
     }
 
     // 자식 카테고리 추가

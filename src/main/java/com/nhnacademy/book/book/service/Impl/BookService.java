@@ -84,10 +84,6 @@ public class BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
         String imageUrl = book.getBookImages().isEmpty() ? null : book.getBookImages().get(0).getImageUrl();
-//        // 카테고리 정보 추출
-//        List<Category> categories = book.getBookCategories().stream()
-//                .map(BookCategory::getCategory)
-//                .collect(Collectors.toList());
 
         // Debugging
         log.debug("도서 정보: {}", book);
@@ -125,34 +121,6 @@ public class BookService {
 
     }
 
-
-    public BookDetailResponseDto getBookDetailFromElastic(Long bookId) {
-        // Elasticsearch에서 BookDocument 조회
-        log.debug("Searching for book with ID: {}", bookId);
-
-        BookDocument bookDocument = bookSearchRepository.findByBookId(bookId);
-
-        if (bookDocument == null) {
-            log.error("Book not found with ID: {}", bookId);
-
-            throw new BookNotFoundException("Book with ID " + bookId + " not found.");
-        }
-
-
-        log.debug("Found book: {}", bookDocument);
-
-        // BookDetailResponseDto로 변환하여 반환
-        return new BookDetailResponseDto(
-                bookDocument.getBookId(),
-                bookDocument.getBookTitle(),
-                bookDocument.getBookIndex(),
-                bookDocument.getBookDescription(),
-                bookDocument.getBookPubDate(),
-                bookDocument.getBookPriceStandard(),
-                bookDocument.getBookIsbn13(),
-                bookDocument.getPublisherId(),
-                bookDocument.getImageUrl());
-    }
 
     // 도서 등록 기능 (관리자)
     @Transactional
@@ -370,5 +338,6 @@ public class BookService {
     }
 
     public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

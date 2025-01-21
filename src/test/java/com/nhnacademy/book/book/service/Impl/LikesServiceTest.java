@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -129,5 +130,64 @@ class LikesServiceTest {
         // Mockito verify
         verify(likesRepository, times(1)).findLikedBooksByMemberId(1L, pageable);
 
+    }
+
+    @Test
+    @DisplayName("좋아요 토글 - 좋아요 추가")
+    void toggleLikeBook_addLike() {
+        Member member = mock(Member.class);
+        SellingBook sellingBook = mock(SellingBook.class);
+
+        when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(member));
+        when(sellingBookRepository.findById(1L)).thenReturn(Optional.of(sellingBook));
+        when(likesRepository.findByMemberAndSellingBook(member, sellingBook)).thenReturn(Optional.empty());
+        when(likesRepository.countBySellingBook(sellingBook)).thenReturn(1L);
+
+        Long likeCount = likesService.toggleLikeBook("user@example.com", 1L);
+
+        assertEquals(1L, likeCount);
+        verify(likesRepository, times(1)).save(any(Likes.class));
+    }
+
+    @Test
+    @DisplayName("좋아요 토글 - 좋아요 취소")
+    void toggleLikeBook_removeLike() {
+        Member member = mock(Member.class);
+        SellingBook sellingBook = mock(SellingBook.class);
+        Likes likes = mock(Likes.class);
+
+        when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(member));
+        when(sellingBookRepository.findById(1L)).thenReturn(Optional.of(sellingBook));
+        when(likesRepository.findByMemberAndSellingBook(member, sellingBook)).thenReturn(Optional.of(likes));
+        when(likesRepository.countBySellingBook(sellingBook)).thenReturn(0L);
+
+        Long likeCount = likesService.toggleLikeBook("user@example.com", 1L);
+
+        assertEquals(0L, likeCount);
+        verify(likesRepository, times(1)).delete(likes);
+    }
+
+    @Test
+    @DisplayName("좋아요 토글 - 회원 미존재")
+    void toggleLikeBook_memberNotFound() {
+        when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> likesService.toggleLikeBook("user@example.com", 1L));
+
+        assertEquals("회원 이메일이 존재하지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("좋아요 토글 - 판매책 미존재")
+    void toggleLikeBook_sellingBookNotFound() {
+        Member member = mock(Member.class);
+        when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(member));
+        when(sellingBookRepository.findById(1L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> likesService.toggleLikeBook("user@example.com", 1L));
+
+        assertEquals("판매책 ID가 유효하지 않습니다.", exception.getMessage());
     }
 }

@@ -41,7 +41,7 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
     @Override
     public DeliveryFeePolicyDto getDeliveryFeePolicy(long id) {
         DeliveryFeePolicy policy = deliveryFeePolicyRepository.findById(id).orElseThrow(()
-                -> new NotFoundException(id + " policy not found!"));
+                -> new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id));
         return new DeliveryFeePolicyDto(policy.getId(), policy.getName(), policy.getDefaultDeliveryFee(), policy.getFreeDeliveryThreshold());
     }
 
@@ -57,8 +57,8 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
 
     @Override
     public void removeDeliveryFeePolicy(long id) {
-        if (isPolicyExists(id)) {
-            throw new NotFoundException(id + " policy not found!");
+        if (!isPolicyExists(id)) {
+            throw new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id);
         }
         deliveryFeePolicyRepository.deleteById(id);
     }
@@ -69,7 +69,7 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
         BigDecimal price = calculateRequest.price();
 
         if (optionalPolicy.isEmpty()) {
-            throw new NotFoundException(id + " policy not found!");
+            throw new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id);
         }
         DeliveryFeePolicy deliveryFeePolicy = optionalPolicy.get();
 

@@ -23,7 +23,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findByCategoryNameAndParentCategory(String categoryName, Category parentCategory);
 
-    List<Category> findByParentCategory(Category parentCategory);
 
 //    List<Category> findByCategoryNameContaining(String keyword);
 
@@ -31,6 +30,18 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findCategoriesByBookId(@Param("bookId") Long bookId);
 
     Page<Category> findByCategoryNameContaining(String keyword, Pageable pageable);
+
+    // 특정 카테고리의 자식 카테고리 목록 조회
+    List<Category> findByParentCategory(Category parentCategory);
+
+    // 특정 부모 카테고리 ID를 기준으로 자식 카테고리 목록 조회
+    @Query("SELECT c FROM Category c WHERE c.parentCategory.categoryId = :parentId")
+    List<Category> findByParentCategoryId(@Param("parentId") Long parentId);
+
+    @Query("SELECT c FROM Category c WHERE c.parentCategory.categoryId = 1 AND c.categoryDepth = 2")
+    List<Category> findChildCategoriesDepth2();
+
+
 
 
     @Modifying
@@ -49,4 +60,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 """, nativeQuery = true)
     void deleteCategoryAndChildren(@Param("categoryId") Long categoryId);
 
+    List<Category> findByParentCategoryCategoryId(Long parentId);
 }

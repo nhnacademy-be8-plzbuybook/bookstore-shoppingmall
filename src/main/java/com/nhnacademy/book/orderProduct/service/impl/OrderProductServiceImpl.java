@@ -1,13 +1,14 @@
 package com.nhnacademy.book.orderProduct.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderProductStatusPatchRequestDto;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.service.OrderCacheService;
+import com.nhnacademy.book.order.service.OrderProductCouponService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
@@ -25,18 +26,16 @@ public class OrderProductServiceImpl implements OrderProductService {
     private final OrderProductRepository orderProductRepository;
     private final SellingBookRepository sellingBookRepository;
     private final OrderCacheService orderCacheService;
+    private final OrderProductCouponService orderProductCouponService;
 
     @Transactional
     @Override
     public OrderProduct saveOrderProduct(Orders order, OrderProductRequestDto orderProductRequest) {
-        SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
-        // 판매책 재고 차감
-//        sellingBook.setSellingBookStock(orderCacheService.getStockCache(sellingBook.getSellingBookId()));
+        SellingBook sellingBook = sellingBookRepository.findById(orderProductRequest.getProductId()).orElseThrow(() -> new SellingBookNotFoundException("찾을 수 없는 상품입니다."));
+        // 판매책 재고 차감된 재고캐시를 rdb에 저장
+        sellingBook.setSellingBookStock(orderCacheService.getProductStockCache(sellingBook.getSellingBookId()));
 
-        BigDecimal couponDiscount = BigDecimal.ZERO;
-        if (orderProductRequest.getAppliedCoupons() != null && !orderProductRequest.getAppliedCoupons().isEmpty()) {
-            couponDiscount = orderProductRequest.getAppliedCoupons().stream().map(OrderProductAppliedCouponDto::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
+        BigDecimal couponDiscount = orderProductCouponService.calculateCouponDiscount(orderProductRequest);
         OrderProduct orderProduct = OrderProduct.builder()
                 .sellingBook(sellingBook)
                 .quantity(orderProductRequest.getQuantity())
@@ -46,7 +45,7 @@ public class OrderProductServiceImpl implements OrderProductService {
                 .order(order)
                 .build();
         OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
-        orderProductRepository.flush();
+//        orderProductRepository.flush();
         return savedOrderProduct;
     }
 

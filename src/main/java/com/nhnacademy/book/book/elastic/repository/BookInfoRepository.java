@@ -24,6 +24,10 @@ public interface BookInfoRepository extends ElasticsearchRepository<BookInfoDocu
     void deleteBySellingBookId(Long sellingBookId);
 
 
+    @Query("{\"match\": {\"category_name\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
+    List<BookInfoDocument> findByExactCategoryName(String categoryName);
+
+
 
 
 

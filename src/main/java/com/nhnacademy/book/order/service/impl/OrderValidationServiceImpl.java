@@ -2,28 +2,26 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.coupon.CouponClient;
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
 import com.nhnacademy.book.deliveryFeePolicy.service.DeliveryFeePolicyService;
-import com.nhnacademy.book.coupon.dto.CouponCalculationRequestDto;
-import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
-import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.order.service.OrderDeliveryService;
 import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
-import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
-import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
+import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
+import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,11 +33,9 @@ import java.time.LocalDate;
 @Service
 public class OrderValidationServiceImpl implements OrderValidationService {
     private final SellingBookRepository sellingBookRepository;
-    private final WrappingPaperService wrappingPaperService;
+    private final WrappingPaperRepository wrappingPaperRepository;
     private final OrderCacheService orderCacheService;
     private final DeliveryFeePolicyService deliveryFeePolicyService;
-    private final CouponClient couponClient;
-    private final OrderRepository orderRepository;
     private final OrderDeliveryService orderDeliveryService;
     private final CouponService couponService;
 
@@ -68,7 +64,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
 
         // 포장지 검증
         if (isWrapped(orderProduct)) {
-            assert orderProduct.getWrapping() != null; // ?
             validateWrappingPaper(orderProduct.getWrapping());
         }
 
@@ -109,7 +104,8 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         if (!(statusCode >= 2 && statusCode <= 5)) {
             throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
         }
-        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+        Orders order = orderProduct.getOrder();
+//        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
         boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
         if (!isReturnable) {
             throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
@@ -130,17 +126,17 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         }
     }
 
-
     /**
      * 주문상품 검증
      *
      * @param orderProduct 주문상품
      */
+    @Transactional(readOnly = true)
     @Override
     public void validateSellingBook(OrderProductRequestDto orderProduct) {
         SellingBook sellingBook = sellingBookRepository.findById(orderProduct.getProductId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 상품입니다."));
 
-        Integer currentStock = sellingBook.getSellingBookStock();
+        int currentStock = orderCacheService.getProductStockCache(sellingBook.getSellingBookId());
         if (currentStock < orderProduct.getQuantity()) {
             throw new StockNotEnoughException("재고가 부족합니다.");
         }
@@ -149,7 +145,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
             throw new PriceMismatchException(sellingBook.getBookTitle() + "의 가격이 변동되었습니다.");
         }
         // 재고 선차감
-        sellingBook.setSellingBookStock(currentStock - orderProduct.getQuantity());
+//        sellingBook.setSellingBookStock(currentStock - orderProduct.getQuantity());
         // 재고선점
 //        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
 //        if (preemptedQuantity == null) {
@@ -165,11 +161,14 @@ public class OrderValidationServiceImpl implements OrderValidationService {
      *
      * @param orderProductWrapping 주문상품 포장 요청
      */
+    @Transactional(readOnly = true)
     @Override
     public void validateWrappingPaper(OrderProductWrappingDto orderProductWrapping) {
         // 포장지 검증
-        WrappingPaperDto wrappingPaper = wrappingPaperService.getWrappingPaper(orderProductWrapping.getWrappingPaperId());
-        Long currentStock = wrappingPaper.getStock();
+        Long wrappingPaperId = orderProductWrapping.getWrappingPaperId();
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("포장지를 찾을 수 없습니다."));
+        Long currentStock = orderCacheService.getWrappingPaperStockCache(wrappingPaperId);
+//        Long currentStock = wrappingPaper.getStock();
         //재고검증
         if (currentStock < orderProductWrapping.getQuantity()) {
             throw new StockNotEnoughException(wrappingPaper.getName() + "의 재고가 부족합니다.");
@@ -179,7 +178,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
             throw new PriceMismatchException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
         }
         // 재고선차감
-        wrappingPaperService.reduceStock(wrappingPaper.getId(), orderProductWrapping.getQuantity());
+//        wrappingPaperService.reduceStock(wrappingPaper.getId(), orderProductWrapping.getQuantity());
         // 재고선점
 //        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
 //        if (preemptedQuantity == null) {
@@ -192,16 +191,10 @@ public class OrderValidationServiceImpl implements OrderValidationService {
 
     @Override
     public void validateCoupon(OrderProductAppliedCouponDto appliedCoupon) {
-        //TODO: 쿠폰 검증
-        // 할인가 검증
         Long couponId = appliedCoupon.getCouponId();
         BigDecimal discount = appliedCoupon.getDiscount();
 
-        couponService.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
-
-        // 쿠폰 아이디가 유효한지 검증
-        // 할인가격이 유효한지 검증
-//        return new ValidateCouponDto(appliedCoupon.getCouponId(), appliedCoupon.getDiscount());
+        couponService.validateCouponCalculation(couponId, new ValidationCouponCalculationRequestDto(discount));
     }
 
     @Override

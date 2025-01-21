@@ -4,11 +4,12 @@ import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+@AllArgsConstructor
 @Getter
 public class OrderProductRequestDto {
     @NotNull

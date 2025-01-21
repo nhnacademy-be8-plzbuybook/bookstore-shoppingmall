@@ -26,7 +26,7 @@ spring:
 
 
   #    datasource:
-  #      url: jdbc:mysql://133.186.241.167:3306/project_be8_plzbuybook_bookstore  # MySQL 데이터베이스 URL
+  #      url: jdbc:mysql://220.67.216.14:3306/project_be8_plzbuybook_bookstore  # MySQL 데이터베이스 URL
   #      driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
   #      username: project_be8_plzbuybook # MySQL 사용자명
   #      password: MOW6c#y4TVxi1P5b  # MySQL 비밀번호

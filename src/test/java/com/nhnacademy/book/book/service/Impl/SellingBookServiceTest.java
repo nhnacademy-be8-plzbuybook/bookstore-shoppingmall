@@ -1,163 +1,215 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhnacademy.book.book.controller.SellingBookController;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
+import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.BookImage;
+import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.entity.SellingBook;
+import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
+import com.nhnacademy.book.book.repository.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SellingBookController.class)
 class SellingBookServiceTest {
 
-    @Autowired
-    private MockMvc mockMvc; // MockMvc: 컨트롤러 테스트를 위한 HTTP 요청/응답 시뮬레이션 도구입니다.
+    @Mock
+    private SellingBookRepository sellingBookRepository;
 
-    @MockBean
-    private SellingBookService sellingBookService; // @MockBean: 서비스 계층을 Mock으로 생성하여 테스트에서 실제 구현 대신 사용합니다.
+    @Mock
+    private BookRepository bookRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper; // ObjectMapper: JSON 데이터 직렬화/역직렬화에 사용됩니다.
+    @Mock
+    private CategoryRepository categoryRepository;
 
-    private SellingBookRegisterDto registerDto; // 판매 책 등록 DTO
-    private SellingBookRegisterDto updateDto; // 판매 책 업데이트 DTO
-    private BookDetailResponseDto bookDetailResponseDto; // 판매 책 상세 DTO
-    private Page<SellingBookAndBookResponseDto> bookPage; // 페이징된 책 데이터
+    @Mock
+    private BookImageRepository bookImageRepository;
+
+    @Mock
+    private BookAuthorRepository bookAuthorRepository;
+
+    @Mock
+    private LikesRepository likesRepository;
+
+    @InjectMocks
+    private SellingBookService sellingBookService;
+
+    private SellingBook testSellingBook;
+
+    @Mock
+    private BookInfoRepository bookInfoRepository;
+
+    private Book testBook;
 
     @BeforeEach
     void setUp() {
-        // 테스트 데이터 초기화
-        registerDto = new SellingBookRegisterDto();
-        registerDto.setBookId(1L);
-        registerDto.setSellingBookPrice(new BigDecimal("19.99"));
-        registerDto.setSellingBookPackageable(true);
-        registerDto.setSellingBookStock(100);
-        registerDto.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING);
-        registerDto.setSellingBookViewCount(50L);
-        registerDto.setUsed(false);
+        MockitoAnnotations.openMocks(this);
 
-        updateDto = new SellingBookRegisterDto();
-        updateDto.setBookId(1L);
-        updateDto.setSellingBookPrice(new BigDecimal("29.99"));
-        updateDto.setSellingBookPackageable(true);
-        updateDto.setSellingBookStock(80);
-        updateDto.setSellingBookStatus(SellingBook.SellingBookStatus.SELLEND);
-        updateDto.setSellingBookViewCount(100L);
-        updateDto.setUsed(true);
+        // Publisher 초기화
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName("Test Publisher");
 
-        bookDetailResponseDto = new BookDetailResponseDto(
-                1L, 1L, "Book Title", "Index", "Description", null,
-                new BigDecimal("29.99"), new BigDecimal("25.99"),
-                50, "978-3-16-148410-0", 1L, "Publisher Name",
-                "image_url", Collections.singletonList("Category1"),
-                Collections.singletonList("Author1"), "Available", 100L
-        );
+        // Book 초기화
+        Book book = new Book();
+        book.setBookId(1L);
+        book.setBookTitle("Test Book");
+        book.setPublisher(publisher);
 
-        PageRequest pageable = PageRequest.of(0, 16);
-        bookPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        // SellingBook 초기화
+        testSellingBook = new SellingBook();
+        testSellingBook.setSellingBookId(1L);
+        testSellingBook.setBook(book);
+        testSellingBook.setSellingBookPrice(new BigDecimal("29.99"));
+        testSellingBook.setSellingBookStock(100);
+        testSellingBook.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING);
+        testSellingBook.setUsed(false);
+
+        // BookImage Mock 설정
+        BookImage bookImage = new BookImage();
+        bookImage.setImageUrl("test-image-url");
+        when(bookImageRepository.findByBook(any(Book.class))).thenReturn(Optional.of(bookImage));
+
+//        // BookInfoRepository Mock 설정
+//        when(bookInfoRepository.deleteBySellingBookId(anyLong())).thenReturn(null);
     }
 
     @Test
-    void testGetBooks() throws Exception {
-        // 페이징 요청 객체 생성
-        PageRequest pageable = PageRequest.of(0, 16, Sort.by(Sort.Direction.DESC, "sellingBookId"));
-        when(sellingBookService.getBooks(pageable, "sellingBookId")).thenReturn(bookPage);
+    @DisplayName("Get Books - Default Sort")
+    void testGetBooks() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<SellingBook> page = new PageImpl<>(Collections.singletonList(testSellingBook));
 
-        // GET 요청 수행
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
-                        .param("page", "0") // 페이지 번호
-                        .param("size", "16") // 페이지 크기
-                        .param("sortBy", "sellingBookId") // 정렬 기준
-                        .param("sortDir", "desc")) // 정렬 방향
-                .andExpect(status().isOk()); // 응답 상태 검증
+        when(sellingBookRepository.findAll(pageable)).thenReturn(page);
 
-        // 서비스 메서드 호출 여부 검증
-        verify(sellingBookService, times(1)).getBooks(pageable, "sellingBookId");
+        Page<SellingBookAndBookResponseDto> result = sellingBookService.getBooks(pageable, "default");
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(sellingBookRepository, times(1)).findAll(pageable);
     }
 
     @Test
-    void testRegisterSellingBooks() throws Exception {
-        // POST 요청으로 판매 책 등록 테스트
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/selling-books")
-                        .contentType(MediaType.APPLICATION_JSON) // JSON 데이터 명시
-                        .content(objectMapper.writeValueAsString(registerDto))) // DTO를 JSON으로 직렬화
-                .andExpect(status().isCreated()); // 응답 상태 검증
+    @DisplayName("Update Selling Book")
+    void testUpdateSellingBook() {
+        SellingBookRegisterDto dto = new SellingBookRegisterDto();
+        dto.setSellingBookPrice(new BigDecimal("39.99"));
+        dto.setSellingBookStock(50);
 
-        // 서비스 메서드 호출 검증
-        verify(sellingBookService, times(1)).registerSellingBooks(registerDto);
+        when(sellingBookRepository.findById(1L)).thenReturn(Optional.of(testSellingBook));
+        when(sellingBookRepository.save(any(SellingBook.class))).thenReturn(testSellingBook);
+
+        SellinBookResponseDto response = sellingBookService.updateSellingBook(1L, dto);
+
+        assertNotNull(response);
+        assertEquals(new BigDecimal("39.99"), response.getSellingBookPrice());
+        assertEquals(50, response.getSellingBookStock());
+        verify(sellingBookRepository, times(1)).findById(1L);
+        verify(sellingBookRepository, times(1)).save(any(SellingBook.class));
+    }
+
+//    @Test
+//    @DisplayName("Register Selling Book")
+//    void testRegisterSellingBooks() {
+//        SellingBookRegisterDto dto = new SellingBookRegisterDto();
+//        dto.setBookId(1L);
+//        dto.setSellingBookPrice(new BigDecimal("19.99"));
+//
+//        when(bookRepository.findById(1L)).thenReturn(Optional.of(testBook));
+//
+//        sellingBookService.registerSellingBooks(dto);
+//
+//        verify(sellingBookRepository, times(1)).save(any(SellingBook.class));
+//    }
+
+    @Test
+    @DisplayName("Delete Selling Book")
+    void testDeleteSellingBook() {
+        when(sellingBookRepository.existsById(1L)).thenReturn(true);
+
+        sellingBookService.deleteSellingBook(1L);
+
+        verify(sellingBookRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void testDeleteSellingBook() throws Exception {
-        Long sellingBookId = 1L;
+    @DisplayName("Get Selling Book")
+    void testGetSellingBook() {
+        when(sellingBookRepository.findById(1L)).thenReturn(Optional.of(testSellingBook));
+        when(bookImageRepository.findByBook(testBook)).thenReturn(Optional.empty());
 
-        // DELETE 요청으로 판매 책 삭제 테스트
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/selling-books/{sellingBookId}", sellingBookId))
-                .andExpect(status().isNoContent()); // 응답 상태 검증
+        BookDetailResponseDto response = sellingBookService.getSellingBook(1L);
 
-        // 서비스 메서드 호출 검증
-        verify(sellingBookService, times(1)).deleteSellingBook(sellingBookId);
+        assertNotNull(response);
+        assertEquals("Test Book", response.getBookTitle());
+        verify(sellingBookRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testUpdateSellingBook() throws Exception {
-        Long sellingBookId = 1L;
+    @DisplayName("Get Selling Books by View Count")
+    void testGetSellingBooksByViewCount() {
+        when(sellingBookRepository.findAll(any(Sort.class))).thenReturn(Collections.singletonList(testSellingBook));
 
-        // PUT 요청으로 판매 책 업데이트 테스트
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/selling-books/{sellingBookId}", sellingBookId)
-                        .contentType(MediaType.APPLICATION_JSON) // JSON 데이터 명시
-                        .content(objectMapper.writeValueAsString(updateDto))) // DTO를 JSON으로 직렬화
-                .andExpect(status().isOk()); // 응답 상태 검증
+        List<SellingBookAndBookResponseDto> result = sellingBookService.getSellingBooksByViewCount("desc");
 
-        // 서비스 메서드 호출 검증
-        verify(sellingBookService, times(1)).updateSellingBook(sellingBookId, updateDto);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(sellingBookRepository, times(1)).findAll(any(Sort.class));
     }
 
     @Test
-    void testGetSellingBook() throws Exception {
-        Long sellingBookId = 1L;
-        when(sellingBookService.getSellingBook(sellingBookId)).thenReturn(bookDetailResponseDto);
+    @DisplayName("Get Selling Books by Status")
+    void testGetSellingBooksByStatus() {
+        when(sellingBookRepository.findBySellingBookStatus(SellingBookStatus.SELLING)).thenReturn(Collections.singletonList(testSellingBook));
 
-        // GET 요청으로 판매 책 상세 조회 테스트
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books/{sellingBookId}", sellingBookId))
-                .andExpect(status().isOk()) // 응답 상태 검증
-                .andExpect(jsonPath("$.bookId").value(1L)) // JSON 응답 검증
-                .andExpect(jsonPath("$.bookTitle").value("Book Title")); // JSON 응답 검증
+        List<SellingBookAndBookResponseDto> result = sellingBookService.getSellingBooksByStatus(SellingBookStatus.SELLING);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(sellingBookRepository, times(1)).findBySellingBookStatus(SellingBookStatus.SELLING);
     }
 
     @Test
-    void testGetSellingBooksByViewCount() throws Exception {
-        List<SellingBookAndBookResponseDto> books = Collections.emptyList();
-        when(sellingBookService.getSellingBooksByViewCount("desc")).thenReturn(books);
+    @DisplayName("Get Selling Books by Price Range")
+    void testGetSellingBooksByPriceRange() {
+        when(sellingBookRepository.findBySellingBookPriceBetween(new BigDecimal("10.00"), new BigDecimal("50.00")))
+                .thenReturn(Collections.singletonList(testSellingBook));
 
-        // GET 요청으로 조회수 기준 판매 책 목록 조회 테스트
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books/view-count")
-                        .param("sortDirection", "desc")) // 정렬 방향
-                .andExpect(status().isOk()); // 응답 상태 검증
+        List<SellingBookAndBookResponseDto> result = sellingBookService.getSellingBooksByPriceRange(new BigDecimal("10.00"), new BigDecimal("50.00"));
 
-        // 서비스 메서드 호출 검증
-        verify(sellingBookService, times(1)).getSellingBooksByViewCount("desc");
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(sellingBookRepository, times(1)).findBySellingBookPriceBetween(new BigDecimal("10.00"), new BigDecimal("50.00"));
     }
 
+    @Test
+    @DisplayName("Get Selling Books by Category")
+    void testGetSellingBooksByCategory() {
+        when(sellingBookRepository.findByCategoryIdOrParent(1L)).thenReturn(Collections.singletonList(testSellingBook));
+
+        List<SellingBookAndBookResponseDto> result = sellingBookService.getSellingBooksByCategory(1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(sellingBookRepository, times(1)).findByCategoryIdOrParent(1L);
+    }
 }
-

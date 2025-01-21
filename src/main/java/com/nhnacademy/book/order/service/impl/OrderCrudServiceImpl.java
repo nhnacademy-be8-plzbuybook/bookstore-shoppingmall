@@ -10,6 +10,7 @@ import com.nhnacademy.book.order.entity.Orders;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCrudService;
+import com.nhnacademy.book.order.service.OrderProductCouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class OrderCrudServiceImpl implements OrderCrudService {
     private final OrderRepository orderRepository;
     private final SellingBookService sellingBookService;
+    private final OrderProductCouponService orderProductCouponService;
 
     @Transactional
     @Override
@@ -63,8 +65,14 @@ public class OrderCrudServiceImpl implements OrderCrudService {
     private String generateOrderName(OrderRequestDto order) {
         List<OrderProductRequestDto> orderProducts = order.getOrderProducts();
         BookDetailResponseDto book = sellingBookService.getSellingBook(orderProducts.getFirst().getProductId());
+        String firstBookTitle = book.getBookTitle();
+
+        if (firstBookTitle.length() >= 50) {
+            firstBookTitle = firstBookTitle.substring(0, 46) + "...";
+        }
+
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size());
+            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size() - 1);
         }
         return book.getBookTitle();
     }
@@ -96,7 +104,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
 
     private BigDecimal calculatePaymentPrice(OrderRequestDto orderRequest) {
         BigDecimal point = orderRequest.getUsedPoint() != null ? BigDecimal.valueOf(orderRequest.getUsedPoint()) : BigDecimal.ZERO;
-        BigDecimal couponDiscount = calculateCouponDiscounts(orderRequest);
+        BigDecimal couponDiscount = getCouponDiscounts(orderRequest);
 
         return orderRequest.getOrderPrice()
                 .add(orderRequest.getDeliveryFee())
@@ -104,16 +112,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
                 .subtract(couponDiscount);
     }
 
-    private BigDecimal calculateCouponDiscounts(OrderRequestDto orderRequest) {
-        BigDecimal couponDiscounts = BigDecimal.ZERO;
-        List<OrderProductRequestDto> orderProducts = orderRequest.getOrderProducts();
-        for(OrderProductRequestDto orderProduct: orderProducts) {
-            if (orderProduct.getAppliedCoupons() != null) {
-                for (OrderProductAppliedCouponDto appliedCoupon: orderProduct.getAppliedCoupons()) {
-                    couponDiscounts = couponDiscounts.add(appliedCoupon.getDiscount());
-                }
-            }
-        }
-        return couponDiscounts;
+    private BigDecimal getCouponDiscounts(OrderRequestDto orderRequest) {
+        return orderProductCouponService.calculateCouponDiscounts(orderRequest.getOrderProducts());
     }
 }

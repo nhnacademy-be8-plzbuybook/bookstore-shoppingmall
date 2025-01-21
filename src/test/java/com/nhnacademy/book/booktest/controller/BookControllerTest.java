@@ -4,12 +4,11 @@ package com.nhnacademy.book.booktest.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.book.controller.BookController;
 import com.nhnacademy.book.book.dto.request.BookRegisterRequestDto;
-import com.nhnacademy.book.book.dto.response.*;
+import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
+import com.nhnacademy.book.book.dto.response.BookRegisterDto;
+import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
-import com.nhnacademy.book.book.service.Impl.BookAuthorService;
-import com.nhnacademy.book.book.service.Impl.BookSearchService;
-import com.nhnacademy.book.book.service.Impl.BookService;
-import com.nhnacademy.book.book.service.Impl.SellingBookService;
+import com.nhnacademy.book.book.service.Impl.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,9 +24,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
 public class BookControllerTest {
@@ -37,6 +36,10 @@ public class BookControllerTest {
 
     @MockBean
     private BookService bookService;
+
+    @MockBean
+    private BookCategoryService bookCategoryService;
+
 
     @MockBean
     private BookAuthorService bookAuthorService;
@@ -67,7 +70,7 @@ public class BookControllerTest {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(bookService).registerBook(any(BookRegisterRequestDto.class));
+        Mockito.verify(bookService).registerBook(Mockito.any(BookRegisterRequestDto.class));
     }
 
     @Test
@@ -77,7 +80,7 @@ public class BookControllerTest {
         responseDto.setBookId(bookId);
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookDetail(bookId)).thenReturn(responseDto);
+        Mockito.when(bookService.getBookDetail(Mockito.eq(bookId))).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/books/{bookId}", bookId))
                 .andExpect(status().isOk())
@@ -92,7 +95,7 @@ public class BookControllerTest {
         bookRegisterDto.setBookTitle("Test Book");
         Page<BookRegisterDto> books = new PageImpl<>(List.of(bookRegisterDto), pageable, 1);
 
-        Mockito.when(bookService.getBooks(pageable)).thenReturn(books);
+        Mockito.when(bookService.getBooks(Mockito.any(Pageable.class))).thenReturn(books);
 
         mockMvc.perform(get("/api/books")
                         .param("page", "0")
@@ -108,7 +111,7 @@ public class BookControllerTest {
         mockMvc.perform(delete("/api/books/{bookId}", bookId))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(bookService).deleteBook(bookId);
+        Mockito.verify(bookService).deleteBook(Mockito.eq(bookId));
     }
 
     @Test
@@ -117,25 +120,25 @@ public class BookControllerTest {
         BookRegisterRequestDto responseDto = new BookRegisterRequestDto();
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookUpdate(bookId)).thenReturn(responseDto);
+        Mockito.when(bookService.getBookUpdate(Mockito.eq(bookId))).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/books/update/{bookId}", bookId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bookTitle").value("Test Book"));
     }
 
-//    @Test
-//    void testUpdateBook() throws Exception {
-//        BookRegisterRequestDto requestDto = new BookRegisterRequestDto();
-//        requestDto.setBookTitle("Updated Book");
-//
-//        mockMvc.perform(put("/api/books/{bookId}", 1L)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(requestDto)))
-//                .andExpect(status().isNoContent());
-//
-//        Mockito.verify(bookService).updateBook(any(BookRegisterRequestDto.class));
-//    }
+    @Test
+    void testUpdateBook() throws Exception {
+        BookRegisterRequestDto requestDto = new BookRegisterRequestDto();
+        requestDto.setBookTitle("Updated Book");
+
+        mockMvc.perform(put("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(bookService).updateBook(Mockito.any(BookRegisterRequestDto.class));
+    }
 
     @Test
     void testGetBooksNotInSellingBooks() throws Exception {
@@ -144,7 +147,7 @@ public class BookControllerTest {
         bookResponseDto.setBookTitle("Unsold Book");
         Page<BookResponseDto> books = new PageImpl<>(List.of(bookResponseDto), pageable, 1);
 
-        Mockito.when(bookService.findBooksNotInSellingBooks(pageable)).thenReturn(books);
+        Mockito.when(bookService.findBooksNotInSellingBooks(Mockito.any(Pageable.class))).thenReturn(books);
 
         mockMvc.perform(get("/api/books/not-in-selling-books")
                         .param("page", "0")
@@ -153,4 +156,3 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.content[0].bookTitle").value("Unsold Book"));
     }
 }
-

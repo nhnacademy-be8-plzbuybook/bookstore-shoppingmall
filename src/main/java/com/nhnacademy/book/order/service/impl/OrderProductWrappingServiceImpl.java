@@ -28,16 +28,16 @@ public class OrderProductWrappingServiceImpl implements OrderProductWrappingServ
     public void saveOrderProductWrapping(long orderProductId, OrderProductWrappingDto orderProductWrapping) {
         if (orderProductWrapping != null) {
             OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
-            WrappingPaper wrappingPaper = wrappingPaperRepository.findById(orderProductWrapping.getWrappingPaperId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 포장"));
+            WrappingPaper wrappingPaper = wrappingPaperRepository.findById(orderProductWrapping.getWrappingPaperId()).orElseThrow(() -> new NotFoundException("찾을 수 없는 포장지입니다."));
             // 포장지 재고 차감
-//            reduceWrappingPaperStock(wrappingPaper);
+            reduceWrappingPaperStock(wrappingPaper);
             // 주문상품-포장 저장
             orderProductWrappingRepository.save(new OrderProductWrapping(orderProduct, wrappingPaper, orderProductWrapping.getQuantity(), wrappingPaper.getPrice()));
         }
     }
 
     private void reduceWrappingPaperStock(WrappingPaper wrappingPaper) {
-        long stock = orderCacheService.getStockCache(wrappingPaper.getId());
+        long stock = orderCacheService.getWrappingPaperStockCache(wrappingPaper.getId());
         wrappingPaper.setStock(stock);
     }
 }

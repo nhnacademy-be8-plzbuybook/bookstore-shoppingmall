@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @NoArgsConstructor
 @Getter
-public class OrderProductWrapping {
+public class OrderProductWrapping { //TODO: 이거 이름 바꿔야됨
     String name;
     int quantity;
     BigDecimal price;

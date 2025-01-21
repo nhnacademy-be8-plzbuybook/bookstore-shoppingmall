@@ -5,11 +5,13 @@ import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
 @Getter
 public class OrderProductReturnRequestDto {
     @NotBlank

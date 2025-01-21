@@ -10,6 +10,9 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    @Query("SELECT paymentKey FROM Payment WHERE orders.id = :orderId ORDER BY recordedAt DESC LIMIT 1")
-    Optional<String> findOldestPaymentKeyByOrdersId(@QueryParam("orderId") String orderId);
+    @Query("SELECT p FROM Payment p WHERE p.orders.id = :orderId ORDER BY p.recordedAt DESC LIMIT 1")
+    Optional<Payment> findOldestByOrderId(@QueryParam("orderId") String orderId);
+
+
+
 }

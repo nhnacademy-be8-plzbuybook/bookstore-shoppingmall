@@ -221,9 +221,6 @@ public class SellingBookService {
     }
 
 
-
-    /**
-
      /**
      * 판매책 조회수 내림차순 정렬 조회 (조회수 높은 순)
      */
@@ -311,29 +308,5 @@ public class SellingBookService {
                 authors
         );
     }
-
-//    /**
-//     * 특정 판매책의 가격과 임시 수량을 곱하여 총 금액 계산
-//     *
-//     * @param sellingBookId 판매책 ID
-//     * @param quantity 주문 수량 (임시 설정)
-//     * @return 가격 * 수량의 총합 (BigDecimal)
-//     * @throws SellingBookNotFoundException 상품이 없을 경우
-//     * @throws IllegalArgumentException 재고 부족 시
-//     */
-//    @Transactional(readOnly = true)
-//    public BigDecimal calculateOrderPrice(Long sellingBookId, int quantity) {
-//        // 판매책 조회
-//        SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
-//                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
-//
-//        // 재고 확인
-//        if (sellingBook.getSellingBookStock() < quantity) {
-//            throw new IllegalArgumentException("Not enough stock for SellingBook ID: " + sellingBookId);
-//        }
-//
-//        // 가격 × 수량 계산
-//        return sellingBook.getSellingBookPrice().multiply(BigDecimal.valueOf(quantity));
-//    }
 
 }
