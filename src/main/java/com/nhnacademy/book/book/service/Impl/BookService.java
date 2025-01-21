@@ -1,12 +1,10 @@
 package com.nhnacademy.book.book.service.Impl;
 
-import com.nhnacademy.book.book.dto.request.*;
+import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
+import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
+import com.nhnacademy.book.book.dto.request.BookRegisterRequestDto;
 import com.nhnacademy.book.book.dto.response.*;
-import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.BookRegisterDto;
-import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
@@ -29,24 +27,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookService {
 
-    //TODO 수정
-
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
-    private final BookSearchRepository bookSearchRepository;
     private final BookImageRepository bookImageRepository;
-    private final SellingBookRepository sellingBookRepository;
     private final CategoryRepository categoryRepository;
     private final AuthorRepository authorRepository;
     private final BookCategoryService bookCategoryService;
     private final BookAuthorService bookAuthorService;
-    private final AuthorService authorService;
     private final BookAuthorRepository bookAuthorRepository;
     private final BookInfoRepository bookInfoRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static final String BOOK_NOT_FOUND_MESSAGE = "존재하지 않는 도서 ID입니다.";
 
 
     public boolean existsBook(Long bookId){
@@ -62,7 +56,7 @@ public class BookService {
     // 도서 상세 조회 기능
     public BookDetailResponseDto getBookDetail(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+                .orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MESSAGE));
 
         BookImage bookImage = bookImageRepository.findByBook(book).orElse(null);
 
@@ -82,7 +76,7 @@ public class BookService {
     // 도서 수정 값관련 서비스
     public BookRegisterRequestDto getBookUpdate(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+                .orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MESSAGE));
         String imageUrl = book.getBookImages().isEmpty() ? null : book.getBookImages().get(0).getImageUrl();
 
         // Debugging
@@ -233,7 +227,7 @@ public class BookService {
         // 도서 삭제 기능 (관리자)
     public void deleteBook(Long bookId) {
         if (!bookRepository.existsById(bookId)) {
-            throw new BookNotFoundException("존재하지 않는 도서 ID입니다.");
+            throw new BookNotFoundException(BOOK_NOT_FOUND_MESSAGE);
         }
         bookRepository.deleteById(bookId);
         bookInfoRepository.deleteByBookId(bookId);
@@ -245,7 +239,7 @@ public class BookService {
 
         //1. 도서 정보 조회
         Book book = bookRepository.findById(bookUpdateRequest.getBookId())
-                .orElseThrow(() -> new BookNotFoundException("존재하지 않는 도서 ID입니다."));
+                .orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MESSAGE));
         // 2. 특정 필드만 수정
         if (bookUpdateRequest.getBookTitle() != null) {
             book.setBookTitle(bookUpdateRequest.getBookTitle());

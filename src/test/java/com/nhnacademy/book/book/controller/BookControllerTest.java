@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
-public class BookControllerTest {
+class BookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -79,7 +79,7 @@ public class BookControllerTest {
         responseDto.setBookId(bookId);
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookDetail(Mockito.eq(bookId))).thenReturn(responseDto);
+        Mockito.when(bookService.getBookDetail(bookId)).thenReturn(responseDto); // eq 제거
 
         mockMvc.perform(get("/api/books/{bookId}", bookId))
                 .andExpect(status().isOk())
@@ -110,7 +110,7 @@ public class BookControllerTest {
         mockMvc.perform(delete("/api/books/{bookId}", bookId))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(bookService).deleteBook(Mockito.eq(bookId));
+        Mockito.verify(bookService).deleteBook(bookId); // eq 제거
     }
 
     @Test
@@ -119,7 +119,7 @@ public class BookControllerTest {
         BookRegisterRequestDto responseDto = new BookRegisterRequestDto();
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookUpdate(Mockito.eq(bookId))).thenReturn(responseDto);
+        Mockito.when(bookService.getBookUpdate(bookId)).thenReturn(responseDto); // eq 제거
 
         mockMvc.perform(get("/api/books/update/{bookId}", bookId))
                 .andExpect(status().isOk())

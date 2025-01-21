@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,8 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,17 +67,108 @@ class SellingBookControllerTest {
 
     @Test
     void testGetBooks() throws Exception {
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
-                .param("page", "0")
-                .param("size", "10")
-                .param("sortBy", "sellingBookId")
-                .param("sortDir", "desc")
-                .accept(MediaType.APPLICATION_JSON));
+        // Mocking service response
+        SellingBookAndBookResponseDto bookResponseDto = new SellingBookAndBookResponseDto();
+        bookResponseDto.setBookTitle("Test Book");
+        bookResponseDto.setPublisher("Test Publisher");
+        bookResponseDto.setSellingBookId(1L);
 
-        result.andExpect(status().isOk())
+        Page<SellingBookAndBookResponseDto> mockedPage = new PageImpl<>(
+                List.of(bookResponseDto),
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "sellingBookId")),
+                1
+        );
+
+        Mockito.when(sellingBookService.getBooks(Mockito.any(Pageable.class), Mockito.eq("sellingBookId")))
+                .thenReturn(mockedPage);
+
+        // Perform the GET request
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "sellingBookId")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
                 .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
     }
+
+
+    @Test
+    void testGetBooks_DefaultSorting() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "sellingBookId")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+    }
+
+    @Test
+    void testGetBooks_SortingByLikeCount() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "likeCount")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("likeCount"));
+    }
+
+    @Test
+    void testGetBooks_SortingByNew() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "new")
+                        .param("sortDir", "asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("new"));
+    }
+
+    @Test
+    void testGetBooks_SortingByLowPrice() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "low-price")
+                        .param("sortDir", "asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("low-price"));
+    }
+
+    @Test
+    void testGetBooks_SortingByHighPrice() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "high-price")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("high-price"));
+    }
+
+
 
     @Test
     void testRegisterSellingBooks() throws Exception {

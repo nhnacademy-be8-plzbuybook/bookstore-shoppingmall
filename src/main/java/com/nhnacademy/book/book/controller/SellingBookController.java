@@ -122,53 +122,5 @@ public class SellingBookController {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount(sortDirection));
     }
 
-
-//    /**
-//     * 도서 상태별 판매책 조회 - 판매중인, 품절된 그런거
-//     */
-//    @GetMapping("/status")
-//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByStatus(
-//            @RequestParam SellingBook.SellingBookStatus status) {
-//        return ResponseEntity.ok(sellingBookService.getSellingBooksByStatus(status));
-//    }
-
-
-//    /**
-//     * 내림차순 만 되는거
-//     *
-//     * @return
-//     */
-//    @GetMapping("/view-count/desc")
-//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountDesc() {
-//        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("desc"));
-//    }
-//
-//
-//    /**
-//     * 올림만 되는ㄴ거
-//     *
-//     * @return
-//     */
-//    @GetMapping("/view-count/asc")
-//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByViewCountAsc() {
-//        return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount("asc"));
-//    }
-
-
-//    /**
-//     * 카테고리별
-//     *
-//     * @param categoryId
-//     * @return
-//     */
-//    @GetMapping("/category/{categoryId}")
-//    public ResponseEntity<List<SellingBookAndBookResponseDto>> getSellingBooksByCategory(@PathVariable Long categoryId) {
-//        log.info("요청: 카테고리 ID  {}" , categoryId);
-//        List<SellingBookAndBookResponseDto> response = sellingBookService.getSellingBooksByCategory(categoryId);
-//        log.debug("응답 크기: {}", response.size());
-//        return ResponseEntity.ok(response);
-//    }
-
-
 }
 

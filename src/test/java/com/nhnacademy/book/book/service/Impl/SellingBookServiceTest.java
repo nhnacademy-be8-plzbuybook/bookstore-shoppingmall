@@ -207,7 +207,7 @@ class SellingBookServiceTest {
         assertEquals("Test Book", response.getBookTitle());
         assertEquals("test-image-url", response.getImageUrl());
         assertEquals(categoryNames, response.getCategories());
-        assertEquals(authorNames, response.getAuthorName()xww);
+        assertEquals(authorNames, response.getAuthorName());
         assertEquals(likeCount, response.getLikeCount());
 
         // Verify
