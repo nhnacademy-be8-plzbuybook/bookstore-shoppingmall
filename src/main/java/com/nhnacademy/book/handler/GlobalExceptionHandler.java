@@ -4,7 +4,6 @@ import com.nhnacademy.book.book.exception.*;
 import com.nhnacademy.book.cartbook.exception.BookStatusNotSellingBookException;
 import com.nhnacademy.book.cartbook.exception.CartBookDoesNotExistException;
 import com.nhnacademy.book.cartbook.exception.SellingBookNotFoundInBookCartException;
-import com.nhnacademy.book.coupon.exception.WelcomeCouponIssueException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
@@ -309,18 +308,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
     }
-
-    //회원가입시 발행하는 Welcome 쿠폰 요청이 실패했을 때
-    @ExceptionHandler(WelcomeCouponIssueException.class)
-    public ResponseEntity<ErrorResponseDto> handleWelcomeCouponIssueException(WelcomeCouponIssueException e) {
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                e.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
-    }
-
 
     // 여기서부터 Book 관련
     @ExceptionHandler(AuthorIdNotFoundException.class)

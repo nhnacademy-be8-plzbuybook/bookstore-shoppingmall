@@ -19,7 +19,7 @@ public interface CouponClient {
     ResponseEntity<String> issueBirthdayCoupon(@RequestBody BirthdayCouponRequestDto requestDto);
 
     @PostMapping("/api/member-coupons/member/{coupon-id}/validation")
-    ResponseEntity<ValidationCouponCalculation> validateCouponCalculation(@PathVariable("coupon-id") Long couponId, @RequestBody @Valid CouponCalculationRequestDto calculationRequestDto);
+    ResponseEntity<ValidationCouponCalculationResponseDto> validateCouponCalculation(@PathVariable("coupon-id") Long couponId, @RequestBody @Valid ValidationCouponCalculationRequestDto calculationRequestDto);
 
     @PostMapping("/api/coupons/refund")
     ResponseEntity<String> refundCoupon(@RequestBody RefundCouponRequestDto refundCouponRequestDto);

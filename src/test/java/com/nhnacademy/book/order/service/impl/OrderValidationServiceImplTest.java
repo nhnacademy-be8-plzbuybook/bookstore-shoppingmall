@@ -2,8 +2,8 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.coupon.dto.CouponCalculationRequestDto;
-import com.nhnacademy.book.coupon.dto.ValidationCouponCalculation;
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationResponseDto;
 import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
@@ -19,26 +19,21 @@ import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.exception.PriceMismatchException;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.order.service.OrderDeliveryService;
-import com.nhnacademy.book.order.service.OrderValidationService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
-import org.joda.time.Days;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,7 +115,7 @@ class OrderValidationServiceImplTest {
         SellingBook mockSellingBook = mock(SellingBook.class);
 
         WrappingPaper mockWrappingPaper = mock(WrappingPaper.class);
-        ValidationCouponCalculation validationCouponCalculation = new ValidationCouponCalculation(price.subtract(couponDiscount));
+        ValidationCouponCalculationResponseDto validationCouponCalculationResponseDto = new ValidationCouponCalculationResponseDto(price.subtract(couponDiscount));
 
         when(mockSellingBook.getSellingBookId()).thenReturn(productId);
         when(sellingBookRepository.findById(productId)).thenReturn(Optional.of(mockSellingBook));
@@ -131,7 +126,7 @@ class OrderValidationServiceImplTest {
         when(orderCacheService.getWrappingPaperStockCache(wrappingPaperId)).thenReturn(100L);
         when(mockWrappingPaper.getPrice()).thenReturn(wrappingPaperPrice);
 
-        when(couponService.validateCouponCalculation(eq(couponId), any(CouponCalculationRequestDto.class))).thenReturn(validationCouponCalculation);
+        when(couponService.validateCouponCalculation(eq(couponId), any(ValidationCouponCalculationRequestDto.class))).thenReturn(validationCouponCalculationResponseDto);
 
         // Act
         orderValidationService.validateOrderProduct(orderProductRequestDto);
@@ -139,7 +134,7 @@ class OrderValidationServiceImplTest {
         // Assert
         verify(orderProductRequestDto).getQuantity();
         verify(wrappingDto).getQuantity();
-        verify(couponService).validateCouponCalculation(eq(couponId), any(CouponCalculationRequestDto.class));
+        verify(couponService).validateCouponCalculation(eq(couponId), any(ValidationCouponCalculationRequestDto.class));
     }
 
     @DisplayName("주문상품 검증: 판매책 없음")
@@ -486,13 +481,13 @@ class OrderValidationServiceImplTest {
         BigDecimal discount = BigDecimal.valueOf(3_000);
         BigDecimal discountedPrice = BigDecimal.valueOf(27_000);
         OrderProductAppliedCouponDto appliedCoupon = new OrderProductAppliedCouponDto(couponId, discount);
-        ValidationCouponCalculation validationCouponCalculation = new ValidationCouponCalculation(discountedPrice);
-        when(couponService.validateCouponCalculation(eq(couponId), any(CouponCalculationRequestDto.class))).thenReturn(validationCouponCalculation);
+        ValidationCouponCalculationResponseDto validationCouponCalculationResponseDto = new ValidationCouponCalculationResponseDto(discountedPrice);
+        when(couponService.validateCouponCalculation(eq(couponId), any(ValidationCouponCalculationRequestDto.class))).thenReturn(validationCouponCalculationResponseDto);
 
         //when
         orderValidationService.validateCoupon(appliedCoupon);
 
-        verify(couponService).validateCouponCalculation(eq(couponId), any(CouponCalculationRequestDto.class));
+        verify(couponService).validateCouponCalculation(eq(couponId), any(ValidationCouponCalculationRequestDto.class));
     }
 
     @Test
