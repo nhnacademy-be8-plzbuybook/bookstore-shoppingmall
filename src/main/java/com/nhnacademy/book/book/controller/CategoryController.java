@@ -65,15 +65,11 @@ public class CategoryController {
 
     @GetMapping(value = "/children-category",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CategoryResponseDto>> getCategory(@RequestParam Long parentId) {
-        return ResponseEntity.ok(categoryService.findByParentCategoryId(parentId));
+        return ResponseEntity.ok(categoryService.findLeafCategories(parentId));
     }
 
 
 
-    @GetMapping("/zz")
-    public ResponseEntity<List<Category>> getget(){
-        return ResponseEntity.ok(categoryRepository.findChildCategoriesDepth2());
-    }
 
 
 
