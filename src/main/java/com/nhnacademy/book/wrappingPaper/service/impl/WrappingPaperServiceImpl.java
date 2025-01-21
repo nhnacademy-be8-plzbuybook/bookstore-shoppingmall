@@ -29,12 +29,10 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Transactional(readOnly = true)
     @Override
     public WrappingPaperDto getWrappingPaper(long id) {
-        Optional<WrappingPaper> wrappingPaper = wrappingPaperRepository.findById(id);
-
-        if (wrappingPaper.isEmpty()) {
-            throw new NotFoundException(id + "wrapping paper not found!");
-        }
-        return new WrappingPaperDto(wrappingPaper.get());
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("포장지를 찾을 수 없습니다. 포장지 아이디: " + id)
+        );
+        return new WrappingPaperDto(wrappingPaper);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +49,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public Long createWrappingPaper(WrappingCreateSaveRequestDto saveRequest) {
         if (isWrappingPaperExists(saveRequest.getName())) {
-            throw new ConflictException("saveRequest.getName()" + "는 이미 존재하는 포장지입니다.");
+            throw new ConflictException(saveRequest.getName() + "는 이미 존재하는 포장지입니다.");
         }
         String imagePath = uploadWrappingPaperImage(saveRequest.getImageFile());
         WrappingPaper wrappingPaper = saveRequest.toEntity(imagePath);
@@ -81,14 +79,14 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public void removeWrappingPaper(long id) {
         if (!wrappingPaperRepository.existsById(id)) {
-            throw new NotFoundException(id + "wrapping paper not found!");
+            throw new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + id);
         }
         wrappingPaperRepository.deleteById(id);
     }
 
     @Override
     public void reduceStock(Long wrappingPaperId, int quantity) {
-        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("포장지를 찾을 수 없습니다."));
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + wrappingPaperId));
         wrappingPaper.setStock(wrappingPaper.getStock() - quantity);
     }
 

@@ -16,6 +16,7 @@ import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderCacheService;
 import com.nhnacademy.book.order.service.OrderCancellationService;
 import com.nhnacademy.book.order.service.OrderValidationService;
+import com.nhnacademy.book.order.service.ReturnPointService;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
@@ -37,9 +38,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final OrderProductCancelRepository orderProductCancelRepository;
     private final OrderRepository orderRepository;
     private final OrderValidationService orderValidationService;
-
-    private final CouponService couponService;
-
+    private final ReturnPointService returnPointService;
     @Transactional
     @Override
     public void cancelOrderProducts(String orderId, OrderCancelRequestDto cancelRequest) {
@@ -55,6 +54,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
             // TODO: 쿠폰복구
 
             // TODO: 포인트 복구
+            returnPointService.returnPoint(orderProduct.getOrderProductId());
 
             // 재고 복구
             restoreOrderProductStock(orderProduct);
@@ -71,6 +71,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
         // 주문상태변경
         order.updateOrderStatus((OrderStatus.fromOrderProductStatus(order.getOrderProducts().stream().map(OrderProduct::getStatus).toList())));
+        // 결제취소
         paymentService.cancelPayment(new PaymentCancelRequestDto(cancelRequest.getReason(), totalCancelAmount, orderId));
     }
 
@@ -98,12 +99,5 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
         sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + orderProduct.getQuantity());
         orderCacheService.addStockCache(orderProduct.getOrderProductId(), Long.valueOf(orderProduct.getQuantity()));
     }
-
-//    private void validateOrderProductForCanceling(OrderProduct orderProduct) {
-//        // 주문상품의 상태가 "발송완료" 이상이면 주문취소 불가능
-//        if (orderProduct.getStatus().getCode() > 1) {
-//            throw new ConflictException("주문상품의 상태가 " + orderProduct.getStatus().getStatus() + "일 때는 주문취소가 불가능합니다.");
-//        }
-//    }
 
 }

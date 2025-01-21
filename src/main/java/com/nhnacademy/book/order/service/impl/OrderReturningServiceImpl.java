@@ -1,20 +1,13 @@
 package com.nhnacademy.book.order.service.impl;
 
-import com.nhnacademy.book.book.entity.SellingBook;
-import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderProductReturnDto;
 import com.nhnacademy.book.order.dto.OrderProductReturnRequestDto;
 import com.nhnacademy.book.order.dto.OrderReturnSearchRequestDto;
-import com.nhnacademy.book.deliveryFeePolicy.exception.StockNotEnoughException;
-import com.nhnacademy.book.order.dto.*;
 import com.nhnacademy.book.order.entity.OrderProductReturn;
-import com.nhnacademy.book.order.entity.Orders;
-import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.order.exception.OrderReturnBadRequestException;
 import com.nhnacademy.book.order.repository.OrderProductReturnRepository;
-import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.repository.OrderReturnQueryRepository;
-import com.nhnacademy.book.order.service.OrderDeliveryService;
 import com.nhnacademy.book.order.service.OrderReturningService;
 import com.nhnacademy.book.order.service.OrderStatusService;
 import com.nhnacademy.book.order.service.OrderValidationService;
@@ -31,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class OrderReturningServiceImpl implements OrderReturningService {
-    private final OrderRepository orderRepository;
     private final OrderReturnQueryRepository orderReturnQueryRepository;
-    private final OrderDeliveryService orderDeliveryService;
     private final OrderProductRepository orderProductRepository;
     private final OrderProductReturnRepository orderProductReturnRepository;
     private final OrderStatusService orderStatusService;
@@ -46,8 +37,8 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     public void requestOrderProductReturn(String orderId, Long orderProductId, OrderProductReturnRequestDto orderProductReturnRequest) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("주문상품정보를 찾을 수 없습니다."));
 
-        if(orderProduct.getQuantity() < orderProductReturnRequest.getQuantity()) {
-            throw new StockNotEnoughException("반품 수량이 주문한 수량을 초과할 수 없다!");
+        if (orderProduct.getQuantity() < orderProductReturnRequest.getQuantity()) {
+            throw new OrderReturnBadRequestException("반품 수량이 주문한 수량을 초과할 수 없다!");
         }
 
         // 반품요청 조건 검증
@@ -61,8 +52,6 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     }
 
 
-
-
     @Transactional
     @Override
     public Long completeOrderProductReturn(Long orderProductId) {
@@ -73,11 +62,9 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 
         //TODO: 반품 포인트적립 (결제금액 - 반품 택배비)
 
-        //TODO: 상품 재고 복구
+        //상품 재고 복구
         orderProductService.addOrderProductStock(orderProductId, orderProductReturn.getQuantity());
-//        restoreOrderProductStock(orderProduct, orderProductReturn.getQuantity());
 
-    
         //포인트 환불
         returnPointService.returnPoint(orderProductId);
 
@@ -90,7 +77,6 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public Page<OrderProductReturnDto> getAllOrderProductReturns(OrderReturnSearchRequestDto searchRequest, Pageable pageable) {
@@ -98,10 +84,10 @@ public class OrderReturningServiceImpl implements OrderReturningService {
     }
 
 
-    private void restoreOrderProductStock(OrderProduct orderProduct, int quantity) {
-        SellingBook sellingBook = orderProduct.getSellingBook();
-        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + quantity);
-    }
+//    private void restoreOrderProductStock(OrderProduct orderProduct, int quantity) {
+//        SellingBook sellingBook = orderProduct.getSellingBook();
+//        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + quantity);
+//    }
 
 //    private void validateOrderProductForReturning(OrderProduct orderProduct) {
 //        int statusCode = orderProduct.getStatus().getCode();
@@ -121,28 +107,28 @@ public class OrderReturningServiceImpl implements OrderReturningService {
 //        }
 //    }
 
-    private void validateOrderProductForReturning(OrderProduct orderProduct) {
-        int statusCode = orderProduct.getStatus().getCode();
-        // 발송완료 <= statusCode <= 배송완료
-        if (!(statusCode >= 2 && statusCode <= 5)) {
-            throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
-        }
-        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
-        boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
-        if (!isReturnable) {
-            throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
-        }
-    }
-
-    private void validateOrderForReturnCompletion(Orders order) {
-        if (order.getStatus() != OrderStatus.RETURN_REQUESTED) {
-            throw new ConflictException("반품요청된 주문이 아닙니다.");
-        }
-    }
-
-    private void validateOrderProductForReturnCompletion(OrderProduct orderProduct) {
-        if (orderProduct.getStatus() != OrderProductStatus.RETURN_REQUESTED) {
-            throw new ConflictException("반품요청된 주문상품이 아닙니다.");
-        }
-    }
+//    private void validateOrderProductForReturning(OrderProduct orderProduct) {
+//        int statusCode = orderProduct.getStatus().getCode();
+//        // 발송완료 <= statusCode <= 배송완료
+//        if (!(statusCode >= 2 && statusCode <= 5)) {
+//            throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
+//        }
+//        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+//        boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
+//        if (!isReturnable) {
+//            throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
+//        }
+//    }
+//
+//    private void validateOrderForReturnCompletion(Orders order) {
+//        if (order.getStatus() != OrderStatus.RETURN_REQUESTED) {
+//            throw new ConflictException("반품요청된 주문이 아닙니다.");
+//        }
+//    }
+//
+//    private void validateOrderProductForReturnCompletion(OrderProduct orderProduct) {
+//        if (orderProduct.getStatus() != OrderProductStatus.RETURN_REQUESTED) {
+//            throw new ConflictException("반품요청된 주문상품이 아닙니다.");
+//        }
+//    }
 }
