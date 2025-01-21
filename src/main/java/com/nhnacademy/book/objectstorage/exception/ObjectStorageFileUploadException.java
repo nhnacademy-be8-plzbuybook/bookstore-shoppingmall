@@ -1,4 +1,4 @@
-package com.nhnacademy.book.objectStorage.exception;
+package com.nhnacademy.book.objectstorage.exception;
 
 public class ObjectStorageFileUploadException extends RuntimeException {
     public ObjectStorageFileUploadException(String message) {

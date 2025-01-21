@@ -1,4 +1,4 @@
-package com.nhnacademy.book.objectStorage.config;
+package com.nhnacademy.book.objectstorage.config;
 
 import com.nhnacademy.book.skm.properties.SKMProperties;
 import com.nhnacademy.book.skm.service.SecureKeyManagerService;
