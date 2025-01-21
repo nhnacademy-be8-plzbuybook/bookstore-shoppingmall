@@ -2,7 +2,7 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.coupon.dto.CouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationRequestDto;
 import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
@@ -194,7 +194,7 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         Long couponId = appliedCoupon.getCouponId();
         BigDecimal discount = appliedCoupon.getDiscount();
 
-        couponService.validateCouponCalculation(couponId, new CouponCalculationRequestDto(discount));
+        couponService.validateCouponCalculation(couponId, new ValidationCouponCalculationRequestDto(discount));
     }
 
     @Override
