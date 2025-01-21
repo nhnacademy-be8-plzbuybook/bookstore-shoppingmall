@@ -1,11 +1,14 @@
 package com.nhnacademy.book.coupon.dto;
 
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
-// 회원가입 쿠폰 발급 요청 Dto
 public record WelComeCouponRequestDto(
+        @NotNull
         Long memberId, // 회원 고유 ID
+        @NotNull
         LocalDateTime registeredAt // 회원가입 시간
 ) {
 }
