@@ -43,23 +43,23 @@ public class CategoryService {
 
 
 
-//    public List<CategoryResponseDto> findByParentCategoryId(Long parentCategoryId) {
-//        Category parentCategory = categoryRepository.findById(parentCategoryId)
-//                .orElseThrow(() -> new CategoryNotFoundException("ParentCategory not found with ID: " + parentCategoryId));
-//
-//        List<Category> childrenCategories = categoryRepository.findByParentCategoryId(parentCategoryId);
-//
-//        if (childrenCategories.isEmpty()) {
-//            throw new CategoryNotFoundException("No children categories found for parent: " + parentCategory.getCategoryName());
-//        }
-//
-//        // Category -> CategoryResponseDto 변환
-//        return childrenCategories.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//
-//
-//    }
+    public List<CategoryResponseDto> findByParentCategoryId(Long parentCategoryId) {
+        Category parentCategory = categoryRepository.findById(parentCategoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("ParentCategory not found with ID: " + parentCategoryId));
+
+        List<Category> childrenCategories = categoryRepository.findByParentCategoryId(parentCategoryId);
+
+        if (childrenCategories.isEmpty()) {
+            throw new CategoryNotFoundException("No children categories found for parent: " + parentCategory.getCategoryName());
+        }
+
+        // Category -> CategoryResponseDto 변환
+        return childrenCategories.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+
+    }
 public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
     Category parentCategory = categoryRepository.findById(parentCategoryId)
             .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));

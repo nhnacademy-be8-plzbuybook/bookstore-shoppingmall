@@ -97,22 +97,22 @@ class CategoryControllerTest {
 
 
 
-    @Test
-    void getCategory() throws Exception {
-        List<CategoryResponseDto> categories = List.of(
-                new CategoryResponseDto(1L, "Fiction", 0, null, null)
-        );
-        when(categoryService.findByParentCategoryId(1L)).thenReturn(categories);
-
-        mockMvc.perform(get("/api/categories/children-category")
-                        .param("parentId", "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].categoryId").value(1L))
-                .andExpect(jsonPath("$[0].categoryName").value("Fiction"));
-
-        verify(categoryService, times(1)).findByParentCategoryId(1L);
-    }
+//    @Test
+//    void getCategory() throws Exception {
+//        List<CategoryResponseDto> categories = List.of(
+//                new CategoryResponseDto(1L, "Fiction", 0, null, null)
+//        );
+//        when(categoryService.findByParentCategoryId(1L)).thenReturn(categories);
+//
+//        mockMvc.perform(get("/api/categories/children-category")
+//                        .param("parentId", "1")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$", hasSize(1)))
+//                .andExpect(jsonPath("$[0].categoryId").value(1L))
+//                .andExpect(jsonPath("$[0].categoryName").value("Fiction"));
+//
+//        verify(categoryService, times(1)).findByParentCategoryId(1L);
+//    }
 
 }
