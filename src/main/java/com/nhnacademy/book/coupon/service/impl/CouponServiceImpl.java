@@ -7,8 +7,6 @@ import com.nhnacademy.book.coupon.service.CouponService;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -51,9 +49,9 @@ public class CouponServiceImpl implements CouponService {
     }
 
     // 주문금액 할인계산 검증
-    public ValidationCouponCalculation validateCouponCalculation(Long couponId, CouponCalculationRequestDto calculationRequestDto) {
+    public ValidationCouponCalculationResponseDto validateCouponCalculation(Long couponId, ValidationCouponCalculationRequestDto validationCouponCalculationRequestDto) {
         try {
-            ValidationCouponCalculation validateCouponCalculation = couponClient.validateCouponCalculation(couponId, calculationRequestDto).getBody();
+            ValidationCouponCalculationResponseDto validateCouponCalculation = couponClient.validateCouponCalculation(couponId, validationCouponCalculationRequestDto).getBody();
 
             if (validateCouponCalculation == null) {
                 throw new CouponException("주문금액 할인계산 검증 에러");

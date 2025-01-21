@@ -8,7 +8,7 @@ public interface CouponService {
 
     String issueBirthdayCoupon(BirthdayCouponRequestDto requestDto);
 
-    ValidationCouponCalculation validateCouponCalculation(Long couponId, CouponCalculationRequestDto calculationRequestDto);
+    ValidationCouponCalculationResponseDto validateCouponCalculation(Long couponId, ValidationCouponCalculationRequestDto validationCouponCalculationRequestDto);
 
     String refundCoupon(RefundCouponRequestDto refundCouponRequestDto);
 }
