@@ -92,8 +92,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             customerOrderService.placeCustomerOrder(orderId, orderRequest);
             // 주문포인트적립
             addOrderPoint(orderRequest);
-            throw new RuntimeException("");
-//            return orderId;
+            return orderId;
         } catch (Exception e) {
             rollbackWhenOrderCompletionFail(order);
             throw new OrderCompletionFailException("주문완료 중 오류가 발생했습니다.", e);
@@ -133,7 +132,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     }
 
     private void rollbackWhenOrderCompletionFail(Orders order) {
-        // TODO: 재고차감 복구
+        // 재고차감 복구
         orderCacheService.rollbackOrderedStock(order.getId());
         // orders 삭제
         orderRepository.delete(order);
