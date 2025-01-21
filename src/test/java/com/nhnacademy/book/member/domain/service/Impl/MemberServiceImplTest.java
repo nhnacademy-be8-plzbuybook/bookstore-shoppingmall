@@ -944,6 +944,7 @@ class MemberServiceImplTest {
     }
 
 
+    @Test
     @DisplayName("회원 상태를 DORMANT로 변경시키는지")
     void updateDormantStatus_success() {
         Clock fixedClock = Clock.fixed(
