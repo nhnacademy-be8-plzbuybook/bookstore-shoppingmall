@@ -1,5 +1,6 @@
 package com.nhnacademy.book.wrappingPaper.controller;
 
+import com.nhnacademy.book.member.domain.dto.ErrorResponseDto;
 import com.nhnacademy.book.wrappingPaper.dto.*;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
 import jakarta.annotation.Nullable;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +24,8 @@ public class WrappingPaperController {
     /**
      * 포장지 단건조회
      *
-     * @param id
-     * @return
+     * @param id 포장지 아이디
+     * @return 포장지 DTO
      */
     @GetMapping("/{wrapping-paper-id}")
     public ResponseEntity<WrappingPaperDto> getWrappingPaper(@PathVariable("wrapping-paper-id") Long id) {
@@ -63,7 +65,7 @@ public class WrappingPaperController {
      */
     @PutMapping("/{wrapping-paper-id}")
     public ResponseEntity<Long> modifyWrappingPaper(@PathVariable("wrapping-paper-id") Long id,
-                                                                              @Valid @ModelAttribute WrappingPaperUpdateRequestDto updateRequest) {
+                                                    @Valid @ModelAttribute WrappingPaperUpdateRequestDto updateRequest) {
         Long modifiedWrappingPaperId = wrappingPaperService.modifyWrappingPaper(id, updateRequest);
         return ResponseEntity.status(HttpStatus.OK).body(modifiedWrappingPaperId);
     }
@@ -81,4 +83,13 @@ public class WrappingPaperController {
     }
 
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponseDto> handleBadRequest(MethodArgumentNotValidException e) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "포장지: 잘못된 입력입니다."
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+    }
 }

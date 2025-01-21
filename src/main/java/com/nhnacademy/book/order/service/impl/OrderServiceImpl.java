@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String getNonMemberOrder(NonMemberOrderDetailAccessRequestDto accessRequest) {
+    public String getNonMemberOrderId(NonMemberOrderDetailAccessRequestDto accessRequest) {
         NonMemberOrderAccessResponseDto nonMemberOrderAccessResponseDto = orderQueryRepository.findNonMemberOrderByOrderNumber(accessRequest.getOrderNumber())
                 .orElseThrow(() -> new NotFoundException("주문 정보를 찾을 수 없습니다."));
         validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderAccessResponseDto.getPassword());
@@ -72,11 +72,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void modifyStatus(String orderId, OrderStatusModifyRequestDto modifyRequest) {
 
-        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문입니다."));
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
         // 주문상태변경
         order.updateOrderStatus(modifyRequest.getStatus());
         // 주문상품 상태변경
-        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        List<OrderProduct> orderProducts = order.getOrderProducts();
         if (orderProducts != null) {
             for (OrderProduct orderProduct: orderProducts) {
                 orderProduct.updateStatus(OrderProductStatus.fromStatus(modifyRequest.getStatus().getStatus()));
@@ -87,34 +87,33 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void orderDelivered(String orderId) {
-        modifyStatus(orderId, new OrderStatusModifyRequestDto(OrderStatus.DELIVERED));
-        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
-        if (orderProducts == null) {
-            throw new NotFoundException("찾을 수 없는 주문상품입니다.");
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
+        order.updateOrderStatus(OrderStatus.DELIVERED);
+        for (OrderProduct orderProduct: order.getOrderProducts()) {
+            orderProduct.updateStatus(OrderProductStatus.DELIVERED);
         }
-        orderProducts.forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.DELIVERED));
     }
 
 
-    /**
-     * 비회원주문 상세 조회
-     *
-     * @param accessRequest 주문번호
-     * @return 비회원주문상세 DTO
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public NonMemberOrderDetail getNonMemberOrderDetail(NonMemberOrderDetailAccessRequestDto accessRequest) {
-        String orderNumber = accessRequest.getOrderNumber();
-        NonMemberOrderDetail nonMemberOrderDetail = orderQueryRepository.findNonMemberOrderByNumber(orderNumber)
-                .orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다. 주문번호: " + orderNumber));
-        validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderDetail.getPassword());
-
-        List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(nonMemberOrderDetail.getOrderId());
-        nonMemberOrderDetail.setOrderProducts(orderProducts);
-
-        return nonMemberOrderDetail;
-    }
+//    /**
+//     * 비회원주문 상세 조회
+//     *
+//     * @param accessRequest 주문번호
+//     * @return 비회원주문상세 DTO
+//     */
+//    @Transactional(readOnly = true)
+//    @Override
+//    public NonMemberOrderDetail getNonMemberOrderDetail(NonMemberOrderDetailAccessRequestDto accessRequest) {
+//        String orderNumber = accessRequest.getOrderNumber();
+//        NonMemberOrderDetail nonMemberOrderDetail = orderQueryRepository.findNonMemberOrderByNumber(orderNumber)
+//                .orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다. 주문번호: " + orderNumber));
+//        validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderDetail.getPassword());
+//
+//        List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(nonMemberOrderDetail.getOrderId());
+//        nonMemberOrderDetail.setOrderProducts(orderProducts);
+//
+//        return nonMemberOrderDetail;
+//    }
 
     private void validateNonMemberOrderPassword(String rawPassword, String targetPassword) {
         if (!passwordEncoder.matches(rawPassword, targetPassword)) {

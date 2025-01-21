@@ -88,7 +88,7 @@ public class OrderQueryController {
      */
     @PostMapping("/non-member/access")
     public ResponseEntity<String> getNonMemberOrderDetail(@RequestBody NonMemberOrderDetailAccessRequestDto accessRequest) {
-        String orderId = orderService.getNonMemberOrder(accessRequest);
+        String orderId = orderService.getNonMemberOrderId(accessRequest);
         return ResponseEntity.ok(orderId);
     }
 
