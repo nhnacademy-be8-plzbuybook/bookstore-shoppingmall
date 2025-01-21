@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
+import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
@@ -16,6 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,8 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +48,9 @@ public class CategoryServiceTest {
     private Category childCategory;
     private ParentCategoryRequestDto parentCategoryRequestDto;
     private CategoryRegisterDto categoryRegisterDto;
+
+    private Pageable pageable;
+
 
     @BeforeEach
     public void setUp() {
@@ -78,6 +85,7 @@ public class CategoryServiceTest {
         categoryRegisterDto.setNewCategoryName("New Category");
 
 
+        pageable = PageRequest.of(0, 5);
 
     }
 
@@ -232,4 +240,139 @@ public class CategoryServiceTest {
         Mockito.when(categoryRepository.existsById(2L)).thenReturn(false);
         assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategoryById(2L));
     }
+
+
+
+    @Test
+    void searchCategoriesByKeyword_shouldReturnCategories() {
+        // Given
+        String keyword = "fiction";
+        Category category1 = new Category("Fiction");
+        Category category2 = new Category("Science Fiction");
+        List<Category> categories = Arrays.asList(category1, category2);
+        Page<Category> page = new PageImpl<>(categories, pageable, categories.size());
+
+        when(categoryRepository.findByCategoryNameContaining(keyword, pageable)).thenReturn(page);
+
+        // When
+        Page<CategorySimpleResponseDto> result = categoryService.searchCategoriesByKeyword(keyword, pageable);
+
+        // Then
+        assertEquals(2, result.getContent().size());
+        assertEquals("Fiction", result.getContent().get(0).getCategoryName());
+        verify(categoryRepository, times(1)).findByCategoryNameContaining(keyword, pageable);
+    }
+
+    @Test
+    void findAllCategories_shouldReturnCategories() {
+        // Given
+        Category category1 = new Category("Fiction");
+        Category category2 = new Category("Science Fiction");
+        List<Category> categories = Arrays.asList(category1, category2);
+        Page<Category> page = new PageImpl<>(categories, pageable, categories.size());
+
+        when(categoryRepository.findAll(pageable)).thenReturn(page);
+
+        // When
+        Page<CategorySimpleResponseDto> result = categoryService.findAllCategories(pageable);
+
+        // Then
+        assertEquals(2, result.getContent().size());
+        assertEquals("Fiction", result.getContent().get(0).getCategoryName());
+        verify(categoryRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    void findAllCategories_shouldThrowExceptionWhenEmpty() {
+        // Given
+        Page<Category> emptyPage = Page.empty();
+
+        when(categoryRepository.findAll(pageable)).thenReturn(emptyPage);
+
+        // When & Then
+        Exception exception = assertThrows(CategoryNotFoundException.class, () ->
+                categoryService.findAllCategories(pageable)
+        );
+
+        assertEquals("Category list is empty", exception.getMessage());
+        verify(categoryRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    void deleteCategory_shouldDeleteCategory() {
+        // Given
+        Long categoryId = 1L;
+        when(categoryRepository.existsById(categoryId)).thenReturn(true);
+
+        // When
+        categoryService.deleteCategory(categoryId);
+
+        // Then
+        verify(categoryRepository, times(1)).deleteCategoryAndChildren(categoryId);
+    }
+
+    @Test
+    void deleteCategory_shouldThrowExceptionWhenNotFound() {
+        // Given
+        Long categoryId = 1L;
+        when(categoryRepository.existsById(categoryId)).thenReturn(false);
+
+        // When & Then
+        Exception exception = assertThrows(CategoryNotFoundException.class, () ->
+                categoryService.deleteCategory(categoryId)
+        );
+
+        assertEquals("Category not found with ID: " + categoryId, exception.getMessage());
+        verify(categoryRepository, never()).deleteCategoryAndChildren(categoryId);
+    }
+
+    @Test
+    void findLeafCategories_shouldReturnLeafCategories() {
+        // Given
+        Long parentCategoryId = 1L;
+
+        Category parentCategory = new Category(1L, "Parent", null);
+        Category childCategory1 = new Category(2L, "Child 1", parentCategory);
+        Category childCategory2 = new Category(3L, "Child 2", parentCategory);
+        Category leafCategory1 = new Category(4L, "Leaf 1", childCategory1);
+        Category leafCategory2 = new Category(5L, "Leaf 2", childCategory2);
+
+        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.of(parentCategory));
+        when(categoryRepository.findByParentCategoryId(parentCategory.getCategoryId())).thenReturn(List.of(childCategory1, childCategory2));
+        when(categoryRepository.findByParentCategoryId(childCategory1.getCategoryId())).thenReturn(List.of(leafCategory1));
+        when(categoryRepository.findByParentCategoryId(childCategory2.getCategoryId())).thenReturn(List.of(leafCategory2));
+        when(categoryRepository.findByParentCategoryId(leafCategory1.getCategoryId())).thenReturn(List.of());
+        when(categoryRepository.findByParentCategoryId(leafCategory2.getCategoryId())).thenReturn(List.of());
+
+        // When
+        List<CategoryResponseDto> result = categoryService.findLeafCategories(parentCategoryId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Leaf 1", result.get(0).getCategoryName());
+        assertEquals("Leaf 2", result.get(1).getCategoryName());
+
+        verify(categoryRepository, times(1)).findById(parentCategoryId);
+        verify(categoryRepository, times(1)).findByParentCategoryId(parentCategory.getCategoryId());
+        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory1.getCategoryId());
+        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory2.getCategoryId());
+    }
+
+    @Test
+    void findLeafCategories_shouldThrowExceptionIfParentCategoryNotFound() {
+        // Given
+        Long parentCategoryId = 99L;
+
+        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findLeafCategories(parentCategoryId));
+
+        verify(categoryRepository, times(1)).findById(parentCategoryId);
+    }
+
+
+
+
 }
