@@ -59,8 +59,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDetail;
     }
 
-
-
+    @Override
     public String getNonMemberOrder(NonMemberOrderDetailAccessRequestDto accessRequest) {
         NonMemberOrderAccessResponseDto nonMemberOrderAccessResponseDto = orderQueryRepository.findNonMemberOrderByOrderNumber(accessRequest.getOrderNumber())
                 .orElseThrow(() -> new NotFoundException("비회원주문 정보를 찾을 수 없습니다."));
