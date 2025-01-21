@@ -1,8 +1,8 @@
-package com.nhnacademy.book.objectStorage.controller;
+package com.nhnacademy.book.objectstorage.controller;
 
 import com.nhnacademy.book.book.dto.response.FileUploadResponse;
-import com.nhnacademy.book.objectStorage.exception.ObjectStorageFileUploadException;
-import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
+import com.nhnacademy.book.objectstorage.exception.ObjectStorageFileUploadException;
+import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

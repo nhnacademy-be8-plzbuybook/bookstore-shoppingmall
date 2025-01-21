@@ -1,7 +1,7 @@
-package com.nhnacademy.book.objectStorage.service;
+package com.nhnacademy.book.objectstorage.service;
 
-import com.nhnacademy.book.objectStorage.config.ObjectStorageConfig;
-import com.nhnacademy.book.objectStorage.exception.ObjectStorageFileUploadException;
+import com.nhnacademy.book.objectstorage.config.ObjectStorageConfig;
+import com.nhnacademy.book.objectstorage.exception.ObjectStorageFileUploadException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

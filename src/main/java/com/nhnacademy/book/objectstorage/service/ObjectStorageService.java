@@ -1,9 +1,9 @@
-package com.nhnacademy.book.objectStorage.service;
+package com.nhnacademy.book.objectstorage.service;
 
 import com.nhnacademy.book.book.dto.response.FileUploadResponse;
-import com.nhnacademy.book.objectStorage.config.ObjectStorageConfig;
-import com.nhnacademy.book.objectStorage.exception.ObjectStorageFileUploadException;
-import com.nhnacademy.book.objectStorage.exception.ObjectStorageTokenException;
+import com.nhnacademy.book.objectstorage.config.ObjectStorageConfig;
+import com.nhnacademy.book.objectstorage.exception.ObjectStorageFileUploadException;
+import com.nhnacademy.book.objectstorage.exception.ObjectStorageTokenException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;

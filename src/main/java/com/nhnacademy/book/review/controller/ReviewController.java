@@ -2,7 +2,7 @@ package com.nhnacademy.book.review.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nhnacademy.book.objectStorage.service.ObjectStorageService;
+import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.review.dto.ReviewCreateRequestDto;
 import com.nhnacademy.book.review.dto.ReviewResponseDto;

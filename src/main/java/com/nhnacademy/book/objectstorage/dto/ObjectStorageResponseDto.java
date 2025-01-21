@@ -1,4 +1,4 @@
-package com.nhnacademy.book.objectStorage.dto;
+package com.nhnacademy.book.objectstorage.dto;
 
 import lombok.Data;
 

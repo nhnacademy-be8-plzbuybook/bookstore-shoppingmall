@@ -1,8 +1,8 @@
-package com.nhnacademy.book.objectStorage.service;
+package com.nhnacademy.book.objectstorage.service;
 
-import com.nhnacademy.book.objectStorage.config.ObjectStorageConfig;
-import com.nhnacademy.book.objectStorage.dto.TokenRequestDto;
-import com.nhnacademy.book.objectStorage.exception.ObjectStorageAuthException;
+import com.nhnacademy.book.objectstorage.config.ObjectStorageConfig;
+import com.nhnacademy.book.objectstorage.dto.TokenRequestDto;
+import com.nhnacademy.book.objectstorage.exception.ObjectStorageAuthException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
