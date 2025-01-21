@@ -39,6 +39,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final OrderRepository orderRepository;
     private final OrderValidationService orderValidationService;
     private final ReturnPointService returnPointService;
+
     @Transactional
     @Override
     public void cancelOrderProducts(String orderId, OrderCancelRequestDto cancelRequest) {
@@ -53,7 +54,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
             // TODO: 쿠폰복구
 
-            // TODO: 포인트 복구
+            // 포인트 복구
             returnPointService.returnPoint(orderProduct.getOrderProductId());
 
             // 재고 복구
