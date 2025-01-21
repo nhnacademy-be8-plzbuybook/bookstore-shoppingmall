@@ -22,7 +22,7 @@ public class OrderReturnController {
      * 주문반품 목록조회
      *
      * @param searchRequest 주문반품 검색 DTO
-     * @param pageable 페이징
+     * @param pageable      페이징
      * @return 주문반품 DTO 페이지
      */
     @GetMapping("/order-product-returns")
@@ -36,15 +36,15 @@ public class OrderReturnController {
     /**
      * 주문상품 반품요청 (사용자)
      *
-     * @param orderId 주문 아이디
-     * @param orderProductId 주문상품 아이디
+     * @param orderId                   주문 아이디
+     * @param orderProductId            주문상품 아이디
      * @param orderProductReturnRequest 반품요청 DTO
      * @return 상태코드
      */
     @PostMapping("/{order-id}/order-products/{order-product-id}/return")
     public ResponseEntity<Void> requestReturnOrderProduct(@PathVariable("order-id") String orderId,
-                                                       @PathVariable("order-product-id") Long orderProductId,
-                                                       @Valid @RequestBody OrderProductReturnRequestDto orderProductReturnRequest) {
+                                                          @PathVariable("order-product-id") Long orderProductId,
+                                                          @Valid @RequestBody OrderProductReturnRequestDto orderProductReturnRequest) {
         orderReturningService.requestOrderProductReturn(orderId, orderProductId, orderProductReturnRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -53,13 +53,13 @@ public class OrderReturnController {
     /**
      * 주문상품 반품요청 완료처리 (관리자)
      *
-     * @param orderId 주문 아이디
+     * @param orderId        주문 아이디
      * @param orderProductId 주문상품 아이디
      * @return 주문 아이디
      */
     @PostMapping("/{order-id}/order-products/{order-product-id}/return/complete")
     public ResponseEntity<String> completeReturnOrderProduct(@PathVariable("order-id") String orderId,
-                                                        @PathVariable("order-product-id") Long orderProductId) {
+                                                             @PathVariable("order-product-id") Long orderProductId) {
         orderReturningService.completeOrderProductReturn(orderProductId);
         return ResponseEntity.status(HttpStatus.OK).body(orderId);
     }
