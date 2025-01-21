@@ -95,11 +95,4 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-    @GetMapping("/by-category")
-    public ResponseEntity<Page<BookResponseDto>> getBooksByCategory(@RequestParam Long parentId,@RequestParam(defaultValue = "0") int page ) {
-        Pageable pageable = PageRequest.of(page, 3);
-
-        Page<BookResponseDto> books = bookCategoryService.getBooksByParentCategory(parentId, pageable);
-        return ResponseEntity.ok(books);
-    }
 }

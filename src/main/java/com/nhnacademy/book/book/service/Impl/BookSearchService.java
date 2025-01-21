@@ -19,10 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -58,7 +55,10 @@ public class BookSearchService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), books.size());
 
-        List<BookInfoDocument> pagedBooks = books.subList(start, end);
+// start가 books.size()보다 크면 빈 리스트 반환
+        List<BookInfoDocument> pagedBooks = (start < books.size())
+                ? books.subList(start, end)
+                : Collections.emptyList();
 
         List<BookInfoResponseDto> bookInfoResponseDtos = pagedBooks.stream()
                 .map(this::convertToDto)
