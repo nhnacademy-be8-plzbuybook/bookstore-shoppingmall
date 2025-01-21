@@ -11,4 +11,8 @@ public interface CouponService {
     ValidationCouponCalculationResponseDto validateCouponCalculation(Long couponId, ValidationCouponCalculationRequestDto validationCouponCalculationRequestDto);
 
     String refundCoupon(RefundCouponRequestDto refundCouponRequestDto);
+
+    String useCoupon(Long couponId);
+
+    String cancelCoupon(Long couponId);
 }
