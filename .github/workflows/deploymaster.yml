@@ -45,10 +45,10 @@ jobs:
             cd /home/be8/be8-team4/shop/target
             
             echo -e "jar 파일을 10143 포트에 실행합니다."
-            nohup /usr/local/java/java21/bin/java -Dserver.port=10143 -Dspring.profiles.active="nhn" -jar ~/book-0.0.1-SNAPSHOT.jar 
+            java -Dserver.port=10143 -Dspring.profiles.active="nhn" -jar book-0.0.1-SNAPSHOT.jar 
             
             echo -e "jar 파일을 10144 포트에 실행합니다."
-            nohup /usr/local/java/java21/bin/java -Dserver.port=10144 -Dspring.profiles.active="nhn" -jar ~/book-0.0.1-SNAPSHOT.jar 
+            java -Dserver.port=10144 -Dspring.profiles.active="nhn" -jar ~/book-0.0.1-SNAPSHOT.jar 
           
             
                
