@@ -41,9 +41,9 @@ jobs:
           username: ${{ secrets.SSH_NHN_ID }}
           port: ${{ secrets.SSH_NHN_PORT }}
           password: ${{ secrets.SSH_NHN_PASSWORD }}
-          script: |
+          script: |    
             echo -e "Starting jar on port 10143"
-            nohup /usr/local/java/java21/bin/java -Dserver.port=10143 -Dspring.profiles.active=nhn -jar /home/be8/be8-team4/shop/book.jar > /home/be8/be8-team4/shop/log_10143.log 2>&1 &
+            nohup /usr/local/java/java21/bin/java -Dserver.port=10143 -Dspring.profiles.active=nhn -jar /home/be8/be8-team4/shop/book.0.0.1-SNAPSHOT.jar > /home/be8/be8-team4/shop/log_10143.log 2>&1 &
 
             echo -e "Starting jar on port 10144"
-            nohup /usr/local/java/java21/bin/java -Dserver.port=10144 -Dspring.profiles.active=nhn -jar /home/be8/be8-team4/shop/hello.jar > /home/be8/be8-team4/shop/log_10144.log 2>&1 &
+            nohup /usr/local/java/java21/bin/java -Dserver.port=10144 -Dspring.profiles.active=nhn -jar /home/be8/be8-team4/shop/book.0.0.1-SNAPSHOT.jar > /home/be8/be8-team4/shop/log_10144.log 2>&1 &
