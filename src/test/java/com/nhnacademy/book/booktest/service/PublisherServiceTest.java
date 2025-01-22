@@ -8,7 +8,6 @@ import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.PublisherNotFoundException;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

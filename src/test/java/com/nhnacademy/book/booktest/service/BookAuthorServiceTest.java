@@ -3,7 +3,6 @@ package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
@@ -18,7 +17,6 @@ import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.service.Impl.BookAuthorService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,18 +25,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)

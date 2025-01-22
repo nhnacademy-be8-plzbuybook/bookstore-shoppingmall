@@ -4,9 +4,7 @@ package com.nhnacademy.book.booktest.service;
 import com.nhnacademy.book.book.dto.response.BookInfoResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookInfoDocument;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.service.Impl.BookSearchService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

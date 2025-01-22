@@ -11,7 +11,6 @@ import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.OrderProductCouponService;
-import com.nhnacademy.book.order.service.impl.OrderCrudServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

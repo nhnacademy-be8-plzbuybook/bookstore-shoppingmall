@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SearchBookController {
 
-    private BookSearchService bookSearchService;
+    private final BookSearchService bookSearchService;
 
     @GetMapping("/api/search")
     public ResponseEntity<Page<BookInfoResponseDto>> searchBooks(

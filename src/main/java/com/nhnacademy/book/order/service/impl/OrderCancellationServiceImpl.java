@@ -52,7 +52,6 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
             OrderProduct orderProduct = orderProductRepository.findById(orderProductCancelRequest.getOrderProductId()).orElseThrow(() -> new NotFoundException("주문상품을 찾을 수 없습니다."));
             orderValidationService.validateOrderProductForCanceling(orderProduct);
 
-            // TODO: 쿠폰복구
             //couponService.cancelCoupon(couponId) //쿠폰사용취소인 경우 (couponId)
             //couponService.refundCoupon(new RefundCouponRequestDto(couponId, memberId)); //쿠폰환불인 경우 (couponId, memberId)
 

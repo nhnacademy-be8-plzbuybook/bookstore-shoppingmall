@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.nhnacademy.book.point.service.Impl.MemberPointServiceImpl.POINT_CONDITION_NOT_FOUND;
 

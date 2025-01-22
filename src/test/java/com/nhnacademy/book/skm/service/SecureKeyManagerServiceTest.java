@@ -1,22 +1,24 @@
 package com.nhnacademy.book.skm.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-
-import com.nhnacademy.book.skm.exception.KeyMangerException;
 import com.nhnacademy.book.skm.dto.KeyResponseDto;
 import com.nhnacademy.book.skm.dto.KeyResponseDto.Body;
+import com.nhnacademy.book.skm.exception.KeyMangerException;
 import com.nhnacademy.book.skm.properties.SKMProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class SecureKeyManagerServiceTest {

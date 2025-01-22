@@ -1,6 +1,9 @@
 package com.nhnacademy.book.booktest.repository;
 
-import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.entity.Author;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.BookAuthor;
+import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import com.nhnacademy.book.book.repository.BookAuthorRepository;
 import com.nhnacademy.book.book.repository.BookRepository;

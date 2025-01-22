@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.service.category;
 
-import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
