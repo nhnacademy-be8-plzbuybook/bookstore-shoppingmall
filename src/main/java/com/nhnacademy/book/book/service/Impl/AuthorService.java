@@ -9,6 +9,7 @@ import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.exception.AuthorNameNotFoundException;
 import com.nhnacademy.book.book.exception.AuthorsNotFoundException;
 import com.nhnacademy.book.book.repository.AuthorRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,19 +17,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 @Slf4j
 public class AuthorService {
-
-    @Autowired
     private final AuthorRepository authorRepository;
     private final AuthorSearchRepository authorSearchRepository;
-
-    public AuthorService(AuthorRepository authorRepository, AuthorSearchRepository authorSearchRepository) {
-        this.authorRepository = authorRepository;
-        this.authorSearchRepository = authorSearchRepository;
-    }
 
     public Page<AuthorResponseDto> getAllAuthors(Pageable pageable) {
         Page<Author> authors = authorRepository.findAll(pageable);
@@ -86,7 +81,6 @@ public class AuthorService {
         AuthorDocument authorDocument = new AuthorDocument();
         authorDocument.setAuthorId(savedAuthor.getAuthorId());
         authorDocument.setAuthorName(savedAuthor.getAuthorName());
-//        authorSearchRepository.save(authorDocument);
 
         return toResponseDto(savedAuthor);
     }

@@ -3,6 +3,7 @@ package com.nhnacademy.book.book.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class SellingBook {
 
     @Id
@@ -56,9 +58,6 @@ public class SellingBook {
                 return SellingBookStatus.SELLING;  // 잘못된 값이나 null일 경우 기본값을 반환
             }
         }
-    }
-
-    public SellingBook() {
     }
 
     public String getBookTitle() {

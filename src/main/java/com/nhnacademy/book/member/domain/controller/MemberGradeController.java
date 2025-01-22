@@ -18,9 +18,7 @@ public class MemberGradeController {
     //회원 등급 추가(값 추가를 위함)
     @PostMapping("/members/grade")
     public MemberGrade createMemberGrade (@RequestBody MemberGradeCreateRequestDto memberGradeCreateRequestDto) {
-        MemberGrade memberGrade = memberGradeService.createMemberGrade(memberGradeCreateRequestDto);
-
-        return memberGrade;
+        return memberGradeService.createMemberGrade(memberGradeCreateRequestDto);
     }
 
     @GetMapping("/members/grade/all")

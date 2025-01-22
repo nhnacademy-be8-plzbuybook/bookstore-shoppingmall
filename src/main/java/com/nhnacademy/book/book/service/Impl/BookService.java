@@ -43,14 +43,13 @@ public class BookService {
     private static final String BOOK_NOT_FOUND_MESSAGE = "존재하지 않는 도서 ID입니다.";
 
 
-    public boolean existsBook(Long bookId){
-        if(bookRepository.existsById(bookId)){
+    public boolean existsBook(Long bookId) {
+        if (bookRepository.existsById(bookId)) {
             return true;
         } else {
             throw new BookNotFoundException("Book not found");
         }
     }
-
 
 
     // 도서 상세 조회 기능
@@ -85,7 +84,7 @@ public class BookService {
         // 작가 정보 추출
         List<String> authors = book.getBookAuthors().stream()
                 .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
-                .collect(Collectors.toList());
+                .toList();
 
         List<CategoryResponseDto> categoryDtos = book.getBookCategories().stream()
                 .map(bookCategory -> new CategoryResponseDto(
@@ -97,7 +96,7 @@ public class BookService {
                                 : null,
                         null // 자식 카테고리 필요 시 추가 처리
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         return new BookRegisterRequestDto(
                 book.getBookId(),
@@ -119,7 +118,7 @@ public class BookService {
     // 도서 등록 기능 (관리자)
     @Transactional
     public void registerBook(BookRegisterRequestDto bookRegisterDto) {
-        if(Objects.isNull(bookRegisterDto)){
+        if (Objects.isNull(bookRegisterDto)) {
             throw new BookNotFoundException("등록 할 책 정보 못 찾음");
         }
         // 출판사 조회 및 필요시 등록
@@ -128,7 +127,6 @@ public class BookService {
                     Publisher newPublisher = new Publisher(bookRegisterDto.getPublisher());
                     return publisherRepository.save(newPublisher); // 새 출판사 저장
                 });
-
 
 
         Book book = new Book(
@@ -140,7 +138,7 @@ public class BookService {
                 bookRegisterDto.getBookPriceStandard(),
                 bookRegisterDto.getBookIsbn13()
         );
-        Book book2 = bookRepository.save(book);
+        bookRepository.save(book);
 
 
         // 3. 이미지 등록
@@ -148,14 +146,13 @@ public class BookService {
             BookImage bookImage = new BookImage(book, bookRegisterDto.getImageUrl());
             bookImageRepository.save(bookImage); // 명시적으로 저장
         }
-        Category ca = categoryRepository.findByCategoryId(bookRegisterDto.getCategories().getFirst().getCategoryId()).get();
         // 4. 카테고리 등록
         List<Category> categories = bookRegisterDto.getCategories().stream()
                 .map(category -> categoryRepository.findByCategoryId(category.getCategoryId()).get()
                 ).toList();
 
 
-        for(Category category : categories) {
+        for (Category category : categories) {
             BookCategoryRequestDto requestDto = new BookCategoryRequestDto();
             requestDto.setCategoryId(category.getCategoryId());
             requestDto.setBookId(book.getBookId());
@@ -166,7 +163,7 @@ public class BookService {
                 .map(authorName -> authorRepository.findByAuthorName(authorName)
                         .orElseGet(() -> authorRepository.save(new Author(authorName))))
                 .toList();
-        for(Author author : authors) {
+        for (Author author : authors) {
             BookAuthorRequestDto requestDto = new BookAuthorRequestDto();
             requestDto.setAuthorId(author.getAuthorId());
             requestDto.setBookId(book.getBookId());
@@ -178,6 +175,7 @@ public class BookService {
 
     /**
      * 관리자페이지에서 페이징 처리만 함.
+     *
      * @param pageable
      * @return
      */
@@ -188,7 +186,7 @@ public class BookService {
             List<String> bookImage = bookImageRepository.findByBook_BookId(book.getBookId())
                     .stream()
                     .map(BookImage::getImageUrl)
-                    .collect(Collectors.toList());
+                    .toList();
 
             // 카테고리 정보 매핑
             List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
@@ -224,7 +222,7 @@ public class BookService {
     }
 
 
-        // 도서 삭제 기능 (관리자)
+    // 도서 삭제 기능 (관리자)
     public void deleteBook(Long bookId) {
         if (!bookRepository.existsById(bookId)) {
             throw new BookNotFoundException(BOOK_NOT_FOUND_MESSAGE);
@@ -234,7 +232,7 @@ public class BookService {
 
     }
 
-//    // 도서 수정 기능 (관리자)
+    //    // 도서 수정 기능 (관리자)
     public void updateBook(BookRegisterRequestDto bookUpdateRequest) {
 
         //1. 도서 정보 조회

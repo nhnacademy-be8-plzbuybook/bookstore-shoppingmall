@@ -66,7 +66,7 @@ public class DeliveryFeePolicyController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<?> createPolicy(@Valid @RequestBody DeliveryFeePolicySaveRequestDto saveRequest) {
+    public ResponseEntity<DeliveryFeePolicySaveResponseDto> createPolicy(@Valid @RequestBody DeliveryFeePolicySaveRequestDto saveRequest) {
         long id = deliveryFeePolicyService.createDeliveryFeePolicy(saveRequest);
         DeliveryFeePolicySaveResponseDto body = new DeliveryFeePolicySaveResponseDto(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);

@@ -30,9 +30,4 @@ public interface BookAuthorRepository extends JpaRepository<BookAuthor, Long> {
 
     @Query("SELECT ba FROM BookAuthor ba WHERE ba.author.authorName = :authorName")
     Optional<BookAuthor> findByAuthorName(@Param("authorName") String authorName);
-
-
-    // Book과 연결된 카테고리를 조회하는 메서드
-//    @Query("SELECT c FROM Category c JOIN c.bookCategories bc WHERE bc.book.bookId = :bookId")
-//    List<Category> findCategoriesByBookId(@Param("bookId") Long bookId);
 }

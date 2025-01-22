@@ -38,6 +38,4 @@ public class MemberIdResponseDto {
 
     @NotNull
     private String memberStateName;
-
-//    private String role;
 }

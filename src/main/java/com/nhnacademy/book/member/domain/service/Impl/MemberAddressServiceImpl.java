@@ -25,11 +25,12 @@ import java.util.stream.Collectors;
 public class MemberAddressServiceImpl implements MemberAddressService {
     private final MemberAddressRepository memberAddressRepository;
     private final MemberRepository memberRepository;
-
+    private static final String MEMBER_NOT_FOUND_MSG = "회원이 존재하지 않습니다.";
+    private static final String MEMBER_ADDRESS_NOT_FOUND_MSG = "해당 주소는 존재하지 않습니다.";
     @Override
     public MemberAddressResponseDto addAddress(Long memberId, MemberAddressRequestDto addressRequestDto) {
         // 회원 존재 여부 확인
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG));
 
         List<MemberAddress> existingAddresses = memberAddressRepository.findByMember_memberId(memberId);
         if (existingAddresses.size() >= 10) {
@@ -51,7 +52,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberAddress.setRecipient(addressRequestDto.getRecipient());
         memberAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
         memberAddress.setMember(memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다.")));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG)));
 
 
         MemberAddress savedAddress = memberAddressRepository.save(memberAddress);
@@ -128,7 +129,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     // 배송지 목록 조회
     public List<MemberAddressResponseDto> getAddressList(Long memberId) {
 
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG));
 
         List<MemberAddress> memberAddresses = memberAddressRepository.findByMember_memberId(memberId);
 
@@ -172,10 +173,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     // 배송지 상세 조회
     public MemberAddressResponseDto getAddress(Long memberId, Long addressId) {
 
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG));
 
         MemberAddress memberAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(MEMBER_ADDRESS_NOT_FOUND_MSG));
 
         return new MemberAddressResponseDto(
                 memberAddress.getMemberAddressId(),
@@ -195,10 +196,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     @Override
     public MemberAddressResponseDto updateAddress(Long memberId, Long addressId, MemberAddressRequestDto addressRequestDto) {
 
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(MEMBER_ADDRESS_NOT_FOUND_MSG));
 
         existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
@@ -233,7 +234,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없다!"));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(MEMBER_ADDRESS_NOT_FOUND_MSG));
 
         existingAddress.setLocationAddress(addressRequestDto.getLocationAddress());
         existingAddress.setDetailAddress(addressRequestDto.getDetailAddress());
@@ -265,10 +266,10 @@ public class MemberAddressServiceImpl implements MemberAddressService {
 
     @Override
     public void deleteAddress(Long memberId, Long addressId) {
-        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MSG));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(MEMBER_ADDRESS_NOT_FOUND_MSG));
 
     // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
     if (existingAddress.getDefaultAddress()) {
@@ -293,7 +294,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberEmailNotFoundException("email에 해당하는 회원이 없다!"));
 
         MemberAddress existingAddress = memberAddressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주소는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(MEMBER_ADDRESS_NOT_FOUND_MSG));
 
         // 주소가 기본 주소일 경우 기본주소를 다른 주소로 설정해야함
         if (existingAddress.getDefaultAddress()) {

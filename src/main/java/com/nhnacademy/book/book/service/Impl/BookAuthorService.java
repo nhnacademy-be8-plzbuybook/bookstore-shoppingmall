@@ -3,17 +3,17 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.request.BookAuthorRequestDto;
 import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
 import com.nhnacademy.book.book.dto.response.BookAuthorResponseDto;
-import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.elastic.repository.BookAuthorSearchRepository;
-import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
 import com.nhnacademy.book.book.exception.AuthorIdNotFoundException;
 import com.nhnacademy.book.book.exception.BookAuthorNotFoundException;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
-import com.nhnacademy.book.book.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nhnacademy.book.book.repository.AuthorRepository;
+import com.nhnacademy.book.book.repository.BookAuthorRepository;
+import com.nhnacademy.book.book.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class BookAuthorService {
@@ -28,29 +29,7 @@ public class BookAuthorService {
     private final BookAuthorRepository bookAuthorRepository;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
-    private final AuthorSearchRepository authorSearchRepository;
-    private final BookSearchRepository bookSearchRepository;
     private final BookAuthorSearchRepository bookAuthorSearchRepository;
-    private final SellingBookRepository sellingBookRepository;
-    private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
-
-
-
-    @Autowired
-    public BookAuthorService(BookAuthorRepository bookAuthorRepository, BookRepository bookRepository, AuthorRepository authorRepository,
-                             AuthorSearchRepository authorSearchRepository, BookSearchRepository bookSearchRepository,
-                             BookAuthorSearchRepository bookAuthorSearchRepository,
-                             SellingBookRepository sellingBookRepository, BookImageRepository bookImageRepository) {
-        this.bookAuthorRepository = bookAuthorRepository;
-        this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
-        this.authorSearchRepository = authorSearchRepository;
-        this.bookSearchRepository = bookSearchRepository;
-        this.bookAuthorSearchRepository = bookAuthorSearchRepository;
-        this.sellingBookRepository = sellingBookRepository;
-        this.bookImageRepository = bookImageRepository;
-    }
-
 
 
     public void createBookAuthor(BookAuthorRequestDto bookAuthorRequestDto) {
@@ -101,8 +80,4 @@ public class BookAuthorService {
                 .map(author -> new AuthorResponseDto(author.getAuthorId(), author.getAuthorName()))
                 .collect(Collectors.toList());
     }
-
-
-
-
 }
