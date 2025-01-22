@@ -16,12 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.MissingRequestHeaderException;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -138,26 +136,6 @@ class LikesControllerTest {
         verify(likesService, times(1)).getLikeBooks(1L, PageRequest.of(0, 16));
 
     }
-
-//    @Test
-//    @DisplayName("좋아요 토글 - X-USER-ID 헤더 없음")
-//    void toggleLike_missingHeader() throws Exception {
-//        mockMvc.perform(post("/api/member-selling-books/like/{sellingBookId}", 1L)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest()) // HTTP 400 상태 확인
-//                .andExpect(result -> {
-//                    Exception resolvedException = result.getResolvedException();
-//                    assertTrue(resolvedException instanceof MissingRequestHeaderException);
-//
-//                    // 메시지의 일부만 검증
-//                    assertTrue(resolvedException.getMessage().contains("Required request header 'X-USER-ID'"));
-//                });
-//
-//
-//        // likesService 호출 여부 검증
-//        verify(likesService, times(0)).toggleLikeBook(anyString(), anyLong());
-//    }
 
 
 

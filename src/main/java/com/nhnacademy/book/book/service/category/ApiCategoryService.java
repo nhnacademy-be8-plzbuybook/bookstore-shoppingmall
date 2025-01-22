@@ -2,10 +2,7 @@ package com.nhnacademy.book.book.service.category;
 
 import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
 import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.entity.BookCategory;
 import com.nhnacademy.book.book.entity.Category;
-import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
-import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.service.Impl.BookCategoryService;
@@ -21,14 +18,14 @@ import org.springframework.stereotype.Service;
 public class ApiCategoryService {
 
 
-    @Autowired
+//    @Autowired
     private  CategoryRepository categoryRepository;
 
-    @Autowired
+//    @Autowired
     private BookRepository bookRepository;
 
 
-    @Autowired
+//    @Autowired
     private BookCategoryService bookCategoryService;
 
     /**
@@ -93,7 +90,6 @@ public class ApiCategoryService {
 
 
             // 도서에 카테고리 연결
-//            book.addCategory(category);
             BookCategoryRequestDto requestDto = new BookCategoryRequestDto();
             requestDto.setBookId(book.getBookId());
             requestDto.setCategoryId(category.getCategoryId());
