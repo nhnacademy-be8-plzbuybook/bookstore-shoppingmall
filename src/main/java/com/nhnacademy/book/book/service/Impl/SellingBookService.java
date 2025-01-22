@@ -48,8 +48,6 @@ public class SellingBookService {
 
     /**
      * 홈페이지 로드시 페이징 처리후 보여짐
-     * @param pageable
-     * @return
      */
     public Page<SellingBookAndBookResponseDto> getBooks(Pageable pageable, String sortBy) {
         if ("likeCount".equals(sortBy)) {
@@ -249,11 +247,8 @@ public class SellingBookService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 카테고리별 도서 조회
-     * @param categoryId
-     * @return
-     */
+    //카테고리별 도서 조회
+
     public List<SellingBookAndBookResponseDto> getSellingBooksByCategory(Long categoryId) {
         List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryIdOrParent(categoryId);
         return sellingBooks.stream()
