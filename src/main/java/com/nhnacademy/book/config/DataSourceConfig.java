@@ -30,9 +30,9 @@ public class DataSourceConfig {
         //복호화 된걸 db환경으로 설정
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl("10.116.64.14");
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUsername("project_be8_plzbuybook");
+        dataSource.setPassword("MOW6c#y4TVxi1P5b");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         // dbcp2 설정
         dataSource.setInitialSize(20);
