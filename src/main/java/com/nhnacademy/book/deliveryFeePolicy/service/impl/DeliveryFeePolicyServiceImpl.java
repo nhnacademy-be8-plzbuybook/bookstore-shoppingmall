@@ -22,6 +22,9 @@ import java.util.Optional;
 public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
     private final DeliveryFeePolicyRepository deliveryFeePolicyRepository;
 
+
+    private static final String NOT_FOUND_MESSAGE = "찾을 수 없는 배송비정책입니다. 배송비정책아이디: ";
+
     @Override
     public long createDeliveryFeePolicy(DeliveryFeePolicySaveRequestDto saveRequest) {
         if (isPolicyExists(saveRequest.getName())) {
@@ -41,7 +44,7 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
     @Override
     public DeliveryFeePolicyDto getDeliveryFeePolicy(long id) {
         DeliveryFeePolicy policy = deliveryFeePolicyRepository.findById(id).orElseThrow(()
-                -> new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id));
+                -> new NotFoundException(NOT_FOUND_MESSAGE + id));
         return new DeliveryFeePolicyDto(policy.getId(), policy.getName(), policy.getDefaultDeliveryFee(), policy.getFreeDeliveryThreshold());
     }
 
@@ -58,7 +61,7 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
     @Override
     public void removeDeliveryFeePolicy(long id) {
         if (!isPolicyExists(id)) {
-            throw new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id);
+            throw new NotFoundException(NOT_FOUND_MESSAGE + id);
         }
         deliveryFeePolicyRepository.deleteById(id);
     }
@@ -69,7 +72,7 @@ public class DeliveryFeePolicyServiceImpl implements DeliveryFeePolicyService {
         BigDecimal price = calculateRequest.price();
 
         if (optionalPolicy.isEmpty()) {
-            throw new NotFoundException("찾을 수 없는 배송비정책입니다. 배송비정책아이디: " + id);
+            throw new NotFoundException(NOT_FOUND_MESSAGE + id);
         }
         DeliveryFeePolicy deliveryFeePolicy = optionalPolicy.get();
 

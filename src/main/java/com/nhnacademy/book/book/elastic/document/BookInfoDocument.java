@@ -54,7 +54,5 @@ public class BookInfoDocument {
         this.imageUrl = imageUrl;
         this.sellingBookId = sellingBookId;
     }
-
-    // 기본 생성자 및 Getter/Setter 생략
 }
 

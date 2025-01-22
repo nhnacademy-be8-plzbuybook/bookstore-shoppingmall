@@ -39,11 +39,14 @@ public class MemberPointServiceImpl implements MemberPointService {
     private final ReviewImageRepository reviewImageRepository;
     private final OrderProductRepository orderProductRepository;
 
+    private static final String POINT_CONDITION_NOT_FOUND_MESSAGE = "포인트 조건이 존재하지 않습니다.";
+
+
     // 회원 가입시
     @Override
     public void addSignUpPoint(Member member) {
         PointCondition pointCondition = pointConditionRepository.findByName("SIGN_UP")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
 
         int pointsToAdd = pointCondition.getConditionPoint();
 
@@ -61,7 +64,7 @@ public class MemberPointServiceImpl implements MemberPointService {
     // 도서구매시
     public void addPurchasePoint(Member member, OrderRequestDto orderRequest) {
         PointCondition pointCondition = pointConditionRepository.findByName("BOOK_PURCHASE")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
         BigDecimal basePercentage = pointCondition.getConditionPercentage();
 
         BigDecimal gradePercentage = switch (member.getMemberGrade().getMemberGradeName()) {
@@ -92,9 +95,9 @@ public class MemberPointServiceImpl implements MemberPointService {
     @Override
     public void addReviewPoint(Review review) {
         PointCondition reviewCondition = pointConditionRepository.findByName("REVIEW")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
         PointCondition photoReviewCondition = pointConditionRepository.findByName("PHOTO_REVIEW")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
 
         String pointConditionName;
         int pointsToAdd;
@@ -121,9 +124,9 @@ public class MemberPointServiceImpl implements MemberPointService {
     @Override
     public void updatePointForReview(Review review, boolean isPhotoAdded) {
         PointCondition photoReview = pointConditionRepository.findByName("PHOTO_ADD")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
         PointCondition photoRemove = pointConditionRepository.findByName("PHOTO_REMOVE")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
 
         if (isPhotoAdded) {
             // 사진 추가 시 포인트 지급
@@ -159,7 +162,7 @@ public class MemberPointServiceImpl implements MemberPointService {
                 .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         PointCondition pointCondition = pointConditionRepository.findByName(requestDto.getName())
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
 
         int pointsToAdd = requestDto.getConditionPoint();
 
@@ -247,7 +250,7 @@ public class MemberPointServiceImpl implements MemberPointService {
         usedPointRecord.setType("USE");
 
         PointCondition condition = pointConditionRepository.findByName("USE")
-                .orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+                .orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
         usedPointRecord.setPointCondition(condition);
 
         memberPointRepository.save(usedPointRecord);
@@ -256,7 +259,7 @@ public class MemberPointServiceImpl implements MemberPointService {
     // 반품시 포인트 지급
     @Override
     public void restorePoint(Member member, int points) {
-        PointCondition pointCondition = pointConditionRepository.findByName("RETURN").orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        PointCondition pointCondition = pointConditionRepository.findByName("RETURN").orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND_MESSAGE));
 
         MemberPoint returnPoint = new MemberPoint();
         returnPoint.setMember(member);
