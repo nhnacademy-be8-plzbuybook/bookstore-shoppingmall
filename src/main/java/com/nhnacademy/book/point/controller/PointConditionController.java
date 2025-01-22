@@ -1,10 +1,7 @@
 package com.nhnacademy.book.point.controller;
 
-import com.nhnacademy.book.member.domain.exception.PointConditionNotFoundException;
-import com.nhnacademy.book.point.domain.PointCondition;
 import com.nhnacademy.book.point.dto.PointConditionRequestDto;
 import com.nhnacademy.book.point.dto.PointConditionResponseDto;
-import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.point.service.PointConditionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")

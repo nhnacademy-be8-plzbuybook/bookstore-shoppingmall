@@ -11,7 +11,6 @@ import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberAddressRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberAddressService;
-import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class MemberAddressServiceImpl implements MemberAddressService {
     @Override
     public MemberAddressResponseDto addAddress(Long memberId, MemberAddressRequestDto addressRequestDto) {
         // 회원 존재 여부 확인
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        memberRepository.findById(memberId).orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
         List<MemberAddress> existingAddresses = memberAddressRepository.findByMember_memberId(memberId);
         if (existingAddresses.size() >= 10) {
@@ -51,13 +50,6 @@ public class MemberAddressServiceImpl implements MemberAddressService {
         memberAddress.setNickName(addressRequestDto.getNickName());
         memberAddress.setRecipient(addressRequestDto.getRecipient());
         memberAddress.setRecipientPhone(addressRequestDto.getRecipientPhone());
-
-        if (existingAddresses.isEmpty()) {
-            memberAddress.setDefaultAddress(true);
-        } else {
-            memberAddress.setDefaultAddress(false);
-        }
-
         memberAddress.setMember(memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다.")));
 
