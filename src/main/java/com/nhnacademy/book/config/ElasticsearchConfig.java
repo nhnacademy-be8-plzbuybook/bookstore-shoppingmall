@@ -20,7 +20,7 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
 //                .connectedTo("localhost:9200") // 원격 서버 URL
-                .connectedTo("10.67.216.14:9200") // 원격 서버 URL
+                .connectedTo("220.67.216.14:9200") // 원격 서버 URL
                 .withBasicAuth("elastic", "nhnacademy123!") // 기본 인증 추가
                 .build();
     }
