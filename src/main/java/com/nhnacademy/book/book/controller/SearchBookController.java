@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.response.BookInfoResponseDto;
 import com.nhnacademy.book.book.service.Impl.BookSearchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

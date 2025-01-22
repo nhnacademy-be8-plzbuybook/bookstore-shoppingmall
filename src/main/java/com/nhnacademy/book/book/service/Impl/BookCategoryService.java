@@ -46,8 +46,9 @@ public class BookCategoryService {
     }
 
     public List<CategoryResponseDto> findCategoriesByBookId(Long bookId) {
-        bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        if (!bookRepository.existsById(bookId)) {
+            throw new BookNotFoundException("Book not found");
+        }
 
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(bookId);
 

@@ -193,29 +193,46 @@ class BookCategoryServiceTest {
 
 
     @Test
-    void findCategoriesByBookId(){
-
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.ofNullable(book1));
+    void findCategoriesByBookId() {
+        // Mock 설정: bookRepository.existsById가 true를 반환하도록 설정
+        when(bookRepository.existsById(anyLong())).thenReturn(true);
         when(bookCategoryRepository.findCategoriesByBookId(anyLong())).thenReturn(categories);
 
+        // 서비스 호출
         List<CategoryResponseDto> categoryResponseDtos = bookCategoryService.findCategoriesByBookId(1L);
 
+        // 검증
+        verify(bookRepository, times(1)).existsById(anyLong());
         verify(bookCategoryRepository, times(1)).findCategoriesByBookId(anyLong());
-        assertEquals(categoryResponseDtos.size(), categories.size());
+        assertEquals(categories.size(), categoryResponseDtos.size());
 
-        for(CategoryResponseDto categoryResponseDto : categoryResponseDtos){
-            log.info("{}",String.valueOf(categoryResponseDto.getCategoryId()));
-            log.info("{}",categoryResponseDto.getCategoryName());
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            CategoryResponseDto responseDto = categoryResponseDtos.get(i);
+
+            // 각 카테고리의 ID와 이름이 동일한지 확인
+            assertEquals(category.getCategoryId(), responseDto.getCategoryId());
+            assertEquals(category.getCategoryName(), responseDto.getCategoryName());
+            log.info("Category ID: {}", responseDto.getCategoryId());
+            log.info("Category Name: {}", responseDto.getCategoryName());
         }
     }
 
     @Test
     void findCategoriesByBookId_BookNotFound() {
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // Mock 설정: bookRepository.existsById가 false를 반환하도록 설정
+        when(bookRepository.existsById(anyLong())).thenReturn(false);
+
+        // 예외 검증
         assertThrows(BookNotFoundException.class, () -> {
             bookCategoryService.findCategoriesByBookId(anyLong());
         });
+
+        // 검증: bookCategoryRepository는 호출되지 않아야 함
+        verify(bookRepository, times(1)).existsById(anyLong());
+        verifyNoInteractions(bookCategoryRepository);
     }
+
 
 
 
