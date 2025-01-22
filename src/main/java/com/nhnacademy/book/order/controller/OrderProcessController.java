@@ -25,14 +25,26 @@ public class OrderProcessController {
      * @return 주문요청 응답(결제정보)
      */
     @PostMapping
-    public ResponseEntity<OrderResponseDto> requestOrder(@RequestHeader(name = "X-USER-ID", required = false) String memberEmail,
+    public ResponseEntity<OrderResponseDto> requestOrder(@RequestHeader(name = "X-USER-ID") String memberEmail,
                                                          @Valid @RequestBody OrderRequestDto orderRequest) {
-        if (memberEmail != null) {
-            orderRequest.setMemberEmail(memberEmail);
-            orderRequest.setOrderType(OrderType.MEMBER_ORDER);
-        }else {
-            orderRequest.setOrderType(OrderType.NON_MEMBER_ORDER);
-        }
+        orderRequest.setMemberEmail(memberEmail);
+        orderRequest.setOrderType(OrderType.MEMBER_ORDER);
+        OrderResponseDto orderResponse = orderProcessService.requestOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
+    }
+
+    @PostMapping("/member")
+    public ResponseEntity<OrderResponseDto> requestMemberOrder(@RequestHeader(name = "X-USER-ID") String memberEmail,
+                                                         @Valid @RequestBody OrderRequestDto orderRequest) {
+        orderRequest.setMemberEmail(memberEmail);
+        orderRequest.setOrderType(OrderType.MEMBER_ORDER);
+        OrderResponseDto orderResponse = orderProcessService.requestOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
+    }
+
+    @PostMapping("/non-member")
+    public ResponseEntity<OrderResponseDto> requestNonMemberOrder(@Valid @RequestBody OrderRequestDto orderRequest) {
+        orderRequest.setOrderType(OrderType.NON_MEMBER_ORDER);
         OrderResponseDto orderResponse = orderProcessService.requestOrder(orderRequest);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
     }
