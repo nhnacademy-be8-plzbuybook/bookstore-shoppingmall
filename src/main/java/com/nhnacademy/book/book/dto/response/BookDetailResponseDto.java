@@ -19,7 +19,7 @@ public class BookDetailResponseDto {
     private String bookDescription;     // 설명
     private LocalDate bookPubDate;      // 출판일
     private BigDecimal bookPriceStandard; // 정가
-    private Integer selling_book_stock;     // 재고
+    private Integer sellingBookStock;     // 재고
     private BigDecimal sellingPrice;    // 판매가 (추가)
     private String bookIsbn13;          // ISBN
     private Long publisherId;           // 출판사 ID
@@ -85,7 +85,7 @@ public class BookDetailResponseDto {
         this.bookPubDate = bookPubDate;
         this.bookPriceStandard = bookPriceStandard;
         this.sellingPrice = sellingBookPrice;
-        this.selling_book_stock = sellingBookStock;
+        this.sellingBookStock = sellingBookStock;
         this.bookIsbn13 = bookIsbn13;
         this.publisherId = publisherId;
         this.publisher = publisherName;

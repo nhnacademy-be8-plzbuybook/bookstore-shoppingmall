@@ -1,11 +1,8 @@
-package com.nhnacademy.book.booktest.repository;
+package com.nhnacademy.book.book.repository;
 
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookImage;
 import com.nhnacademy.book.book.entity.Publisher;
-import com.nhnacademy.book.book.repository.BookImageRepository;
-import com.nhnacademy.book.book.repository.BookRepository;
-import com.nhnacademy.book.book.repository.PublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
