@@ -139,4 +139,54 @@ class CouponServiceImplTest {
 
         assertTrue(exception.getMessage().contains("쿠폰환불 에러"));
     }
+
+    @DisplayName("쿠폰 사용")
+    @Test
+    void useCoupon() {
+        Long couponId = 1L;
+        when(couponClient.useCoupon(couponId)).thenReturn(ResponseEntity.ok("쿠폰 상태가 변경되었습니다"));
+
+        String response = couponService.useCoupon(couponId);
+
+        assertEquals("쿠폰 상태가 변경되었습니다", response);
+        verify(couponClient, times(1)).useCoupon(couponId);
+    }
+
+    @DisplayName("쿠폰 사용 실패")
+    @Test
+    void useCoupon_CouponException() {
+        Long couponId = 1L;
+        when(couponClient.useCoupon(couponId)).thenReturn(ResponseEntity.ok(null));
+
+        CouponException exception = assertThrows(CouponException.class,
+                () -> couponService.useCoupon(couponId)
+        );
+
+        assertTrue(exception.getMessage().contains("쿠폰사용 에러"));
+    }
+
+    @DisplayName("쿠폰 사용 취소")
+    @Test
+    void cancelCoupon() {
+        Long couponId = 1L;
+        when(couponClient.cancelCoupon(couponId)).thenReturn(ResponseEntity.ok("쿠폰 사용이 취소되었습니다"));
+
+        String response = couponService.cancelCoupon(couponId);
+
+        assertEquals("쿠폰 사용이 취소되었습니다", response);
+        verify(couponClient, times(1)).cancelCoupon(couponId);
+    }
+
+    @DisplayName("쿠폰 사용 취소 실패")
+    @Test
+    void cancelCoupon_CouponException() {
+        Long couponId = 1L;
+        when(couponClient.cancelCoupon(couponId)).thenReturn(ResponseEntity.ok(null));
+
+        CouponException exception = assertThrows(CouponException.class,
+                () -> couponService.cancelCoupon(couponId)
+        );
+
+        assertTrue(exception.getMessage().contains("쿠폰사용 취소 에러"));
+    }
 }
