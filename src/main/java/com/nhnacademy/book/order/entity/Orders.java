@@ -1,7 +1,6 @@
 package com.nhnacademy.book.order.entity;
 
 import com.nhnacademy.book.converter.OrderStatusConverter;
-import com.nhnacademy.book.order.dto.OrderUpdateRequestDto;
 import com.nhnacademy.book.order.enums.OrderStatus;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import jakarta.persistence.*;
@@ -72,11 +71,6 @@ public class Orders {
     public void addOrderProduct(OrderProduct orderProduct) {
         orderProduct.setOrder(this);
         orderProducts.add(orderProduct);
-    }
-
-    public void update(OrderUpdateRequestDto updateRequest) {
-
-        //TODO: 업데이트 로직
     }
 
     public void updateOrderStatus(OrderStatus statusCode) {

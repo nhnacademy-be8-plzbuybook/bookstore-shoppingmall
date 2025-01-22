@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Import(JpaRepositoryConfig.class)
-public class AuthorRepositoryTest {
+class AuthorRepositoryTest {
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -51,7 +51,7 @@ public class AuthorRepositoryTest {
         author.setAuthorName("new author");
         authorRepository.save(author);
         Author updatedAuthor = authorRepository.findById(jpa.getAuthorId()).get();
-        assertEquals(updatedAuthor.getAuthorName(),"new author");
+        assertEquals("new author", updatedAuthor.getAuthorName());
     }
 
 }

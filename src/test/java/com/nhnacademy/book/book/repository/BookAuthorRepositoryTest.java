@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @DataJpaTest
 //@ActiveProfiles("test")
-public class BookAuthorRepositoryTest {
+class BookAuthorRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;

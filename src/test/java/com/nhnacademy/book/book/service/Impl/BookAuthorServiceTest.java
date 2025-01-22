@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class BookAuthorServiceTest {
+class BookAuthorServiceTest {
 
     @InjectMocks
     private BookAuthorService bookAuthorService;
@@ -131,8 +131,8 @@ public class BookAuthorServiceTest {
 
         BookAuthor captured = captor.getValue();
 
-        assertEquals(captured.getAuthor().getAuthorId(), 1L);
-        assertEquals(captured.getBook().getBookId(), 1L);
+        assertEquals(1L, captured.getAuthor().getAuthorId());
+        assertEquals(1L, captured.getBook().getBookId());
     }
 
     @Test

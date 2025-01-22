@@ -35,7 +35,7 @@ public class BookSearchService {
 
         List<BookInfoResponseDto> bookInfoResponseDtos = pagedBooks.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(bookInfoResponseDtos, pageable, books.size());
     }
@@ -54,7 +54,7 @@ public class BookSearchService {
 
         List<BookInfoResponseDto> bookInfoResponseDtos = pagedBooks.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(bookInfoResponseDtos, pageable, books.size());
 

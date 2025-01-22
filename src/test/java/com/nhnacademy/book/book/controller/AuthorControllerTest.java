@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthorController.class)
-public class AuthorControllerTest {
+class AuthorControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -69,7 +69,7 @@ public class AuthorControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<AuthorResponseDto> authors = new PageImpl<>(Collections.singletonList(authorResponseDto), pageable, 1);
 
-        Mockito.when(authorService.findAll(eq(pageable))).thenReturn(authors);
+        Mockito.when(authorService.findAll(pageable)).thenReturn(authors);
 
         mockMvc.perform(get("/api/admin/authors")
                         .param("page", "0")
@@ -79,7 +79,7 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.content[0].authorId").value(authorResponseDto.getAuthorId()))
                 .andExpect(jsonPath("$.content[0].authorName").value(authorResponseDto.getAuthorName()));
 
-        Mockito.verify(authorService, Mockito.times(1)).findAll(eq(pageable));
+        Mockito.verify(authorService, Mockito.times(1)).findAll(pageable);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AuthorControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<AuthorResponseDto> authors = new PageImpl<>(Collections.singletonList(authorResponseDto), pageable, 1);
 
-        Mockito.when(authorService.searchAuthorsByKeyword(eq(keyword), eq(pageable))).thenReturn(authors);
+        Mockito.when(authorService.searchAuthorsByKeyword(keyword, pageable)).thenReturn(authors);
 
         mockMvc.perform(get("/api/admin/authors")
                         .param("keyword", keyword)
@@ -99,7 +99,7 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.content[0].authorId").value(authorResponseDto.getAuthorId()))
                 .andExpect(jsonPath("$.content[0].authorName").value(authorResponseDto.getAuthorName()));
 
-        Mockito.verify(authorService, Mockito.times(1)).searchAuthorsByKeyword(eq(keyword), eq(pageable));
+        Mockito.verify(authorService, Mockito.times(1)).searchAuthorsByKeyword(keyword, pageable);
     }
 
     @Test
