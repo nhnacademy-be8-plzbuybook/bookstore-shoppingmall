@@ -2,7 +2,6 @@ package com.nhnacademy.book.booktest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.book.controller.PublisherController;
-import com.nhnacademy.book.book.dto.request.AuthorRequestDto;
 import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.service.Impl.PublisherService;

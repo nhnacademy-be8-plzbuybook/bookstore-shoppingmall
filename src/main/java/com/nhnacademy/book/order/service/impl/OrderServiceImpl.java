@@ -11,7 +11,6 @@ import com.nhnacademy.book.order.service.OrderService;
 import com.nhnacademy.book.orderProduct.dto.OrderProductDto;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
-import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

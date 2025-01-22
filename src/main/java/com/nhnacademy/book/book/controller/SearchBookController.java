@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class SearchBookController {
-
-
     private final BookSearchService bookSearchService;
 
     @GetMapping("/api/search")

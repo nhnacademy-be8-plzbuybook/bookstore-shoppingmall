@@ -5,8 +5,6 @@ import com.nhnacademy.book.member.domain.MemberCertification;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.certification.*;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberCertificationRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -20,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

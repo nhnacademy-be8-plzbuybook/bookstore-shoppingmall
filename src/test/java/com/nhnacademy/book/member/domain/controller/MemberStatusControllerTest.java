@@ -1,11 +1,8 @@
 package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.member.domain.Member;
-import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
-import com.nhnacademy.book.member.domain.service.MemberService;
 import com.nhnacademy.book.member.domain.service.MemberStatusService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

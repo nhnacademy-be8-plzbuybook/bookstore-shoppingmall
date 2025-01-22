@@ -20,7 +20,6 @@ import com.nhnacademy.book.payment.entity.Payment;
 import com.nhnacademy.book.payment.exception.PaymentFailException;
 import com.nhnacademy.book.payment.repository.PaymentRepository;
 import com.nhnacademy.book.payment.service.TossPaymentService;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

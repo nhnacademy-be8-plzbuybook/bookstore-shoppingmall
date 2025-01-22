@@ -1,8 +1,5 @@
 package com.nhnacademy.book.booktest.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.nhnacademy.book.book.dto.response.BookTagResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookTag;
@@ -17,11 +14,15 @@ import com.nhnacademy.book.book.service.Impl.BookTagService;
 import com.nhnacademy.book.book.service.Impl.TagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.data.domain.PageRequest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class BookTagServiceTest {
 

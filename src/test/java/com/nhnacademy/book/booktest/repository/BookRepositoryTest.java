@@ -1,8 +1,11 @@
 package com.nhnacademy.book.booktest.repository;
 
-import com.nhnacademy.book.book.entity.*;
-import com.nhnacademy.book.book.repository.*;
-import com.nhnacademy.book.config.ElasticsearchConfig;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.entity.Publisher;
+import com.nhnacademy.book.book.repository.BookRepository;
+import com.nhnacademy.book.book.repository.CategoryRepository;
+import com.nhnacademy.book.book.repository.PublisherRepository;
 import com.nhnacademy.book.config.JpaRepositoryConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
