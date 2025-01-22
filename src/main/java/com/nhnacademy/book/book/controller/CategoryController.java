@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +19,9 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryRepository categoryRepository;
 
-    public CategoryController(CategoryService categoryService, CategoryRepository categoryRepository) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.categoryRepository = categoryRepository;
     }
 
 
@@ -64,12 +61,4 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponseDto>> getCategory(@RequestParam Long parentId) {
         return ResponseEntity.ok(categoryService.findLeafCategories(parentId));
     }
-
-
-
-
-
-
-
-
 }
