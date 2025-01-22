@@ -116,13 +116,11 @@ public class SellingBookService {
     }
 
     public void registerSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
-        // 1. 책 ID로 책 정보 조회
         Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책 ID입니다."));
 
-        // 2. 판매책 정보 생성
         SellingBook sellingBook = new SellingBook();
-        sellingBook.setBook(book); // 책과 매핑
+        sellingBook.setBook(book);
         sellingBook.setSellingBookPrice(sellingBookRegisterDto.getSellingBookPrice()); // 판매가
         sellingBook.setSellingBookPackageable(sellingBookRegisterDto.getSellingBookPackageable()); // 선물포장 가능 여부
         sellingBook.setSellingBookStock(sellingBookRegisterDto.getSellingBookStock()); // 재고

@@ -90,13 +90,6 @@ public class Book {
         this.bookTitle = testBook;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "bookId=" + bookId +
-                ", bookTitle='" + bookTitle + '\'' +
-                '}';
-    }
     // addCategory 메서드 추가
     public void addCategory(Category category) {
         if (bookCategories.stream().noneMatch(bc -> bc.getCategory().equals(category))) {

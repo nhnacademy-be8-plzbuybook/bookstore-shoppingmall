@@ -28,8 +28,4 @@ public class BookAuthor {
         this.author = author;
     }
 
-    @Override
-    public String toString() {
-        return "BookAuthor [id=" + id + ", book=" + book.toString() + ", author=" + author.toString() + "]";
-    }
 }

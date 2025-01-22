@@ -56,4 +56,30 @@ public class SearchBookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"));
     }
+
+    @Test
+    void testSearchBooksByCategory() throws Exception {
+        String searchKeyword = "test";
+        Pageable pageable = PageRequest.of(0, 3);
+        BookInfoResponseDto bookInfoResponseDto = new BookInfoResponseDto();
+        bookInfoResponseDto.setBookTitle("Test Book");
+        BookInfoResponseDto bookInfoResponseDto2 = new BookInfoResponseDto();
+        bookInfoResponseDto2.setBookTitle("Test Book2");
+
+        Page<BookInfoResponseDto> books = new PageImpl<>(List.of(bookInfoResponseDto, bookInfoResponseDto2), pageable, 2);
+
+
+        Mockito.when(bookSearchService.findByExactCategoryName(eq(1L), any(Pageable.class)))
+                .thenReturn(books);
+
+        mockMvc.perform(get("/api/categories/1/books")
+                        .param("searchKeyword", searchKeyword)
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[1].bookTitle").value("Test Book2"));
+
+
+    }
 }
