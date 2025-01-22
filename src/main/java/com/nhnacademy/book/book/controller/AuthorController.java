@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthorController {
 
     private final AuthorService authorService;
-    private AuthorSearchRepository authorSearchRepository;
+    private final AuthorSearchRepository authorSearchRepository;
 
 
     @PostMapping("/authors")
