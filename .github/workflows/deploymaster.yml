@@ -30,7 +30,7 @@ jobs:
           host: ${{ secrets.SSH_NHN_IP }}
           username: ${{ secrets.SSH_NHN_ID }}
           port: ${{ secrets.SSH_NHN_PORT }}
-          key: ${{ secrets.SSH_NHN_PASSWORD }}
+          password: ${{ secrets.SSH_NHN_PASSWORD }}
           source: "."
           target: "/home/be8/be8-team4/shop"
 
@@ -40,7 +40,7 @@ jobs:
           host: ${{ secrets.SSH_NHN_IP }}
           username: ${{ secrets.SSH_NHN_ID }}
           port: ${{ secrets.SSH_NHN_PORT }}
-          key: ${{ secrets.SSH_NHN_PASSWORD }}
+          password: ${{ secrets.SSH_NHN_PASSWORD }}
           script: |
             cd /home/be8/be8-team4/shop
             # 첫번째 쇼핑몰 서버 배포
