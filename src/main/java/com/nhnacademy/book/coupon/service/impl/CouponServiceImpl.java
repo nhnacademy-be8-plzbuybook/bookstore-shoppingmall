@@ -80,5 +80,35 @@ public class CouponServiceImpl implements CouponService {
         }
     }
 
+    @Override
+    public String useCoupon(Long couponId) {
+        try {
+            String useCoupon = couponClient.useCoupon(couponId).getBody();
 
+            if (useCoupon == null) {
+                throw new CouponException("쿠폰사용 에러");
+            }
+
+            return useCoupon;
+        } catch (FeignException | CouponException e) {
+            log.error("useCoupon Feign Exception: {}", e.getMessage());
+            throw new CouponException(e.getMessage());
+        }
+    }
+
+    @Override
+    public String cancelCoupon(Long couponId) {
+        try {
+            String cancelCoupon = couponClient.cancelCoupon(couponId).getBody();
+
+            if (cancelCoupon == null) {
+                throw new CouponException("쿠폰사용 취소 에러");
+            }
+
+            return cancelCoupon;
+        } catch (FeignException | CouponException e) {
+            log.error("cancelCoupon Feign Exception: {}", e.getMessage());
+            throw new CouponException(e.getMessage());
+        }
+    }
 }

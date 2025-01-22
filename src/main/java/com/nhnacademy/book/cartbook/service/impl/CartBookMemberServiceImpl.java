@@ -34,6 +34,8 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class CartBookMemberServiceImpl implements CartBookMemberService {
+    private static final String PREFIX_MEMBER = "Member";
+
     private final CartBookRepository cartBookRepository;
     private final SellingBookRepository sellingBookRepository;
     private final MemberRepository memberRepository;
@@ -67,14 +69,14 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                 .orElseThrow(() -> new MemberNotFoundException("장바구니에서 해당 이메일로 가입된 회원을 찾을 수 없습니다."))));
 
         cartRepository.save(cart);
-        List<ReadCartBookResponseDto> redisResponselist = cartBookRedisRepository.readAllHashName("Member" + memberId);
+        List<ReadCartBookResponseDto> redisResponselist = cartBookRedisRepository.readAllHashName(PREFIX_MEMBER + memberId);
 
         if (redisResponselist.isEmpty()) {
             List<CartBook> cartBookList = cartBookRepository.findAllByCart(cart);
             for (CartBook cartBook : cartBookList) {
                 String url = getBookImageUrl(cartBook.getSellingBook().getBook());
 
-                cartBookRedisRepository.create("Member" + memberId,
+                cartBookRedisRepository.create(PREFIX_MEMBER + memberId,
                         cartBook.getId(),
                         ReadCartBookResponseDto.builder()
                                 .cartId(cart.getCartId())
@@ -159,7 +161,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
             cartBook = cartBookRepository.save(cartBook);
         }
 
-        cartBookRedisRepository.create("Member" + memberId,
+        cartBookRedisRepository.create(PREFIX_MEMBER + memberId,
                 cartBook.getId(),
                 ReadCartBookResponseDto.builder()
                         .cartId(cart.getCartId())
@@ -178,9 +180,9 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
 
     @Override
     public Long updateBookCartMember(UpdateCartBookRequestDto updateCartBookRequestDto, String email) {
-        Long MemberId = memberRepository.getMemberIdByEmail(email);
+        Long memberId = memberRepository.getMemberIdByEmail(email);
 
-        Cart cart = cartRepository.findByMember_MemberId(MemberId)
+        Cart cart = cartRepository.findByMember_MemberId(memberId)
                 .orElseThrow(() -> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
 
         CartBook cartBook = cartBookRepository.findBySellingBook_SellingBookIdAndCart_CartId(updateCartBookRequestDto.sellingBookId(), cart.getCartId())
@@ -197,10 +199,10 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
 
         if (cartBook.getQuantity() <= 0) {
             cartBookRepository.deleteByCart(cart);
-            cartBookRedisRepository.delete("Member" + MemberId, cartBook.getId());
+            cartBookRedisRepository.delete(PREFIX_MEMBER + memberId, cartBook.getId());
         } else {
             cartBookRepository.save(cartBook);
-            cartBookRedisRepository.update("Member" + MemberId, cartBook.getId(), cartBook.getQuantity());
+            cartBookRedisRepository.update(PREFIX_MEMBER + memberId, cartBook.getId(), cartBook.getQuantity());
         }
 
         return cartBook.getId();
@@ -213,7 +215,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                 cartBookRepository.findById(bookCartId)
                         .orElseThrow(() -> new SellingBookNotFoundInBookCartException("장바구니에서 해당 상품을 찾을 수 없습니다."))
         );
-        cartBookRedisRepository.delete("Member" + memberId, bookCartId);
+        cartBookRedisRepository.delete(PREFIX_MEMBER + memberId, bookCartId);
 
         return email;
     }
@@ -227,7 +229,7 @@ public class CartBookMemberServiceImpl implements CartBookMemberService {
                 .orElseThrow(() -> new CartNotFoundException("회원에 해당하는 장바구니를 찾을 수 없습니다."));
 
         cartBookRepository.deleteByCart(cart);
-        cartBookRedisRepository.deleteAll("Member" + memberId);
+        cartBookRedisRepository.deleteAll(PREFIX_MEMBER + memberId);
         return email;
     }
 

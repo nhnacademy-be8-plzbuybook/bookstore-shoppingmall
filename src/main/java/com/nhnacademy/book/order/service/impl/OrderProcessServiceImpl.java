@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
@@ -42,6 +43,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
     private final PaymentService paymentService;
+    private final CouponService couponService;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -144,6 +146,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
         }
         // 주문상태변경
         //TODO: 쿠폰 사용취소처리
+        //couponService.cancelCoupon(couponId) // couponId 필요함
         //TODO: 포인트 사용취소처리
     }
 

@@ -1,5 +1,7 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
@@ -32,6 +34,8 @@ class OrderProductCouponServiceImplTest {
     @InjectMocks
     private OrderProductCouponServiceImpl orderProductCouponService;
     private List<OrderProductAppliedCouponDto> appliedCoupons;
+    @Mock
+    private CouponService couponService;
 
     @BeforeEach
     void setup() {
@@ -56,8 +60,13 @@ class OrderProductCouponServiceImplTest {
         Long result = orderProductCouponService.saveOrderProductCoupon(orderProductId, appliedCoupons);
         assertNotNull(result);
         assertEquals(orderProductId, result);
-        // TODO: 쿠폰 검증
-        // TODO: 쿠폰 사용처리
+
+        for (OrderProductAppliedCouponDto orderProductAppliedCouponDto : appliedCoupons) {
+            verify(couponService, times(1))
+                    .validateCouponCalculation(orderProductAppliedCouponDto.getCouponId(), new ValidationCouponCalculationRequestDto(orderProductAppliedCouponDto.getDiscount()));
+            verify(couponService, times(1)).useCoupon(orderProductAppliedCouponDto.getCouponId());
+        }
+
         verify(orderProductCouponRepository, times(appliedCoupons.size())).save(any(OrderProductCoupon.class));
     }
 
@@ -70,10 +79,11 @@ class OrderProductCouponServiceImplTest {
         //when
         Long result = orderProductCouponService.saveOrderProductCoupon(orderProductId, Collections.emptyList());
 
-        //TODO: 쿠폰 검증 안함
-        //TODO: 쿠폰 사용 안함
         assertNotNull(result);
         assertEquals(orderProductId, result);
+
+        verify(couponService, never()).validateCouponCalculation(anyLong(), any());
+        verify(couponService, never()).useCoupon(anyLong());
         verify(orderProductCouponRepository, never()).save(any(OrderProductCoupon.class));
     }
 
