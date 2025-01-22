@@ -2,6 +2,7 @@ package com.nhnacademy.book.order.controller;
 
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
+import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.service.OrderProcessService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,9 @@ public class OrderProcessController {
                                                          @Valid @RequestBody OrderRequestDto orderRequest) {
         if (memberEmail != null) {
             orderRequest.setMemberEmail(memberEmail);
+            orderRequest.setOrderType(OrderType.MEMBER_ORDER);
+        }else {
+            orderRequest.setOrderType(OrderType.NON_MEMBER_ORDER);
         }
         OrderResponseDto orderResponse = orderProcessService.requestOrder(orderRequest);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponse);
