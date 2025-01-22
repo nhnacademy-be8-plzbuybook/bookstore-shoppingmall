@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @Import(JpaRepositoryConfig.class)
 @DataJpaTest
-public class BookCategoryRepositoryTest {
+class BookCategoryRepositoryTest {
 
     @Autowired
     private BookCategoryRepository bookCategoryRepository;

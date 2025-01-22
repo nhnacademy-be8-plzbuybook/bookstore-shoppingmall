@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -78,6 +77,6 @@ public class BookAuthorService {
 
         return authors.stream()
                 .map(author -> new AuthorResponseDto(author.getAuthorId(), author.getAuthorName()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

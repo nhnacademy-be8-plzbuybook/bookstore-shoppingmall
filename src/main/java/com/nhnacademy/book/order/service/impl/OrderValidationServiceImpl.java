@@ -69,7 +69,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
 
         // 쿠폰 검증
         if (isCouponApplied(orderProduct)) {
-            assert orderProduct.getAppliedCoupons() != null; // ?
             for (OrderProductAppliedCouponDto appliedCoupon : orderProduct.getAppliedCoupons()) {
                 validateCoupon(appliedCoupon);
             }
@@ -105,7 +104,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
             throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
         }
         Orders order = orderProduct.getOrder();
-//        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
         boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
         if (!isReturnable) {
             throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
@@ -144,15 +142,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         if (sellingBook.getSellingBookPrice().compareTo(orderProduct.getPrice()) != 0) {
             throw new PriceMismatchException(sellingBook.getBookTitle() + "의 가격이 변동되었습니다.");
         }
-        // 재고 선차감
-//        sellingBook.setSellingBookStock(currentStock - orderProduct.getQuantity());
-        // 재고선점
-//        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProduct.getProductId(), orderProduct.getQuantity());
-//        if (preemptedQuantity == null) {
-//            // 재고 업데이트
-//            Long stock = (long) (sellingBook.getSellingBookStock() - orderProduct.getQuantity());
-//            orderCacheService.addStockCache(sellingBook.getSellingBookId(), stock);
-//        }
     }
 
 
@@ -168,7 +157,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         Long wrappingPaperId = orderProductWrapping.getWrappingPaperId();
         WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("포장지를 찾을 수 없습니다."));
         Long currentStock = orderCacheService.getWrappingPaperStockCache(wrappingPaperId);
-//        Long currentStock = wrappingPaper.getStock();
         //재고검증
         if (currentStock < orderProductWrapping.getQuantity()) {
             throw new StockNotEnoughException(wrappingPaper.getName() + "의 재고가 부족합니다.");
@@ -177,15 +165,6 @@ public class OrderValidationServiceImpl implements OrderValidationService {
         if (wrappingPaper.getPrice().compareTo(orderProductWrapping.getPrice()) != 0) {
             throw new PriceMismatchException(wrappingPaper.getName() + "의 가격이 변동되었습니다.");
         }
-        // 재고선차감
-//        wrappingPaperService.reduceStock(wrappingPaper.getId(), orderProductWrapping.getQuantity());
-        // 재고선점
-//        Long preemptedQuantity = orderCacheService.preemptStockCache(orderProductWrapping.getWrappingPaperId(), orderProductWrapping.getQuantity());
-//        if (preemptedQuantity == null) {
-//            // 재고 업데이트
-//            Long requiredQuantity = wrappingPaper.getStock() - orderProductWrapping.getQuantity();
-//            orderCacheService.addStockCache(wrappingPaper.getId(), requiredQuantity);
-//        }
     }
 
 

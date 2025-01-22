@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageImpl;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -135,7 +134,7 @@ class BookSearchServiceTest {
         Page<BookInfoResponseDto> result = bookSearchService.findByExactCategoryName(categoryId, pageable);
 
         assertThat(result.getContent()).isEmpty();
-        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getTotalElements()).isZero();
 
         verify(categoryRepository, times(1)).findByCategoryId(categoryId);
         verify(bookInfoRepository, times(1)).findByExactCategoryName("Category X");

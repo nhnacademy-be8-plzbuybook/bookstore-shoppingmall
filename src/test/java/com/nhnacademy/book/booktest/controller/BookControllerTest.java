@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,7 +81,7 @@ public class BookControllerTest {
         responseDto.setBookId(bookId);
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookDetail(Mockito.eq(bookId))).thenReturn(responseDto);
+        Mockito.when(bookService.getBookDetail(bookId)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/books/{bookId}", bookId))
                 .andExpect(status().isOk())
@@ -111,7 +112,7 @@ public class BookControllerTest {
         mockMvc.perform(delete("/api/books/{bookId}", bookId))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(bookService).deleteBook(Mockito.eq(bookId));
+        Mockito.verify(bookService).deleteBook(bookId);
     }
 
     @Test
@@ -120,7 +121,7 @@ public class BookControllerTest {
         BookRegisterRequestDto responseDto = new BookRegisterRequestDto();
         responseDto.setBookTitle("Test Book");
 
-        Mockito.when(bookService.getBookUpdate(Mockito.eq(bookId))).thenReturn(responseDto);
+        Mockito.when(bookService.getBookUpdate(bookId)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/books/update/{bookId}", bookId))
                 .andExpect(status().isOk())

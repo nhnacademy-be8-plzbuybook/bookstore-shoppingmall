@@ -44,9 +44,7 @@ public class OrderProductServiceImpl implements OrderProductService {
                 .couponDiscount(couponDiscount)
                 .order(order)
                 .build();
-        OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
-//        orderProductRepository.flush();
-        return savedOrderProduct;
+        return orderProductRepository.save(orderProduct);
     }
 
     @Transactional

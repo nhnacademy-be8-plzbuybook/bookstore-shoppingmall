@@ -44,10 +44,7 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
         OrderDelivery orderDelivery = orderDeliveryRepository.findByOrder(order).orElseThrow(() -> new NotFoundException("주문배송정보를 찾을 수 없습니다."));
         Period period = Period.between(orderDelivery.getRegisteredAt().toLocalDate(), LocalDate.now());
 
-        if (!(period.getDays() > REFUND_LIMIT_DATE)) {
-            return true;
-        }
-        return false;
+        return period.getDays() <= REFUND_LIMIT_DATE;
     }
 
 

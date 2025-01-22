@@ -13,6 +13,5 @@ public interface OrderCacheService {
     int getProductStockCache(Long productId);
     Long getWrappingPaperStockCache(Long wrappingPaperId);
     Map<String, Integer> preemptOrderStock(String orderId, OrderRequestDto orderRequest);
-//    void rollbackOrderedStock(OrderRequestDto orderRequest);
     void rollbackOrderedStock(String orderId);
 }
