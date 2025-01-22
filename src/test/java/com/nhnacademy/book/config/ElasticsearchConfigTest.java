@@ -20,6 +20,6 @@ class ElasticsearchConfigTest {
 
         String endpoints = clientConfig.getEndpoints().toString();  // 리스트를 문자열로 변환
 
-        assertThat(endpoints).contains("220.67.216.14");
+        assertThat(endpoints).contains("10.67.216.14");
     }
 }
