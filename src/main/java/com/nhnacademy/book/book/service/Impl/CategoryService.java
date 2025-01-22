@@ -9,6 +9,7 @@ import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,21 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategorySearchRepository categorySearchRepository;
-
-    public CategoryService(CategoryRepository categoryRepository, CategorySearchRepository categorySearchRepository) {
-        this.categoryRepository = categoryRepository;
-        this.categorySearchRepository = categorySearchRepository;
-    }
+    private static final String CATEGORY_NOT_FOUND_MSG = "Category not found with ID: ";
 
     public CategoryResponseDto findCategoryById(Long id) {
         Category category = categoryRepository.findByCategoryId(id)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + id));
 
         return convertToDto(category);
     }
@@ -40,7 +38,7 @@ public class CategoryService {
 
     public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
         Category parentCategory = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + parentCategoryId));
 
         // 리프 노드를 찾는 재귀 호출
         List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
@@ -52,7 +50,7 @@ public class CategoryService {
         // Category -> CategoryResponseDto 변환
         return leafCategories.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Category> findLeafCategoriesRecursive(Category category) {
@@ -66,7 +64,7 @@ public class CategoryService {
         // 자식이 있으면 자식 카테고리에 대해 재귀 호출
         return children.stream()
                 .flatMap(child -> findLeafCategoriesRecursive(child).stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -89,7 +87,7 @@ public class CategoryService {
         // Category -> CategoryResponseDto 변환
         return childrenCategories.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -138,7 +136,7 @@ public class CategoryService {
 
     public void deleteCategoryById(Long categoryId) {
         if (!categoryRepository.existsById(categoryId) || !categorySearchRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
         categorySearchRepository.deleteById(categoryId);
         categoryRepository.deleteById(categoryId);
@@ -160,7 +158,7 @@ public class CategoryService {
 
     public void deleteCategory(Long categoryId) {
         if(!categoryRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
 
         categoryRepository.deleteCategoryAndChildren(categoryId);
@@ -179,7 +177,7 @@ public class CategoryService {
                         child.getParentCategory() != null ? child.getParentCategory().getCategoryId() : null,
                         new ArrayList<>()
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         return new CategoryResponseDto(
                 category.getCategoryId(),

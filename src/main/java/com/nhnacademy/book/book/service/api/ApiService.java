@@ -33,7 +33,6 @@ public class ApiService {
     public void saveBooksFromListApi(String queryType, String searchTarget, int start, int maxResults) {
         int currentPage = 1;
         int totalBooksFetched = 0;
-//        int totalBooksSaved = 0;
 
         try {
             while (currentPage <= 5) { // 최대 페이지 제한
@@ -56,7 +55,6 @@ public class ApiService {
                 for (AladinResponse bookData : response.getBooks()) {
                     boolean isSaved = mappingService.processBookData(bookData);
                     if (isSaved) {
-//                        totalBooksSaved++;
                         log.info("저장된 책: {}", bookData.getTitle());
                     } else {
                         log.info("중복된 책 스킵: {}", bookData.getIsbn13());
@@ -71,7 +69,6 @@ public class ApiService {
         }
 
         log.info("총 가져온 책 수: {}", totalBooksFetched);
-//        log.info("총 저장된 책 수: {}", totalBooksSaved);
     }
 
     /**

@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,6 +33,7 @@ public class SellingBookService {
     private final LikesRepository likesRepository;
     private final BookInfoRepository bookInfoRepository;
     private static final String SELLING_BOOK_NOT_FOUND_MESSAGE = "SellingBook not found with ID: ";
+
     @Autowired
     public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
                               BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository, BookInfoRepository bookInfoRepository) {
@@ -59,8 +59,6 @@ public class SellingBookService {
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
     }
-
-
 
 
     /**
@@ -138,7 +136,6 @@ public class SellingBookService {
     }
 
 
-
     /**
      * 판매책 삭제
      */
@@ -172,14 +169,12 @@ public class SellingBookService {
         List<String> categoryNames = categoryRepository.findCategoriesByBookId(book.getBookId())
                 .stream()
                 .map(Category::getCategoryName)
-                .collect(Collectors.toList());
-
+                .toList();
         // 작가 이름 가져오기
         List<String> authorNames = bookAuthorRepository.findByBook_BookId(book.getBookId())
                 .stream()
                 .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
-                .collect(Collectors.toList());
-
+                .toList();
         // 특정 판매책에 대한 좋아요 수 조회
         Long likeCount = likesRepository.countBySellingBookId(sellingBookId);
 
@@ -206,7 +201,7 @@ public class SellingBookService {
     }
 
 
-     /**
+    /**
      * 판매책 조회수 내림차순 정렬 조회 (조회수 높은 순)
      */
     public List<SellingBookAndBookResponseDto> getSellingBooksByViewCount(String sortDirection) {
@@ -220,7 +215,7 @@ public class SellingBookService {
         return sellingBookRepository.findAll(sort)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -231,7 +226,7 @@ public class SellingBookService {
         return sellingBookRepository.findBySellingBookStatus(status)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -242,17 +237,8 @@ public class SellingBookService {
         return sellingBookRepository.findBySellingBookPriceBetween(minPrice, maxPrice)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
-
-//    //카테고리별 도서 조회
-//
-//    public List<SellingBookAndBookResponseDto> getSellingBooksByCategory(Long categoryId) {
-//        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryIdOrParent(categoryId);
-//        return sellingBooks.stream()
-//                .map(this::toResponseDto)
-//                .collect(Collectors.toList());
-//    }
 
     private SellingBookAndBookResponseDto toResponseDto(SellingBook sellingBook) {
         Book book = sellingBook.getBook();
@@ -263,14 +249,12 @@ public class SellingBookService {
         List<String> categories = categoryRepository.findCategoriesByBookId(book.getBookId())
                 .stream()
                 .map(Category::getCategoryName)
-                .collect(Collectors.toList());
-
+                .toList();
         // 작가 정보 매핑
         List<String> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId())
                 .stream()
                 .map(Author::getAuthorName) // Author의 authorName을 가져옴
-                .collect(Collectors.toList());
-
+                .toList();
         // 출판사 정보 가져오기
         String publisher = book.getPublisher().getPublisherName();
 

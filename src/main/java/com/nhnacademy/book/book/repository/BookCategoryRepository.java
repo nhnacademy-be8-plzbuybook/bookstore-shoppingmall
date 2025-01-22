@@ -35,20 +35,6 @@ public interface BookCategoryRepository extends JpaRepository<BookCategory, Long
 
     List<BookCategory> findByBook_BookIdIn(List<Long> longs);
 
-//    @Query("SELECT bc.book FROM BookCategory bc " +
-//            "WHERE bc.category.categoryId IN (" +
-//            "  SELECT c.categoryId FROM Category c " +
-//            "  WHERE c.categoryId = :parentId " +
-//            "  OR c.parentCategory.categoryId = :parentId " +
-//            "  OR c.categoryId IN (" +
-//            "    SELECT child.categoryId FROM Category child WHERE child.parentCategory.categoryId = c.categoryId" +
-//            "    OR child.categoryId IN (" +
-//            "      SELECT grandChild.categoryId FROM Category grandChild WHERE grandChild.parentCategory.categoryId = child.categoryId" +
-//            "    )" +
-//            "  )" +
-//            ")")
-//    Page<Book> findBooksByParentCategory(@Param("parentId") Long parentId, Pageable pageable);
-
 
     @Query("SELECT bc.book FROM BookCategory bc " +
             "WHERE bc.category IN (" +

@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.service.Impl;
 import com.nhnacademy.book.book.dto.response.BookInfoResponseDto;
 import com.nhnacademy.book.book.elastic.document.BookInfoDocument;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BookSearchService {
-
-    private final BookSearchRepository bookSearchRepository;
 
     private final BookInfoRepository bookInfoRepository;
 
