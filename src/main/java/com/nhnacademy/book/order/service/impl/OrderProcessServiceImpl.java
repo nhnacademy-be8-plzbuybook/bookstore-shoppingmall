@@ -10,6 +10,7 @@ import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.entity.Orders;
+import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.exception.OrderCompletionFailException;
 import com.nhnacademy.book.order.exception.OrderRequestFailException;
 import com.nhnacademy.book.order.repository.OrderRepository;
@@ -22,8 +23,6 @@ import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -60,7 +59,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // 주문정보 캐싱
             orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
             // 재고 선점
-            Map<String, Integer> stockMap = orderCacheService.preemptOrderStock(orderResponseDto.getOrderId(), orderRequest);
+            orderCacheService.preemptOrderStock(orderResponseDto.getOrderId(), orderRequest);
 
             return orderResponseDto;
         } catch (Exception e) {
@@ -115,10 +114,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private void processUsingPoint(OrderRequestDto orderRequest) {
         Integer usedPoint = orderRequest.getUsedPoint();
         if (usedPoint != null && usedPoint > 0) {
-            memberPointService.usedPoint(orderRequest instanceof MemberOrderRequestDto
-                            ? ((MemberOrderRequestDto) orderRequest).getMemberEmail()
-                            : null,
-                    usedPoint);
+            memberPointService.usedPoint((orderRequest.getOrderType() == OrderType.MEMBER_ORDER ? orderRequest.getMemberEmail()
+                    : null), usedPoint);
         }
     }
 
@@ -143,9 +140,9 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             paymentService.removePayment(paymentId);
         }
         // 주문상태변경
-        //TODO: 쿠폰 사용취소처리
+        // 쿠폰 사용취소처리
         //couponService.cancelCoupon(couponId) // couponId 필요함
-        //TODO: 포인트 사용취소처리
+        //  포인트 사용취소처리
     }
 
 }
