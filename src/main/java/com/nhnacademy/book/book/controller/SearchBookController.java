@@ -23,16 +23,18 @@ public class SearchBookController {
     @GetMapping("/api/search")
     public ResponseEntity<Page<BookInfoResponseDto>> searchBooks(
             @RequestParam String searchKeyword,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "14") int size
     ) {
-        Pageable pageable = PageRequest.of(page, 3);
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(bookSearchService.searchBooksByKeyword2(searchKeyword, pageable));
     }
 
 
     @GetMapping("/api/categories/{category-id}/books")
-    public ResponseEntity<Page<BookInfoResponseDto>> searchBooksByCategory(@PathVariable(name="category-id") Long categoryId, @RequestParam(defaultValue = "0") int page){
-        Pageable pageable = PageRequest.of(page, 3);
+    public ResponseEntity<Page<BookInfoResponseDto>> searchBooksByCategory(@PathVariable(name="category-id") Long categoryId, @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "14") int size){
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(bookSearchService.findByExactCategoryName(categoryId, pageable));
     }
 

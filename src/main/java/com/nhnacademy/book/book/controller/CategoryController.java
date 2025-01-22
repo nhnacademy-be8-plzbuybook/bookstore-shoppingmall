@@ -64,8 +64,10 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/children-category",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryResponseDto>> getCategory(@RequestParam Long parentId) {
-        return ResponseEntity.ok(categoryService.findLeafCategories(parentId));
+    public ResponseEntity<Page<CategoryResponseDto>> getCategory(@RequestParam Long parentId, @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "15")int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(categoryService.findLeafCategories(parentId, pageable));
     }
 
 

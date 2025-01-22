@@ -44,7 +44,7 @@ public class SellingBookController {
     @GetMapping
     public ResponseEntity<Page<SellingBookAndBookResponseDto>> getBooks(
             @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
-            @RequestParam(defaultValue = "16") int size,        // 페이지 크기
+            @RequestParam(defaultValue = "14") int size,        // 페이지 크기
             @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 정렬 기준
             @RequestParam(defaultValue = "desc") String sortDir // 정렬 방향
     ) {
@@ -185,21 +185,6 @@ public class SellingBookController {
         return ResponseEntity.ok(response);
     }
 
-//    /**
-//     * 판매책 가격과 임시 수량을 곱한 총 금액 반환
-//     *
-//     * @param sellingBookId 판매책 ID
-//     * @param quantity 주문 수량 (임시 설정)
-//     * @return 가격 * 수량의 총합
-//     */
-//    @GetMapping("/{sellingBookId}/calculate-price")
-//    public ResponseEntity<BigDecimal> calculateOrderPrice(
-//            @PathVariable Long sellingBookId,
-//            @RequestParam int quantity) {
-//        BigDecimal totalPrice = sellingBookService.calculateOrderPrice(sellingBookId, quantity);
-//        return ResponseEntity.ok(totalPrice);
-//    }
-//
 
 }
 
