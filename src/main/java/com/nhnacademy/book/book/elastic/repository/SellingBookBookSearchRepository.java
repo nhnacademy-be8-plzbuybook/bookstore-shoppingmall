@@ -2,7 +2,6 @@ package com.nhnacademy.book.book.elastic.repository;
 
 import com.nhnacademy.book.book.elastic.document.SellingBookBookDocument;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 

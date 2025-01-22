@@ -2,7 +2,6 @@ package com.nhnacademy.book.order.entity;
 
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

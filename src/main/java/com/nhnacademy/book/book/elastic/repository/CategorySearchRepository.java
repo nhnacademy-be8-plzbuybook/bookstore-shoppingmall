@@ -2,11 +2,8 @@ package com.nhnacademy.book.book.elastic.repository;
 
 import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.entity.Category;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

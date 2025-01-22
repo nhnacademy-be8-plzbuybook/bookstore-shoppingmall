@@ -1,8 +1,6 @@
 package com.nhnacademy.book.member.domain.controller;
 
 import com.nhnacademy.book.member.domain.dto.certification.*;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
 import com.nhnacademy.book.member.domain.service.MemberCertificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

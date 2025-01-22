@@ -1,14 +1,16 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
 
-import com.nhnacademy.book.member.domain.*;
+import com.nhnacademy.book.member.domain.Auth;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.MemberAuth;
 import com.nhnacademy.book.member.domain.dto.auth.MemberAuthRequestDto;
 import com.nhnacademy.book.member.domain.dto.auth.MemberAuthResponseDto;
 import com.nhnacademy.book.member.domain.exception.AuthNotFoundException;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
+import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.repository.auth.AuthRepository;
 import com.nhnacademy.book.member.domain.repository.auth.MemberAuthRepository;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.member.domain.service.MemberAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

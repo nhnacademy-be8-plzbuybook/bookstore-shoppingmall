@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.entity.Orders;

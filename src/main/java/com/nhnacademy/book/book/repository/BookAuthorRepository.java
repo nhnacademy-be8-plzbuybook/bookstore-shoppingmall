@@ -1,16 +1,13 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
-import com.nhnacademy.book.book.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

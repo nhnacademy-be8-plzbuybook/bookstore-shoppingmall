@@ -2,11 +2,8 @@ package com.nhnacademy.book.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 
 @Converter
 @Component

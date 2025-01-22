@@ -1,9 +1,6 @@
 package com.nhnacademy.book.member.domain.service;
 
-import com.nhnacademy.book.member.domain.MemberCertification;
 import com.nhnacademy.book.member.domain.dto.certification.*;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
 
 import java.util.List;
 

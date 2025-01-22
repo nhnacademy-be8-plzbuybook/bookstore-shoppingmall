@@ -5,7 +5,6 @@ import com.nhnacademy.book.order.entity.Orders;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 

@@ -1,8 +1,6 @@
 package com.nhnacademy.book.member.domain.service;
 
 
-import com.nhnacademy.book.member.domain.Auth;
-import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.dto.auth.MemberAuthRequestDto;
 import com.nhnacademy.book.member.domain.dto.auth.MemberAuthResponseDto;
 

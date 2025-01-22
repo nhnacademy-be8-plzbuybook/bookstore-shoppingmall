@@ -1,7 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.response.BookTagResponseDto;
-import com.nhnacademy.book.book.dto.response.TagResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookTag;
 import com.nhnacademy.book.book.entity.Tag;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

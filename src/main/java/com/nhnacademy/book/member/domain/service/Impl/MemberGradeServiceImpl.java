@@ -3,7 +3,6 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.dto.MemberGradeCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateMemberGradeException;
-import com.nhnacademy.book.member.domain.exception.DuplicateMemberStateException;
 import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.service.MemberGradeService;
 import lombok.RequiredArgsConstructor;

@@ -4,14 +4,11 @@ import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
