@@ -1,6 +1,8 @@
 server:
   port: 10143
 
+
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -22,16 +24,20 @@ spring:
       host: 10.116.64.14
       port: 6379
       password: "*N2vya7H@muDTwdNMR!"
+    jpa:
+      properties:
+        hibernate:
+          show_sql: true
+          format_sql: true
+      hibernate:
+        ddl-auto: none
+      open-in-view: false # osiv 비활성화
 
-#    auth_redis_range: 231
+  #    auth_redis_range: 231
 #    order_redis_range: 232
 #    cart_redis_range: 233
 #    auth_code_redis_range: 234
 #    database: 0
-
-
-
-
 
   application:
     name: bookstore
@@ -41,15 +47,10 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  profiles:
+    active: nhn
 
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-    hibernate:
-      ddl-auto: none
-    open-in-view: false # osiv 비활성화
+
 
 logging:
   level:
