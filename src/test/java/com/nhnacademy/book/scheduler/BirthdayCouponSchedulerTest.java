@@ -1,7 +1,6 @@
 package com.nhnacademy.book.scheduler;
 
 import com.nhnacademy.book.member.domain.service.BirthdayCouponService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +14,8 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)

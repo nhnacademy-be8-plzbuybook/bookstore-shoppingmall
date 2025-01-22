@@ -1,7 +1,6 @@
 package com.nhnacademy.book.orderProduct.entity;
 
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
-import org.checkerframework.checker.units.qual.N;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

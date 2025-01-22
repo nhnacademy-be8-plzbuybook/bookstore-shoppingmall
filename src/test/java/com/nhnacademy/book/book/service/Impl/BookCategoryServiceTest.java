@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.BookCategoryResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookCategory;
@@ -15,25 +14,23 @@ import com.nhnacademy.book.book.repository.BookCategoryRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;

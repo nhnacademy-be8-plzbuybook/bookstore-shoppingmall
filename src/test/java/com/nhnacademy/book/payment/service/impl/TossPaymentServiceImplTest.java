@@ -3,7 +3,6 @@ package com.nhnacademy.book.payment.service.impl;
 import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
 import com.nhnacademy.book.payment.dto.PaymentConfirmRequestDto;
 import com.nhnacademy.book.webClient.TossPaymentClient;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

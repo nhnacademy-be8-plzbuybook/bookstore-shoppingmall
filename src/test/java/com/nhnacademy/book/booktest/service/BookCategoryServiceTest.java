@@ -3,9 +3,11 @@ package com.nhnacademy.book.booktest.service;
 
 import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.BookCategoryResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
-import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.BookCategory;
+import com.nhnacademy.book.book.entity.Category;
+import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.exception.BookNotFoundException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.BookCategoryRepository;
@@ -28,11 +30,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)

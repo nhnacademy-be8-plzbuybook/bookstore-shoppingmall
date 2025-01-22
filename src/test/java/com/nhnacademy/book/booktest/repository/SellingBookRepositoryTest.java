@@ -17,7 +17,8 @@ import org.springframework.context.annotation.Import;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Import(JpaRepositoryConfig.class)
 @DataJpaTest
 class SellingBookRepositoryTest {

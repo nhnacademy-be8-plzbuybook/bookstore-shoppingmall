@@ -1,6 +1,8 @@
 package com.nhnacademy.book.member.domain.service.Impl;
 
-import com.nhnacademy.book.member.domain.*;
+import com.nhnacademy.book.member.domain.Member;
+import com.nhnacademy.book.member.domain.MemberGrade;
+import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.MemberStatusCreateRequestDto;
 import com.nhnacademy.book.member.domain.exception.DuplicateMemberStateException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;

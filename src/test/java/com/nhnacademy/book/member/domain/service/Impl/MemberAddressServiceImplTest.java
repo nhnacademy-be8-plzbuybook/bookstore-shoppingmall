@@ -4,10 +4,12 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAddress;
 import com.nhnacademy.book.member.domain.dto.MemberAddressRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberAddressResponseDto;
-import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.member.domain.exception.AddressLimitExceededException;
+import com.nhnacademy.book.member.domain.exception.DuplicateAddressException;
+import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberAddressRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,11 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
