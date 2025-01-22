@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class BookCategoryServiceTest {
+class BookCategoryServiceTest {
 
     @InjectMocks
     private BookCategoryService bookCategoryService;
@@ -61,9 +61,7 @@ public class BookCategoryServiceTest {
     private CategoryRepository categoryRepository;
 
     private Publisher publisher;
-
     private Pageable pageable;
-
 
     List<Book> books = new ArrayList<>();
     List<Category> categories = new ArrayList<>();

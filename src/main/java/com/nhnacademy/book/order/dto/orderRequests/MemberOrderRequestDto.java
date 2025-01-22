@@ -16,7 +16,7 @@ public class MemberOrderRequestDto extends OrderRequestDto {
     private String memberEmail;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private final OrderType orderType = OrderType.MEMBER_ORDER;
+    private static final OrderType orderType = OrderType.MEMBER_ORDER;
 
     public MemberOrderRequestDto(@Nullable LocalDate deliveryWishDate, Integer usedPoint,
                                  OrderDeliveryAddressDto orderDeliveryAddressDto, List<OrderProductRequestDto> orderProducts,

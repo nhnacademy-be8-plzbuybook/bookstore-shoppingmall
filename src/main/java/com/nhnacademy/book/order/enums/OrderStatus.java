@@ -115,44 +115,5 @@ public enum OrderStatus {
 
         throw new ConflictException("해당하는 주문상태가 존재하지 않습니다.");
     }
-//    public static OrderStatus fromOrderProductStatus(List<OrderProductStatus> orderProductStatusList) {
-//
-//        Map<OrderProductStatus, Integer> statusCountMap = new HashMap<>();
-//        for (OrderProductStatus orderProductStatus: orderProductStatusList) {
-//            statusCountMap.compute(orderProductStatus, (key, value) -> (value == null) ? 0 : value + 1);
-//        }
-//
-//        if (statusCountMap.containsKey(OrderProductStatus.RETURN_REQUESTED) && statusCountMap.get(OrderProductStatus.RETURN_REQUESTED) > 0) {
-//            return OrderStatus.RETURN_REQUESTED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.PAYMENT_PENDING) && statusCountMap.get(OrderProductStatus.PAYMENT_PENDING) > 0) {
-//            return OrderStatus.PAYMENT_PENDING;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.ORDER_CANCELLED) && statusCountMap.get(OrderProductStatus.ORDER_CANCELLED) > 0 && statusCountMap.get(OrderProductStatus.ORDER_CANCELLED) < orderProductStatusList.size()) {
-//            return OrderStatus.PARTIALLY_CANCELED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.RETURN_COMPLETED) && statusCountMap.get(OrderProductStatus.RETURN_COMPLETED) > 0 && statusCountMap.get(OrderProductStatus.RETURN_COMPLETED) < orderProductStatusList.size()) {
-//            return OrderStatus.PARTIALLY_CANCELED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.SHIPPED) && statusCountMap.get(OrderProductStatus.SHIPPED) > 0) {
-//            return OrderStatus.SHIPPED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.DELIVERING) && statusCountMap.get(OrderProductStatus.DELIVERING) > 0) {
-//            return OrderStatus.SHIPPED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.PAYMENT_COMPLETED) && statusCountMap.get(OrderProductStatus.PAYMENT_COMPLETED) == orderProductStatusList.size()) {
-//            return OrderStatus.PAYMENT_COMPLETED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.DELIVERED) && statusCountMap.get(OrderProductStatus.DELIVERED) == orderProductStatusList.size()) {
-//            return OrderStatus.DELIVERING;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.RETURN_COMPLETED) && statusCountMap.get(OrderProductStatus.RETURN_COMPLETED) == orderProductStatusList.size()) {
-//            return OrderStatus.RETURN_COMPLETED;
-//        }
-//        if (statusCountMap.containsKey(OrderProductStatus.ORDER_CANCELLED) && statusCountMap.get(OrderProductStatus.ORDER_CANCELLED) == orderProductStatusList.size()) {
-//            return OrderStatus.ORDER_CANCELLED;
-//        }
-//        throw new ConflictException("해당하는 주문상태가 존재하지 않습니다.");
-//    }
 }
 
