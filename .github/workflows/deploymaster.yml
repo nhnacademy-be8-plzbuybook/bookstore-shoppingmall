@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.SSH_NHN_ID }}
           port: ${{ secrets.SSH_NHN_PORT }}
           password: ${{ secrets.SSH_NHN_PASSWORD }}
-          source: "."
+          source: "target/*.jar"
           target: "/home/be8/be8-team4/shop"
 
       - name: Deploy to server via SSH
