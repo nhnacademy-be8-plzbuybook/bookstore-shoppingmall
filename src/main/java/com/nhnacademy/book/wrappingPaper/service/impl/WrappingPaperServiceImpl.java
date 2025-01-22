@@ -24,6 +24,9 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     private final ObjectStorageService objectStorageService;
     public static final String WRAPPING_PAPER_NOT_FOUND_MSG = "찾을 수 없는 포장지입니다. 포장지 아이디: ";
 
+    private static final String WRAPPING_NOT_FOUND_MESSAGE = "찾을 수 없는 포장지입니다. 포장지 아이디: ";
+
+
     @Transactional(readOnly = true)
     @Override
     public WrappingPaperDto getWrappingPaper(long id) {
@@ -60,6 +63,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public Long modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest) {
         WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(()
+
                 -> new NotFoundException(WRAPPING_PAPER_NOT_FOUND_MSG + id));
         // 이미지 파일이 없으면 파일 제외하고 수정
         if (updateRequest.imageFile() == null) {
@@ -77,6 +81,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public void removeWrappingPaper(long id) {
         if (!wrappingPaperRepository.existsById(id)) {
+
             throw new NotFoundException(WRAPPING_PAPER_NOT_FOUND_MSG + id);
         }
         wrappingPaperRepository.deleteById(id);

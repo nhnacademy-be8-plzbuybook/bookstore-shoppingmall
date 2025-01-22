@@ -4,10 +4,12 @@ import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberAddress;
 import com.nhnacademy.book.member.domain.dto.MemberAddressRequestDto;
 import com.nhnacademy.book.member.domain.dto.MemberAddressResponseDto;
-import com.nhnacademy.book.member.domain.exception.*;
+import com.nhnacademy.book.member.domain.exception.AddressLimitExceededException;
+import com.nhnacademy.book.member.domain.exception.DuplicateAddressException;
+import com.nhnacademy.book.member.domain.exception.MemberEmailNotFoundException;
+import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberAddressRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,15 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MemberAddressServiceImplTest {
+class MemberAddressServiceImplTest {
     @Mock
     private MemberAddressRepository memberAddressRepository;
     @Mock
@@ -38,7 +42,6 @@ public class MemberAddressServiceImplTest {
     void addAddress_Success() {
 
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -51,7 +54,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
 
         MemberAddress savedAddress = new MemberAddress();
         savedAddress.setMemberAddressId(1L);
@@ -83,7 +85,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 추가_회원이 존재하지 않을 때")
     void addAddress_MemberNotFound() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -96,7 +97,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         when(memberRepository.findById(1L)).thenReturn(Optional.empty());
         MemberNotFoundException exception = assertThrows(MemberNotFoundException.class, () -> {
             memberAddressService.addAddress(1L, addressRequestDto);
@@ -109,7 +109,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 추가_10개의 주소가 존재할 때")
     void addAddress_AddressLimitExceeded() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -122,7 +121,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(
                 List.of(new MemberAddress(), new MemberAddress(), new MemberAddress(),
                         new MemberAddress(), new MemberAddress(), new MemberAddress(),
@@ -141,7 +139,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 추가_이미 같은 주소가 등록되어 있을 떄")
     void addAddress_DuplicateAddress() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -154,7 +151,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         MemberAddress existingAddress = new MemberAddress();
         existingAddress.setLocationAddress("광주 동구 필문대로 309");
         existingAddress.setDetailAddress("IT융합대학 4225");
@@ -221,7 +217,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 목록 조회_성공")
     void getAddressList_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -234,7 +229,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         MemberAddress address1 = new MemberAddress();
         address1.setMemberAddressId(1L);
@@ -275,7 +269,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 목록 조회_회원이 존재하지 않을 때")
     void getAddressList_MemberNotFound() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -288,7 +281,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
         MemberNotFoundException exception = assertThrows(MemberNotFoundException.class, () -> {
@@ -302,7 +294,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 상세 조회_성공")
     void getAddress_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -315,7 +306,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
 
@@ -343,7 +333,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 상세 조회_회원이 존재하지 않을 때")
     void getAddress_MemberNotFound() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -356,7 +345,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
@@ -371,7 +359,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 상세 조회_주소가 존재하지 않을 떄")
     void getAddress_IllegalArgumentException() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -384,7 +371,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(new Member()));
@@ -401,7 +387,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 수정_성공")
     void updateAddress_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -414,7 +399,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
@@ -470,7 +454,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 수정(email)_성공")
     void updateAddressByEmail_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -484,7 +467,6 @@ public class MemberAddressServiceImplTest {
         member.setEmail("test@test.com");
 
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
@@ -541,7 +523,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 수정_회원이 존재하지 않을 때")
     void updateAddress_MemberNotFound() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -554,7 +535,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
@@ -570,7 +550,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 수정_주소가 존재하지 않을 때")
     void updateAddress_IllegalArgumentException() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -583,7 +562,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         MemberAddressRequestDto addressRequestDto = new MemberAddressRequestDto();
@@ -602,7 +580,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 삭제_성공")
     void deleteAddress_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -615,7 +592,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
 
@@ -654,7 +630,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 삭제(이메일)_성공")
     void deleteAddressByEmail_Success() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -668,7 +643,6 @@ public class MemberAddressServiceImplTest {
         member.setEmail("test@test.com");
 
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
 
@@ -709,7 +683,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 삭제_회원이 존재하지 않을 때")
     void deleteAddress_MemberNotFound() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -722,7 +695,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
@@ -737,7 +709,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 삭제_주소가 존재하지 않을 때")
     void deleteAddress_IllegalArgumentException() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -750,7 +721,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(new Member()));
@@ -767,7 +737,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 삭제_기본 주소 삭제 시 기본 주소로 설정할 다른 주소가 없을 때")
     void deleteAddress_NoOtherDefaultAddress () {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");
@@ -780,7 +749,6 @@ public class MemberAddressServiceImplTest {
         member.setMemberId(1L);
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        when(memberAddressRepository.findByMember_memberId(1L)).thenReturn(List.of());
         Long memberId = 1L;
         Long addressId = 1L;
 
@@ -888,7 +856,6 @@ public class MemberAddressServiceImplTest {
     @DisplayName("주소 제한 오류 (header email)")
     void testCreateAddress_AddressLimitExceeded() {
         addressRequestDto = new MemberAddressRequestDto();
-//        addressRequestDto.setDefaultAddress(true);
         addressRequestDto.setLocationAddress("광주 동구 필문대로 309");
         addressRequestDto.setDetailAddress("IT융합대학 4225");
         addressRequestDto.setZipCode("64132");

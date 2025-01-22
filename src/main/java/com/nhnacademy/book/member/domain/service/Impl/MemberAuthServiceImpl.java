@@ -29,13 +29,17 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     private final MemberRepository memberRepository;
     private final AuthRepository authRepository;
 
+    private static final String MEMBER_NOT_FOUND_MESSAGE = "회원이 존재하지 않습니다.";
+    private static final String AUTH_NOT_FOUND_MESSAGE = "권한이 존재하지 않습니다.";
+
+
     // 회원에게 권한 부여
     @Override
     public MemberAuthResponseDto assignAuthToMember(MemberAuthRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
         Auth auth = authRepository.findById(requestDto.getAuthId())
-                .orElseThrow(() -> new AuthNotFoundException("권한이 존재하지 않습니다."));
+                .orElseThrow(() -> new AuthNotFoundException(AUTH_NOT_FOUND_MESSAGE));
 
         Optional<MemberAuth> existingMemberAuth = memberAuthRepository.findByMemberAndAuth(member, auth);
         if (existingMemberAuth.isPresent()) {
@@ -57,7 +61,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     public List<String> getAuthNameByMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
 
         return memberAuthRepository.findByMember(member)
                 .stream()
@@ -69,9 +73,9 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     public MemberAuthResponseDto updateMemberAuth(MemberAuthRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
         Auth newAuth = authRepository.findById(requestDto.getAuthId())
-                .orElseThrow(() -> new AuthNotFoundException("권한이 존재하지 않습니다."));
+                .orElseThrow(() -> new AuthNotFoundException(AUTH_NOT_FOUND_MESSAGE));
 
         Optional<MemberAuth> existingMemberAuthOpt = memberAuthRepository.findByMemberAndAuth(member, newAuth);
         if (existingMemberAuthOpt.isPresent()) {
@@ -93,9 +97,9 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     public void deleteAuthFromMember(Long memberId, Long authId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
         Auth auth = authRepository.findById(authId)
-                .orElseThrow(() -> new AuthNotFoundException("권한이 존재하지 않습니다."));
+                .orElseThrow(() -> new AuthNotFoundException(AUTH_NOT_FOUND_MESSAGE));
         MemberAuth memberAuth = memberAuthRepository.findByMemberAndAuth(member, auth)
                 .orElseThrow(() -> new RuntimeException("회원의 해당 권한을 찾을 수 없습니다."));
 
