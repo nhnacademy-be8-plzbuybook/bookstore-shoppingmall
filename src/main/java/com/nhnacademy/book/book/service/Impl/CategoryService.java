@@ -57,6 +57,8 @@ public class CategoryService {
                 .stream()
                 .map(this::convertToDto)
                 .toList();
+
+        return new PageImpl<>(paginatedLeafCategories, pageable, leafCategories.size());
     }
 
     private List<Category> findLeafCategoriesRecursive(Category category) {
@@ -73,7 +75,6 @@ public class CategoryService {
                 .flatMap(child -> findLeafCategoriesRecursive(child).stream())
                 .toList();
     }
-
 
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {
@@ -141,7 +142,6 @@ public class CategoryService {
     }
 
 
-
     public void deleteCategoryById(Long categoryId) {
         if (!categoryRepository.existsById(categoryId) || !categorySearchRepository.existsById(categoryId)) {
             throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
@@ -165,14 +165,12 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long categoryId) {
-        if(!categoryRepository.existsById(categoryId)) {
+        if (!categoryRepository.existsById(categoryId)) {
             throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
 
         categoryRepository.deleteCategoryAndChildren(categoryId);
     }
-
-
 
 
     // Category 엔티티를 CategoryResponseDto로 변환하는 메서드
