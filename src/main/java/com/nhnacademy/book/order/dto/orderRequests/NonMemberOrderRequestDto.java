@@ -16,7 +16,7 @@ public class NonMemberOrderRequestDto extends OrderRequestDto {
     private String nonMemberPassword;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private final OrderType orderType = OrderType.NON_MEMBER_ORDER;
+    private static final OrderType orderType = OrderType.NON_MEMBER_ORDER;
 
     public NonMemberOrderRequestDto(@Nullable LocalDate deliveryWishDate, Integer usedPoint,
                                     OrderDeliveryAddressDto orderDeliveryAddress, List<OrderProductRequestDto> orderProducts,

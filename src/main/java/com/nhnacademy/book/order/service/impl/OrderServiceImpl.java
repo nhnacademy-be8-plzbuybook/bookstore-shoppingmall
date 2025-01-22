@@ -27,7 +27,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderQueryRepository orderQueryRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderRepository orderRepository;
-    private final OrderProductRepository orderProductRepository;
 
     /**
      * 전체 주문목록 조회
@@ -93,27 +92,6 @@ public class OrderServiceImpl implements OrderService {
             orderProduct.updateStatus(OrderProductStatus.DELIVERED);
         }
     }
-
-
-//    /**
-//     * 비회원주문 상세 조회
-//     *
-//     * @param accessRequest 주문번호
-//     * @return 비회원주문상세 DTO
-//     */
-//    @Transactional(readOnly = true)
-//    @Override
-//    public NonMemberOrderDetail getNonMemberOrderDetail(NonMemberOrderDetailAccessRequestDto accessRequest) {
-//        String orderNumber = accessRequest.getOrderNumber();
-//        NonMemberOrderDetail nonMemberOrderDetail = orderQueryRepository.findNonMemberOrderByNumber(orderNumber)
-//                .orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다. 주문번호: " + orderNumber));
-//        validateNonMemberOrderPassword(accessRequest.getPassword(), nonMemberOrderDetail.getPassword());
-//
-//        List<OrderProductDto> orderProducts = orderQueryRepository.findOrderProducts(nonMemberOrderDetail.getOrderId());
-//        nonMemberOrderDetail.setOrderProducts(orderProducts);
-//
-//        return nonMemberOrderDetail;
-//    }
 
     private void validateNonMemberOrderPassword(String rawPassword, String targetPassword) {
         if (!passwordEncoder.matches(rawPassword, targetPassword)) {

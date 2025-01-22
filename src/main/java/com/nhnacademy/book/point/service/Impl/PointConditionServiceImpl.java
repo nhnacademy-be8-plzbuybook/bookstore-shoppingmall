@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.nhnacademy.book.point.service.Impl.MemberPointServiceImpl.POINT_CONDITION_NOT_FOUND;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -60,13 +62,13 @@ public class PointConditionServiceImpl implements PointConditionService {
                         pointCondition.getConditionPercentage(),
                         pointCondition.isStatus()
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
     @Override
     public PointConditionResponseDto updatePointCondition(Long id, PointConditionRequestDto pointConditionRequestDto) {
-        PointCondition existingPointCondition = pointConditionRepository.findById(id).orElseThrow(() -> new PointConditionNotFoundException("포인트 조건이 존재하지 않습니다."));
+        PointCondition existingPointCondition = pointConditionRepository.findById(id).orElseThrow(() -> new PointConditionNotFoundException(POINT_CONDITION_NOT_FOUND));
 
         existingPointCondition.setName(pointConditionRequestDto.getName());
         existingPointCondition.setConditionPoint(pointConditionRequestDto.getConditionPoint());
