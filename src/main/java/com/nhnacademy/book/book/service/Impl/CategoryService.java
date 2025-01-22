@@ -11,6 +11,7 @@ import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,36 +36,44 @@ public class CategoryService {
     }
 
 
-    public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
+    public Page<CategoryResponseDto> findLeafCategories(Long parentCategoryId, Pageable pageable) {
+        // 부모 카테고리 조회
         Category parentCategory = categoryRepository.findById(parentCategoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + parentCategoryId));
 
-        // 리프 노드를 찾는 재귀 호출
+        // 리프 노드 찾기 (재귀 호출)
         List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
 
         if (leafCategories.isEmpty()) {
             throw new CategoryNotFoundException("No leaf categories found for parent: " + parentCategory.getCategoryName());
         }
 
-        // Category -> CategoryResponseDto 변환
-        return leafCategories.stream()
+        // 페이지 처리: start와 end 계산
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), leafCategories.size());
+
+        // 페이지에 맞는 데이터 추출
+        List<CategoryResponseDto> paginatedLeafCategories = leafCategories.subList(start, end)
+                .stream()
                 .map(this::convertToDto)
                 .toList();
     }
 
     private List<Category> findLeafCategoriesRecursive(Category category) {
+        // 자식 카테고리 조회
         List<Category> children = categoryRepository.findByParentCategoryId(category.getCategoryId());
 
-        // 자식이 없으면 리프 노드이므로 현재 카테고리를 반환
+        // 자식이 없으면 리프 노드이므로 현재 카테고리 반환
         if (children.isEmpty()) {
             return List.of(category);
         }
 
-        // 자식이 있으면 자식 카테고리에 대해 재귀 호출
+        // 자식 카테고리가 있으면 재귀 호출
         return children.stream()
                 .flatMap(child -> findLeafCategoriesRecursive(child).stream())
                 .toList();
     }
+
 
 
     public List<CategoryResponseDto> findByParentCategory(ParentCategoryRequestDto parentCategoryDto) {

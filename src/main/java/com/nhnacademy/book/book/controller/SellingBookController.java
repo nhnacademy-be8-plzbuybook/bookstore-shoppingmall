@@ -37,7 +37,7 @@ public class SellingBookController {
     @GetMapping
     public ResponseEntity<Page<SellingBookAndBookResponseDto>> getBooks(
             @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
-            @RequestParam(defaultValue = "16") int size,        // 페이지 크기
+            @RequestParam(defaultValue = "14") int size,        // 페이지 크기
             @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 정렬 기준
             @RequestParam(defaultValue = "desc") String sortDir // 정렬 방향
     ) {
@@ -121,6 +121,7 @@ public class SellingBookController {
             @RequestParam(defaultValue = "desc") String sortDirection) {
         return ResponseEntity.ok(sellingBookService.getSellingBooksByViewCount(sortDirection));
     }
+
 
 }
 
