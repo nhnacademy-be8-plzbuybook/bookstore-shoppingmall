@@ -42,18 +42,13 @@ jobs:
           port: ${{ secrets.SSH_NHN_PORT }}
           password: ${{ secrets.SSH_NHN_PASSWORD }}
           script: |
-            cd /home/be8/be8-team4/shop/target
-            
             echo -e "jar 파일을 10143 포트에 실행합니다."
-            java -Dserver.port=10143 -Dspring.profiles.active="nhn" -jar book-0.0.1-SNAPSHOT.jar 
+            nohup /usr/local/java/java21/bin/java -Dserver.port=10143 -Dspring.profiles.active=nhn -jar ~/target/book.jar > log_$port 2>&1 & 
             
             echo -e "jar 파일을 10144 포트에 실행합니다."
-            java -Dserver.port=10144 -Dspring.profiles.active="nhn" -jar ~/book-0.0.1-SNAPSHOT.jar 
-          
-            
-               
-      
-            
+            nohup /usr/local/java/java21/bin/java -Dserver.port=10144 -Dspring.profiles.active=nhn -jar ~/target/hello.jar > log_$port 2>&1 &
+
+#            java -Dserver.port=10143 -Dspring.profiles.active="nhn" -jar book-0.0.1-SNAPSHOT.jar
             
 
 #            cd /home/nhnacademy/shop
