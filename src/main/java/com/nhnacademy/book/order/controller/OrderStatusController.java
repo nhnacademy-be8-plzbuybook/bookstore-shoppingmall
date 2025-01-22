@@ -35,17 +35,18 @@ public class OrderStatusController {
     /**
      * 주문상태 수정
      *
-     * @param orderId 주문 아이디
+     * @param orderId       주문 아이디
      * @param modifyRequest 주문상태 수정 DTO
      * @return 상태코드
      */
-    @PutMapping("{order-id}/status")
+    @PutMapping("/{order-id}/status")
     public ResponseEntity<Void> patchOrderStatus(@PathVariable("order-id") String orderId,
                                                  @RequestBody OrderStatusModifyRequestDto modifyRequest) {
         if (modifyRequest.getStatus() == DELIVERED) {
             orderService.orderDelivered(orderId);
+        } else {
+            orderService.modifyStatus(orderId, modifyRequest);
         }
-       orderService.modifyStatus(orderId, modifyRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -54,7 +55,7 @@ public class OrderStatusController {
      * 주문상품상태 수정
      *
      * @param orderProductId 주문상품 아이디
-     * @param patchRequest 주문상품상태 수정 DTO
+     * @param patchRequest   주문상품상태 수정 DTO
      * @return 상태코드
      */
     @PutMapping("/order-products/{order-product-id}/status")

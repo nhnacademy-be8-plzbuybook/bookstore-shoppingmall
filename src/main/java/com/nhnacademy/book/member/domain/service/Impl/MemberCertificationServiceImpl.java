@@ -3,8 +3,6 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberCertification;
 import com.nhnacademy.book.member.domain.dto.certification.*;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberCertificationRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
@@ -23,6 +21,11 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
     private final MemberRepository memberRepository;
 
     private static final List<String> VALID_CERTIFICATION_METHODS = List.of("일반", "페이코");
+
+
+    private static final String MEMBER_ID_NOT_FOUND_MESSAGE = "ID에 해당하는 member가 없다!";
+    private static final String CERTIFICATION_NOT_FOUND_MESSAGE = "해당 회원의 인증 정보가 없다!";
+
 
     @Override
     public CertificationCreateResponseDto addCertification(CertificationCreateRequestDto certificationCreateRequest) {
@@ -52,10 +55,10 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
     @Override
     public CertificationResponseDto getCertificationByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException("ID에 해당하는 member가 없다!"));
+                .orElseThrow(() -> new MemberIdNotFoundException(MEMBER_ID_NOT_FOUND_MESSAGE));
 
         MemberCertification memberCertification = memberCertificationRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(() -> new CertificationNotFoundException("해당 회원의 인증 정보가 없다!"));
+                .orElseThrow(() -> new CertificationNotFoundException(CERTIFICATION_NOT_FOUND_MESSAGE));
 
         CertificationResponseDto certificationResponse = new CertificationResponseDto();
         certificationResponse.setMemberId(memberCertification.getMember().getMemberId());
@@ -66,10 +69,10 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
     @Override
     public CertificationUpdateResponseDto updateCertificationMethod(Long memberId, CertificationUpdateRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException("ID에 해당하는 member가 없다!"));
+                .orElseThrow(() -> new MemberIdNotFoundException(MEMBER_ID_NOT_FOUND_MESSAGE));
 
         MemberCertification memberCertification = memberCertificationRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(() -> new CertificationNotFoundException("해당 회원의 인증 정보가 없다!"));
+                .orElseThrow(() -> new CertificationNotFoundException(CERTIFICATION_NOT_FOUND_MESSAGE));
 
         String newCertificationMethod = requestDto.getCertification();
         if(!isValidCertificationMethod(newCertificationMethod)) {
@@ -94,10 +97,10 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
     public UpdateLastLoginResponseDto updateLastLogin(UpdateLastLoginRequestDto requestDto)
     {
         Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new MemberIdNotFoundException("ID에 해당하는 member가 없다!"));
+                .orElseThrow(() -> new MemberIdNotFoundException(MEMBER_ID_NOT_FOUND_MESSAGE));
 
         MemberCertification memberCertification = memberCertificationRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(() -> new CertificationNotFoundException("해당 회원의 인증 정보가 없다!"));
+                .orElseThrow(() -> new CertificationNotFoundException(CERTIFICATION_NOT_FOUND_MESSAGE));
 
         memberCertification.setMember(member);
         memberCertification.setLastLogin(LocalDateTime.now());
@@ -114,10 +117,10 @@ public class MemberCertificationServiceImpl implements MemberCertificationServic
     @Override
     public DeleteCertificationResponseDto deleteCertification(DeleteCertificationRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new MemberIdNotFoundException("ID에 해당하는 member가 없다!"));
+                .orElseThrow(() -> new MemberIdNotFoundException(MEMBER_ID_NOT_FOUND_MESSAGE));
 
         MemberCertification memberCertification = memberCertificationRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(() -> new CertificationNotFoundException("해당 회원의 인증 정보가 없다!"));
+                .orElseThrow(() -> new CertificationNotFoundException(CERTIFICATION_NOT_FOUND_MESSAGE));
 
         memberCertificationRepository.delete(memberCertification);
 

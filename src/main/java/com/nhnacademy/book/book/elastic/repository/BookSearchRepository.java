@@ -1,14 +1,11 @@
 package com.nhnacademy.book.book.elastic.repository;
 
 import com.nhnacademy.book.book.elastic.document.BookDocument;
-import com.nhnacademy.book.book.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -27,10 +24,6 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
     // 제목으로 책 조회
     List<BookDocument> findByBookTitle(String bookTitle);
 
-
-    // 제목에 특정 문자열이 포함된 책 조회
-//    @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
-//    List<BookDocument> findByBookTitleContaining(String keyword);
 
     @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
     List<BookDocument> findByBookTitleContaining(String keyword);
@@ -58,8 +51,4 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
 
 
     List<BookDocument> findByBookIdIn(List<Long> bookIds);
-
-
-
-
 }

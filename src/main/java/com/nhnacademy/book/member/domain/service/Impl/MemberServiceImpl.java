@@ -46,6 +46,10 @@ public class MemberServiceImpl implements MemberService {
     private final MemberCertificationRepository memberCertificationRepository;
     private final Clock clock;
     private final OrderProductRepository orderProductRepository;
+    private static final String WITHDRAWAL = "WITHDRAWAL";
+
+
+    private static final String MEMBER_NOT_FOUND_MESSAGE = "이메일에 해당하는 회원이 없습니다.";
 
     //회원 생성
     @Override
@@ -229,9 +233,6 @@ public class MemberServiceImpl implements MemberService {
         if(!isModified) {
             throw new DuplicateMemberModificationException("수정할 내용이 기존 데이터와 같다!");
         }
-
-//        memberRepository.save(member);
-
     }
 
     //이메일로 특정 회원 조회
@@ -243,7 +244,7 @@ public class MemberServiceImpl implements MemberService {
         List<MemberAuth> memberAuthList = memberAuthRepository.findByMember(member);
 
         if (memberAuthList.isEmpty()) {
-            throw new RuntimeException("해당 멤버에 대한 권한 정보를 찾을 수 없습니다");
+            throw new IllegalArgumentException("해당 멤버에 대한 권한 정보를 찾을 수 없습니다");
         }
 
         String authName = memberAuthList.get(0).getAuth().getAuthName();
@@ -264,7 +265,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmailWithGradeAndStatus(email)
                 .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
 
-        if ("WITHDRAWAL".equalsIgnoreCase(member.getMemberStatus().getMemberStateName())) {
+        if (WITHDRAWAL.equalsIgnoreCase(member.getMemberStatus().getMemberStateName())) {
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
 
@@ -299,7 +300,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void withdrawMember(Long memberId) {
-        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName(WITHDRAWAL)
                 .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
 
         Member member = memberRepository.findById(memberId)
@@ -312,13 +313,13 @@ public class MemberServiceImpl implements MemberService {
     // 회원 탈퇴
     @Override
     public void withdrawState(String email) {
-        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName("WITHDRAWAL")
+        MemberStatus withdrawStatus = memberStatusRepository.findByMemberStateName(WITHDRAWAL)
                 .orElseThrow(() -> new MemberGradeNotFoundException("withdraw 상태가 없다!"));
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberEmailNotFoundException("해당 이메일의 회원이 존재하지 않다!"));
 
-        if (member.getMemberStatus().getMemberStateName().equals("WITHDRAWAL")) {
+        if (member.getMemberStatus().getMemberStateName().equals(WITHDRAWAL)) {
             throw new IllegalStateException("이미 탈퇴한 회원입니다.");
         }
 
@@ -353,7 +354,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updateActiveStatus(String email) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException("이메일에 해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
 
         MemberStatus activeStatus = memberStatusRepository.findByMemberStateName("ACTIVE")
                 .orElseThrow(() -> new MemberStatusNotFoundException("해당 상태가 존재하지 않습니다."));
@@ -401,7 +402,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 기존 회원 정보 조회
         Member member = memberRepository.findByEmail(memberModifyByAdminRequestDto.getOriginalEmail())
-                .orElseThrow(() -> new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new MemberEmailNotFoundException(MEMBER_NOT_FOUND_MESSAGE));
 
         // 이름 수정
         if (memberModifyByAdminRequestDto.getName() != null &&
@@ -475,7 +476,7 @@ public class MemberServiceImpl implements MemberService {
         Long memberId = memberRepository.getMemberIdByEmail(email);
 
         if (memberId == null) {
-            throw new MemberEmailNotFoundException("이메일에 해당하는 회원이 없습니다.");
+            throw new MemberEmailNotFoundException(MEMBER_NOT_FOUND_MESSAGE);
         }
 
         return memberId;

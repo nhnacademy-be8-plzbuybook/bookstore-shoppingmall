@@ -17,6 +17,8 @@ import java.util.Map;
 @RequestMapping("/api/bookstore/guests/carts")
 public class CartBookGuestController {
 
+    private static final String RESPONSE_CART_ID = "cartId";
+
     private final CartBookGuestService cartBookGuestService;
 
     public CartBookGuestController(CartBookGuestService cartBookGuestService) {
@@ -27,9 +29,9 @@ public class CartBookGuestController {
     public ResponseEntity<Map<String, Long>> createGuestCart(@RequestBody CreateCartBookRequestDto createCartBookRequestDto,
                                                              @RequestHeader("cart") String sessionId) {
 
-        Long cartId = cartBookGuestService.AddToGuestCart(createCartBookRequestDto, sessionId);
+        Long cartId = cartBookGuestService.addToGuestCart(createCartBookRequestDto, sessionId);
         Map<String, Long> response = new HashMap<>();
-        response.put("cartId", cartId);
+        response.put(RESPONSE_CART_ID, cartId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,7 +48,7 @@ public class CartBookGuestController {
 
         Long updatedCartId = cartBookGuestService.updateGuestCartItem(cartId, quantity, sessionId);
         Map<String, Long> response = new HashMap<>();
-        response.put("cartId", updatedCartId);
+        response.put(RESPONSE_CART_ID, updatedCartId);
 
         return ResponseEntity.ok(response);
     }
@@ -65,7 +67,7 @@ public class CartBookGuestController {
 
         Long deletedCartId = cartBookGuestService.removeItemFromGuestCart(cartId, sessionId);
         Map<String, Long> response = new HashMap<>();
-        response.put("cartId", deletedCartId);
+        response.put(RESPONSE_CART_ID, deletedCartId);
 
         return ResponseEntity.ok(response);
     }

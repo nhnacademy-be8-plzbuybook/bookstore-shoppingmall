@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +24,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Book findByBookId(Long bookId);
 
-//    @Query("SELECT b FROM Book b " +
-//            "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
-//            "LEFT JOIN Author a ON ba.author.authorId = a.authorId " +
-//            "LEFT JOIN BookCategory bc ON b.bookId = bc.book.bookId " +
-//            "LEFT JOIN Category c ON bc.category.categoryId = c.categoryId " +
-//            "WHERE b.bookTitle LIKE %:searchKeyword% " +
-//            "OR a.authorName LIKE %:searchKeyword% " +
-//            "OR c.categoryName LIKE %:searchKeyword%")
-//    List<Book> findBooksBySearchKeyword(@Param("searchKeyword") String searchKeyword);
 
     @Query("SELECT DISTINCT b FROM Book b " +
             "LEFT JOIN BookAuthor ba ON b.bookId = ba.book.bookId " +
@@ -90,15 +80,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByBookCategories_Category_CategoryId(Long categoryId);
 
     boolean existsByBookId(Long bookId);
-
-//    // 책을 쓴 작가를 검색
-//    @Query("SELECT a FROM Author a JOIN a.bookAuthors ba JOIN ba.book b WHERE b.bookId = :bookId")
-//    List<Author> findAuthorsByBookId(@Param("bookId") Long bookId);
-//
-//    // 작가가 집필한 책 검색
-//    @Query("SELECT b FROM Book b JOIN b.bookAuthors ba JOIN ba.author a WHERE a.authorName = :authorName")
-//    List<Book> findBooksByAuthorName(@Param("authorName") String authorName);
-
-
 
 }

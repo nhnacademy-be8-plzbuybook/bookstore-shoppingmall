@@ -188,10 +188,6 @@ class OrderValidationServiceImplTest {
         verify(deliveryFeePolicyService).getCalculatedDeliveryFee(anyLong(), any(DeliveryFeeCalculateRequestDto.class));
     }
 
-    @Test
-    void validatePoint() {
-        //TODO: 테스트 코드 작성
-    }
 
     @DisplayName("반품 요청: 성공")
     @Test
@@ -490,8 +486,4 @@ class OrderValidationServiceImplTest {
         verify(couponService).validateCouponCalculation(eq(couponId), any(ValidationCouponCalculationRequestDto.class));
     }
 
-    @Test
-    void validateDeliveryWishDate() {
-        //TODO: 테스트코드 작성
-    }
 }

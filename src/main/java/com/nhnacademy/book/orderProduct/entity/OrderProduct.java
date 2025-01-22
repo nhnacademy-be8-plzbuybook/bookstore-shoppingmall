@@ -26,7 +26,7 @@ public class OrderProduct {
     private Long orderProductId;
 
     @ManyToOne
-    @JoinColumn(name = "op_selling_book_id", referencedColumnName = "sellingBookId") //TODO: 컬럼명 명시적으로 지정필요
+    @JoinColumn(name = "op_selling_book_id", referencedColumnName = "sellingBookId")
     private SellingBook sellingBook;
 
     @Setter

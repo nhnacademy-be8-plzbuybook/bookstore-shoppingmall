@@ -8,7 +8,6 @@ public interface OrderService {
     Page<OrderDto> getOrders(OrderSearchRequestDto searchRequest, Pageable pageable);
     OrderDetail getOrderDetail(String orderId);
     void orderDelivered(String orderId);
-//    NonMemberOrderDetail getNonMemberOrderDetail(NonMemberOrderDetailAccessRequestDto accessRequest);
     String getNonMemberOrderId(NonMemberOrderDetailAccessRequestDto accessRequest);
     void modifyStatus(String orderId, OrderStatusModifyRequestDto modifyRequest);
 

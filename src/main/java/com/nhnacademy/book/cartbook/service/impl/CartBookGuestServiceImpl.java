@@ -22,6 +22,8 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 public class CartBookGuestServiceImpl implements CartBookGuestService {
+    private static final String PREFIX_GUEST = "Guest:";
+
     private final CartBookRedisRepository cartBookRedisRepository;
     private final SellingBookRepository sellingBookRepository;
     private final BookImageRepository bookImageRepository;
@@ -36,7 +38,7 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
 
 
     @Override
-    public Long AddToGuestCart(CreateCartBookRequestDto createCartBookRequestDto, String sessionId) {
+    public Long addToGuestCart(CreateCartBookRequestDto createCartBookRequestDto, String sessionId) {
         Long cartId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
 
         SellingBook sellingBook = sellingBookRepository.findById(createCartBookRequestDto.sellingBookId())
@@ -45,12 +47,12 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
             throw new BookStatusNotSellingBookException("판매중인 도서가 아닙니다.");
         }
 
-        List<ReadCartBookResponseDto> existingCartItems = cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
-        if (cartBookRedisRepository.isHit("Guest:" + sessionId)) {
+        List<ReadCartBookResponseDto> existingCartItems = cartBookRedisRepository.readAllHashName(PREFIX_GUEST + sessionId);
+        if (cartBookRedisRepository.isHit(PREFIX_GUEST + sessionId)) {
             for (ReadCartBookResponseDto existingCartItem : existingCartItems) {
                 if (existingCartItem.sellingBookId().equals(sellingBook.getSellingBookId())) {
                     int quantity = existingCartItem.quantity() + createCartBookRequestDto.quantity();
-                    return cartBookRedisRepository.update("Guest:" + sessionId, existingCartItem.cartId(), quantity);
+                    return cartBookRedisRepository.update(PREFIX_GUEST + sessionId, existingCartItem.cartId(), quantity);
                 }
             }
         }
@@ -67,35 +69,35 @@ public class CartBookGuestServiceImpl implements CartBookGuestService {
                 .quantity(createCartBookRequestDto.quantity())
                 .sellingBookStock(sellingBook.getSellingBookStock())
                 .build();
-        return cartBookRedisRepository.create("Guest:" + sessionId, cartId, readCartBookResponseDto);
+        return cartBookRedisRepository.create(PREFIX_GUEST + sessionId, cartId, readCartBookResponseDto);
 
     }
 
 
     @Override
     public Long updateGuestCartItem(Long cartId, int quantity, String sessionId) {
-        return cartBookRedisRepository.update("Guest:" + sessionId, cartId, quantity);
+        return cartBookRedisRepository.update(PREFIX_GUEST + sessionId, cartId, quantity);
     }
 
     @Override
     public Long removeItemFromGuestCart(Long cartId, String sessionId) {
-        return cartBookRedisRepository.delete("Guest:" + sessionId, cartId);
+        return cartBookRedisRepository.delete(PREFIX_GUEST + sessionId, cartId);
     }
 
     @Override
     public void clearGuestCart(String sessionId) {
-        cartBookRedisRepository.deleteAll("Guest:" + sessionId);
+        cartBookRedisRepository.deleteAll(PREFIX_GUEST + sessionId);
     }
 
     @Override
     public List<ReadCartBookResponseDto> getGuestCart(String sessionId) {
-        return cartBookRedisRepository.readAllHashName("Guest:" + sessionId);
+        return cartBookRedisRepository.readAllHashName(PREFIX_GUEST + sessionId);
     }
 
     private String getImageUrl(SellingBook sellingBook, BookImageRepository bookImageRepository) {
         Book book = sellingBook.getBook(); // 판매책으로 책정보를 가져옴
         BookImage bookImage = bookImageRepository.findByBook(book).orElse(null); // 책으로 책이미지를 가져옴
-        String url = bookImage.getImageUrl(); // 책이미지에서 이미지 url 을 가져옴
+        String url = bookImage != null ? bookImage.getImageUrl() : null; // 책이미지에서 이미지 url 을 가져옴
 
         if (url != null && !url.isEmpty()) {
             log.info("책에 대한 이미지 url이 존재하지 않습니다.");

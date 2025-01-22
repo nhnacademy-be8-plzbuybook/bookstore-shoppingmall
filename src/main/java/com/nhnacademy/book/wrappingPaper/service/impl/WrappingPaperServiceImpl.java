@@ -3,7 +3,9 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
-import com.nhnacademy.book.wrappingPaper.dto.*;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingCreateSaveRequestDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperUpdateRequestDto;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
 import com.nhnacademy.book.wrappingPaper.service.WrappingPaperService;
@@ -12,14 +14,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class WrappingPaperServiceImpl implements WrappingPaperService {
     private final WrappingPaperRepository wrappingPaperRepository;
     private final ObjectStorageService objectStorageService;
+    public static final String WRAPPING_PAPER_NOT_FOUND_MSG = "찾을 수 없는 포장지입니다. 포장지 아이디: ";
+
+    private static final String WRAPPING_NOT_FOUND_MESSAGE = "찾을 수 없는 포장지입니다. 포장지 아이디: ";
+
 
     @Transactional(readOnly = true)
     @Override
@@ -36,7 +42,7 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
         List<WrappingPaper> wrappingPapers = wrappingPaperRepository.findAll();
 
         if (wrappingPapers.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
         return wrappingPapers.stream().map(WrappingPaperDto::new).toList();
     }
@@ -57,7 +63,8 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public Long modifyWrappingPaper(long id, WrappingPaperUpdateRequestDto updateRequest) {
         WrappingPaper wrappingPaper = wrappingPaperRepository.findById(id).orElseThrow(()
-                -> new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + id));
+
+                -> new NotFoundException(WRAPPING_PAPER_NOT_FOUND_MSG + id));
         // 이미지 파일이 없으면 파일 제외하고 수정
         if (updateRequest.imageFile() == null) {
             wrappingPaper.update(updateRequest.name(), updateRequest.price(), updateRequest.stock());
@@ -74,14 +81,15 @@ public class WrappingPaperServiceImpl implements WrappingPaperService {
     @Override
     public void removeWrappingPaper(long id) {
         if (!wrappingPaperRepository.existsById(id)) {
-            throw new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + id);
+
+            throw new NotFoundException(WRAPPING_PAPER_NOT_FOUND_MSG + id);
         }
         wrappingPaperRepository.deleteById(id);
     }
 
     @Override
     public void reduceStock(Long wrappingPaperId, int quantity) {
-        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException("찾을 수 없는 포장지입니다. 포장지 아이디: " + wrappingPaperId));
+        WrappingPaper wrappingPaper = wrappingPaperRepository.findById(wrappingPaperId).orElseThrow(() -> new NotFoundException(WRAPPING_PAPER_NOT_FOUND_MSG + wrappingPaperId));
         wrappingPaper.setStock(wrappingPaper.getStock() - quantity);
     }
 

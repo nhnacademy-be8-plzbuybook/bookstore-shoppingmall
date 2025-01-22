@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = PublisherController.class)
-public class PublisherControllerTest {
+class PublisherControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -55,7 +55,7 @@ public class CartBookGuestControllerTest {
         Long expectedCartId = 1L;
 
         // 모킹: 서비스에서 반환할 값 설정
-        when(cartBookGuestService.AddToGuestCart(any(CreateCartBookRequestDto.class), anyString()))
+        when(cartBookGuestService.addToGuestCart(any(CreateCartBookRequestDto.class), anyString()))
                 .thenReturn(expectedCartId);
 
         // When & Then

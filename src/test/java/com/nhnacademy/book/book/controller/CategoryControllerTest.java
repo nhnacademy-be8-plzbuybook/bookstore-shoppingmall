@@ -1,7 +1,6 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
-import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,15 +28,12 @@ class CategoryControllerTest {
     @Mock
     private CategoryService categoryService;
 
-    @Mock
-    private com.nhnacademy.book.book.repository.CategoryRepository categoryRepository;
-
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        CategoryController categoryController = new CategoryController(categoryService, categoryRepository);
+        CategoryController categoryController = new CategoryController(categoryService);
         mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
     }
 
@@ -94,25 +90,4 @@ class CategoryControllerTest {
         // Mock 검증
         verify(categoryService, times(1)).findAllCategories(any());
     }
-
-
-
-//    @Test
-//    void getCategory() throws Exception {
-//        List<CategoryResponseDto> categories = List.of(
-//                new CategoryResponseDto(1L, "Fiction", 0, null, null)
-//        );
-//        when(categoryService.findByParentCategoryId(1L)).thenReturn(categories);
-//
-//        mockMvc.perform(get("/api/categories/children-category")
-//                        .param("parentId", "1")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$", hasSize(1)))
-//                .andExpect(jsonPath("$[0].categoryId").value(1L))
-//                .andExpect(jsonPath("$[0].categoryName").value("Fiction"));
-//
-//        verify(categoryService, times(1)).findByParentCategoryId(1L);
-//    }
-
 }

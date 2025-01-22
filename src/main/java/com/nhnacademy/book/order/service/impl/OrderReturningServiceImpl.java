@@ -60,8 +60,6 @@ public class OrderReturningServiceImpl implements OrderReturningService {
                 -> new NotFoundException("주문상품반품 정보를 찾을 수 없습니다."));
         orderValidationService.validateOrderProductForReturnCompletion(orderProduct);
 
-        //TODO: 반품 포인트적립 (결제금액 - 반품 택배비)
-
         //상품 재고 복구
         orderProductService.addOrderProductStock(orderProductId, orderProductReturn.getQuantity());
 
@@ -83,52 +81,4 @@ public class OrderReturningServiceImpl implements OrderReturningService {
         return orderReturnQueryRepository.findOrderProductReturnPage(searchRequest, pageable);
     }
 
-
-//    private void restoreOrderProductStock(OrderProduct orderProduct, int quantity) {
-//        SellingBook sellingBook = orderProduct.getSellingBook();
-//        sellingBook.setSellingBookStock(sellingBook.getSellingBookStock() + quantity);
-//    }
-
-//    private void validateOrderProductForReturning(OrderProduct orderProduct) {
-//        int statusCode = orderProduct.getStatus().getCode();
-//        // 발송완료 <= statusCode <= 구매확정
-//        if (!(statusCode >= 2 && statusCode <= 5)) {
-//            throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
-//        }
-//        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
-//        boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
-//        if (!isReturnable) {
-//            throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
-//        }
-//    }
-//    private void validateOrderProductForReturnCompletion(OrderProduct orderProduct) {
-//        if (orderProduct.getStatus() != OrderProductStatus.RETURN_REQUESTED) {
-//            throw new ConflictException("반품요청된 주문상품이 아닙니다.");
-//        }
-//    }
-
-//    private void validateOrderProductForReturning(OrderProduct orderProduct) {
-//        int statusCode = orderProduct.getStatus().getCode();
-//        // 발송완료 <= statusCode <= 배송완료
-//        if (!(statusCode >= 2 && statusCode <= 5)) {
-//            throw new ConflictException("반품이 불가능한 주문상품입니다. (사유: 반품가능 상태가 아님)");
-//        }
-//        Orders order = orderRepository.findById(orderProduct.getOrder().getId()).orElseThrow(() -> new NotFoundException("주문정보를 찾을 수 없습니다."));
-//        boolean isReturnable = orderDeliveryService.isInReturnablePeriod(order);
-//        if (!isReturnable) {
-//            throw new ConflictException("반품이 불가능한 주문입니다. (사유: 반품기간 지남)");
-//        }
-//    }
-//
-//    private void validateOrderForReturnCompletion(Orders order) {
-//        if (order.getStatus() != OrderStatus.RETURN_REQUESTED) {
-//            throw new ConflictException("반품요청된 주문이 아닙니다.");
-//        }
-//    }
-//
-//    private void validateOrderProductForReturnCompletion(OrderProduct orderProduct) {
-//        if (orderProduct.getStatus() != OrderProductStatus.RETURN_REQUESTED) {
-//            throw new ConflictException("반품요청된 주문상품이 아닙니다.");
-//        }
-//    }
 }

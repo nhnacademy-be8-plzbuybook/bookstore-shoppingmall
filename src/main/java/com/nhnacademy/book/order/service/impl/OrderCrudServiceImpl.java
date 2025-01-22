@@ -2,7 +2,6 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
-import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
@@ -16,10 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -72,9 +71,9 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         }
 
         if (orderProducts.size() > 1) {
-            return String.format("%s 외 %d 건", book.getBookTitle(), orderProducts.size() - 1);
+            return String.format("%s 외 %d 건", firstBookTitle, orderProducts.size() - 1);
         }
-        return book.getBookTitle();
+        return firstBookTitle;
     }
 
 
@@ -88,7 +87,7 @@ public class OrderCrudServiceImpl implements OrderCrudService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmssSSSS");
         String orderedAtString = orderedAt.format(formatter);
 
-        int randomValue = new Random().nextInt(9999); // 0~9999 랜덤 값
+        int randomValue = new SecureRandom().nextInt(9999); // 0~9999 랜덤 값
         return "ORD-" + orderedAtString + "-" + String.format("%04d", randomValue);
     }
 

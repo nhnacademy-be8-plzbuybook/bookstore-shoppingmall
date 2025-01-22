@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUploadResponse {
-//    private Long bookId;
     private String url; // 업로드된 파일의 URL
 }

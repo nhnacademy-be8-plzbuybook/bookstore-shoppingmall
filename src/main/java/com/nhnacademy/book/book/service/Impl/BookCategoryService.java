@@ -2,10 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.BookCategoryResponseDto;
-import com.nhnacademy.book.book.dto.response.BookInfoResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
-import com.nhnacademy.book.book.elastic.document.BookInfoDocument;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookCategory;
 import com.nhnacademy.book.book.entity.Category;
@@ -14,15 +11,14 @@ import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.BookCategoryRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class BookCategoryService {
@@ -30,14 +26,6 @@ public class BookCategoryService {
     private final BookCategoryRepository bookCategoryRepository;
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
-    private final CategoryService categoryService;
-
-    public BookCategoryService(BookCategoryRepository bookCategoryRepository, BookRepository bookRepository, CategoryRepository categoryRepository, CategoryService categoryService) {
-        this.bookCategoryRepository = bookCategoryRepository;
-        this.bookRepository = bookRepository;
-        this.categoryRepository = categoryRepository;
-        this.categoryService = categoryService;
-    }
 
     public BookCategoryResponseDto createBookCategory(BookCategoryRequestDto bookCategoryRequestDto) {
         Book book = bookRepository.findById(bookCategoryRequestDto.getBookId())
@@ -58,11 +46,11 @@ public class BookCategoryService {
     }
 
     public List<CategoryResponseDto> findCategoriesByBookId(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        if (!bookRepository.existsById(bookId)) {
+            throw new BookNotFoundException("Book not found");
+        }
 
         List<Category> categories = bookCategoryRepository.findCategoriesByBookId(bookId);
-
 
 
         // Category 엔티티를 CategoryResponseDto로 변환하여 반환
@@ -77,7 +65,7 @@ public class BookCategoryService {
                                     child.getParentCategory() != null ? child.getParentCategory().getCategoryId() : null,
                                     new ArrayList<>()  // 자식 카테고리의 자식들을 추가할 경우 여기에 추가
                             ))
-                            .collect(Collectors.toList());
+                            .toList();
 
                     return new CategoryResponseDto(
                             category.getCategoryId(),
@@ -87,9 +75,6 @@ public class BookCategoryService {
                             childCategories
                     );
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
-
-
-
 }

@@ -23,12 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TagController.class)
-public class TagControllerTest {
+class TagControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -83,7 +82,7 @@ public class TagControllerTest {
         tagResponseDto.setTagName("Test Tag");
         Page<TagResponseDto> tags = new PageImpl<>(List.of(tagResponseDto), pageable, 1);
 
-        Mockito.when(tagService.searchTagsByKeyword(eq(keyword), eq(pageable))).thenReturn(tags);
+        Mockito.when(tagService.searchTagsByKeyword(keyword, pageable)).thenReturn(tags);
 
         mockMvc.perform(get("/api/tags")
                         .param("keyword", keyword)

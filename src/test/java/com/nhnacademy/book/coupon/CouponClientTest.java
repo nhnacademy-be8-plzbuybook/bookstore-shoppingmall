@@ -88,4 +88,32 @@ class CouponClientTest {
 
         verify(couponClient, times(1)).refundCoupon(any(RefundCouponRequestDto.class));
     }
+
+    @DisplayName("쿠폰 사용")
+    @Test
+    void useCoupon() {
+        Long couponId = 1L;
+        when(couponClient.useCoupon(couponId)).thenReturn(ResponseEntity.ok("쿠폰 상태가 변경되었습니다"));
+
+        ResponseEntity<String> response = couponClient.useCoupon(couponId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("쿠폰 상태가 변경되었습니다", response.getBody());
+
+        verify(couponClient, times(1)).useCoupon(couponId);
+    }
+
+    @DisplayName("쿠폰 사용취소")
+    @Test
+    void cancelCoupon() {
+        Long couponId = 1L;
+        when(couponClient.cancelCoupon(couponId)).thenReturn(ResponseEntity.ok("쿠폰 사용이 취소되었습니다"));
+
+        ResponseEntity<String> response = couponClient.cancelCoupon(couponId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("쿠폰 사용이 취소되었습니다", response.getBody());
+
+        verify(couponClient, times(1)).cancelCoupon(couponId);
+    }
 }

@@ -2,9 +2,7 @@ package com.nhnacademy.book.book.service.Impl;
 
 
 import com.nhnacademy.book.book.dto.request.TagRegisterDto;
-import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
 import com.nhnacademy.book.book.dto.response.TagResponseDto;
-import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.entity.Tag;
 import com.nhnacademy.book.book.exception.TagNameAlreadyException;
 import com.nhnacademy.book.book.exception.TagNotFoundException;
@@ -15,15 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class TagService {
 
     private final TagRepository tagRepository;
+
+    private static final String TAG_NOT_FOUND_MESSAGE = "tag not found";
 
 
     public TagResponseDto save(TagRegisterDto tagRegisterDto) {
@@ -46,7 +43,7 @@ public class TagService {
     public Tag findTagById(Long tagId) {
         if(tagRepository.existsByTagId(tagId)){
             return tagRepository.findByTagId(tagId);
-        } else throw new TagNotFoundException("tag not found");
+        } else throw new TagNotFoundException(TAG_NOT_FOUND_MESSAGE);
     }
 
 
@@ -65,13 +62,13 @@ public class TagService {
         if(tagRepository.existsByTagId(tagId)){
             tagRepository.deleteById(tagId);
         } else {
-            throw new TagNotFoundException("tag not found");
+            throw new TagNotFoundException(TAG_NOT_FOUND_MESSAGE);
         }
     }
 
     public String findTagNameByTagId(Long tagId) {
         if(!tagRepository.existsByTagId(tagId)){
-            throw new TagNotFoundException("tag not found");
+            throw new TagNotFoundException(TAG_NOT_FOUND_MESSAGE);
         }
 
         Tag tag = tagRepository.findTagByTagId(tagId);

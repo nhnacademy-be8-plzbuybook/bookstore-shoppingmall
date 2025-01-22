@@ -1,7 +1,5 @@
 package com.nhnacademy.book.book.dto.response;
 
-import com.nhnacademy.book.book.entity.Author;
-import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.entity.SellingBook;
 import lombok.Getter;
 import lombok.Setter;

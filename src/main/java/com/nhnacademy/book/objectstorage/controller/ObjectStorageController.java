@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/objects")
 public class ObjectStorageController {
+    private static final String FILE_UPLOAD_FAILED = "File upload failed: ";
 
     private final ObjectStorageService objectStorageService;
 
@@ -32,7 +33,7 @@ public class ObjectStorageController {
             return ResponseEntity.ok("Files uploaded successfully: " + String.join(", ", uploadedFileNames));
         } catch (ObjectStorageFileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("File upload failed: " + e.getMessage());
+                    .body(FILE_UPLOAD_FAILED + e.getMessage());
         }
     }
 
@@ -53,7 +54,7 @@ public class ObjectStorageController {
             return ResponseEntity.ok("File uploaded successfully: " + uploadedFileName);
         } catch (ObjectStorageFileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("File upload failed: " + e.getMessage());
+                    .body(FILE_UPLOAD_FAILED + e.getMessage());
         }
     }
 
@@ -74,7 +75,7 @@ public class ObjectStorageController {
             return ResponseEntity.ok(uploadedFileResponses); // 리스트 반환
         } catch (ObjectStorageFileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(List.of(new FileUploadResponse("File upload failed: " + e.getMessage())));
+                    .body(List.of(new FileUploadResponse(FILE_UPLOAD_FAILED + e.getMessage())));
         }
     }
 

@@ -1,7 +1,9 @@
 package com.nhnacademy.book.book.elastic.document;
+
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.member.domain.Member;
-import jakarta.persistence.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.controller;
 import com.nhnacademy.book.book.dto.request.TagRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookTagResponseDto;
 import com.nhnacademy.book.book.dto.response.TagResponseDto;
-import com.nhnacademy.book.book.service.Impl.BookService;
 import com.nhnacademy.book.book.service.Impl.BookTagService;
 import com.nhnacademy.book.book.service.Impl.TagService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

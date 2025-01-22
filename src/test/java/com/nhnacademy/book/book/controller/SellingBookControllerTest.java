@@ -1,194 +1,226 @@
 package com.nhnacademy.book.book.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
-import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(SellingBookController.class)
 class SellingBookControllerTest {
 
-    @InjectMocks
-    private SellingBookController sellingBookController;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private SellingBookService sellingBookService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private SellingBookAndBookResponseDto sellingBookAndBookResponseDto;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        // DTO 수동 초기화
+        sellingBookAndBookResponseDto = SellingBookAndBookResponseDto.builder()
+                .sellingBookId(1L)
+                .bookId(1L)
+                .bookTitle("Test Book")
+                .sellingBookPrice(BigDecimal.valueOf(15000))
+                .sellingBookPackageable(true)
+                .sellingBookStock(10)
+                .sellingBookStatus(SellingBook.SellingBookStatus.SELLING)
+                .used(false)
+                .sellingBookViewCount(100L)
+                .publisher("Test Publisher")
+                .categories(List.of("Category1", "Category2"))
+                .authors(List.of("Author1", "Author2"))
+                .build();
+
+        // Mock 설정
+        Mockito.when(sellingBookService.getBooks(any(), any()))
+                .thenReturn(new PageImpl<>(List.of(sellingBookAndBookResponseDto)));
+
+        Mockito.doNothing().when(sellingBookService).registerSellingBooks(any(SellingBookRegisterDto.class));
+        Mockito.doNothing().when(sellingBookService).deleteSellingBook(anyLong());
     }
 
     @Test
-    void getBooks() {
-        // Mock 반환값 설정
-        Page<SellingBookAndBookResponseDto> mockPage = new PageImpl<>(
-                List.of(new SellingBookAndBookResponseDto(1L, 1L, "Book Title", BigDecimal.valueOf(10000),
-                        true, 10, SellingBook.SellingBookStatus.SELLING, false, 100L,
-                        "imageUrl", "publisherName", List.of("Category1"), List.of("Author1")))
+    void testGetBooks() throws Exception {
+        // Mocking service response
+        SellingBookAndBookResponseDto bookResponseDto = new SellingBookAndBookResponseDto();
+        bookResponseDto.setBookTitle("Test Book");
+        bookResponseDto.setPublisher("Test Publisher");
+        bookResponseDto.setSellingBookId(1L);
+
+        Page<SellingBookAndBookResponseDto> mockedPage = new PageImpl<>(
+                List.of(bookResponseDto),
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "sellingBookId")),
+                1
         );
-        Mockito.when(sellingBookService.getBooks(any(Pageable.class), anyString())).thenReturn(mockPage);
 
-        // API 호출
-        ResponseEntity<Page<SellingBookAndBookResponseDto>> response = sellingBookController.getBooks(0, 16, "sellingBookId", "desc");
+        Mockito.when(sellingBookService.getBooks(Mockito.any(Pageable.class), Mockito.eq("sellingBookId")))
+                .thenReturn(mockedPage);
 
-        // 검증
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().getTotalElements());
-        assertEquals("Book Title", response.getBody().getContent().get(0).getBookTitle());
+        // Perform the GET request
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "sellingBookId")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
     }
 
 
     @Test
-    void registerSellingBooks() {
-        SellingBookRegisterDto dto = new SellingBookRegisterDto();
-
-        doNothing().when(sellingBookService).registerSellingBooks(any(SellingBookRegisterDto.class));
-
-        ResponseEntity<SellingBookRegisterDto> response = sellingBookController.registerSellingBooks(dto);
-
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals(dto, response.getBody());
-
-        verify(sellingBookService, times(1)).registerSellingBooks(eq(dto));
+    void testGetBooks_DefaultSorting() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "sellingBookId")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
     }
 
     @Test
-    void deleteSellingBook() {
-        Long sellingBookId = 1L;
+    void testGetBooks_SortingByLikeCount() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "likeCount")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
 
-        doNothing().when(sellingBookService).deleteSellingBook(eq(sellingBookId));
-
-        ResponseEntity<Void> response = sellingBookController.deleteSellingBook(sellingBookId);
-
-        assertEquals(204, response.getStatusCodeValue());
-
-        verify(sellingBookService, times(1)).deleteSellingBook(eq(sellingBookId));
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("likeCount"));
     }
 
     @Test
-    void updateSellingBook() {
-        Long sellingBookId = 1L;
-        SellingBookRegisterDto dto = new SellingBookRegisterDto();
-        SellinBookResponseDto responseDto = new SellinBookResponseDto();
+    void testGetBooks_SortingByNew() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "new")
+                        .param("sortDir", "asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
 
-        when(sellingBookService.updateSellingBook(eq(sellingBookId), eq(dto))).thenReturn(responseDto);
-
-        ResponseEntity<SellinBookResponseDto> response = sellingBookController.updateSellingBook(sellingBookId, dto);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDto, response.getBody());
-
-        verify(sellingBookService, times(1)).updateSellingBook(eq(sellingBookId), eq(dto));
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("new"));
     }
 
     @Test
-    void getSellingBook() {
-        Long sellingBookId = 1L;
+    void testGetBooks_SortingByLowPrice() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "low-price")
+                        .param("sortDir", "asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("low-price"));
+    }
+
+    @Test
+    void testGetBooks_SortingByHighPrice() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "high-price")
+                        .param("sortDir", "desc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].bookTitle").value("Test Book"))
+                .andExpect(jsonPath("$.content[0].publisher").value("Test Publisher"));
+
+        Mockito.verify(sellingBookService).getBooks(any(Pageable.class), eq("high-price"));
+    }
+
+
+
+    @Test
+    void testRegisterSellingBooks() throws Exception {
+        SellingBookRegisterDto registerDto = new SellingBookRegisterDto();
+        registerDto.setBookId(1L);
+        registerDto.setSellingBookPrice(BigDecimal.valueOf(15000));
+        registerDto.setSellingBookPackageable(true);
+        registerDto.setSellingBookStock(10);
+        registerDto.setSellingBookStatus(SellingBook.SellingBookStatus.SELLING);
+        registerDto.setUsed(false);
+        registerDto.setSellingBookViewCount(100L);
+
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/selling-books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registerDto)));
+
+        result.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.bookId").value(1L))
+                .andExpect(jsonPath("$.sellingBookPrice").value(15000))
+                .andExpect(jsonPath("$.sellingBookStock").value(10));
+    }
+
+    @Test
+    void testDeleteSellingBook() throws Exception {
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/selling-books/1"));
+
+        result.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testGetSellingBook() throws Exception {
         BookDetailResponseDto responseDto = new BookDetailResponseDto();
+        responseDto.setSellingBookId(1L);
+        responseDto.setBookTitle("Detail Book");
 
-        when(sellingBookService.getSellingBook(eq(sellingBookId))).thenReturn(responseDto);
+        Mockito.when(sellingBookService.getSellingBook(anyLong())).thenReturn(responseDto);
 
-        ResponseEntity<BookDetailResponseDto> response = sellingBookController.getSellingBook(sellingBookId);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books/1"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDto, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBook(eq(sellingBookId));
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookTitle").value("Detail Book"));
     }
 
     @Test
-    void getSellingBooksByViewCount() {
-        List<SellingBookAndBookResponseDto> responseDtos = Collections.emptyList();
+    void testGetSellingBooksByViewCount() throws Exception {
+        Mockito.when(sellingBookService.getSellingBooksByViewCount(any()))
+                .thenReturn(List.of(sellingBookAndBookResponseDto));
 
-        when(sellingBookService.getSellingBooksByViewCount(eq("desc"))).thenReturn(responseDtos);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/api/selling-books/view-count")
+                .param("sortDirection", "desc"));
 
-        ResponseEntity<List<SellingBookAndBookResponseDto>> response = sellingBookController.getSellingBooksByViewCount("desc");
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDtos, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBooksByViewCount(eq("desc"));
-    }
-
-    @Test
-    void getSellingBooksByStatus() {
-        SellingBook.SellingBookStatus status = SellingBook.SellingBookStatus.SELLING;
-        List<SellingBookAndBookResponseDto> responseDtos = Collections.emptyList();
-
-        when(sellingBookService.getSellingBooksByStatus(eq(status))).thenReturn(responseDtos);
-
-        ResponseEntity<List<SellingBookAndBookResponseDto>> response = sellingBookController.getSellingBooksByStatus(status);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDtos, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBooksByStatus(eq(status));
-    }
-
-    @Test
-    void getSellingBooksByViewCountDesc() {
-        List<SellingBookAndBookResponseDto> responseDtos = Collections.emptyList();
-
-        when(sellingBookService.getSellingBooksByViewCount(eq("desc"))).thenReturn(responseDtos);
-
-        ResponseEntity<List<SellingBookAndBookResponseDto>> response = sellingBookController.getSellingBooksByViewCountDesc();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDtos, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBooksByViewCount(eq("desc"));
-    }
-
-    @Test
-    void getSellingBooksByViewCountAsc() {
-        List<SellingBookAndBookResponseDto> responseDtos = Collections.emptyList();
-
-        when(sellingBookService.getSellingBooksByViewCount(eq("asc"))).thenReturn(responseDtos);
-
-        ResponseEntity<List<SellingBookAndBookResponseDto>> response = sellingBookController.getSellingBooksByViewCountAsc();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDtos, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBooksByViewCount(eq("asc"));
-    }
-
-    @Test
-    void getSellingBooksByCategory() {
-        Long categoryId = 1L;
-        List<SellingBookAndBookResponseDto> responseDtos = Collections.emptyList();
-
-        when(sellingBookService.getSellingBooksByCategory(eq(categoryId))).thenReturn(responseDtos);
-
-        ResponseEntity<List<SellingBookAndBookResponseDto>> response = sellingBookController.getSellingBooksByCategory(categoryId);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(responseDtos, response.getBody());
-
-        verify(sellingBookService, times(1)).getSellingBooksByCategory(eq(categoryId));
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].bookTitle").value("Test Book"));
     }
 }

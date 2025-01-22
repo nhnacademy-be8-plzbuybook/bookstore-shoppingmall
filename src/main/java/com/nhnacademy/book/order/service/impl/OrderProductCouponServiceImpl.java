@@ -1,5 +1,7 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.coupon.dto.ValidationCouponCalculationRequestDto;
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductAppliedCouponDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
@@ -18,16 +20,19 @@ import java.util.List;
 public class OrderProductCouponServiceImpl implements OrderProductCouponService {
     private final OrderProductRepository orderProductRepository;
     private final OrderProductCouponRepository orderProductCouponRepository;
-
+    private final CouponService couponService;
 
     @Override
     public Long saveOrderProductCoupon(Long orderProductId, List<OrderProductAppliedCouponDto> appliedCoupons) {
         OrderProduct orderProduct = orderProductRepository.findById(orderProductId).orElseThrow(() -> new NotFoundException("찾을 수 없는 주문상품입니다."));
         if (appliedCoupons != null) {
             for (OrderProductAppliedCouponDto orderProductAppliedCouponDto : appliedCoupons) {
-                //TODO: 쿠폰 검증
-
-                //TODO: 쿠폰 사용처리
+                // 쿠폰 검증
+                Long couponId = orderProductAppliedCouponDto.getCouponId();
+                BigDecimal discount = orderProductAppliedCouponDto.getDiscount();
+                couponService.validateCouponCalculation(couponId, new ValidationCouponCalculationRequestDto(discount));
+                // 쿠폰 사용처리
+                couponService.useCoupon(couponId);
 
                 // 주문상품 쿠폰저장
                 orderProductCouponRepository.save(orderProductAppliedCouponDto.toEntity(orderProduct));

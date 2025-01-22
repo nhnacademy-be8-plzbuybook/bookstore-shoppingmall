@@ -3,7 +3,6 @@ package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.BookCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.BookCategoryResponseDto;
-import com.nhnacademy.book.book.dto.response.BookResponseDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookCategory;
@@ -15,32 +14,30 @@ import com.nhnacademy.book.book.repository.BookCategoryRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class BookCategoryServiceTest {
+class BookCategoryServiceTest {
 
     @InjectMocks
     private BookCategoryService bookCategoryService;
@@ -61,9 +58,7 @@ public class BookCategoryServiceTest {
     private CategoryRepository categoryRepository;
 
     private Publisher publisher;
-
     private Pageable pageable;
-
 
     List<Book> books = new ArrayList<>();
     List<Category> categories = new ArrayList<>();
@@ -198,29 +193,46 @@ public class BookCategoryServiceTest {
 
 
     @Test
-    void findCategoriesByBookId(){
-
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.ofNullable(book1));
+    void findCategoriesByBookId() {
+        // Mock 설정: bookRepository.existsById가 true를 반환하도록 설정
+        when(bookRepository.existsById(anyLong())).thenReturn(true);
         when(bookCategoryRepository.findCategoriesByBookId(anyLong())).thenReturn(categories);
 
+        // 서비스 호출
         List<CategoryResponseDto> categoryResponseDtos = bookCategoryService.findCategoriesByBookId(1L);
 
+        // 검증
+        verify(bookRepository, times(1)).existsById(anyLong());
         verify(bookCategoryRepository, times(1)).findCategoriesByBookId(anyLong());
-        assertEquals(categoryResponseDtos.size(), categories.size());
+        assertEquals(categories.size(), categoryResponseDtos.size());
 
-        for(CategoryResponseDto categoryResponseDto : categoryResponseDtos){
-            log.info("{}",String.valueOf(categoryResponseDto.getCategoryId()));
-            log.info("{}",categoryResponseDto.getCategoryName());
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            CategoryResponseDto responseDto = categoryResponseDtos.get(i);
+
+            // 각 카테고리의 ID와 이름이 동일한지 확인
+            assertEquals(category.getCategoryId(), responseDto.getCategoryId());
+            assertEquals(category.getCategoryName(), responseDto.getCategoryName());
+            log.info("Category ID: {}", responseDto.getCategoryId());
+            log.info("Category Name: {}", responseDto.getCategoryName());
         }
     }
 
     @Test
     void findCategoriesByBookId_BookNotFound() {
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // Mock 설정: bookRepository.existsById가 false를 반환하도록 설정
+        when(bookRepository.existsById(anyLong())).thenReturn(false);
+
+        // 예외 검증
         assertThrows(BookNotFoundException.class, () -> {
             bookCategoryService.findCategoriesByBookId(anyLong());
         });
+
+        // 검증: bookCategoryRepository는 호출되지 않아야 함
+        verify(bookRepository, times(1)).existsById(anyLong());
+        verifyNoInteractions(bookCategoryRepository);
     }
+
 
 
 

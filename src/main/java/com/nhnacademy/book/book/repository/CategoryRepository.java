@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByCategoryName(String categoryName);
 
     Optional<Category> findByCategoryNameAndParentCategory(String categoryName, Category parentCategory);
-
-
-//    List<Category> findByCategoryNameContaining(String keyword);
 
     @Query("SELECT c FROM Category c JOIN c.bookCategories bc WHERE bc.book.bookId = :bookId")
     List<Category> findCategoriesByBookId(@Param("bookId") Long bookId);

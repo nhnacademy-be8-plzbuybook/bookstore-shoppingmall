@@ -90,7 +90,7 @@ class CartBookGuestServiceImplTest {
         given(cartBookRedisRepository.create(eq("Guest:" + "sessionId"), any(), any())).willReturn(1L);
 
         // when
-        Long result = cartBookGuestService.AddToGuestCart(requestDto, "sessionId");
+        Long result = cartBookGuestService.addToGuestCart(requestDto, "sessionId");
 
         // then
         assertThat(result).isEqualTo(1L);
@@ -108,7 +108,7 @@ class CartBookGuestServiceImplTest {
                 .willReturn(Optional.empty());
 
         // when & then
-        assertThrows(BookNotFoundException.class, () -> cartBookGuestService.AddToGuestCart(requestDto, "sessionId"));
+        assertThrows(BookNotFoundException.class, () -> cartBookGuestService.addToGuestCart(requestDto, "sessionId"));
     }
 
     @Test
@@ -123,7 +123,7 @@ class CartBookGuestServiceImplTest {
                 .willReturn(Optional.of(testSellingBook));
 
         // when & then
-        assertThrows(BookStatusNotSellingBookException.class, () -> cartBookGuestService.AddToGuestCart(requestDto, "sessionId"));
+        assertThrows(BookStatusNotSellingBookException.class, () -> cartBookGuestService.addToGuestCart(requestDto, "sessionId"));
     }
 
     @Test

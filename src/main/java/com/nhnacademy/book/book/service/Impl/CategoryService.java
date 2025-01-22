@@ -4,14 +4,12 @@ import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,24 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategorySearchRepository categorySearchRepository;
-
-    public CategoryService(CategoryRepository categoryRepository, CategorySearchRepository categorySearchRepository) {
-        this.categoryRepository = categoryRepository;
-        this.categorySearchRepository = categorySearchRepository;
-    }
+    private static final String CATEGORY_NOT_FOUND_MSG = "Category not found with ID: ";
 
     public CategoryResponseDto findCategoryById(Long id) {
         Category category = categoryRepository.findByCategoryId(id)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + id));
 
         return convertToDto(category);
     }
@@ -46,7 +39,7 @@ public class CategoryService {
     public Page<CategoryResponseDto> findLeafCategories(Long parentCategoryId, Pageable pageable) {
         // 부모 카테고리 조회
         Category parentCategory = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + parentCategoryId));
 
         // 리프 노드 찾기 (재귀 호출)
         List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
@@ -63,10 +56,7 @@ public class CategoryService {
         List<CategoryResponseDto> paginatedLeafCategories = leafCategories.subList(start, end)
                 .stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        // Page 객체 생성 및 반환
-        return new PageImpl<>(paginatedLeafCategories, pageable, leafCategories.size());
+                .toList();
     }
 
     private List<Category> findLeafCategoriesRecursive(Category category) {
@@ -81,7 +71,7 @@ public class CategoryService {
         // 자식 카테고리가 있으면 재귀 호출
         return children.stream()
                 .flatMap(child -> findLeafCategoriesRecursive(child).stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -105,7 +95,7 @@ public class CategoryService {
         // Category -> CategoryResponseDto 변환
         return childrenCategories.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -154,7 +144,7 @@ public class CategoryService {
 
     public void deleteCategoryById(Long categoryId) {
         if (!categoryRepository.existsById(categoryId) || !categorySearchRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
         categorySearchRepository.deleteById(categoryId);
         categoryRepository.deleteById(categoryId);
@@ -176,7 +166,7 @@ public class CategoryService {
 
     public void deleteCategory(Long categoryId) {
         if(!categoryRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
 
         categoryRepository.deleteCategoryAndChildren(categoryId);
@@ -195,7 +185,7 @@ public class CategoryService {
                         child.getParentCategory() != null ? child.getParentCategory().getCategoryId() : null,
                         new ArrayList<>()
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         return new CategoryResponseDto(
                 category.getCategoryId(),

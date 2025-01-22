@@ -1,7 +1,5 @@
 package com.nhnacademy.book.book.dto.response;
 
-import com.nhnacademy.book.book.entity.Publisher;
-import jakarta.persistence.Table;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -21,7 +19,7 @@ public class BookDetailResponseDto {
     private String bookDescription;     // 설명
     private LocalDate bookPubDate;      // 출판일
     private BigDecimal bookPriceStandard; // 정가
-    private Integer selling_book_stock;     // 재고
+    private Integer sellingBookStock;     // 재고
     private BigDecimal sellingPrice;    // 판매가 (추가)
     private String bookIsbn13;          // ISBN
     private Long publisherId;           // 출판사 ID
@@ -87,7 +85,7 @@ public class BookDetailResponseDto {
         this.bookPubDate = bookPubDate;
         this.bookPriceStandard = bookPriceStandard;
         this.sellingPrice = sellingBookPrice;
-        this.selling_book_stock = sellingBookStock;
+        this.sellingBookStock = sellingBookStock;
         this.bookIsbn13 = bookIsbn13;
         this.publisherId = publisherId;
         this.publisher = publisherName;
@@ -97,21 +95,5 @@ public class BookDetailResponseDto {
         this.status = status;
         this.likeCount = likeCount;
     }
-
-//    public BookDetailResponseDto(Long bookId, String bookTitle,
-//                                 String bookIndex, String bookDescription,
-//                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
-//                                 Integer sellingBookStock, Boolean sellingBookPackageable,
-//                                 String bookIsbn13, Publisher publisher,
-//                                 List<String> categories, String imageUrl) {
-//    }
-//
-//    public BookDetailResponseDto(Long bookId, String bookTitle,
-//                                 String bookIndex, String bookDescription,
-//                                 LocalDate bookPubDate, BigDecimal bookPriceStandard,
-//                                 Integer sellingBookStock, Boolean sellingBookPackageable,
-//                                 String bookIsbn13, String publisherName, List<String> categories,
-//                                 String imageUrl) {
-//    }
 }
 

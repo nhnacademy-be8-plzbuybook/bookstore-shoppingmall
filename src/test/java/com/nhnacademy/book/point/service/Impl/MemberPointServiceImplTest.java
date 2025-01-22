@@ -3,24 +3,19 @@ package com.nhnacademy.book.point.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.repository.MemberGradeRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
-import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import com.nhnacademy.book.orderProduct.repository.OrderProductRepository;
 import com.nhnacademy.book.point.domain.MemberPoint;
 import com.nhnacademy.book.point.domain.PointCondition;
-import com.nhnacademy.book.point.dto.MemberPointAddRequestDto;
 import com.nhnacademy.book.point.dto.MemberPointListResponseDto;
 import com.nhnacademy.book.point.repository.MemberPointRepository;
 import com.nhnacademy.book.point.repository.PointConditionRepository;
 import com.nhnacademy.book.review.domain.Review;
 import com.nhnacademy.book.review.repository.ReviewImageRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -285,6 +280,7 @@ class MemberPointServiceImplTest {
                 .thenReturn(List.of(memberPoint));
 
         List<MemberPointListResponseDto> result = memberPointService.getMemberPointsByMemberId(memberId);
+        assertNotNull(result);
 
     }
 

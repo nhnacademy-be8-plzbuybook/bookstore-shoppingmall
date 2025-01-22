@@ -3,7 +3,9 @@ package com.nhnacademy.book.wrappingPaper.service.impl;
 import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.objectstorage.service.ObjectStorageService;
-import com.nhnacademy.book.wrappingPaper.dto.*;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingCreateSaveRequestDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperUpdateRequestDto;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.nhnacademy.book.wrappingPaper.service.impl.WrappingPaperServiceImpl.WRAPPING_PAPER_NOT_FOUND_MSG;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -104,7 +107,7 @@ class WrappingPaperServiceImplTest {
         List<WrappingPaperDto> result = wrappingPaperService.getWrappingPapers();
 
         //then
-        assertNull(result);
+        assertEquals(Collections.emptyList(), result);
         verify(wrappingPaperRepository).findAll();
     }
 
@@ -164,7 +167,7 @@ class WrappingPaperServiceImplTest {
                 () -> wrappingPaperService.modifyWrappingPaper(existingId, updateRequest));
 
         //then
-        assertEquals("찾을 수 없는 포장지입니다. 포장지 아이디: " + existingId, exception.getMessage());
+        assertEquals(WRAPPING_PAPER_NOT_FOUND_MSG + existingId, exception.getMessage());
     }
 
 
@@ -256,7 +259,7 @@ class WrappingPaperServiceImplTest {
                 () -> wrappingPaperService.removeWrappingPaper(existingId));
 
         //then
-        assertEquals("찾을 수 없는 포장지입니다. 포장지 아이디: " + existingId, exception.getMessage());
+        assertEquals(WRAPPING_PAPER_NOT_FOUND_MSG + existingId, exception.getMessage());
         verify(wrappingPaperRepository, never()).deleteById(existingId);
     }
 
@@ -289,6 +292,6 @@ class WrappingPaperServiceImplTest {
                 () -> wrappingPaperService.reduceStock(existingId, quantity));
 
         //then
-        assertEquals("찾을 수 없는 포장지입니다. 포장지 아이디: " + existingId, exception.getMessage());
+        assertEquals(WRAPPING_PAPER_NOT_FOUND_MSG + existingId, exception.getMessage());
     }
 }

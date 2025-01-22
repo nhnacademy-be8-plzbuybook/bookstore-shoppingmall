@@ -1,7 +1,6 @@
 package com.nhnacademy.book.member.domain;
 
 import jakarta.persistence.*;
-import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

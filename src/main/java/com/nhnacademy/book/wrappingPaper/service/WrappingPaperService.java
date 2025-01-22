@@ -1,10 +1,9 @@
 package com.nhnacademy.book.wrappingPaper.service;
 
-import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
-import com.nhnacademy.book.wrappingPaper.dto.*;
-import org.springframework.web.multipart.MultipartFile;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingCreateSaveRequestDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperDto;
+import com.nhnacademy.book.wrappingPaper.dto.WrappingPaperUpdateRequestDto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface WrappingPaperService {
