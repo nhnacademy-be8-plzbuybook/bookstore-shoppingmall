@@ -16,7 +16,7 @@ spring:
   datasource:
     url: jdbc:mysql://10.116.64.14:13306/project_be8_plzbuybook_bookstore
     username: project_be8_plzbuybook
-    password: "MOW6c#y4TVxi1P5b"
+    password: MOW6c#y4TVxi1P5b
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   data:
@@ -59,8 +59,6 @@ logging:
         client: DEBUG
 
 
-
-
 #h2:
 #    console:
 #      enabled: true  # H2 콘솔 활성화
@@ -71,10 +69,10 @@ eureka:
     register-with-eureka: true  # Eureka에 서비스 등록
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
-      defaultZone: http://localhost:10149/eureka  # Eureka 서버 URL
+      defaultZone: http://10.116.64.14:10149/eureka  # Eureka 서버 URL
 
 aladin:
   api:
     url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101
-    url2: https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101&OptResult=ebookList,usedList,reviewLis
+    url2: https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
 
