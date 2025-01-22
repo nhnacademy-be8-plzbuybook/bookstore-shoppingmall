@@ -3,19 +3,14 @@ package com.nhnacademy.book.point.controller;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.point.dto.MemberPointAddResponseDto;
 import com.nhnacademy.book.point.dto.MemberPointListResponseDto;
 import com.nhnacademy.book.point.dto.MemberPointUseRequestDto;
 import com.nhnacademy.book.point.service.MemberPointService;
-import com.nhnacademy.book.review.domain.Review;
-import com.nhnacademy.book.review.exception.ReviewNotFoundException;
-import com.nhnacademy.book.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 

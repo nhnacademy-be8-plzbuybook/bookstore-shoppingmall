@@ -51,17 +51,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         );
     }
 
-//    @Override
-//    public List<String> getAuthsByMember(Long memberId) {
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다"));
-//
-//        return memberAuthRepository.findByMember(member)
-//                .stream()
-//                .map(memberAuth -> memberAuth.getAuth().getAuthName())
-//                .collect(Collectors.toList());
-//    }
-
     // 회원의 권한 조회
     @Override
     public List<String> getAuthNameByMember(Long memberId) {
