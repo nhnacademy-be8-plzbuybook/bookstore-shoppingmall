@@ -42,7 +42,7 @@ jobs:
           port: ${{ secrets.SSH_NHN_PORT }}
           password: ${{ secrets.SSH_NHN_PASSWORD }}
           script: |
-            cd /home/be8/be8-team4/shop
+            cd /home/be8/be8-team4/shop/target
             # 첫번째 쇼핑몰 서버 배포
             java -jar -Dserver.port=10143 -Dspring.profiles.active=nhn /home/be8/be8-team4/shop/target/book-0.0.1-SNAPSHOT.jar 
             
