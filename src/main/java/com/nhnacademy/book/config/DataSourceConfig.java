@@ -29,7 +29,7 @@ public class DataSourceConfig {
 
         //복호화 된걸 db환경으로 설정
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl(url);
+        dataSource.setUrl("10.116.64.14");
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
