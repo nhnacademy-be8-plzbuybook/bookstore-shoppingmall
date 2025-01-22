@@ -247,14 +247,14 @@ public class SellingBookService {
                 .collect(Collectors.toList());
     }
 
-    //카테고리별 도서 조회
-
-    public List<SellingBookAndBookResponseDto> getSellingBooksByCategory(Long categoryId) {
-        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryIdOrParent(categoryId);
-        return sellingBooks.stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
-    }
+//    //카테고리별 도서 조회
+//
+//    public List<SellingBookAndBookResponseDto> getSellingBooksByCategory(Long categoryId) {
+//        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryIdOrParent(categoryId);
+//        return sellingBooks.stream()
+//                .map(this::toResponseDto)
+//                .collect(Collectors.toList());
+//    }
 
     private SellingBookAndBookResponseDto toResponseDto(SellingBook sellingBook) {
         Book book = sellingBook.getBook();

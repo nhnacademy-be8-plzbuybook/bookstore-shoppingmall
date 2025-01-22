@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
@@ -112,24 +115,64 @@ class SellingBookServiceTest {
         verifyNoInteractions(sellingBookRepository);
     }
 
+
     @Test
-    @DisplayName("판매책 수정 성공")
+    @DisplayName("판매책 특정 필드 수정 성공")
     void testUpdateSellingBook_Success() {
+        Long sellingBookId = 1L;
         SellingBookRegisterDto updateDto = new SellingBookRegisterDto();
         updateDto.setSellingBookPrice(new BigDecimal("39.99"));
         updateDto.setSellingBookStock(50);
 
-        // save 시 반환값 설정
-        when(sellingBookRepository.save(any(SellingBook.class))).thenReturn(testSellingBook);
+        // Mocking 존재하는 판매책
+        when(sellingBookRepository.findById(sellingBookId)).thenReturn(Optional.of(testSellingBook));
+        when(sellingBookRepository.save(testSellingBook)).thenReturn(testSellingBook);
 
-        SellinBookResponseDto updatedSellingBook = sellingBookService.updateSellingBook(1L, updateDto);
+        // 메서드 호출
+        SellinBookResponseDto result = sellingBookService.updateSellingBook(sellingBookId, updateDto);
 
-        assertEquals(new BigDecimal("39.99"), updatedSellingBook.getSellingBookPrice());
-        assertEquals(50, updatedSellingBook.getSellingBookStock());
-        verify(sellingBookRepository, times(1)).findById(1L);
-        verify(sellingBookRepository, times(1)).save(any(SellingBook.class));
+        // 검증
+        assertEquals(new BigDecimal("39.99"), result.getSellingBookPrice());
+        assertEquals(50, result.getSellingBookStock());
+        verify(sellingBookRepository, times(1)).findById(sellingBookId);
+        verify(sellingBookRepository, times(1)).save(testSellingBook);
     }
 
+
+
+    @Test
+    @DisplayName("판매책 모든 필드 수정 성공")
+    void testUpdateSellingBook_AllFieldsSuccess() {
+        Long sellingBookId = 1L;
+
+        // 모든 필드를 설정한 DTO 생성
+        SellingBookRegisterDto updateDto = new SellingBookRegisterDto();
+        updateDto.setSellingBookPrice(new BigDecimal("49.99")); // 판매가 수정
+        updateDto.setSellingBookPackageable(true);             // 선물포장 가능 여부 수정
+        updateDto.setSellingBookStock(200);                    // 재고 수정
+        updateDto.setSellingBookStatus(SellingBookStatus.SELLEND); // 도서 상태 수정
+        updateDto.setUsed(true);                               // 중고 여부 수정
+        updateDto.setSellingBookViewCount(500L);               // 조회수 수정
+
+        // Mocking 기존 판매책
+        when(sellingBookRepository.findById(sellingBookId)).thenReturn(Optional.of(testSellingBook));
+        when(sellingBookRepository.save(any(SellingBook.class))).thenAnswer(invocation -> invocation.getArgument(0)); // 수정된 엔티티 반환
+
+        // 메서드 호출
+        SellinBookResponseDto result = sellingBookService.updateSellingBook(sellingBookId, updateDto);
+
+        // 검증: 각 필드가 업데이트되었는지 확인
+        assertEquals(new BigDecimal("49.99"), result.getSellingBookPrice());
+        assertTrue(result.getSellingBookPackageable());
+        assertEquals(200, result.getSellingBookStock());
+        assertEquals(SellingBookStatus.SELLEND, result.getSellingBookStatus());
+        assertTrue(result.getUsed());
+        assertEquals(500L, result.getSellingBookViewCount());
+
+        // Mock 호출 검증
+        verify(sellingBookRepository, times(1)).findById(sellingBookId);
+        verify(sellingBookRepository, times(1)).save(testSellingBook);
+    }
 
     @Test
     @DisplayName("존재하지 않는 판매책 수정 시 실패")
@@ -266,4 +309,41 @@ class SellingBookServiceTest {
         assertEquals(1, result.size());
         verify(sellingBookRepository, times(1)).findBySellingBookPriceBetween(new BigDecimal("10.00"), new BigDecimal("50.00"));
     }
+
+    @Test
+    @DisplayName("좋아요 수 기준으로 판매책 조회 성공")
+    void testGetBooks_SortedByLikeCount() {
+        Pageable pageable = Pageable.unpaged();
+
+        // Mocking 판매책 데이터
+        when(sellingBookRepository.findAllWithLikeCount(pageable)).thenReturn(new PageImpl<>(List.of(testSellingBook)));
+
+        // 메서드 호출
+        Page<SellingBookAndBookResponseDto> result = sellingBookService.getBooks(pageable, "likeCount");
+
+        // 검증
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        verify(sellingBookRepository, times(1)).findAllWithLikeCount(pageable);
+    }
+
+    @Test
+    @DisplayName("기본 정렬로 판매책 조회 성공")
+    void testGetBooks_DefaultSort() {
+        Pageable pageable = Pageable.unpaged();
+
+        // Mocking 판매책 데이터
+        when(sellingBookRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(testSellingBook)));
+
+        // 메서드 호출
+        Page<SellingBookAndBookResponseDto> result = sellingBookService.getBooks(pageable, "default");
+
+        // 검증
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        verify(sellingBookRepository, times(1)).findAll(pageable);
+    }
+
+
+
 }
