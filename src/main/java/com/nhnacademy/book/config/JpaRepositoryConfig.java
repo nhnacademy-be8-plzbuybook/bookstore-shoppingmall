@@ -22,7 +22,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.nhnacademy.book.review.repository",
         "com.nhnacademy.book.cartbook.repository",
         "com.nhnacademy.book.cart.repository"
-
 })
 public class JpaRepositoryConfig {
     @PersistenceContext

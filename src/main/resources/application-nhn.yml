@@ -9,7 +9,7 @@ springdoc:
 
 spring:
   elasticsearch:
-    uris: http://220.67.216.14:9200/
+    uris: http://10.67.216.14:9200/
     username: elastic
     password: nhnacademy123!
 
