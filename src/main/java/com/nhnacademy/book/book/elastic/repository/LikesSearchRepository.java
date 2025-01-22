@@ -1,11 +1,9 @@
 package com.nhnacademy.book.book.elastic.repository;
 
 import com.nhnacademy.book.book.elastic.document.LikesDocument;
-import com.nhnacademy.book.book.entity.Likes;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.member.domain.Member;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

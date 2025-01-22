@@ -2,7 +2,10 @@ package com.nhnacademy.book.payment.entity;
 
 import com.nhnacademy.book.order.entity.Orders;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,6 +1,5 @@
 package com.nhnacademy.book.book.elastic.repository;
 
-import com.nhnacademy.book.book.elastic.document.BookDocument;
 import com.nhnacademy.book.book.elastic.document.BookInfoDocument;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;

@@ -3,8 +3,6 @@ package com.nhnacademy.book.member.domain.service.Impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberCertification;
 import com.nhnacademy.book.member.domain.dto.certification.*;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateRequestDto;
-import com.nhnacademy.book.member.domain.dto.certification.CertificationCreateResponseDto;
 import com.nhnacademy.book.member.domain.exception.*;
 import com.nhnacademy.book.member.domain.repository.MemberCertificationRepository;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;

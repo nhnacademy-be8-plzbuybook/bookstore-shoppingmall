@@ -1,13 +1,10 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
-import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
-import jakarta.ws.rs.PUT;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

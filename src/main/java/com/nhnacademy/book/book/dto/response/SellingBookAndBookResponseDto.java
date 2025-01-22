@@ -2,7 +2,6 @@ package com.nhnacademy.book.book.dto.response;
 
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import lombok.*;
-import org.springframework.context.annotation.Bean;
 
 import java.math.BigDecimal;
 import java.util.List;

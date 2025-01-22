@@ -1,6 +1,8 @@
 package com.nhnacademy.book.coupon.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 @Getter

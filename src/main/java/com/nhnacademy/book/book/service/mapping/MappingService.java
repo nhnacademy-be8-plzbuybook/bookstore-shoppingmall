@@ -1,9 +1,15 @@
 package com.nhnacademy.book.book.service.mapping;
 
 import com.nhnacademy.book.book.dto.response.aladin.AladinResponse;
-import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.entity.Author;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.Publisher;
+import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.exception.BookAlreadyExistsException;
-import com.nhnacademy.book.book.repository.*;
+import com.nhnacademy.book.book.repository.AuthorRepository;
+import com.nhnacademy.book.book.repository.BookRepository;
+import com.nhnacademy.book.book.repository.PublisherRepository;
+import com.nhnacademy.book.book.repository.SellingBookRepository;
 import com.nhnacademy.book.book.service.category.ApiCategoryService;
 import com.nhnacademy.book.book.service.image.ImageService;
 import jakarta.transaction.Transactional;

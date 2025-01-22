@@ -1,7 +1,6 @@
 package com.nhnacademy.book.book.service.Impl;
 
 import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
-import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.elastic.document.PublisherDocument;
 import com.nhnacademy.book.book.elastic.repository.PublisherSearchRepository;

@@ -1,8 +1,6 @@
 package com.nhnacademy.book.book.elastic.document;
 
-import com.nhnacademy.book.book.entity.BookCategory;
 import com.nhnacademy.book.book.entity.Category;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

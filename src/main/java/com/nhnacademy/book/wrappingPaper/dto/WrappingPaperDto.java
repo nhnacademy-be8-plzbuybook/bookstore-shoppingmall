@@ -4,7 +4,6 @@ import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

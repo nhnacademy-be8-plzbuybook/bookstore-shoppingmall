@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain.service;
 
-import com.nhnacademy.book.member.domain.dto.MemberModifyByAdminRequestDto;
 import com.nhnacademy.book.member.domain.dto.*;
 import org.springframework.data.domain.Page;
 
