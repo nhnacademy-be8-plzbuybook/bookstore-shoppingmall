@@ -1,9 +1,6 @@
 package com.nhnacademy.book.book.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookResponseDto {
     private Long bookId;
     private String bookTitle;
@@ -19,9 +17,4 @@ public class BookResponseDto {
     private String bookIsbn13;
     private LocalDate bookPubDate; // 출판일
     private String publisher; // 출판사
-
-
-    public BookResponseDto() {
-
-    }
 }

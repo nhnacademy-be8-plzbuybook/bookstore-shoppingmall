@@ -1,15 +1,13 @@
 package com.nhnacademy.book.book.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class BookInfoResponseDto {
@@ -22,9 +20,4 @@ public class BookInfoResponseDto {
     private BigDecimal bookPriceStandard; // 표준 가격
     private String imageUrl; // 이미지 URL
     private Long sellingBookId;
-
-
-    public BookInfoResponseDto() {
-
-    }
 }

@@ -25,10 +25,6 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
     List<BookDocument> findByBookTitle(String bookTitle);
 
 
-    // 제목에 특정 문자열이 포함된 책 조회
-//    @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
-//    List<BookDocument> findByBookTitleContaining(String keyword);
-
     @Query("{\"match\": {\"book_title\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
     List<BookDocument> findByBookTitleContaining(String keyword);
 
@@ -55,8 +51,4 @@ public interface BookSearchRepository extends ElasticsearchRepository<BookDocume
 
 
     List<BookDocument> findByBookIdIn(List<Long> bookIds);
-
-
-
-
 }

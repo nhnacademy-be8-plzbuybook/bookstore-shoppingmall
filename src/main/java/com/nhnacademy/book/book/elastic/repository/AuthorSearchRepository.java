@@ -14,10 +14,7 @@ public interface AuthorSearchRepository extends ElasticsearchRepository<AuthorDo
 
 
     void deleteByAuthorId(Long authorId);
-
-//    @Query("{\"match\": {\"author_name\": {\"query\": \"?0\", \"operator\": \"and\"}}}")
-//    List<AuthorDocument> findByAuthorNameContaining(String keyword);
-
+    
     @Query("{\"match\": {\"author_name\": {\"query\": \"?0\", \"operator\": \"or\"}}}")
     List<AuthorDocument> findByAuthorNameContaining(String keyword);
 
