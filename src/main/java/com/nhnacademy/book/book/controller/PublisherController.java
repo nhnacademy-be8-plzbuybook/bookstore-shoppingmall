@@ -5,7 +5,6 @@ import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/publishers")
 public class PublisherController {
 
-    @Autowired
+
     private final  PublisherService publisherService;
 
     @PostMapping

@@ -70,6 +70,7 @@ OrderCacheServiceImpl implements OrderCacheService {
             log.info("orderCache: {}", redis.opsForValue().get(key));
 
         } catch (JsonProcessingException e) {
+
             throw new OrderCacheException("주문정보 변환 오류가 발생했습니다.", e);
         } catch (Exception e) {
             throw new OrderCacheException("주문정보 캐싱 중 오류가 발생했습니다.", e);
@@ -99,6 +100,7 @@ OrderCacheServiceImpl implements OrderCacheService {
 
 
         } catch (JsonProcessingException e) {
+
             throw new OrderCacheException("주문정보 변환 오류가 발생했습니다.", e);
         }
     }
@@ -158,6 +160,7 @@ OrderCacheServiceImpl implements OrderCacheService {
         Object stock = redis.opsForValue().get(key);
 
         if (stock == null) {
+
             throw new OrderCacheException("재고 캐시를 찾을 수 없습니다.");
         }
         return Integer.parseInt((String) stock);
@@ -179,6 +182,7 @@ OrderCacheServiceImpl implements OrderCacheService {
             return productStock;
         } catch (Exception e) {
             log.error("상품 재고를 가져오는 중 오류가 발생했습니다. ", e);
+
             throw new OrderCacheException("상품 재고를 가져오는 중 오류가 발생했습니다. ", e);
         }
     }
@@ -218,6 +222,7 @@ OrderCacheServiceImpl implements OrderCacheService {
             return preemptedStockMap;
         } catch (Exception e) {
             log.error("재고 선점 중 오류가 발생했습니다.", e);
+
             throw new OrderCacheException("재고 선점 중 오류가 발생했습니다.", e);
         }
     }
@@ -239,6 +244,7 @@ OrderCacheServiceImpl implements OrderCacheService {
         }
     }
 
+
     @Override
     public void rollbackOrderedStock(String orderId) {
         redis.multi();
@@ -252,6 +258,7 @@ OrderCacheServiceImpl implements OrderCacheService {
             redis.exec();
         } catch (Exception e) {
             redis.discard();
+
             throw new OrderCacheException("재고롤백 중 오류가 발생했습니다.", e);
         }
 

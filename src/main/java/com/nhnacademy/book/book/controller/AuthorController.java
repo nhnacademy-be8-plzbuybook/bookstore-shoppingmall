@@ -6,7 +6,6 @@ import com.nhnacademy.book.book.dto.response.AuthorResponseDto;
 import com.nhnacademy.book.book.elastic.repository.AuthorSearchRepository;
 import com.nhnacademy.book.book.service.Impl.AuthorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthorController {
 
-    @Autowired
     private final AuthorService authorService;
-    @Autowired
     private AuthorSearchRepository authorSearchRepository;
 
 
