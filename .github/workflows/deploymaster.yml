@@ -41,7 +41,11 @@ jobs:
           username: ${{ secrets.SSH_NHN_ID }}
           port: ${{ secrets.SSH_NHN_PORT }}
           password: ${{ secrets.SSH_NHN_PASSWORD }}
-          script: |    
+          script: |
+            mkdir -p /home/be8/be8-team4/shop
+            
+            cd /home/be8/be8-team4/shop
+            
             echo -e "Starting jar on port 10143"
             nohup /usr/local/java/java21/bin/java -Dserver.port=10143 -Dspring.profiles.active=nhn -jar /home/be8/be8-team4/shop/target/book-0.0.1-SNAPSHOT.jar > /home/be8/be8-team4/shop/log_10143.log 2>&1 &
 
