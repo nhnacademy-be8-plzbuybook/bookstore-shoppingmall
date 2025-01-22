@@ -5,13 +5,10 @@ import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,24 +32,17 @@ public class SellingBookService {
     private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
     private final BookAuthorRepository bookAuthorRepository;
     private final LikesRepository likesRepository;
-    private final MemberRepository memberRepository;
-    private final MemberService memberService; // 추가
-    private final SellingBookSearchRepository sellingBookSearchRepository;
     private final BookInfoRepository bookInfoRepository;
-
+    private static final String SELLING_BOOK_NOT_FOUND_MESSAGE = "SellingBook not found with ID: ";
     @Autowired
     public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
-                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository,
-                              MemberRepository memberRepository, MemberService memberService, SellingBookSearchRepository sellingBookSearchRepository, BookInfoRepository bookInfoRepository) {
+                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository, BookInfoRepository bookInfoRepository) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.bookImageRepository = bookImageRepository;
         this.bookAuthorRepository = bookAuthorRepository;
         this.likesRepository = likesRepository;
-        this.memberRepository = memberRepository;
-        this.memberService = memberService;
-        this.sellingBookSearchRepository = sellingBookSearchRepository;
         this.bookInfoRepository = bookInfoRepository;
     }
 
@@ -81,7 +71,7 @@ public class SellingBookService {
     @Transactional
     public SellinBookResponseDto updateSellingBook(Long sellingBookId, SellingBookRegisterDto updateDto) {
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
-                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+                .orElseThrow(() -> new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId));
 
         // 특정 필드만 수정
         // 판매가 수정
@@ -159,7 +149,7 @@ public class SellingBookService {
     @Transactional
     public void deleteSellingBook(Long sellingBookId) {
         if (!sellingBookRepository.existsById(sellingBookId)) {
-            throw new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId);
+            throw new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId);
         }
         sellingBookRepository.deleteById(sellingBookId);
         bookInfoRepository.deleteBySellingBookId(sellingBookId);
@@ -174,7 +164,7 @@ public class SellingBookService {
     public BookDetailResponseDto getSellingBook(Long sellingBookId) {
 
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
-                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+                .orElseThrow(() -> new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId));
 
         Book book = sellingBook.getBook();
 
