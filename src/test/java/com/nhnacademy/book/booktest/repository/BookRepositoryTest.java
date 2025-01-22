@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
 @ActiveProfiles("test")
 @Import(JpaRepositoryConfig.class)
-public class BookRepositoryTest {
+class BookRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;

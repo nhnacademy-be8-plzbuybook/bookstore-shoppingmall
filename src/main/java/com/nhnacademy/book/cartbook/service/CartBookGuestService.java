@@ -6,7 +6,7 @@ import com.nhnacademy.book.cartbook.dto.response.ReadCartBookResponseDto;
 import java.util.List;
 
 public interface CartBookGuestService {
-    Long AddToGuestCart(CreateCartBookRequestDto createCartBookRequestDto, String sessionId);
+    Long addToGuestCart(CreateCartBookRequestDto createCartBookRequestDto, String sessionId);
 
     Long updateGuestCartItem(Long sellingBookId, int quantity, String sessionId);
 

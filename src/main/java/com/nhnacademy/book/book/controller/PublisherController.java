@@ -2,7 +2,6 @@ package com.nhnacademy.book.book.controller;
 
 
 import com.nhnacademy.book.book.dto.request.PublisherRegisterDto;
-import com.nhnacademy.book.book.dto.request.PublisherRequestDto;
 import com.nhnacademy.book.book.dto.response.PublisherResponseDto;
 import com.nhnacademy.book.book.service.Impl.PublisherService;
 import lombok.RequiredArgsConstructor;

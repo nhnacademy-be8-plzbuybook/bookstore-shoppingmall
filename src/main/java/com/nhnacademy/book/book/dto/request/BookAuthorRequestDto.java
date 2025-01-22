@@ -1,9 +1,9 @@
 package com.nhnacademy.book.book.dto.request;
 
-import lombok.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

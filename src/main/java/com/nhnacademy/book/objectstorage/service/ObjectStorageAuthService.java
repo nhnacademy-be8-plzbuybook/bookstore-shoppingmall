@@ -9,6 +9,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 @Service
 public class ObjectStorageAuthService {
 
@@ -58,7 +60,7 @@ public class ObjectStorageAuthService {
     }
 
     private void validateResponse(ResponseEntity<String> response) {
-        if (response.getStatusCode() != HttpStatus.OK || response.getBody().isEmpty()) {
+        if (response.getStatusCode() != HttpStatus.OK || Objects.requireNonNull(response.getBody()).isEmpty()) {
             throw new ObjectStorageAuthException("Invalid response from object storage auth token service: status="
                     + response.getStatusCode());
         }

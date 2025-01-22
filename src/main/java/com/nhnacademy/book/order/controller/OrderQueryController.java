@@ -48,7 +48,7 @@ public class OrderQueryController {
      * @return 주문목록 페이지
      */
     @GetMapping("/my")
-    public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader("X-USER-ID") String memberEmail,
+    public ResponseEntity<Page<OrderDto>> getMyOrders(@RequestHeader(value = "X-USER-ID", required = false) String memberEmail,
                                                       OrderSearchRequestDto searchRequest,
                                                       Pageable pageable) {
         // 회원 검증
