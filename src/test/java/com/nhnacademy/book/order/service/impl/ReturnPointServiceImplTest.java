@@ -3,7 +3,6 @@ package com.nhnacademy.book.order.service.impl;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
-import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
 import com.nhnacademy.book.member.domain.repository.MemberRepository;
 import com.nhnacademy.book.order.entity.OrderProductReturn;
 import com.nhnacademy.book.order.entity.Orders;

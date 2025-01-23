@@ -1,6 +1,5 @@
 package com.nhnacademy.book.member.domain.controller;//package com.nhnacademy.book.member.domain.controller;
 
-import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.MemberGrade;
 import com.nhnacademy.book.member.domain.MemberStatus;
 import com.nhnacademy.book.member.domain.dto.*;

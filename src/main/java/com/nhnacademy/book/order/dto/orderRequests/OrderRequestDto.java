@@ -14,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class OrderRequestDto {
-    private final OrderType orderType;
+    @Setter
+    private OrderType orderType;
     @Nullable
     private LocalDate deliveryWishDate;
     @NotNull

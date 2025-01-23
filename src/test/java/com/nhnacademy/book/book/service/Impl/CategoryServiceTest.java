@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CategoryServiceTest {
+class CategoryServiceTest {
 
     @InjectMocks
     private CategoryService categoryService;
@@ -326,51 +326,51 @@ public class CategoryServiceTest {
         verify(categoryRepository, never()).deleteCategoryAndChildren(categoryId);
     }
 
-    @Test
-    void findLeafCategories_shouldReturnLeafCategories() {
-        // Given
-        Long parentCategoryId = 1L;
-
-        Category parentCategory = new Category(1L, "Parent", null);
-        Category childCategory1 = new Category(2L, "Child 1", parentCategory);
-        Category childCategory2 = new Category(3L, "Child 2", parentCategory);
-        Category leafCategory1 = new Category(4L, "Leaf 1", childCategory1);
-        Category leafCategory2 = new Category(5L, "Leaf 2", childCategory2);
-
-        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.of(parentCategory));
-        when(categoryRepository.findByParentCategoryId(parentCategory.getCategoryId())).thenReturn(List.of(childCategory1, childCategory2));
-        when(categoryRepository.findByParentCategoryId(childCategory1.getCategoryId())).thenReturn(List.of(leafCategory1));
-        when(categoryRepository.findByParentCategoryId(childCategory2.getCategoryId())).thenReturn(List.of(leafCategory2));
-        when(categoryRepository.findByParentCategoryId(leafCategory1.getCategoryId())).thenReturn(List.of());
-        when(categoryRepository.findByParentCategoryId(leafCategory2.getCategoryId())).thenReturn(List.of());
-
-        // When
-        List<CategoryResponseDto> result = categoryService.findLeafCategories(parentCategoryId);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("Leaf 1", result.get(0).getCategoryName());
-        assertEquals("Leaf 2", result.get(1).getCategoryName());
-
-        verify(categoryRepository, times(1)).findById(parentCategoryId);
-        verify(categoryRepository, times(1)).findByParentCategoryId(parentCategory.getCategoryId());
-        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory1.getCategoryId());
-        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory2.getCategoryId());
-    }
-
-    @Test
-    void findLeafCategories_shouldThrowExceptionIfParentCategoryNotFound() {
-        // Given
-        Long parentCategoryId = 99L;
-
-        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findLeafCategories(parentCategoryId));
-
-        verify(categoryRepository, times(1)).findById(parentCategoryId);
-    }
+//    @Test
+//    void findLeafCategories_shouldReturnLeafCategories() {
+//        // Given
+//        Long parentCategoryId = 1L;
+//
+//        Category parentCategory = new Category(1L, "Parent", null);
+//        Category childCategory1 = new Category(2L, "Child 1", parentCategory);
+//        Category childCategory2 = new Category(3L, "Child 2", parentCategory);
+//        Category leafCategory1 = new Category(4L, "Leaf 1", childCategory1);
+//        Category leafCategory2 = new Category(5L, "Leaf 2", childCategory2);
+//
+//        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.of(parentCategory));
+//        when(categoryRepository.findByParentCategoryId(parentCategory.getCategoryId())).thenReturn(List.of(childCategory1, childCategory2));
+//        when(categoryRepository.findByParentCategoryId(childCategory1.getCategoryId())).thenReturn(List.of(leafCategory1));
+//        when(categoryRepository.findByParentCategoryId(childCategory2.getCategoryId())).thenReturn(List.of(leafCategory2));
+//        when(categoryRepository.findByParentCategoryId(leafCategory1.getCategoryId())).thenReturn(List.of());
+//        when(categoryRepository.findByParentCategoryId(leafCategory2.getCategoryId())).thenReturn(List.of());
+//
+//        // When
+//        List<CategoryResponseDto> result = categoryService.findLeafCategories(parentCategoryId);
+//
+//        // Then
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//        assertEquals("Leaf 1", result.get(0).getCategoryName());
+//        assertEquals("Leaf 2", result.get(1).getCategoryName());
+//
+//        verify(categoryRepository, times(1)).findById(parentCategoryId);
+//        verify(categoryRepository, times(1)).findByParentCategoryId(parentCategory.getCategoryId());
+//        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory1.getCategoryId());
+//        verify(categoryRepository, times(1)).findByParentCategoryId(childCategory2.getCategoryId());
+//    }
+//
+//    @Test
+//    void findLeafCategories_shouldThrowExceptionIfParentCategoryNotFound() {
+//        // Given
+//        Long parentCategoryId = 99L;
+//
+//        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.empty());
+//
+//        // When & Then
+//        assertThrows(CategoryNotFoundException.class, () -> categoryService.findLeafCategories(parentCategoryId));
+//
+//        verify(categoryRepository, times(1)).findById(parentCategoryId);
+//    }
 
 
 

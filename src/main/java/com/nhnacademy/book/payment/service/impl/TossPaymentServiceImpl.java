@@ -6,6 +6,7 @@ import com.nhnacademy.book.payment.service.TossPaymentService;
 import com.nhnacademy.book.webClient.TossPaymentClient;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -18,7 +19,8 @@ import java.util.LinkedHashMap;
 public class TossPaymentServiceImpl implements TossPaymentService {
     private final TossPaymentClient tossPaymentClient;
 
-    private static final String WIDGET_SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
+    @Value("${tossSecretKey}")
+    private String tossSecretKey;
 
     @Override
     public JSONObject cancelPayment(String paymentKey, PaymentCancelRequestDto cancelRequest) {
@@ -43,6 +45,6 @@ public class TossPaymentServiceImpl implements TossPaymentService {
     }
 
     private String getBasicToken() {
-        return "Basic " + Base64.getEncoder().encodeToString((WIDGET_SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
+        return "Basic " + Base64.getEncoder().encodeToString((tossSecretKey + ":").getBytes(StandardCharsets.UTF_8));
     }
 }

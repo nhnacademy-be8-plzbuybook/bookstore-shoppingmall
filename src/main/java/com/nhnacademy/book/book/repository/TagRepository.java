@@ -1,7 +1,5 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.entity.Book;
-import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +23,4 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     Tag findTagByTagId(Long tagId);
 
     Page<Tag> findByTagNameContaining(String tagName, Pageable pageable);
-
-
-//    Page<Category> findByCategoryNameContaining(String keyword, Pageable pageable);
-
 }

@@ -3,10 +3,12 @@ package com.nhnacademy.book.config;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestPropertySource(locations = "classpath:application-dev.yml")
 @SpringJUnitConfig
 @ContextConfiguration(classes = ElasticsearchConfig.class)
 class ElasticsearchConfigTest {

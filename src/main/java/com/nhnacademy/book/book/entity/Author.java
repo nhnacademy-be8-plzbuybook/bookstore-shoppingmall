@@ -10,9 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -37,11 +35,5 @@ public class Author {
 
     public Author(String authorName) {
         this.authorName = authorName;
-    }
-
-
-    @Override
-    public String toString() {
-        return "authorId: " + authorId + ", " +"authorName: "+authorName;
     }
 }

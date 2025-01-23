@@ -1,13 +1,9 @@
 package com.nhnacademy.book.book.controller;
 
 import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
-import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.entity.Category;
-import com.nhnacademy.book.book.repository.CategoryRepository;
 import com.nhnacademy.book.book.service.Impl.CategoryService;
-import jakarta.ws.rs.PUT;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,14 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryRepository categoryRepository;
 
-    public CategoryController(CategoryService categoryService, CategoryRepository categoryRepository) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.categoryRepository = categoryRepository;
     }
 
 
@@ -64,15 +58,9 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/children-category",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryResponseDto>> getCategory(@RequestParam Long parentId) {
-        return ResponseEntity.ok(categoryService.findLeafCategories(parentId));
+    public ResponseEntity<Page<CategoryResponseDto>> getCategory(@RequestParam Long parentId, @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "15")int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(categoryService.findLeafCategories(parentId, pageable));
     }
-
-
-
-
-
-
-
-
 }

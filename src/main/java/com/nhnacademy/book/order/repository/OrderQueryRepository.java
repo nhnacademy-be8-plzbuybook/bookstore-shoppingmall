@@ -58,7 +58,7 @@ public class OrderQueryRepository {
                                 orders.orderedAt,
                                 orders.status,
                                 orders.name,
-                                orders.orderPrice,
+                                orders.orderPrice.subtract(orders.usedPoint),
                                 getMemberEmail()
                         )).distinct()
                 .from(orders)
@@ -100,12 +100,9 @@ public class OrderQueryRepository {
                 .fetchOne();
 
         long total = (countResult != null) ? countResult : 0L;
-        Page<OrderDto> orderPage = new PageImpl<>(orderDtos, pageable, total);
-
-        return orderPage;
+        return new PageImpl<>(orderDtos, pageable, total);
     }
 
-    //TODO: 쿠폰할인액 계산?
     public Optional<OrderDetail> findOrderDetailById(String orderId) {
         return Optional.ofNullable(
                 queryFactory

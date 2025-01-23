@@ -4,7 +4,6 @@ import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeeCalculateRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyDto;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicySaveRequestDto;
 import com.nhnacademy.book.deliveryFeePolicy.dto.DeliveryFeePolicyUpdateRequestDto;
-import com.nhnacademy.book.deliveryFeePolicy.entity.DeliveryFeePolicy;
 
 import java.math.BigDecimal;
 import java.util.List;

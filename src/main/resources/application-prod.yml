@@ -89,3 +89,7 @@ aladin:
     url: https://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101
     url2: https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&Cover=Big&output=js&Version=20131101&OptResult=ebookList,usedList,reviewList
 ## https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbfkqlaus1419001&itemIdType=ISBN&ItemId=%s&OptResult=ebookList,usedList,reviewList";
+
+
+tossSecretKey: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+elasticUrl: 220.67.216.14:9200

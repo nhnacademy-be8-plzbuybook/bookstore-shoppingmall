@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
@@ -27,7 +28,4 @@ public class SellingBookAndBookResponseDto {
     private List<String> categories; // 카테고리 정보
     private List<String> authors;    // 작가 정보
 
-    public SellingBookAndBookResponseDto() {
-
-    }
 }

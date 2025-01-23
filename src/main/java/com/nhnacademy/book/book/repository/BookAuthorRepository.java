@@ -1,16 +1,13 @@
 package com.nhnacademy.book.book.repository;
 
-import com.nhnacademy.book.book.elastic.document.BookAuthorDocument;
 import com.nhnacademy.book.book.entity.Author;
 import com.nhnacademy.book.book.entity.Book;
 import com.nhnacademy.book.book.entity.BookAuthor;
-import com.nhnacademy.book.book.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +30,4 @@ public interface BookAuthorRepository extends JpaRepository<BookAuthor, Long> {
 
     @Query("SELECT ba FROM BookAuthor ba WHERE ba.author.authorName = :authorName")
     Optional<BookAuthor> findByAuthorName(@Param("authorName") String authorName);
-
-
-    // Book과 연결된 카테고리를 조회하는 메서드
-//    @Query("SELECT c FROM Category c JOIN c.bookCategories bc WHERE bc.book.bookId = :bookId")
-//    List<Category> findCategoriesByBookId(@Param("bookId") Long bookId);
 }

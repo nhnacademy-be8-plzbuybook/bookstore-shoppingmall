@@ -4,73 +4,76 @@ import com.nhnacademy.book.book.dto.request.CategoryRegisterDto;
 import com.nhnacademy.book.book.dto.request.ParentCategoryRequestDto;
 import com.nhnacademy.book.book.dto.response.CategoryResponseDto;
 import com.nhnacademy.book.book.dto.response.CategorySimpleResponseDto;
-import com.nhnacademy.book.book.elastic.document.CategoryDocument;
 import com.nhnacademy.book.book.elastic.repository.CategorySearchRepository;
 import com.nhnacademy.book.book.entity.Category;
 import com.nhnacademy.book.book.exception.CategoryAlreadyExistsException;
 import com.nhnacademy.book.book.exception.CategoryNotFoundException;
 import com.nhnacademy.book.book.repository.CategoryRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategorySearchRepository categorySearchRepository;
-
-    public CategoryService(CategoryRepository categoryRepository, CategorySearchRepository categorySearchRepository) {
-        this.categoryRepository = categoryRepository;
-        this.categorySearchRepository = categorySearchRepository;
-    }
+    private static final String CATEGORY_NOT_FOUND_MSG = "Category not found with ID: ";
 
     public CategoryResponseDto findCategoryById(Long id) {
         Category category = categoryRepository.findByCategoryId(id)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + id));
 
         return convertToDto(category);
     }
 
 
-    public List<CategoryResponseDto> findLeafCategories(Long parentCategoryId) {
+    public Page<CategoryResponseDto> findLeafCategories(Long parentCategoryId, Pageable pageable) {
+        // 부모 카테고리 조회
         Category parentCategory = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + parentCategoryId));
+                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + parentCategoryId));
 
-        // 리프 노드를 찾는 재귀 호출
+        // 리프 노드 찾기 (재귀 호출)
         List<Category> leafCategories = findLeafCategoriesRecursive(parentCategory);
 
         if (leafCategories.isEmpty()) {
             throw new CategoryNotFoundException("No leaf categories found for parent: " + parentCategory.getCategoryName());
         }
 
-        // Category -> CategoryResponseDto 변환
-        return leafCategories.stream()
+        // 페이지 처리: start와 end 계산
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), leafCategories.size());
+
+        // 페이지에 맞는 데이터 추출
+        List<CategoryResponseDto> paginatedLeafCategories = leafCategories.subList(start, end)
+                .stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return new PageImpl<>(paginatedLeafCategories, pageable, leafCategories.size());
     }
 
     private List<Category> findLeafCategoriesRecursive(Category category) {
+        // 자식 카테고리 조회
         List<Category> children = categoryRepository.findByParentCategoryId(category.getCategoryId());
 
-        // 자식이 없으면 리프 노드이므로 현재 카테고리를 반환
+        // 자식이 없으면 리프 노드이므로 현재 카테고리 반환
         if (children.isEmpty()) {
             return List.of(category);
         }
 
-        // 자식이 있으면 자식 카테고리에 대해 재귀 호출
+        // 자식 카테고리가 있으면 재귀 호출
         return children.stream()
                 .flatMap(child -> findLeafCategoriesRecursive(child).stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -93,7 +96,7 @@ public class CategoryService {
         // Category -> CategoryResponseDto 변환
         return childrenCategories.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -139,10 +142,9 @@ public class CategoryService {
     }
 
 
-
     public void deleteCategoryById(Long categoryId) {
         if (!categoryRepository.existsById(categoryId) || !categorySearchRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
         categorySearchRepository.deleteById(categoryId);
         categoryRepository.deleteById(categoryId);
@@ -163,14 +165,12 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long categoryId) {
-        if(!categoryRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundException("Category not found with ID: " + categoryId);
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException(CATEGORY_NOT_FOUND_MSG + categoryId);
         }
 
         categoryRepository.deleteCategoryAndChildren(categoryId);
     }
-
-
 
 
     // Category 엔티티를 CategoryResponseDto로 변환하는 메서드
@@ -183,7 +183,7 @@ public class CategoryService {
                         child.getParentCategory() != null ? child.getParentCategory().getCategoryId() : null,
                         new ArrayList<>()
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         return new CategoryResponseDto(
                 category.getCategoryId(),

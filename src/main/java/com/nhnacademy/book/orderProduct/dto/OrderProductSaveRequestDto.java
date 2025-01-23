@@ -1,6 +1,5 @@
 package com.nhnacademy.book.orderProduct.dto;
 
-import com.nhnacademy.book.orderProduct.entity.OrderProduct;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

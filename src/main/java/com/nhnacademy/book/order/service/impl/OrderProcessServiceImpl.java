@@ -1,5 +1,6 @@
 package com.nhnacademy.book.order.service.impl;
 
+import com.nhnacademy.book.coupon.service.CouponService;
 import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.member.domain.Member;
 import com.nhnacademy.book.member.domain.exception.MemberNotFoundException;
@@ -9,13 +10,12 @@ import com.nhnacademy.book.order.dto.orderRequests.OrderProductRequestDto;
 import com.nhnacademy.book.order.dto.orderRequests.OrderRequestDto;
 import com.nhnacademy.book.order.dto.orderResponse.OrderResponseDto;
 import com.nhnacademy.book.order.entity.Orders;
-import com.nhnacademy.book.order.enums.OrderStatus;
+import com.nhnacademy.book.order.enums.OrderType;
 import com.nhnacademy.book.order.exception.OrderCompletionFailException;
 import com.nhnacademy.book.order.exception.OrderRequestFailException;
 import com.nhnacademy.book.order.repository.OrderRepository;
 import com.nhnacademy.book.order.service.*;
 import com.nhnacademy.book.orderProduct.entity.OrderProduct;
-import com.nhnacademy.book.orderProduct.entity.OrderProductStatus;
 import com.nhnacademy.book.orderProduct.service.OrderProductService;
 import com.nhnacademy.book.payment.dto.PaymentCancelRequestDto;
 import com.nhnacademy.book.payment.service.PaymentService;
@@ -23,8 +23,6 @@ import com.nhnacademy.book.point.service.MemberPointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +40,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private final OrderProductCouponService orderProductCouponService;
     private final CustomerOrderService customerOrderService;
     private final PaymentService paymentService;
+    private final CouponService couponService;
 
     /**
      * 주문요청 처리 (검증, 저장, 캐싱)
@@ -60,7 +59,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             // 주문정보 캐싱
             orderCacheService.saveOrderCache(orderResponseDto.getOrderId(), orderRequest);
             // 재고 선점
-            Map<String, Integer> stockMap = orderCacheService.preemptOrderStock(orderResponseDto.getOrderId(), orderRequest);
+            orderCacheService.preemptOrderStock(orderResponseDto.getOrderId(), orderRequest);
 
             return orderResponseDto;
         } catch (Exception e) {
@@ -115,10 +114,8 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private void processUsingPoint(OrderRequestDto orderRequest) {
         Integer usedPoint = orderRequest.getUsedPoint();
         if (usedPoint != null && usedPoint > 0) {
-            memberPointService.usedPoint(orderRequest instanceof MemberOrderRequestDto
-                            ? ((MemberOrderRequestDto) orderRequest).getMemberEmail()
-                            : null,
-                    usedPoint);
+            memberPointService.usedPoint((orderRequest.getOrderType() == OrderType.MEMBER_ORDER ? orderRequest.getMemberEmail()
+                    : null), usedPoint);
         }
     }
 
@@ -143,8 +140,9 @@ public class OrderProcessServiceImpl implements OrderProcessService {
             paymentService.removePayment(paymentId);
         }
         // 주문상태변경
-        //TODO: 쿠폰 사용취소처리
-        //TODO: 포인트 사용취소처리
+        // 쿠폰 사용취소처리
+        //couponService.cancelCoupon(couponId) // couponId 필요함
+        //  포인트 사용취소처리
     }
 
 }

@@ -5,13 +5,10 @@ import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,31 +31,23 @@ public class SellingBookService {
     private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
     private final BookAuthorRepository bookAuthorRepository;
     private final LikesRepository likesRepository;
-    private final MemberRepository memberRepository;
-    private final MemberService memberService; // 추가
-    private final SellingBookSearchRepository sellingBookSearchRepository;
     private final BookInfoRepository bookInfoRepository;
+    private static final String SELLING_BOOK_NOT_FOUND_MESSAGE = "SellingBook not found with ID: ";
 
     @Autowired
     public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
-                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository,
-                              MemberRepository memberRepository, MemberService memberService, SellingBookSearchRepository sellingBookSearchRepository, BookInfoRepository bookInfoRepository) {
+                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository, BookInfoRepository bookInfoRepository) {
         this.sellingBookRepository = sellingBookRepository;
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.bookImageRepository = bookImageRepository;
         this.bookAuthorRepository = bookAuthorRepository;
         this.likesRepository = likesRepository;
-        this.memberRepository = memberRepository;
-        this.memberService = memberService;
-        this.sellingBookSearchRepository = sellingBookSearchRepository;
         this.bookInfoRepository = bookInfoRepository;
     }
 
     /**
      * 홈페이지 로드시 페이징 처리후 보여짐
-     * @param pageable
-     * @return
      */
     public Page<SellingBookAndBookResponseDto> getBooks(Pageable pageable, String sortBy) {
         if ("likeCount".equals(sortBy)) {
@@ -73,15 +61,13 @@ public class SellingBookService {
     }
 
 
-
-
     /**
      * 판매책 수정 update -  특정 필드값 수정 가능 로직 (관리자)
      */
     @Transactional
     public SellinBookResponseDto updateSellingBook(Long sellingBookId, SellingBookRegisterDto updateDto) {
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
-                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+                .orElseThrow(() -> new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId));
 
         // 특정 필드만 수정
         // 판매가 수정
@@ -127,15 +113,12 @@ public class SellingBookService {
         return responseDto;
     }
 
-    //TODO
     public void registerSellingBooks(SellingBookRegisterDto sellingBookRegisterDto) {
-        // 1. 책 ID로 책 정보 조회
         Book book = bookRepository.findById(sellingBookRegisterDto.getBookId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책 ID입니다."));
 
-        // 2. 판매책 정보 생성
         SellingBook sellingBook = new SellingBook();
-        sellingBook.setBook(book); // 책과 매핑
+        sellingBook.setBook(book);
         sellingBook.setSellingBookPrice(sellingBookRegisterDto.getSellingBookPrice()); // 판매가
         sellingBook.setSellingBookPackageable(sellingBookRegisterDto.getSellingBookPackageable()); // 선물포장 가능 여부
         sellingBook.setSellingBookStock(sellingBookRegisterDto.getSellingBookStock()); // 재고
@@ -153,14 +136,13 @@ public class SellingBookService {
     }
 
 
-
     /**
      * 판매책 삭제
      */
     @Transactional
     public void deleteSellingBook(Long sellingBookId) {
         if (!sellingBookRepository.existsById(sellingBookId)) {
-            throw new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId);
+            throw new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId);
         }
         sellingBookRepository.deleteById(sellingBookId);
         bookInfoRepository.deleteBySellingBookId(sellingBookId);
@@ -175,7 +157,7 @@ public class SellingBookService {
     public BookDetailResponseDto getSellingBook(Long sellingBookId) {
 
         SellingBook sellingBook = sellingBookRepository.findById(sellingBookId)
-                .orElseThrow(() -> new SellingBookNotFoundException("SellingBook not found with ID: " + sellingBookId));
+                .orElseThrow(() -> new SellingBookNotFoundException(SELLING_BOOK_NOT_FOUND_MESSAGE + sellingBookId));
 
         Book book = sellingBook.getBook();
 
@@ -187,14 +169,12 @@ public class SellingBookService {
         List<String> categoryNames = categoryRepository.findCategoriesByBookId(book.getBookId())
                 .stream()
                 .map(Category::getCategoryName)
-                .collect(Collectors.toList());
-
+                .toList();
         // 작가 이름 가져오기
         List<String> authorNames = bookAuthorRepository.findByBook_BookId(book.getBookId())
                 .stream()
                 .map(bookAuthor -> bookAuthor.getAuthor().getAuthorName())
-                .collect(Collectors.toList());
-
+                .toList();
         // 특정 판매책에 대한 좋아요 수 조회
         Long likeCount = likesRepository.countBySellingBookId(sellingBookId);
 
@@ -221,7 +201,7 @@ public class SellingBookService {
     }
 
 
-     /**
+    /**
      * 판매책 조회수 내림차순 정렬 조회 (조회수 높은 순)
      */
     public List<SellingBookAndBookResponseDto> getSellingBooksByViewCount(String sortDirection) {
@@ -235,7 +215,7 @@ public class SellingBookService {
         return sellingBookRepository.findAll(sort)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -246,7 +226,7 @@ public class SellingBookService {
         return sellingBookRepository.findBySellingBookStatus(status)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -257,19 +237,7 @@ public class SellingBookService {
         return sellingBookRepository.findBySellingBookPriceBetween(minPrice, maxPrice)
                 .stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 카테고리별 도서 조회
-     * @param categoryId
-     * @return
-     */
-    public List<SellingBookAndBookResponseDto> getSellingBooksByCategory(Long categoryId) {
-        List<SellingBook> sellingBooks = sellingBookRepository.findByCategoryIdOrParent(categoryId);
-        return sellingBooks.stream()
-                .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private SellingBookAndBookResponseDto toResponseDto(SellingBook sellingBook) {
@@ -281,14 +249,12 @@ public class SellingBookService {
         List<String> categories = categoryRepository.findCategoriesByBookId(book.getBookId())
                 .stream()
                 .map(Category::getCategoryName)
-                .collect(Collectors.toList());
-
+                .toList();
         // 작가 정보 매핑
         List<String> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId())
                 .stream()
                 .map(Author::getAuthorName) // Author의 authorName을 가져옴
-                .collect(Collectors.toList());
-
+                .toList();
         // 출판사 정보 가져오기
         String publisher = book.getPublisher().getPublisherName();
 

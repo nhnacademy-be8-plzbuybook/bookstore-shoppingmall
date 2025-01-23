@@ -2,9 +2,8 @@ package com.nhnacademy.book.order.service.impl;
 
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.repository.SellingBookRepository;
-import com.nhnacademy.book.deliveryFeePolicy.exception.ConflictException;
-import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.coupon.service.CouponService;
+import com.nhnacademy.book.deliveryFeePolicy.exception.NotFoundException;
 import com.nhnacademy.book.order.dto.OrderCancelRequestDto;
 import com.nhnacademy.book.order.dto.OrderProductCancelRequestDto;
 import com.nhnacademy.book.order.entity.OrderProductCoupon;
@@ -39,6 +38,7 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
     private final OrderRepository orderRepository;
     private final OrderValidationService orderValidationService;
     private final ReturnPointService returnPointService;
+    private final CouponService couponService;
 
     @Transactional
     @Override
@@ -52,11 +52,8 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
             OrderProduct orderProduct = orderProductRepository.findById(orderProductCancelRequest.getOrderProductId()).orElseThrow(() -> new NotFoundException("주문상품을 찾을 수 없습니다."));
             orderValidationService.validateOrderProductForCanceling(orderProduct);
 
-            // TODO: 쿠폰복구
-
-            // 포인트 복구
-            returnPointService.returnPoint(orderProduct.getOrderProductId());
-
+            //couponService.cancelCoupon(couponId) //쿠폰사용취소인 경우 (couponId)
+            //couponService.refundCoupon(new RefundCouponRequestDto(couponId, memberId)); //쿠폰환불인 경우 (couponId, memberId)
             // 재고 복구
             restoreOrderProductStock(orderProduct);
 

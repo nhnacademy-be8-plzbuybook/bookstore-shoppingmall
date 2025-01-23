@@ -1,15 +1,14 @@
 package com.nhnacademy.book.objectstorage.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.book.book.dto.response.FileUploadResponse;
 import com.nhnacademy.book.objectstorage.config.ObjectStorageConfig;
 import com.nhnacademy.book.objectstorage.exception.ObjectStorageFileUploadException;
 import com.nhnacademy.book.objectstorage.exception.ObjectStorageTokenException;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
@@ -28,7 +27,6 @@ import java.util.UUID;
 
 @Service
 public class ObjectStorageService {
-
     // 허용된 파일 확장자 목록 (이미지, PDF, TXT 등)
     private static final List<String> ALLOWED_FILE_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "pdf", "txt");
 
@@ -55,7 +53,6 @@ public class ObjectStorageService {
 
     public List<String> uploadObjects(List<MultipartFile> multipartFiles) {
         if (multipartFiles == null || multipartFiles.isEmpty()) {
-//            throw new ObjectStorageFileUploadException("No files upload.");
             return new ArrayList<>();
         }
 
@@ -193,12 +190,15 @@ public class ObjectStorageService {
             }
 
             return response.body();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ObjectStorageFileUploadException("Thread was interrupted while creating InputStream from URL: " + fileUrl, e);
         } catch (Exception e) {
             throw new ObjectStorageFileUploadException("Failed to create InputStream from URL: " + fileUrl);
-        }
+        } 
     }
 
-    private void uploadFileToStorage(String url, InputStream inputStream, String tokenId) throws IOException {
+    private void uploadFileToStorage(String url, InputStream inputStream, String tokenId) {
         RequestCallback requestCallback = request -> {
             request.getHeaders().add("X-Auth-Token", tokenId);
             IOUtils.copy(inputStream, request.getBody());
@@ -207,5 +207,4 @@ public class ObjectStorageService {
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, null);
     }
 
-    //TODO 조회 하는거 추가
 }

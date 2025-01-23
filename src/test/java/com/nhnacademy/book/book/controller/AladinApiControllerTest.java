@@ -47,7 +47,7 @@ class AladinApiControllerTest {
                 .andExpect(status().isOk());
 
         Mockito.verify(apiService, Mockito.times(1))
-                .saveBooksFromListApi(eq("Bestseller"), eq("Book"), eq(1), eq(10));
+                .saveBooksFromListApi("Bestseller", "Book", 1, 10);
     }
 
     @Test

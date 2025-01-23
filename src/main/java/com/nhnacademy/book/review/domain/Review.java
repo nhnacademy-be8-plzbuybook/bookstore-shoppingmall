@@ -57,12 +57,4 @@ public class Review {
         this.writeDate = LocalDateTime.now();
         this.isPhotoPointGiven = isPhotoPointGiven;
     }
-//
-//    //리뷰 수정용
-//    public void update(String content, int score) {
-//        this.content = content;
-//        this.score = score;
-//        this.modifiedDate = LocalDateTime.now();
-//    }
-
 }

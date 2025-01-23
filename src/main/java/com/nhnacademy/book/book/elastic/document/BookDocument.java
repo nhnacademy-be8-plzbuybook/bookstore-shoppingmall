@@ -1,21 +1,15 @@
 package com.nhnacademy.book.book.elastic.document;
 
 
-import com.nhnacademy.book.converter.LocalDateToLongConverter;
-import com.thoughtworks.xstream.converters.time.LocalDateConverter;
-import jakarta.persistence.Convert;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.core.mapping.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Document(indexName = "book_4")
 @Getter

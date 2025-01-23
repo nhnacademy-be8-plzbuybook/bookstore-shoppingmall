@@ -19,9 +19,7 @@ public class MemberStatusController {
     //회원 상태 추가(값 추가를 위함)
     @PostMapping("/members/status")
     public MemberStatus createMemberStatus (@RequestBody MemberStatusCreateRequestDto memberStatusCreateRequestDto){
-        MemberStatus memberStatus = memberStatusService.createMemberStatus(memberStatusCreateRequestDto);
-
-        return memberStatus;
+        return memberStatusService.createMemberStatus(memberStatusCreateRequestDto);
     }
 
     @PostMapping("/members/{email}/active")

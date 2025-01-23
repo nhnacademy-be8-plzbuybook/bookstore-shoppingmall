@@ -1,11 +1,7 @@
 package com.nhnacademy.book.book.entity;
 
-import com.nhnacademy.book.book.elastic.repository.BookSearchRepository;
-import com.nhnacademy.book.converter.PasswordConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -94,32 +90,6 @@ public class Book {
         this.bookTitle = testBook;
     }
 
-//    // 이미지 추가 메서드
-//    public void addImage(String imageUrl) {
-//        BookImage bookImage = new BookImage(this, imageUrl);
-//        this.bookImages.add(bookImage);
-//    }
-//    public Book(String bookTitle, String bookIndex,
-//                String bookDescription, LocalDate bookPubDate,
-//                BigDecimal sellingBookPrice, String bookIsbn13,
-//                Publisher publisher, String imageUrl) {
-//    }
-//
-//    public Book(String bookTitle, String bookIsbn13,
-//                Object o, Object o1,
-//                LocalDate bookPubDate,
-//                BigDecimal sellingBookPrice,
-//                String bookIsbn131, String publisher, String imageUrl) {
-//    }
-
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "bookId=" + bookId +
-                ", bookTitle='" + bookTitle + '\'' +
-                '}';
-    }
     // addCategory 메서드 추가
     public void addCategory(Category category) {
         if (bookCategories.stream().noneMatch(bc -> bc.getCategory().equals(category))) {

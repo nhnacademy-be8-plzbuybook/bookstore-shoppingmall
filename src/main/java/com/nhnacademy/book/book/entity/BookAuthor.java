@@ -1,7 +1,6 @@
 package com.nhnacademy.book.book.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,8 +28,4 @@ public class BookAuthor {
         this.author = author;
     }
 
-    @Override
-    public String toString() {
-        return "BookAuthor [id=" + id + ", book=" + book.toString() + ", author=" + author.toString() + "]";
-    }
 }
