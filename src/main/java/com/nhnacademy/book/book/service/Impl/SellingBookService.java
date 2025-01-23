@@ -56,7 +56,7 @@ public class SellingBookService {
             return books.map(this::toResponseDto);
         }
         //기본 정렬
-        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
+        Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable); // 쿼리 18번
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
     }
 
