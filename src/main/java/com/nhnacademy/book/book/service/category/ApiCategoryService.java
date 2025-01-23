@@ -17,15 +17,12 @@ import org.springframework.stereotype.Service;
 public class ApiCategoryService {
 
 
-//    @Autowired
-    private  CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-//    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
 
-//    @Autowired
-    private BookCategoryService bookCategoryService;
+    private final BookCategoryService bookCategoryService;
 
     /**
      * 카테고리 경로를 > 기준으로 나눠서 저장
