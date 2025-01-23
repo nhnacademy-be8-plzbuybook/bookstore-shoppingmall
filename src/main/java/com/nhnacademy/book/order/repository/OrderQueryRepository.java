@@ -58,7 +58,7 @@ public class OrderQueryRepository {
                                 orders.orderedAt,
                                 orders.status,
                                 orders.name,
-                                orders.orderPrice,
+                                orders.orderPrice.subtract(orders.usedPoint),
                                 getMemberEmail()
                         )).distinct()
                 .from(orders)
