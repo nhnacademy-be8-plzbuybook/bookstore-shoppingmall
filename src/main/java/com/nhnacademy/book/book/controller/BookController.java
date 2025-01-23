@@ -44,9 +44,16 @@ public class BookController {
     @GetMapping
     public ResponseEntity<Page<BookRegisterDto>> adminGetBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword
+
+            ) {
         Pageable pageable = PageRequest.of(page, size);
+        if (keyword != null && !keyword.isEmpty()) {
+            return ResponseEntity.ok(bookService.searchBooksByKeyword(keyword, pageable));
+        } else {
+
+        }
         return ResponseEntity.ok(bookService.getBooks(pageable));
     }
 

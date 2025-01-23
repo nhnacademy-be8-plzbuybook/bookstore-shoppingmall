@@ -71,6 +71,49 @@ public class BookService {
         );
     }
 
+    public Page<BookRegisterDto> searchBooksByKeyword(String keyword, Pageable pageable) {
+        Page<Book> bookPage = bookRepository.findByBookTitleContaining(keyword, pageable);
+
+
+
+        return bookPage.map(book -> {
+            List<String> bookImage = bookImageRepository.findByBook_BookId(book.getBookId())
+                    .stream()
+                    .map(BookImage::getImageUrl)
+                    .toList();
+
+            // 카테고리 정보 매핑
+            List<Category> categories = categoryRepository.findCategoriesByBookId(book.getBookId());
+
+            // 작가 정보 매핑
+            List<Author> authors = bookAuthorRepository.findAuthorsByBookId(book.getBookId());
+
+            // 출판사 정보 가져오기
+            String publisher = book.getPublisher().getPublisherName();
+
+            return new BookRegisterDto(
+                    book.getBookId(),
+                    book.getBookTitle(),    // 제목
+                    book.getBookPubDate(),         // 출판일
+                    publisher,                     // 출판사
+                    book.getBookIsbn13(),          // ISBN
+                    book.getBookPriceStandard(),
+                    bookImage, // 이미지 URL
+                    authors.stream()
+                            .map(author -> new AuthorResponseDto(
+                                    author.getAuthorId(),
+                                    author.getAuthorName()
+                            ))
+                            .toList(),
+                    categories.stream()
+                            .map(category -> new CategorySimpleResponseDto(
+                                    category.getCategoryId(),
+                                    category.getCategoryName()
+                            ))
+                            .toList()
+            );
+        });
+    }
     // 도서 수정 값관련 서비스
     public BookRegisterRequestDto getBookUpdate(Long bookId) {
         Book book = bookRepository.findById(bookId)

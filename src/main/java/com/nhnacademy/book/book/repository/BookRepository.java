@@ -68,7 +68,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 
     // 제목에 특정 문자열이 포함된 책 조회
-    List<Book> findByBookTitleContaining(String bookTitle);
+    Page<Book> findByBookTitleContaining(String bookTitle,Pageable pageable);
 
     // index에 특정 문자열 조회
     List<Book> findByBookIndexContaining(String bookIndex);

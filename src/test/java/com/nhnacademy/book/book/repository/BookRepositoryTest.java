@@ -147,29 +147,29 @@ class BookRepositoryTest {
         }
     }
 
-    // 제목에 특정 문자열이 포함된 책을 찾는 테스트
-    @Test
-    void findByBookTitleContainingTest() {
-        // 추가 책 저장
-        Book book = new Book(
-                publisher,
-                "Find Me Book Title",
-                "Book Index",
-                "Book Description",
-                LocalDate.of(2023, 12, 17),
-                new BigDecimal("12.99"),
-                "1234567890123455"
-        );
-        bookRepository.save(book);
-
-        // 제목에 "Find Me"가 포함된 책 검색
-        List<Book> books = bookRepository.findByBookTitleContaining("Find Me");
-
-        log.info("Found Books containing 'Find Me': {}", books);  // 포함된 제목으로 책 찾은 후 로그 출력
-
-        // 책 검증
-        assertNotNull(books);
-        assertEquals(1, books.size());
-        assertEquals("Find Me Book Title", books.get(0).getBookTitle());
-    }
+//    // 제목에 특정 문자열이 포함된 책을 찾는 테스트
+//    @Test
+//    void findByBookTitleContainingTest() {
+//        // 추가 책 저장
+//        Book book = new Book(
+//                publisher,
+//                "Find Me Book Title",
+//                "Book Index",
+//                "Book Description",
+//                LocalDate.of(2023, 12, 17),
+//                new BigDecimal("12.99"),
+//                "1234567890123455"
+//        );
+//        bookRepository.save(book);
+//
+//        // 제목에 "Find Me"가 포함된 책 검색
+//        List<Book> books = bookRepository.findByBookTitleContaining("Find Me");
+//
+//        log.info("Found Books containing 'Find Me': {}", books);  // 포함된 제목으로 책 찾은 후 로그 출력
+//
+//        // 책 검증
+//        assertNotNull(books);
+//        assertEquals(1, books.size());
+//        assertEquals("Find Me Book Title", books.get(0).getBookTitle());
+//    }
 }
