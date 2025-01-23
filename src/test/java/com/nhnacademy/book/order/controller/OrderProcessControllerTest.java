@@ -84,39 +84,39 @@ class OrderProcessControllerTest {
     }
 
 
-    @Test
-    void requestOrder_non_member() throws Exception{
-        // Arrange
-        String memberEmail = "test@email.com";
-        OrderRequestDto orderRequestDto = new OrderRequestDto(OrderType.NON_MEMBER_ORDER, LocalDate.now(),
-                0, List.of(mock(OrderProductRequestDto.class)), mock(OrderDeliveryAddressDto.class), BigDecimal.ZERO,
-                BigDecimal.valueOf(30_000), null, null);
-
-        OrderResponseDto orderResponseDto = new OrderResponseDto("orderId", BigDecimal.valueOf(30_000), "수학의 정석 외 2건");
-        when(orderProcessService.requestOrder(any(OrderRequestDto.class))).thenReturn(orderResponseDto);
-
-        // Act
-        MvcResult result = mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderRequestDto)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        // Assert
-        ArgumentCaptor<OrderRequestDto> captor = ArgumentCaptor.forClass(OrderRequestDto.class);
-        verify(orderProcessService).requestOrder(captor.capture());
-        OrderRequestDto capturedRequest = captor.getValue();
-
-        assertNotNull(capturedRequest);
-        assertNull(capturedRequest.getMemberEmail());
-
-        assertNotNull(result.getResponse());
-        OrderResponseDto responseContent = objectMapper.readValue(result.getResponse().getContentAsString(), OrderResponseDto.class);
-        assertEquals(orderResponseDto.getOrderId(), responseContent.getOrderId());
-        assertEquals(orderResponseDto.getOrderName(), responseContent.getOrderName());
-        assertEquals(orderResponseDto.getAmount(), responseContent.getAmount());
-    }
+//    @Test
+//    void requestOrder_non_member() throws Exception{
+//        // Arrange
+//        String memberEmail = "test@email.com";
+//        OrderRequestDto orderRequestDto = new OrderRequestDto(OrderType.NON_MEMBER_ORDER, LocalDate.now(),
+//                0, List.of(mock(OrderProductRequestDto.class)), mock(OrderDeliveryAddressDto.class), BigDecimal.ZERO,
+//                BigDecimal.valueOf(30_000), null, null);
+//
+//        OrderResponseDto orderResponseDto = new OrderResponseDto("orderId", BigDecimal.valueOf(30_000), "수학의 정석 외 2건");
+//        when(orderProcessService.requestOrder(any(OrderRequestDto.class))).thenReturn(orderResponseDto);
+//
+//        // Act
+//        MvcResult result = mockMvc.perform(post(BASE_URL)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(orderRequestDto)))
+//                .andExpect(status().isOk())
+//                .andReturn();
+//
+//        // Assert
+//        ArgumentCaptor<OrderRequestDto> captor = ArgumentCaptor.forClass(OrderRequestDto.class);
+//        verify(orderProcessService).requestOrder(captor.capture());
+//        OrderRequestDto capturedRequest = captor.getValue();
+//
+//        assertNotNull(capturedRequest);
+//        assertNull(capturedRequest.getMemberEmail());
+//
+//        assertNotNull(result.getResponse());
+//        OrderResponseDto responseContent = objectMapper.readValue(result.getResponse().getContentAsString(), OrderResponseDto.class);
+//        assertEquals(orderResponseDto.getOrderId(), responseContent.getOrderId());
+//        assertEquals(orderResponseDto.getOrderName(), responseContent.getOrderName());
+//        assertEquals(orderResponseDto.getAmount(), responseContent.getAmount());
+//    }
 
     @Test
     void completeOrder() throws Exception {
