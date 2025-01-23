@@ -54,10 +54,6 @@ public class OrderCancellationServiceImpl implements OrderCancellationService {
 
             //couponService.cancelCoupon(couponId) //쿠폰사용취소인 경우 (couponId)
             //couponService.refundCoupon(new RefundCouponRequestDto(couponId, memberId)); //쿠폰환불인 경우 (couponId, memberId)
-
-            // 포인트 복구
-            returnPointService.returnPoint(orderProduct.getOrderProductId());
-
             // 재고 복구
             restoreOrderProductStock(orderProduct);
 
