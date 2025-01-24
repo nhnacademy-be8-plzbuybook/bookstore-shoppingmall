@@ -69,7 +69,7 @@ eureka:
     register-with-eureka: true  # Eureka에 서비스 등록
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
-      defaultZone: http://10.116.64.14:10149/eureka  # Eureka 서버 URL
+      defaultZone: http://localhost:10149/eureka  # Eureka 서버 URL
 
 aladin:
   api:
