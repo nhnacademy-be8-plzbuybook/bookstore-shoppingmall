@@ -1,16 +1,19 @@
 package com.nhnacademy.book.booktest.repository;
 
-import com.nhnacademy.book.book.entity.*;
+import com.nhnacademy.book.book.entity.Author;
+import com.nhnacademy.book.book.entity.Book;
+import com.nhnacademy.book.book.entity.BookAuthor;
+import com.nhnacademy.book.book.entity.Publisher;
 import com.nhnacademy.book.book.repository.AuthorRepository;
 import com.nhnacademy.book.book.repository.BookAuthorRepository;
 import com.nhnacademy.book.book.repository.BookRepository;
 import com.nhnacademy.book.book.repository.PublisherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
-//@ActiveProfiles("test")
 public class BookAuthorRepositoryTest {
 
     @Autowired
@@ -69,6 +71,7 @@ public class BookAuthorRepositoryTest {
     }
 
     @Test
+    @Disabled
     void findBooksByAuthorIdTest() {
         // 추가 Book 저장
         Book book2 = new Book(

@@ -1,8 +1,3 @@
-server:
-  port: 10143
-
-
-
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -24,14 +19,15 @@ spring:
       host: 10.116.64.14
       port: 6379
       password: "*N2vya7H@muDTwdNMR!"
-    jpa:
-      properties:
-        hibernate:
-          show_sql: true
-          format_sql: true
+
+  jpa:
+    show-sql: true  # SQL을 콘솔에 출력
+    properties:
       hibernate:
-        ddl-auto: none
-      open-in-view: false # osiv 비활성화
+        format_sql: true  # SQL을 보기 좋게 포맷
+    hibernate:
+      ddl-auto: none  # 스키마 자동 변경 방지
+    open-in-view: false  # OSIV 비활성화
 
   #    auth_redis_range: 231
 #    order_redis_range: 232
@@ -69,7 +65,7 @@ eureka:
     register-with-eureka: true  # Eureka에 서비스 등록
     fetch-registry: true  # Eureka에서 서비스 목록 가져오기
     service-url:
-      defaultZone: http://10.116.64.14:10149/eureka  # Eureka 서버 URL
+      defaultZone: http://localhost:10149/eureka  # Eureka 서버 URL
 
 aladin:
   api:
