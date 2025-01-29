@@ -1,10 +1,4 @@
 <configuration>
-    <!-- 스프링이 제공하는 프로퍼티 로드 -->
-    <springProperty scope="context" name="CONSOLE_LOG_PATTERN" source="logging.pattern.console"/>
-    <springProperty scope="context" name="FILE_LOG_PATTERN" source="logging.pattern.file"/>
-    <springProperty scope="context" name="LOG_FILE" source="logging.file.name"/>
-    <springProperty scope="context" name="LOG_PATH" source="logging.file.path"/>
-
     <!-- 콘솔 출력 Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -14,14 +8,12 @@
 
     <!-- 파일 출력 Appender -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- 로그 파일 저장 경로 -->
-        <file>./logs/shop.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>./logs/shop-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -34,16 +26,8 @@
         </root>
     </springProfile>
 
-    <springProfile name="dev">
-        <!-- 로그 레벨 ERROR -->
+    <springProfile name="prod, nhn">
         <root level="ERROR">
-            <appender-ref ref="FILE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="nhn">
-        <!-- 로그 레벨 DEBUG -->
-        <root level="DEBUG">
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE"/>
         </root>
