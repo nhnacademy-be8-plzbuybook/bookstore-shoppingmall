@@ -1,22 +1,27 @@
+server:
+  port: 10143
+
+
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
 spring:
   elasticsearch:
-    uris: http://10.116.64.14:9200
+    uris: http://220.67.216.14:9200
     username: elastic
     password: nhnacademy123!
 
   datasource:
-    url: jdbc:mysql://10.116.64.14:13306/project_be8_plzbuybook_bookstore
+    url: jdbc:mysql://220.67.216.14:3306/project_be8_plzbuybook_bookstore
     username: project_be8_plzbuybook
     password: MOW6c#y4TVxi1P5b
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   data:
     redis:
-      host: 10.116.64.14
+      host: 220.67.216.14
       port: 6379
       password: "*N2vya7H@muDTwdNMR!"
 

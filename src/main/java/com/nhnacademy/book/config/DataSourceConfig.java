@@ -29,7 +29,7 @@ public class DataSourceConfig {
 
         //복호화 된걸 db환경으로 설정
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://10.116.64.14:13306/project_be8_plzbuybook_bookstore");
+        dataSource.setUrl("jdbc:mysql://220.67.216.14:13306/project_be8_plzbuybook_bookstore");
         dataSource.setUsername("project_be8_plzbuybook");
         dataSource.setPassword("MOW6c#y4TVxi1P5b");
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
