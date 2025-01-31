@@ -1,19 +1,17 @@
 package com.nhnacademy.book.book.service.Impl;
 
+import com.nhnacademy.book.book.dto.SellingBookSimpleResponseDto;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
 import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.elastic.repository.BookInfoRepository;
-import com.nhnacademy.book.book.elastic.repository.SellingBookSearchRepository;
 import com.nhnacademy.book.book.entity.*;
 import com.nhnacademy.book.book.entity.SellingBook.SellingBookStatus;
 import com.nhnacademy.book.book.exception.SellingBookNotFoundException;
 import com.nhnacademy.book.book.repository.*;
-import com.nhnacademy.book.member.domain.repository.MemberRepository;
-import com.nhnacademy.book.member.domain.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,8 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@RequiredArgsConstructor
 @Transactional
+@Service
 public class SellingBookService {
 
     private final SellingBookRepository sellingBookRepository;
@@ -35,26 +34,9 @@ public class SellingBookService {
     private final BookImageRepository bookImageRepository; // 누락된 Repository 추가
     private final BookAuthorRepository bookAuthorRepository;
     private final LikesRepository likesRepository;
-    private final MemberRepository memberRepository;
-    private final MemberService memberService; // 추가
-    private final SellingBookSearchRepository sellingBookSearchRepository;
     private final BookInfoRepository bookInfoRepository;
+    private final SellingBookQueryRepository sellingBookQueryRepository;
 
-    @Autowired
-    public SellingBookService(SellingBookRepository sellingBookRepository, BookRepository bookRepository, CategoryRepository categoryRepository,
-                              BookImageRepository bookImageRepository, BookAuthorRepository bookAuthorRepository, LikesRepository likesRepository,
-                              MemberRepository memberRepository, MemberService memberService, SellingBookSearchRepository sellingBookSearchRepository, BookInfoRepository bookInfoRepository) {
-        this.sellingBookRepository = sellingBookRepository;
-        this.bookRepository = bookRepository;
-        this.categoryRepository = categoryRepository;
-        this.bookImageRepository = bookImageRepository;
-        this.bookAuthorRepository = bookAuthorRepository;
-        this.likesRepository = likesRepository;
-        this.memberRepository = memberRepository;
-        this.memberService = memberService;
-        this.sellingBookSearchRepository = sellingBookSearchRepository;
-        this.bookInfoRepository = bookInfoRepository;
-    }
 
     /**
      * 홈페이지 로드시 페이징 처리후 보여짐
@@ -70,6 +52,10 @@ public class SellingBookService {
         //기본 정렬
         Page<SellingBook> sellingBooks = sellingBookRepository.findAll(pageable);
         return sellingBooks.map(this::toResponseDto); // Page<SellingBook> -> Page<SellingBookResponseDto> 변환
+    }
+
+    public Page<SellingBookSimpleResponseDto> getBooks(Pageable pageable, String sortBy, String sortDir) {
+        return sellingBookQueryRepository.findSellingBooks(pageable, sortBy, sortDir);
     }
 
 

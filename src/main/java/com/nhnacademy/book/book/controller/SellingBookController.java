@@ -1,5 +1,6 @@
 package com.nhnacademy.book.book.controller;
 
+import com.nhnacademy.book.book.dto.SellingBookSimpleResponseDto;
 import com.nhnacademy.book.book.dto.request.SellingBookRegisterDto;
 import com.nhnacademy.book.book.dto.response.BookDetailResponseDto;
 import com.nhnacademy.book.book.dto.response.SellinBookResponseDto;
@@ -7,12 +8,14 @@ import com.nhnacademy.book.book.dto.response.SellingBookAndBookResponseDto;
 import com.nhnacademy.book.book.entity.SellingBook;
 import com.nhnacademy.book.book.service.Impl.SellingBookService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,61 +23,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/selling-books")
 public class SellingBookController {
 
     private final SellingBookService sellingBookService;
 
-    @Autowired
-    public SellingBookController(SellingBookService sellingBookService) {
-        this.sellingBookService = sellingBookService;
-    }
-
-    /**
-     * index 화면 페이징 한후 로드
-     *
-     * @param page
-     * @param size
-     * @param sortBy
-     * @param sortDir
-     * @return
-     */
-    //유저
     @GetMapping
-    public ResponseEntity<Page<SellingBookAndBookResponseDto>> getBooks(
-            @RequestParam(defaultValue = "0") int page,         // 기본 페이지 번호
-            @RequestParam(defaultValue = "16") int size,        // 페이지 크기
-            @RequestParam(defaultValue = "sellingBookId") String sortBy,  // 정렬 기준
-            @RequestParam(defaultValue = "desc") String sortDir // 정렬 방향
-    ) {
-        Pageable pageable;
-        if ("likeCount".equals(sortBy)) {
-            // 좋아요 수 기준 정렬
-            pageable = PageRequest.of(page, size);
-            return ResponseEntity.ok(sellingBookService.getBooks(pageable, sortBy));
-        } else {
-            // 일반 정렬 기준 적용
-            String sortField;
-            switch (sortBy) {
-                case "new":           // 신상품 (출판 날짜 기준)
-                    sortField = "book.bookPubDate";
-                    break;
-                case "low-price":     // 최저가
-                    sortField = "sellingBookPrice";
-                    sortDir = "asc"; // 강제로 오름차순
-                    break;
-                case "high-price":    // 최고가
-                    sortField = "sellingBookPrice";
-                    sortDir = "desc"; // 강제로 내림차순
-                    break;
-                default:              // 기본값 (ID 정렬)
-                    sortField = "sellingBookId";
-            }
-
-            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortField));
-            return ResponseEntity.ok(sellingBookService.getBooks(pageable, sortBy));
-        }
+    public ResponseEntity<Page<SellingBookSimpleResponseDto>> getBooks(Pageable pageable,
+                                                                       @PageableDefault(size = 16, page = 0)
+                                                                       @RequestParam(required = false) String sortBy,
+                                                                       @RequestParam(required = false) String sortDir) {
+        Page<SellingBookSimpleResponseDto> contents = sellingBookService.getBooks(pageable, sortBy, sortDir);
+        return ResponseEntity.ok(contents);
     }
 
 
