@@ -18,7 +18,7 @@
     </appender>
 
     <!-- 개발환경(Dev) 프로필 설정 -->
-    <springProfile name="dev">
+    <springProfile name="dev, local">
         <!-- 로그 레벨 DEBUG -->
         <root level="DEBUG">
             <appender-ref ref="STDOUT"/>
