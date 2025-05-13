@@ -17,13 +17,21 @@ import com.nhnacademy.book.orderProduct.dto.OrderProductWrappingDto;
 import com.nhnacademy.book.wrappingPaper.entity.WrappingPaper;
 import com.nhnacademy.book.wrappingPaper.repository.WrappingPaperRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBucket;
+import org.redisson.api.RLock;
+import org.redisson.api.RScript;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.LongCodec;
+import org.redisson.client.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +43,7 @@ OrderCacheServiceImpl implements OrderCacheService {
     private final RedisTemplate<String, Object> redis;
     private final WrappingPaperRepository wrappingPaperRepository;
     private final SellingBookRepository sellingBookRepository;
+    private final RedissonClient redissonClient;
 
     private static final String STOCK_KEY = "stock:";
     private static final String ORDER_KEY = "order:";
@@ -43,11 +52,13 @@ OrderCacheServiceImpl implements OrderCacheService {
     public OrderCacheServiceImpl(ObjectMapper objectMapper,
                                  @Qualifier("orderRedisTemplate") RedisTemplate<String, Object> redis,
                                  WrappingPaperRepository wrappingPaperRepository,
-                                 SellingBookRepository sellingBookRepository) {
+                                 SellingBookRepository sellingBookRepository,
+                                 RedissonClient redissonClient) {
         this.objectMapper = objectMapper;
         this.redis = redis;
         this.wrappingPaperRepository = wrappingPaperRepository;
         this.sellingBookRepository = sellingBookRepository;
+        this.redissonClient = redissonClient;
     }
 
 
@@ -64,6 +75,7 @@ OrderCacheServiceImpl implements OrderCacheService {
         try {
             String jsonString = objectMapper.writeValueAsString(order);
             redis.opsForValue().set(key, jsonString, 15, TimeUnit.MINUTES);  // 15분간 주문정보 캐시 유지
+//            redis.opsForValue().set(key, jsonString, 3, TimeUnit.DAYS);  // 3일간 주문정보 캐시 유지
             log.info("orderCache: {}", redis.opsForValue().get(key));
 
         } catch (JsonProcessingException e) {
@@ -200,6 +212,7 @@ OrderCacheServiceImpl implements OrderCacheService {
      * @param orderRequest 주문요청 DTO
      * @return 주문 재고차감 맵
      */
+    // v1
     @Transactional
     @Override
     public Map<String, Integer> preemptOrderStock(String orderId, OrderRequestDto orderRequest) {
@@ -219,11 +232,86 @@ OrderCacheServiceImpl implements OrderCacheService {
         }
     }
 
-    private void preemptProductStock(Map<String, Integer> preemptedStockMap, OrderProductRequestDto orderProductRequest) {
+    // v2
+    @Override
+    public Map<String, Integer> preemptOrderStock(String orderId, List<OrderProductRequestDto> orderProducts) {
+        // 롤백을 위해 map으로 차감한 재고 저장
+        Map<String, Integer> preemptedStockMap = new HashMap<>();
+        try {
+            for (OrderProductRequestDto orderProductRequest : orderProducts) {
+                preemptProductStock(preemptedStockMap, orderProductRequest);
+                preemptWrappingPaperStock(preemptedStockMap, orderProductRequest);
+            }
+            String stockMapKey = getOrderStockMapKey(orderId);
+            redis.opsForValue().set(stockMapKey, preemptedStockMap);
+            return preemptedStockMap;
+        } catch (Exception e) {
+            log.error("재고 선점 중 오류가 발생했습니다.", e);
+            throw new RuntimeException("재고 선점 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    //    private void preemptProductStock(Map<String, Integer> preemptedStockMap, OrderProductRequestDto orderProductRequest) {
+//        String bookStockKey = getProductStockKey(orderProductRequest.getProductId());
+//        // 상품 재고 차감
+//        redis.opsForValue().decrement(bookStockKey, orderProductRequest.getQuantity());
+//        preemptedStockMap.put(bookStockKey, orderProductRequest.getQuantity());
+//    }
+    public void preemptProductStock(Map<String, Integer> preemptedStockMap, OrderProductRequestDto orderProductRequest) {
         String bookStockKey = getProductStockKey(orderProductRequest.getProductId());
-        // 상품 재고 차감
-        redis.opsForValue().decrement(bookStockKey, orderProductRequest.getQuantity());
+        // 재고 감소
+        decreaseWithLock(bookStockKey, orderProductRequest.getQuantity());
         preemptedStockMap.put(bookStockKey, orderProductRequest.getQuantity());
+    }
+
+    public void decrease(String key, int quantity) {
+        RBucket<Long> stockBucket = redissonClient.getBucket(key);
+        Long stock = stockBucket.get();
+        if (stock < quantity) {
+            throw new StockNotEnoughException("재고가 부족합니다. 현재 재고(" + stock + "), 주문수량(" + quantity + ")");
+        }
+        // 상품 재고 차감
+        stockBucket.set(stock - quantity);
+    }
+
+    public void decreaseWithLock(String key, int quantity) {
+        String lockKey = "lock:" + key;
+        RLock lock = redissonClient.getLock(lockKey);
+        try {
+            boolean isLocked = lock.tryLock(1, 3, TimeUnit.SECONDS);
+            if (!isLocked) {
+                throw new RuntimeException("락 획득 실패");
+            }
+            decrease(key, quantity);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("재고 차감 중 오류가 발생했습니다.", e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void decreaseWithLuaScript(String key, int quantity) {
+        RScript rScript = redissonClient.getScript(StringCodec.INSTANCE);
+        String luaScript =
+                "local stock = redis.call('GET', KEYS[1]);" +
+                        "if stock == nil then return -2; end;" +
+                        "stock = tonumber(stock)" +  // 키가 없으면 -2 반환
+                        "local quantity = tonumber(ARGV[1]);" +
+                        "if stock >= quantity then " +
+                        "  return redis.call('DECRBY', KEYS[1], quantity);" +
+                        "else return -1; end";
+        Long result = rScript.eval(
+                RScript.Mode.READ_WRITE,
+                luaScript,
+                RScript.ReturnType.INTEGER,
+                Collections.singletonList(key),
+                quantity
+        );
+        if (result == -1) {
+            throw new StockNotEnoughException("재고가 부족합니다.");
+        } else if (result == -2) {
+            throw new RuntimeException("재고가 등록되지 않았습니다.");
+        }
     }
 
     private void preemptWrappingPaperStock(Map<String, Integer> preemptedStockMap, OrderProductRequestDto orderProductRequest) {
@@ -231,29 +319,10 @@ OrderCacheServiceImpl implements OrderCacheService {
             OrderProductWrappingDto orderProductWrapping = orderProductRequest.getWrapping();
             String wrappingStockKey = getWrappingPaperStockKey(orderProductWrapping.getWrappingPaperId());
             // 포장지 재고 차감
-            redis.opsForValue().decrement(wrappingStockKey, orderProductWrapping.getQuantity());
+            decreaseWithLock(wrappingStockKey, orderProductWrapping.getQuantity());
             preemptedStockMap.put(wrappingStockKey, orderProductWrapping.getQuantity());
         }
     }
-
-//    @Override
-//    public void rollbackOrderedStock(OrderRequestDto orderRequest) {
-//        String orderId = "";
-//        try {
-//            Map<Object, Object> preemptedStockMap = redis.opsForHash().entries(getOrderStockMapKey(orderId));
-//            // 트랜잭션 시작
-//            redis.multi();
-//            preemptedStockMap.forEach((key, value) -> {
-//                redis.opsForValue().increment((String) key, (Integer) value);
-//            });
-//            // 트랜잭션 종료
-//            redis.exec();
-//        } catch (Exception e) {
-//            redis.discard();
-//            log.error("재고 롤백 중 오류가 발생했습니다.", e);
-//            throw new RuntimeException("재고 롤백 중 오류가 발생했습니다.", e);
-//        }
-//    }
 
     @Override
     public void rollbackOrderedStock(String orderId) {
